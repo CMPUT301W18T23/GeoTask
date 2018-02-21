@@ -69,4 +69,9 @@ public class ElasticsearchBasicTest {
         bidList.add("ID2");
         controller.insertNewBid(docID, bidList);
     }
+
+    @Test
+    public void testExistsProfile() {
+        assert(controller.existsProfile("123@gmail.com"));
+    }
 }

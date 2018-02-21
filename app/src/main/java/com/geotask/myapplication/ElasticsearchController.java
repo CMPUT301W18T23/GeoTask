@@ -9,16 +9,28 @@ import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.elasticsearch.action.admin.indices.stats.CommonStatsFlags.Flag.Search;
 
 /**
  * Created by MT on 2/19/2018.
@@ -49,6 +61,45 @@ public class ElasticsearchController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Method to check if a user has already registered with an email address.
+     *
+     * NOTE: We need to decide where to call this
+     *
+     * references: - https://stackoverflow.com/questions/30369962/getting-the-result-of-a-searchresponse-in-elasticsearch
+     *             - https://www.programcreek.com/java-api-examples/index.php?api=org.elasticsearch.search.builder.SearchSourceBuilder
+     *
+     * @param email - email of the client
+     * @return True if email is in system, False otherwise
+     */
+    public boolean existsProfile(String email){
+        QueryBuilder existsProfileQuery = QueryBuilders.termQuery("email", email); //the query (email field = to new email
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();                   //sourcebuilder object
+        sourceBuilder.query(existsProfileQuery);                                         //add the query to the sourcebuilder object
+        SearchRequest searchRequest = new SearchRequest(INDEX_NAME);                     //create the searchRequest object on the objecr
+        searchRequest.source(sourceBuilder);                                             //add the builder to the searchRequest
+
+        try {
+            SearchResponse response = client.search(searchRequest);                      //perform the query
+            if(response == null){
+                return false;
+            }
+
+            /* //maybe can just check if null?
+            SearchHit[] results = response.getHits().getHits();                          //get the results
+            if(results.length == 0){
+                return false;
+            } else {
+                return true;
+            }
+            */
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 
     /*
