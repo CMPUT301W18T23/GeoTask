@@ -1,3 +1,12 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">GeoTask</string>
+
+    <string name="all">All</string>
+    <string name="request">Request</string>
+    <string name="provider">Provider</string>
+    <string name="filter">Filter</string>
+    <string name="profile">Profile</string>
+    <string name="map">Map</string>
+    <string name="logout">Logout</string>
+
 </resources>

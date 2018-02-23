@@ -32,3 +32,5 @@ dependencies {
     annotationProcessor 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.2.1'
     compile 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.2.1'
 }
+
+
