@@ -7,6 +7,8 @@ import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.get.GetRequest;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
@@ -15,22 +17,15 @@ import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-
-import static org.elasticsearch.index.query.QueryBuilders.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.elasticsearch.action.admin.indices.stats.CommonStatsFlags.Flag.Search;
 
 /**
  * Created by MT on 2/19/2018.
@@ -236,5 +231,33 @@ public class ElasticsearchController {
         }
 
     }
+
+    public String getProfile(String ID) {
+        GetRequest request = new GetRequest(INDEX_NAME, "profile", ID);
+
+        GetResponse response = null;
+        try {
+            response = client.get(request);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return response.toString();
+    }
+
+    public String insertNewBid(String providerID, String TaskID) {
+        Map<String, Object> jsonMap = new HashMap<>();
+        IndexRequest request = new IndexRequest(INDEX_NAME, "bid").source(jsonMap);
+
+        try {
+            IndexResponse response = client.index(request);
+            return response.getId();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     //TODO search
+
 }
