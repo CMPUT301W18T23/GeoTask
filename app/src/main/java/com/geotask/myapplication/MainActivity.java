@@ -102,8 +102,10 @@ public class MainActivity extends AppCompatActivity {
     //Setup the adapter for our task list, do elastic search things
     protected void onStart() {
         super.onStart();
-        adapter = new ArrayAdapter<Task>(this, R.layout.list_item, taskArray);
-        taskList.setAdapter(adapter);
+		/*Here is where the elastic search needs to populate our array before making the adapter*/
+		
+        //adapter = new ArrayAdapter<Task>(this, R.layout.list_item, taskArray);
+        //taskList.setAdapter(adapter);
 
     }
 
