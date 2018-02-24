@@ -23,9 +23,7 @@ public class User {
     public String getName() {
         return this.name;
     }
-    public void setName(String Name) {
-        this.name = Name;
-    }
+
     public String getAdress() {
         return this.adress;
     }
