@@ -1,10 +1,10 @@
 package com.geotask.myapplication;
 
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.search.SearchHit;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by MT on 2/19/2018.
@@ -15,8 +15,14 @@ public class ElasticsearchBasicTest {
     ElasticsearchController controller = new ElasticsearchController();
 
     @Test
+    public void testCreateIndex() {
+        controller.deleteIndex();
+        controller.createIndex();
+    }
+
+    @Test
     public void testInsertProfile(){
-        String docID = controller.insertNewProfile("Michael Tang", "123@gmail.com","123123");
+        String docID = controller.insertNewProfile("apple", "123@gmail.com","123123");
         System.out.println(docID);
     }
 
@@ -31,7 +37,7 @@ public class ElasticsearchBasicTest {
     public void testInsertNewTask() {
         ArrayList<String> bidList = new ArrayList<>();
         bidList.add("ID1");
-        String docID = controller.insertNewTask("insertnewtask", "what", "complete",
+        String docID = controller.insertNewTask("insertnewtask", "what", "1234",
                                                 bidList, new ArrayList<Byte>(), "up");
 
         System.out.println(docID);
@@ -72,6 +78,21 @@ public class ElasticsearchBasicTest {
 
     @Test
     public void testExistsProfile() {
-        assert(controller.existsProfile("123@gmail.com"));
+        boolean result = controller.existsProfile("123@gmail.com");
+        System.out.println(result);
+    }
+
+    @Test
+    public void testBasicSearch() {
+        ArrayList<String> tuple = new ArrayList<>();
+        tuple.add("email");
+        tuple.add("12364gmail46com");
+        ArrayList<ArrayList<String>> list = new ArrayList<>();
+        list.add(tuple);
+        SearchResponse response = controller.basicSearch("profile", list);
+        SearchHit[] results = response.getHits().getHits();
+        for(SearchHit result:results){
+            System.out.println(result.getSourceAsString());
+        }
     }
 }

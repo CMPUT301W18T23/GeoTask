@@ -1,5 +1,6 @@
 package com.geotask.myapplication;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
@@ -17,8 +18,9 @@ import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.io.IOException;
@@ -66,21 +68,68 @@ public class ElasticsearchController {
      * references: - https://stackoverflow.com/questions/30369962/getting-the-result-of-a-searchresponse-in-elasticsearch
      *             - https://www.programcreek.com/java-api-examples/index.php?api=org.elasticsearch.search.builder.SearchSourceBuilder
      *
-     * @param email - email of the client
+     * @param  - email of the client
      * @return True if email is in system, False otherwise
      */
     public boolean existsProfile(String email){
-        QueryBuilder existsProfileQuery = QueryBuilders.termQuery("email", email); //the query (email field = to new email
-        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();                   //sourcebuilder object
-        sourceBuilder.query(existsProfileQuery);                                         //add the query to the sourcebuilder object
-        SearchRequest searchRequest = new SearchRequest(INDEX_NAME);                     //create the searchRequest object on the objecr
-        searchRequest.source(sourceBuilder);                                             //add the builder to the searchRequest
+        SearchRequest searchRequest = new SearchRequest(INDEX_NAME).types("profile");
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        byte[] emailEncoded = this.beautify(email);
+        TermQueryBuilder matchQueryBuilder = new TermQueryBuilder("email", emailEncoded);
+        searchSourceBuilder.query(matchQueryBuilder);
+        searchRequest.source(searchSourceBuilder);
 
         try {
-            SearchResponse response = client.search(searchRequest);                      //perform the query
-            if(response == null){
-                return false;
+            SearchResponse response = client.search(searchRequest);
+            SearchHit[] results = response.getHits().getHits();
+            for(SearchHit result:results){
+                System.out.println(result.getSourceAsString());
             }
+            System.out.println((response.getHits().getTotalHits()));
+            if(response.getHits().getTotalHits() != 0) {
+                return true;
+            }
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        return false;
+    }
+
+    private byte[] beautify(String email) {
+        byte[] emailEncoded = Base64.encodeBase64(email.getBytes());
+        System.out.println(emailEncoded);
+        return emailEncoded;
+    }
+
+    private String unbeautify(byte[] emailEncoded) {
+        byte[] valueDecoded = Base64.decodeBase64(emailEncoded);
+        return new String(valueDecoded);
+    }
+
+    public SearchResponse basicSearch(String type, ArrayList<ArrayList<String>> terms){
+
+        BoolQueryBuilder query = new BoolQueryBuilder();
+        for(ArrayList<String> term: terms){
+            if(term.get(0).equals("status")) {
+                query.must(new TermQueryBuilder(term.get(0), term.get(1)));
+            } else {
+                query.must(new TermQueryBuilder(term.get(0), term.get(1)));
+            }
+        }
+        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+        sourceBuilder.query(query);
+        SearchRequest searchRequest = new SearchRequest(INDEX_NAME).types(type);
+        searchRequest.source(sourceBuilder);
+
+        System.out.println(query);
+        System.out.println(searchRequest);
+
+        try {
+            SearchResponse response = client.search(searchRequest);
+            return response;
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
 
             /* //maybe can just check if null?
             SearchHit[] results = response.getHits().getHits();                          //get the results
@@ -90,13 +139,8 @@ public class ElasticsearchController {
                 return true;
             }
             */
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return true;
+        return null;
     }
-
     /*
     insert profile into elasticsearch and returns the document id
     assumes profile does not exist. will create duplicate document otherwise
@@ -105,7 +149,7 @@ public class ElasticsearchController {
         Map<String, Object> jsonMap = new HashMap<>();
         //jsonMap.put("type", "profile"); not required for this server version
         jsonMap.put("name", name);
-        jsonMap.put("email", email);
+        jsonMap.put("email", this.beautify("email"));
         jsonMap.put("phoneNumber", phoneNumber);
 
         // type is required by server, can be removed safely for newer server versions
@@ -242,7 +286,7 @@ public class ElasticsearchController {
             e.printStackTrace();
         }
 
-        return response.toString();
+        return (response.isExists()) ? response.toString(): null;
     }
 
     public String insertNewBid(String providerID, String TaskID) {
