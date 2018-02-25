@@ -1,5 +1,7 @@
 package com.geotask.myapplication;
 
+import org.junit.Test;
+
 public class TestBid {
 
 	

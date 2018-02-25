@@ -3,11 +3,11 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/GeoTask.iml" filepath="$PROJECT_DIR$/GeoTask.iml" />
-      <module fileurl="file://C:\Users\Kyle\AndroidStudioProjects\GeoTask\GeoTask.iml" filepath="C:\Users\Kyle\AndroidStudioProjects\GeoTask\GeoTask.iml" />
       <module fileurl="file://C:\Users\felixdgaypc\Desktop\GeoTask\GeoTask.iml" filepath="C:\Users\felixdgaypc\Desktop\GeoTask\GeoTask.iml" />
+      <module fileurl="file://C:\Users\Kyle\AndroidStudioProjects\GeoTask\GeoTask.iml" filepath="C:\Users\Kyle\AndroidStudioProjects\GeoTask\GeoTask.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\Users\Kyle\AndroidStudioProjects\GeoTask\app\app.iml" filepath="C:\Users\Kyle\AndroidStudioProjects\GeoTask\app\app.iml" />
       <module fileurl="file://C:\Users\felixdgaypc\Desktop\GeoTask\app\app.iml" filepath="C:\Users\felixdgaypc\Desktop\GeoTask\app\app.iml" />
+      <module fileurl="file://C:\Users\Kyle\AndroidStudioProjects\GeoTask\app\app.iml" filepath="C:\Users\Kyle\AndroidStudioProjects\GeoTask\app\app.iml" />
     </modules>
   </component>
 </project>
