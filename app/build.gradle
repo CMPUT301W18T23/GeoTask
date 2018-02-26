@@ -4,11 +4,13 @@ android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.geotask.myapplication"
-        minSdkVersion 15
+        minSdkVersion 26
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+        multiDexEnabled true
+        defaultConfig.javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = true
     }
     buildTypes {
         release {
@@ -16,21 +18,22 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
     testOptions {
         unitTests.returnDefaultValues = true
+    }
+    buildToolsVersion '26.0.2'
+    productFlavors {
     }
 }
 
 dependencies {
-    testImplementation 'junit:junit:4.12'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    annotationProcessor 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.2.1'
-    compile 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.2.1'
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.2.2'
 }
 
 

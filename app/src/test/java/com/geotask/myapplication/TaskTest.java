@@ -1,5 +1,7 @@
 package com.geotask.myapplication;
 
+import org.junit.Test;
+
 import java.util.ArrayList;
 
 public class TaskTest {
