@@ -1,6 +1,6 @@
 package com.geotask.myapplication;
 
-public class Bid {
+public class Bid extends GTData{
 	private String providerID;
 	private Double value;
 	private String taskID;
