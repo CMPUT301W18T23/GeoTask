@@ -4,7 +4,7 @@ import com.geotask.myapplication.DataClasses.Bid;
 
 import java.util.ArrayList;
 
-public class BidList {
+public class BidList extends GTData{
     private ArrayList<Bid> bidArrayList = new ArrayList<Bid>();
     private String taskID;
 

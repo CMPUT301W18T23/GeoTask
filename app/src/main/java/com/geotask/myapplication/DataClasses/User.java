@@ -1,14 +1,9 @@
 package com.geotask.myapplication.DataClasses;
 
-/**
- * Created by Kehan Wang on 2018/2/23.
- */
-
-public class User {
+public class User extends GTData{
     private String name;
     private String email;
     private String phonenum;
-
 
     public User(String name, String email, String phonenum){
         this.name = name;

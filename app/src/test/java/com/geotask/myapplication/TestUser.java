@@ -1,8 +1,5 @@
 package com.geotask.myapplication;
 
-/**
- * Created by Kehan Wang on 2018/2/23.
- */
 
 import com.geotask.myapplication.DataClasses.User;
 

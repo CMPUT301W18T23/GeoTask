@@ -2,7 +2,7 @@ package com.geotask.myapplication.DataClasses;
 
 import java.util.ArrayList;
 
-public class Task {
+public class Task extends GTData{
 	private String name;
 	private String description;
 	private String status;
