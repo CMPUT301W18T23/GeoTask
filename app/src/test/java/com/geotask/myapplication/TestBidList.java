@@ -1,5 +1,8 @@
 package com.geotask.myapplication;
 
+import com.geotask.myapplication.DataClasses.Bid;
+import com.geotask.myapplication.DataClasses.BidList;
+
 import org.junit.Test;
 
 public class TestBidList {

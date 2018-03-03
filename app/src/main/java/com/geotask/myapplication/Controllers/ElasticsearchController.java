@@ -1,5 +1,6 @@
-package com.geotask.myapplication;
+package com.geotask.myapplication.Controllers;
 
+import com.geotask.myapplication.DataClasses.GTData;
 import com.google.gson.Gson;
 import com.searchly.jestdroid.DroidClientConfig;
 import com.searchly.jestdroid.JestClientFactory;
