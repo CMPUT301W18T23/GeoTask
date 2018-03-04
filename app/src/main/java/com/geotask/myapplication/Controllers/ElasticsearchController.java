@@ -9,6 +9,9 @@ import com.searchly.jestdroid.DroidClientConfig;
 import com.searchly.jestdroid.JestClientFactory;
 import com.searchly.jestdroid.JestDroidClient;
 
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.util.QueryBuilder;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -69,8 +72,15 @@ public class ElasticsearchController {
     }
 
     public void search(String type, ArrayList<ArrayList<String>> terms){
-        
-        Search search = new Search.Builder("").build();
+        //QueryBuilder builder = new QueryBuilder()
+        BooleanQuery query = new BooleanQuery();
+        Search search = new Search.Builder(query.toString()).addIndex(INDEX_NAME).build();
+        try {
+            Log.i("hi-search", client.execute(search).getJsonString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static void verifySettings() {

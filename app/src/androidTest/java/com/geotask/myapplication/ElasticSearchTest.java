@@ -13,6 +13,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.util.ArrayList;
+
 /**
  * Created by Kyle on 2018-03-04.
  */
@@ -38,6 +40,12 @@ public class ElasticSearchTest {
     public void TestGetDocument(){
         //GTData bid2 = (Bid) controller.getDocument("AWHytEkr1Qdy-XuYsHZA", bid.getClass().toString());
         Log.i("hi", controller.getDocument("AWHytEkr1Qdy-XuYsHZA").toString());
+    }
+
+    @Test
+    public void TestSearch(){
+        ArrayList<ArrayList<String>> test = new ArrayList<ArrayList<String>>();
+        controller.search("null", test);
     }
 
     @Test
