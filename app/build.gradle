@@ -28,4 +28,11 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation files('src/include/jest-droid-2.0.1-SNAPSHOT.jar')
     //implementation 'org.elasticsearch:elasticsearch:1.2.4'
+    //implementation "org.elasticsearch.search.builder.SearchSourceBuilder"
+    // https://mvnrepository.com/artifact/org.elasticsearch/elasticsearch
+    /*
+    compile group: 'org.elasticsearch', name: 'elasticsearch', version: '1.2.4' {
+        exclude group: "org.apache.lun"
+    }*/
+
 }

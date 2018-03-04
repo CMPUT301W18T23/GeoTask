@@ -1,5 +1,7 @@
 package com.geotask.myapplication.Controllers;
 
+import android.util.Log;
+
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.google.gson.Gson;
@@ -14,6 +16,7 @@ import io.searchbox.client.JestResult;
 import io.searchbox.core.Delete;
 import io.searchbox.core.Get;
 import io.searchbox.core.Index;
+import io.searchbox.core.Search;
 
 /*
 API DOCUMENTATION
@@ -33,7 +36,7 @@ public class ElasticsearchController {
         System.out.println(request.toString());
         try {
             JestResult result = client.execute(request);
-            return result.getJsonObject().get("_id").toString();
+            return result.getJsonObject().get("_id").toString().replace("\"", "");
            // return result.get;
         } catch (IOException e) {
             e.printStackTrace();
@@ -54,15 +57,20 @@ public class ElasticsearchController {
         return null;
     }
 
-    public void deleteDocument(String ID, String type) {
+    public int deleteDocument(String ID) {
         try {
-            client.execute(new Delete.Builder(ID).index(INDEX_NAME).type(type).build());
+            Log.i("build", new Delete.Builder(ID).index(INDEX_NAME).type("bid").build().toString());
+            return client.execute(new Delete.Builder(ID).index(INDEX_NAME).type("bid").build()).getResponseCode();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return -1;
     }
 
     public void search(String type, ArrayList<ArrayList<String>> terms){
+        
+        Search search = new Search.Builder("").build();
     }
 
     public static void verifySettings() {

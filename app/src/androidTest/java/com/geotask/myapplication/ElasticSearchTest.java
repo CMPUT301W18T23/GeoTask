@@ -6,6 +6,8 @@ import com.geotask.myapplication.Controllers.ElasticsearchController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 
+import junit.framework.Assert;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,6 +38,15 @@ public class ElasticSearchTest {
     public void TestGetDocument(){
         //GTData bid2 = (Bid) controller.getDocument("AWHytEkr1Qdy-XuYsHZA", bid.getClass().toString());
         Log.i("hi", controller.getDocument("AWHytEkr1Qdy-XuYsHZA").toString());
+    }
+
+    @Test
+    public void TestDeleteDocument(){
+        //GTData bid2 = (Bid) controller.getDocument("AWHytEkr1Qdy-XuYsHZA", bid.getClass().toString());
+        Bid bid = new Bid("test",77.8, "test");
+        String test = controller.createNewDocument(bid);
+        Log.i("hi", test);
+        Assert.assertEquals(200, controller.deleteDocument(test));
     }
 
 }
