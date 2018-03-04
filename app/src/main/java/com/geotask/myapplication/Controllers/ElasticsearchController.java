@@ -9,8 +9,6 @@ import com.searchly.jestdroid.DroidClientConfig;
 import com.searchly.jestdroid.JestClientFactory;
 import com.searchly.jestdroid.JestDroidClient;
 
-import junit.framework.Assert;
-
 import java.io.IOException;
 
 import io.searchbox.client.JestResult;
@@ -88,15 +86,13 @@ public class ElasticsearchController {
 
     }*/
 
-    public String search(String type, String query) {
-        Search search = new Search.Builder(query)
-                .addIndex(INDEX_NAME)
-                .addType(type)
-                .build();
-
+    public Integer search(String type, String query) {
+        Search search = new Search.Builder(query).addIndex(INDEX_NAME).addType(type).build();
+        Log.wtf("search", String.valueOf(search));
         try {
+
             SearchResult result = client.execute(search);
-            return result.getSourceAsString();
+            return result.getTotal();
         } catch (IOException e) {
             e.printStackTrace();
         }

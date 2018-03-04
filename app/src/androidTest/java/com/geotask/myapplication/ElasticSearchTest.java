@@ -44,7 +44,7 @@ public class ElasticSearchTest {
     }
 
     @Test
-    public void TestSearch() throws InterruptedException {
+    public void TestSearch() {
   /*      Bid bid1 = new Bid("test1",77.8, "test");
         Bid bid2 = new Bid("test2",67.8, "test");
         Bid bid3 = new Bid("test3",57.8, "test");
@@ -64,10 +64,12 @@ public class ElasticSearchTest {
         TimeUnit.SECONDS.sleep(3);
 */
         SuperBooleanBuilder builder = new SuperBooleanBuilder();
-        builder.put("ProviderID", "task1");
+        builder.put("providerID", "test1");
 
-        System.out.println(builder.toString());
-        String string = controller.search("bid", builder.toString());
+        //System.out.println(builder.toString());
+        Integer string = controller.search("bid", builder.toString());
+        Log.i("&&&&&&&&&&&&&&&&&235135&&&&&&&&&", string.toString());
+        System.out.println(string);
     }
 
     @Test
