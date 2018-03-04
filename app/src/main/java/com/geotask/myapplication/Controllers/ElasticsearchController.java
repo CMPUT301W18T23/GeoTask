@@ -9,17 +9,16 @@ import com.searchly.jestdroid.DroidClientConfig;
 import com.searchly.jestdroid.JestClientFactory;
 import com.searchly.jestdroid.JestDroidClient;
 
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.util.QueryBuilder;
+import junit.framework.Assert;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import io.searchbox.client.JestResult;
 import io.searchbox.core.Delete;
 import io.searchbox.core.Get;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;
+import io.searchbox.core.SearchResult;
 
 /*
 API DOCUMENTATION
@@ -71,17 +70,39 @@ public class ElasticsearchController {
         return -1;
     }
 
-    public void search(String type, ArrayList<ArrayList<String>> terms){
-        //QueryBuilder builder = new QueryBuilder()
-        BooleanQuery query = new BooleanQuery();
-        Search search = new Search.Builder(query.toString()).addIndex(INDEX_NAME).build();
+    /*public void search(String type, ArrayList<ArrayList<String>> terms){
+        Map<String, String> jsonMap = new HashMap<String,String>();
+        for(ArrayList<String> term: terms) {
+            jsonMap.put(term.get(0), term.get(1));
+        }
+        Gson gson = new Gson();
+        String query = gson.toJson(jsonMap);
+
+        Log.i("query", query);
+        Search search = new Search.Builder(query).addIndex(INDEX_NAME).addType(type).build();
         try {
             Log.i("hi-search", client.execute(search).getJsonString());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+    }*/
+
+    public String search(String type, String query) {
+        Search search = new Search.Builder(query)
+                .addIndex(INDEX_NAME)
+                .addType(type)
+                .build();
+
+        try {
+            SearchResult result = client.execute(search);
+            return result.getSourceAsString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
+
 
     public static void verifySettings() {
         if(client == null) {

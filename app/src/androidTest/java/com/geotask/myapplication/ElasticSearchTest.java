@@ -5,6 +5,7 @@ import android.util.Log;
 import com.geotask.myapplication.Controllers.ElasticsearchController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
+import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import junit.framework.Assert;
 
@@ -14,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Kyle on 2018-03-04.
@@ -26,7 +28,6 @@ public class ElasticSearchTest {
     @Before
     public void setup(){
         controller.verifySettings();
-
     }
 
     @Test
@@ -43,9 +44,30 @@ public class ElasticSearchTest {
     }
 
     @Test
-    public void TestSearch(){
-        ArrayList<ArrayList<String>> test = new ArrayList<ArrayList<String>>();
-        controller.search("null", test);
+    public void TestSearch() throws InterruptedException {
+  /*      Bid bid1 = new Bid("test1",77.8, "test");
+        Bid bid2 = new Bid("test2",67.8, "test");
+        Bid bid3 = new Bid("test3",57.8, "test");
+        Bid bid4 = new Bid("test4",47.8, "test");
+        Bid bid5 = new Bid("test5",37.8, "test");
+        Bid bid6 = new Bid("test6",27.8, "test");
+        Bid bid7 = new Bid("test7",17.8, "test");
+
+        controller.createNewDocument(bid1);
+        controller.createNewDocument(bid2);
+        controller.createNewDocument(bid3);
+        controller.createNewDocument(bid4);
+        controller.createNewDocument(bid5);
+        controller.createNewDocument(bid6);
+        controller.createNewDocument(bid7);
+
+        TimeUnit.SECONDS.sleep(3);
+*/
+        SuperBooleanBuilder builder = new SuperBooleanBuilder();
+        builder.put("ProviderID", "task1");
+
+        System.out.println(builder.toString());
+        String string = controller.search("bid", builder.toString());
     }
 
     @Test
