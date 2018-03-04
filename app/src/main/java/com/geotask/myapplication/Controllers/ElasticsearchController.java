@@ -1,5 +1,6 @@
 package com.geotask.myapplication.Controllers;
 
+import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.google.gson.Gson;
 import com.searchly.jestdroid.DroidClientConfig;
@@ -24,25 +25,28 @@ public class ElasticsearchController {
     private static JestDroidClient client;
     private final static String INDEX_NAME = "cmput301w18t23";
 
-    public static void createNewDocument(GTData data){
+    public String createNewDocument(GTData data){
         Gson gson = new Gson();
         String json = gson.toJson(data);
-        Index request = new Index.Builder(json).index(INDEX_NAME).type(data.getClass().toString()).build();
+        Index request = new Index.Builder(json).index(INDEX_NAME).type(data.getType()).build();
 
         System.out.println(request.toString());
         try {
-            client.execute(request);
+            JestResult result = client.execute(request);
+            return result.getJsonObject().get("_id").toString();
+           // return result.get;
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
-    public GTData getDocument(String ID, String type) {
-        Get request = new Get.Builder(INDEX_NAME, ID).type(type).build();
+    public GTData getDocument(String ID) {
+        Get request = new Get.Builder(INDEX_NAME, ID).build();
 
         try {
             JestResult result = client.execute(request);
-            GTData data = result.getSourceAsObject(GTData.class);
+            Bid data = result.getSourceAsObject(Bid.class);
             return data;
         } catch (IOException e) {
             e.printStackTrace();
