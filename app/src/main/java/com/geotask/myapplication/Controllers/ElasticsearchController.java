@@ -4,12 +4,15 @@ import android.util.Log;
 
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
+import com.geotask.myapplication.DataClasses.Task;
+import com.geotask.myapplication.DataClasses.User;
 import com.google.gson.Gson;
 import com.searchly.jestdroid.DroidClientConfig;
 import com.searchly.jestdroid.JestClientFactory;
 import com.searchly.jestdroid.JestDroidClient;
 
 import java.io.IOException;
+import java.util.List;
 
 import io.searchbox.client.JestResult;
 import io.searchbox.core.Delete;
@@ -57,10 +60,10 @@ public class ElasticsearchController {
         return null;
     }
 
-    public int deleteDocument(String ID) {
+    public int deleteDocument(String ID, String type) {
         try {
-            Log.i("build", new Delete.Builder(ID).index(INDEX_NAME).type("bid").build().toString());
-            return client.execute(new Delete.Builder(ID).index(INDEX_NAME).type("bid").build()).getResponseCode();
+            Log.i("build", new Delete.Builder(ID).index(INDEX_NAME).type(type).build().toString());
+            return client.execute(new Delete.Builder(ID).index(INDEX_NAME).type(type).build()).getResponseCode();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -68,31 +71,39 @@ public class ElasticsearchController {
         return -1;
     }
 
-    /*public void search(String type, ArrayList<ArrayList<String>> terms){
-        Map<String, String> jsonMap = new HashMap<String,String>();
-        for(ArrayList<String> term: terms) {
-            jsonMap.put(term.get(0), term.get(1));
-        }
-        Gson gson = new Gson();
-        String query = gson.toJson(jsonMap);
-
-        Log.i("query", query);
-        Search search = new Search.Builder(query).addIndex(INDEX_NAME).addType(type).build();
-        try {
-            Log.i("hi-search", client.execute(search).getJsonString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }*/
-
-    public Integer search(String type, String query) {
-        Search search = new Search.Builder(query).addIndex(INDEX_NAME).addType(type).build();
-        Log.wtf("search", String.valueOf(search));
+    public List<Bid> searchBids(String query) {
+        Search search = new Search.Builder(query).addIndex(INDEX_NAME).addType("bid").build();
         try {
 
             SearchResult result = client.execute(search);
-            return result.getTotal();
+            List<Bid> bids = result.getSourceAsObjectList(Bid.class);
+            return bids;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<Task> searchTasks(String query) {
+        Search search = new Search.Builder(query).addIndex(INDEX_NAME).addType("task").build();
+        try {
+
+            SearchResult result = client.execute(search);
+            List<Task> tasks = result.getSourceAsObjectList(Task.class);
+            return tasks;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<User> searchUsers(String query) {
+        Search search = new Search.Builder(query).addIndex(INDEX_NAME).addType("user").build();
+        try {
+
+            SearchResult result = client.execute(search);
+            List<User> users = result.getSourceAsObjectList(User.class);
+            return users;
         } catch (IOException e) {
             e.printStackTrace();
         }
