@@ -1,5 +1,6 @@
 package com.geotask.myapplication;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -107,6 +108,9 @@ public class MainActivity extends AppCompatActivity {
 		
         //adapter = new ArrayAdapter<Task>(this, R.layout.list_item, taskArray);
         //taskList.setAdapter(adapter);
+
+        Intent intent = new Intent(MainActivity.this, MenuActivity.class);
+        startActivity(intent);
 
     }
 

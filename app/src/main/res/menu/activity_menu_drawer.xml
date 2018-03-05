@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_browse"
+            android:icon="@drawable/view_list"
+            android:title="Browse" />
+        <item
+            android:id="@+id/nav_filter"
+            android:icon="@drawable/ic_filter_outline_grey600_48dp"
+            android:title="Filter" />
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_account_outline_grey600_48dp"
+            android:title="Profile" />
+        <item
+            android:id="@+id/nav_map"
+            android:icon="@drawable/ic_google_maps_grey600_48dp"
+            android:title="Map" />
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_logout_variant_grey600_48dp"
+            android:title="Logout" />
+    </group>
+
+    <item android:title="Mode">
+        <menu>
+            <item
+                android:id="@+id/nav_provider"
+                android:icon="@drawable/ic_google_circles_extended_grey600_48dp"
+                android:title="Provider" />
+            <item
+                android:id="@+id/nav_requester"
+                android:icon="@drawable/ic_circle_outline_grey600_48dp"
+                android:title="Requester" />
+            <item
+                android:id="@+id/nav_all"
+                android:icon="@drawable/ic_google_circles_communities_grey600_48dp"
+                android:title="All" />
+        </menu>
+    </item>
+</menu>
