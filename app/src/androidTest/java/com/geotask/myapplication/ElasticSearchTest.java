@@ -15,7 +15,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import io.searchbox.core.SearchResult;
 
 /**
  * Created by Kyle on 2018-03-04.
@@ -67,8 +70,10 @@ public class ElasticSearchTest {
         builder.put("providerID", "test1");
 
         //System.out.println(builder.toString());
-        Integer string = controller.search("bid", builder.toString());
-        Log.i("&&&&&&&&&&&&&&&&&235135&&&&&&&&&", string.toString());
+        List<Bid> string = controller.searchBids(builder.toString());
+        for(Bid bid: string) {
+            System.out.println(bid);
+        }
         System.out.println(string);
     }
 
@@ -81,4 +86,20 @@ public class ElasticSearchTest {
         Assert.assertEquals(200, controller.deleteDocument(test));
     }
 
+    @Test
+    public void testMultiSearch(){
+        SuperBooleanBuilder builder = new SuperBooleanBuilder();
+        ArrayList<String> list = new ArrayList<>();
+        list.add("providerID");
+        list.add("test1");
+        list.add("taskID");
+        list.add("test");
+
+        builder.put(list);
+        List<Bid> string = controller.searchBids(builder.toString());
+        for(Bid bid: string) {
+            System.out.println(bid);
+        }
+        System.out.println(string);
+    }
 }
