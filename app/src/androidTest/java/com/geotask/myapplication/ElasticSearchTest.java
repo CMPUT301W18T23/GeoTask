@@ -52,7 +52,7 @@ public class ElasticSearchTest {
         try {
             ID = controller.createNewDocument(bid);
             bid.setObjectID(ID);
-            remote = (Bid) controller.getDocument(ID, "bid");
+            remote = (Bid) controller.getDocument(ID, Bid.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -71,7 +71,7 @@ public class ElasticSearchTest {
         try {
             ID = controller.createNewDocument(task);
             task.setObjectID(ID);
-            remote = (Task) controller.getDocument(ID, "task");
+            remote = (Task) controller.getDocument(ID, Task.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -91,7 +91,7 @@ public class ElasticSearchTest {
         try {
             ID = controller.createNewDocument(bidList);
             bidList.setObjectID(ID);
-            remote = (BidList) controller.getDocument(ID, "bidList");
+            remote = (BidList) controller.getDocument(ID, BidList.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -107,7 +107,7 @@ public class ElasticSearchTest {
         try {
             ID = controller.createNewDocument(user);
             user.setObjectID(ID);
-            remote = (User) controller.getDocument(ID, "user");
+            remote = (User) controller.getDocument(ID, User.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -130,7 +130,7 @@ public class ElasticSearchTest {
         }
 
         try {
-            code = controller.deleteDocument(ID, "bid");
+            code = controller.deleteDocument(ID, Bid.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -159,7 +159,7 @@ public class ElasticSearchTest {
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
         builder1.put("taskID", "atask");
         try {
-            searchResultList1 = (List<Bid>) controller.search(builder1.toString(), "bid");
+            searchResultList1 = (List<Bid>) controller.search(builder1.toString(), Bid.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -171,7 +171,7 @@ public class ElasticSearchTest {
         SuperBooleanBuilder builder2 = new SuperBooleanBuilder();
         builder2.put("providerID", "aprovider");
         try {
-            searchResultList1 = (List<Bid>) controller.search(builder2.toString(), "bid");
+            searchResultList1 = (List<Bid>) controller.search(builder2.toString(), Bid.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -200,11 +200,11 @@ public class ElasticSearchTest {
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
         builder1.put("description", "a");
         try {
-            searchResultList = (List<Task>) controller.search(builder1.toString(), "task");
+            searchResultList = (List<Task>) controller.search(builder1.toString(), Task.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        assertEquals(2, searchResultList.size());
+        assertEquals(1, searchResultList.size());
     }
 
     @Test

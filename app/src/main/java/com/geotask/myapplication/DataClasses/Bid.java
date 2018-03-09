@@ -1,15 +1,19 @@
 package com.geotask.myapplication.DataClasses;
 
+import android.content.Context;
+
+import java.lang.reflect.Type;
+
 public class Bid extends GTData {
 	private String providerID;
 	private Double value;
 	private String taskID;
 
 	public Bid() {
-		super.setType("bid");
+		super.setType(Bid.class);
 	}
 	public Bid(String providerID, Double value, String taskID) {
-		super.setType("bid");
+		super.setType(Bid.class);
 		this.providerID = providerID;
 		this.value = value;
 		this.taskID = taskID;
@@ -35,12 +39,22 @@ public class Bid extends GTData {
 	}
 
 	@Override
-	public String getType(){
+	public Type getType(){
 		return super.getType();
 	}
 
 	@Override
 	public String toString(){
 		return this.providerID + this.value + this.taskID ;
+	}
+
+	@Override
+	public void writeFile(Context context) {
+		this.writeFile(context);
+	}
+
+	@Override
+	public GTData readFile(String filename, Context context, Type type) {
+		return super.readFile(filename, context, type);
 	}
 }
