@@ -6,7 +6,7 @@ package com.geotask.myapplication;
 
 class TestServerAddress {
     private static final TestServerAddress ourInstance = new TestServerAddress();
-    private static final String testAddress = "cmput301w18t23";
+    private static final String testAddress = "cmput301w18t23test";
 
     private TestServerAddress() {
     }
