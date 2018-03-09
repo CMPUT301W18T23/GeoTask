@@ -39,7 +39,7 @@ https://github.com/searchbox-io/Jest/tree/master/jest
 public class ElasticsearchController {
     private static final String SERVER_ADDRESS = "http://cmput301.softwareprocess.es:8080";
     private static JestDroidClient client;
-    private final String INDEX_NAME = "cmput301w18t23";
+    private String INDEX_NAME = "cmput301w18t23";
 
 
     /**
@@ -209,5 +209,9 @@ public class ElasticsearchController {
         if(client != null) {
             client.shutdownClient();
         }
+    }
+
+    public void setTestSettings(String testServerAddress) {
+        this.INDEX_NAME = testServerAddress;
     }
 }
