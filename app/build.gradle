@@ -27,6 +27,17 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation files('src/include/jest-droid-2.0.1-SNAPSHOT.jar')
+    //implementation "org.apache.lucene.util"
+    //implementation 'org.elasticsearch:elasticsearch:1.2.4'
+    //implementation "org.elasticsearch.search.builder.SearchSourceBuilder"
+    // https://mvnrepository.com/artifact/org.elasticsearch/elasticsearch
+    /*
+    compile group: 'org.elasticsearch', name: 'elasticsearch', version: '1.2.4' {
+        exclude group: "org.apache.lun"
+    }*/
+
+// https://mvnrepository.com/artifact/org.apache.lucene/lucene-queries
     compile group: 'org.apache.lucene', name: 'lucene-queries', version: '4.10.3'
-    compile group: 'com.jayway.android.robotium', name: 'robotium-solo', version: '5.6.3'
+
+
 }

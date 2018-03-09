@@ -1,5 +1,6 @@
 package com.geotask.myapplication.Controllers;
 
+import android.os.StrictMode;
 import android.util.Log;
 
 import com.geotask.myapplication.DataClasses.Bid;
@@ -14,7 +15,6 @@ import com.searchly.jestdroid.JestClientFactory;
 import com.searchly.jestdroid.JestDroidClient;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,7 +72,10 @@ public class ElasticsearchController {
     public String createNewDocument(GTData data) throws IOException {
         Gson gson = new Gson();
         String json = gson.toJson(data);
-        Index request = new Index.Builder(json).index(INDEX_NAME).type(data.getType().toString()).build();
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+        Index request = new Index.Builder(json).index(INDEX_NAME).type(data.getType()).build();
 
         JestResult result = client.execute(request);
         return result.getJsonObject().get("_id").toString().replace("\"", "");
@@ -84,19 +87,19 @@ public class ElasticsearchController {
      * @param ID - ID of the document
      * @return GTData object
      */
-    public GTData getDocument(String ID, Type type) throws IOException {
+    public GTData getDocument(String ID, String type) throws IOException {
         Get request = new Get.Builder(INDEX_NAME, ID).build();
 
         JestResult result = client.execute(request);
 
         GTData data = null;
-        if (type.equals(Bid.class)) {
+        if (type.equals("bid")) {
             data = result.getSourceAsObject(Bid.class);
-        } else if (type.equals(Task.class)) {
+        } else if (type.equals("task")) {
             data = result.getSourceAsObject(Task.class);;
-        } else if (type.equals(User.class)) {
+        } else if (type.equals("user")) {
             data = result.getSourceAsObject(User.class);;
-        } else if (type.equals(BidList.class)) {
+        } else if (type.equals("bidList")) {
             data = result.getSourceAsObject(BidList.class);;
         }
         return data;
@@ -109,8 +112,8 @@ public class ElasticsearchController {
      * @param type - type of document
      * @return - response code of deletion (200 on success, 400 on failure)
      */
-    public int deleteDocument(String ID, Class<Bid> type) throws IOException {
-        return client.execute(new Delete.Builder(ID).index(INDEX_NAME).type(type.toString()).build()).getResponseCode();
+    public int deleteDocument(String ID, String type) throws IOException {
+        return client.execute(new Delete.Builder(ID).index(INDEX_NAME).type(type).build()).getResponseCode();
     }
 
     /**
@@ -119,22 +122,50 @@ public class ElasticsearchController {
      * @param query - query of terms that has been already formatted
      * @return a list of Bid objects
      */
-    public List<? extends GTData> search(String query, Type type) throws IOException {
-        Search search = new Search.Builder(query).addIndex(INDEX_NAME).addType(type.toString()).build();
+    public List<? extends GTData> search(String query, String type) throws IOException {
+        Search search = new Search.Builder(query).addIndex(INDEX_NAME).addType("bid").build();
 
         SearchResult result = client.execute(search);
 
         List<? extends GTData> dataList = null;
-        if (type.equals(Bid.class)) {
+        if (type.equals("bid")) {
             dataList = result.getSourceAsObjectList(Bid.class);
-        } else if (type.equals(Task.class)) {
+        } else if (type.equals("task")) {
             dataList = result.getSourceAsObjectList(Task.class);;
-        } else if (type.equals(User.class)) {
+        } else if (type.equals("user")) {
             dataList = result.getSourceAsObjectList(User.class);;
-        } else if (type.equals(BidList.class)) {
+        } else if (type.equals("bidList")) {
             dataList = result.getSourceAsObjectList(BidList.class);;
         }
         return dataList;
+    }
+
+    /**
+     * searchTasks - Method that searches the elasticSearch database and returns a list of task objects
+     *
+     * @param query - query of terms that has been already formatted
+     * @return a list of Task objects
+     */
+    public List<Task> searchTasks(String query) throws IOException {
+        Search search = new Search.Builder(query).addIndex(INDEX_NAME).addType("task").build();
+
+        SearchResult result = client.execute(search);
+        List<Task> tasks = result.getSourceAsObjectList(Task.class);
+        return tasks;
+    }
+
+    /**
+     * searchUsers - Method that searches the elasticSearch database and returns a list of profile objects
+     *
+     * @param query - query of terms that has been already formatted
+     * @return a list of profile objects
+     */
+    public List<User> searchUsers(String query) throws IOException {
+        Search search = new Search.Builder(query).addIndex(INDEX_NAME).addType("user").build();
+
+        SearchResult result = client.execute(search);
+        List<User> users = result.getSourceAsObjectList(User.class);
+        return users;
     }
 
     /**
@@ -144,19 +175,19 @@ public class ElasticsearchController {
      * @return true if the email is in use, false otherwise
      */
     public boolean existsProfile(String email){
-        ArrayList<String> arrayList = new ArrayList<String>();
-        arrayList.add("email");
-        arrayList.add(email);
-        SuperBooleanBuilder query = new SuperBooleanBuilder();
-        query.put(arrayList);
-        Search search = new Search.Builder(query.toString()).addIndex(INDEX_NAME).addType("user").build();
-        try {
-            if(client.execute(search).getTotal() > 0){
-                return true;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        ArrayList<String> arrayList = new ArrayList<String>();
+//        arrayList.add("email");
+//        arrayList.add(email);
+//        SuperBooleanBuilder query = new SuperBooleanBuilder();
+//        query.put(arrayList);
+//        Search search = new Search.Builder(query.toString()).addIndex(INDEX_NAME).addType("user").build();
+//        try {
+//            if(client.execute(search).getTotal() > 0){
+//                return true;
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         return false;
     }
 

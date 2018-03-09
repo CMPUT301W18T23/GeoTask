@@ -1,8 +1,5 @@
 package com.geotask.myapplication.DataClasses;
 
-import android.content.Context;
-
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class Task extends GTData{
@@ -15,10 +12,10 @@ public class Task extends GTData{
 	private String requester;
 	//i am not sure of what datatype for pictures
 	public Task(String name, String description) { //need string for pictures
-		super.setType(Task.class);
+		super.setType("task");
 		this.name = name;
 		this.description = description;
-		this.status = "requested";
+		this.status = "Requested";
 	}
 	public String getName() {
 		return this.name;
@@ -71,17 +68,7 @@ public class Task extends GTData{
 		return this.requester;
 	}
 
-	public Type getType() {
+	public String getType() {
 		return super.getType();
-	}
-
-	@Override
-	public void writeFile(Context context) {
-		this.writeFile(context);
-	}
-
-	@Override
-	public GTData readFile(String filename, Context context, Type type) {
-		return super.readFile(filename, context, type);
 	}
 }

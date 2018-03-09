@@ -7,7 +7,6 @@ import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -15,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -52,7 +52,7 @@ public class ElasticSearchTest {
         try {
             ID = controller.createNewDocument(bid);
             bid.setObjectID(ID);
-            remote = (Bid) controller.getDocument(ID, Bid.class);
+            remote = (Bid) controller.getDocument(ID, "bid");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -71,7 +71,7 @@ public class ElasticSearchTest {
         try {
             ID = controller.createNewDocument(task);
             task.setObjectID(ID);
-            remote = (Task) controller.getDocument(ID, Task.class);
+            remote = (Task) controller.getDocument(ID, "task");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -91,7 +91,7 @@ public class ElasticSearchTest {
         try {
             ID = controller.createNewDocument(bidList);
             bidList.setObjectID(ID);
-            remote = (BidList) controller.getDocument(ID, BidList.class);
+            remote = (BidList) controller.getDocument(ID, "bidList");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -107,7 +107,7 @@ public class ElasticSearchTest {
         try {
             ID = controller.createNewDocument(user);
             user.setObjectID(ID);
-            remote = (User) controller.getDocument(ID, User.class);
+            remote = (User) controller.getDocument(ID, "user");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -130,7 +130,7 @@ public class ElasticSearchTest {
         }
 
         try {
-            code = controller.deleteDocument(ID, Bid.class);
+            code = controller.deleteDocument(ID, "bid");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -159,7 +159,7 @@ public class ElasticSearchTest {
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
         builder1.put("taskID", "atask");
         try {
-            searchResultList1 = (List<Bid>) controller.search(builder1.toString(), Bid.class);
+            searchResultList1 = (List<Bid>) controller.search(builder1.toString(), "bid");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -171,7 +171,7 @@ public class ElasticSearchTest {
         SuperBooleanBuilder builder2 = new SuperBooleanBuilder();
         builder2.put("providerID", "aprovider");
         try {
-            searchResultList1 = (List<Bid>) controller.search(builder2.toString(), Bid.class);
+            searchResultList1 = (List<Bid>) controller.search(builder2.toString(), "bid");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -200,11 +200,11 @@ public class ElasticSearchTest {
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
         builder1.put("description", "a");
         try {
-            searchResultList = (List<Task>) controller.search(builder1.toString(), Task.class);
+            searchResultList = (List<Task>) controller.search(builder1.toString(), "task");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        assertEquals(1, searchResultList.size());
+        assertEquals(2, searchResultList.size());
     }
 
     @Test
@@ -238,10 +238,5 @@ public class ElasticSearchTest {
     @Test
     public void testExistsProfile() {
 
-    }
-
-    @AfterClass
-    public static void oneTimeTearDown() {
-        controller.shutDown();
     }
 }
