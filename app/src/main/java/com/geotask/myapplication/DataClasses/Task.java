@@ -7,15 +7,18 @@ public class Task extends GTData{
 	private String description;
 	private String status;
 	private ArrayList<String> photoList = new ArrayList<String>();
+	private BidList bidList = new BidList();
 	private Double accpetedBid;
 	private String provider;
 	private String requester;
+	private int hitCounter;
 	//i am not sure of what datatype for pictures
 	public Task(String name, String description) { //need string for pictures
 		super.setType("task");
 		this.name = name;
 		this.description = description;
 		this.status = "Requested";
+		this.hitCounter = 0;
 	}
 	public String getName() {
 		return this.name;
@@ -70,5 +73,15 @@ public class Task extends GTData{
 
 	public String getType() {
 		return super.getType();
+	}
+
+	public void addHit(){
+		this.hitCounter ++;
+	}
+	public Integer getHitCounter(){
+		return this.hitCounter;
+	}
+	public Integer getNumBidders(){
+		return this.bidList.getNumBids();
 	}
 }
