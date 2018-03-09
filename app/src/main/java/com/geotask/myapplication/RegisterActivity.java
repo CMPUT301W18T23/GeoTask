@@ -13,7 +13,7 @@ import com.geotask.myapplication.DataClasses.User;
 
 
 //https://stackoverflow.com/questions/2736389/how-to-pass-an-object-from-one-activity-to-another-on-android
-public class Register extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
 
     private EditText newName;
     private EditText newEmail;
