@@ -2,6 +2,7 @@ package com.geotask.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
@@ -29,6 +30,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+*
+* FOR WISHLIST BUTTON LATER https://stackoverflow.com/questions/8244252/star-button-in-android
+*
+*/
 public class MenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -37,6 +43,7 @@ public class MenuActivity extends AppCompatActivity
     private ArrayAdapter<Task> adapter;
     private ElasticsearchController controller;
     private String mode;
+    FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +55,7 @@ public class MenuActivity extends AppCompatActivity
         oldTasks = (ListView) findViewById(R.id.taskListView);
         taskList = new ArrayList<Task>();
         controller.verifySettings();
+
         mode = "all";
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -55,6 +63,17 @@ public class MenuActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Intent intent = new Intent(MenuActivity.this, AddTaskActivity.class);
+                //startActivity(intent);
+                adapter.notifyDataSetChanged();
+            }
+        });
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -81,6 +100,7 @@ public class MenuActivity extends AppCompatActivity
         super.onStart();
         Log.i("LifeCycle --->", "onStart is called");
         //populate the array on start
+        fab.hide();
         //TODO - need to get the mode of user, assuming all rn
         populateTaskView(mode, new ArrayList<String>());
         adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
@@ -162,14 +182,17 @@ public class MenuActivity extends AppCompatActivity
         } else if (id == R.id.nav_logout) {
 
         }  else if (id == R.id.nav_requester) {
+            fab.show();
             mode = "Requester";
             Snackbar.make(snackView, "Changed view to \"Requester\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         } else if (id == R.id.nav_provider) {
+            fab.hide();
             mode = "Provider";
             Snackbar.make(snackView, "Changed view to \"Provider\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         } else if (id == R.id.nav_all) {
+            fab.hide();
             mode = "All";
             Snackbar.make(snackView, "Changed view to \"All\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
