@@ -66,4 +66,8 @@ public class Task extends GTData{
 	public String getRequester() {
 		return this.requester;
 	}
+
+	public String getType() {
+		return "task";
+	}
 }

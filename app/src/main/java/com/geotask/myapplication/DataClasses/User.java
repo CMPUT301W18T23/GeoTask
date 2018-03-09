@@ -30,4 +30,6 @@ public class User extends GTData{
     public void setPhonenum(String phonenum){
         this.phonenum = phonenum;
     }
+
+    public String getType() { return "user"; }
 }

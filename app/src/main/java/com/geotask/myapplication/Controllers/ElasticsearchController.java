@@ -3,6 +3,7 @@ package com.geotask.myapplication.Controllers;
 import android.util.Log;
 
 import com.geotask.myapplication.DataClasses.Bid;
+import com.geotask.myapplication.DataClasses.BidList;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
@@ -63,18 +64,26 @@ public class ElasticsearchController {
     }
 
     /**
-     * getDocument - Gets the
+     * getDocument - Get a single document by ID. Will downcast to correct object type.
      *
      * @param ID - ID of the document
      * @return GTData object
      */
-    //TODO - What is this function supposed to do lol
     public GTData getDocument(String ID) {
         Get request = new Get.Builder(INDEX_NAME, ID).build();
 
         try {
             JestResult result = client.execute(request);
-            Bid data = result.getSourceAsObject(Bid.class);
+            GTData data = result.getSourceAsObject(Bid.class);
+            if (data.getType().equals("bid")) {
+                return (Bid) data;
+            } else if (data.getType().equals("user")) {
+                return (User) data;
+            } else if (data.getType().equals("task")) {
+                return (Task) data;
+            } else if (data.getType().equals("bidList")) {
+                return (BidList) data;
+            }
             return data;
         } catch (IOException e) {
             e.printStackTrace();
