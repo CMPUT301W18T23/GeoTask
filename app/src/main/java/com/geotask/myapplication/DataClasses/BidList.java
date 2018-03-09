@@ -6,11 +6,11 @@ import java.util.ArrayList;
 
 public class BidList extends GTData{
     private ArrayList<String> bidArrayList = new ArrayList<>();
-    private String taskID;
+    //private String taskID;
 
-    public BidList(String TaskID) {
+    public BidList() {
         super.setType("bidList");
-        this.taskID = TaskID;
+        //this.taskID = TaskID;
     }
 
     public void deleteBid(int index) {

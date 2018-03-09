@@ -1,21 +1,28 @@
 package com.geotask.myapplication.DataClasses;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Task extends GTData{
 	private String name;
 	private String description;
 	private String status;
 	private ArrayList<String> photoList = new ArrayList<String>();
+	private BidList bidList = new BidList(); //ToDo: delete BidList class
 	private Double accpetedBid;
 	private String provider;
 	private String requester;
+	private int hitCounter;
+	private Date date;
 	//i am not sure of what datatype for pictures
 	public Task(String name, String description) { //need string for pictures
 		super.setType("task");
 		this.name = name;
 		this.description = description;
-		this.status = "Requested";
+		this.hitCounter = 0;
+		this.status = "requested";
+		this.date = new Date();
 	}
 	public String getName() {
 		return this.name;
@@ -70,5 +77,23 @@ public class Task extends GTData{
 
 	public String getType() {
 		return super.getType();
+	}
+
+	public void addHit(){
+		this.hitCounter ++;
+	}
+	public Integer getHitCounter(){
+		return this.hitCounter;
+	}
+	public Integer getNumBidders(){
+		return this.bidList.getNumBids();
+	}
+
+	public String getDate(){
+		String strDate = new SimpleDateFormat("EEEE MMMM d, yyyy").format(this.date);
+		return strDate;
+	}
+	public void addBid(Bid bid){
+		bidList.addBid(bid.getObjectID());
 	}
 }

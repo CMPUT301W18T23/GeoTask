@@ -14,6 +14,7 @@ import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -114,7 +115,11 @@ public class MainActivity extends AppCompatActivity {
 		
         //adapter = new ArrayAdapter<Task>(this, R.layout.list_item, taskArray);
         //taskList.setAdapter(adapter);
-
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Intent intent = new Intent(MainActivity.this, MenuActivity.class);
         startActivity(intent);
 
