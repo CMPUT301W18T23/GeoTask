@@ -35,15 +35,19 @@ public class MenuActivity extends AppCompatActivity
     private ArrayList<Task> taskList;
     private ArrayAdapter<Task> adapter;
     private ElasticsearchController controller;
+    private String mode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i("LifeCycle --->", "onCreate is called");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         oldTasks = (ListView) findViewById(R.id.taskListView);
-        controller.verifySettings();;
+        taskList = new ArrayList<Task>();
+        controller.verifySettings();
+        mode = "all";
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -70,6 +74,31 @@ public class MenuActivity extends AppCompatActivity
         });
 
     }
+    /* This method loads the subList from savefile and sets the array adapter for the ListView
+     *
+     */
+    protected void onStart() {
+        super.onStart();
+        Log.i("LifeCycle --->", "onStart is called");
+        //populate the array on start
+        //TODO - need to get the mode of user, assuming all rn
+        populateTaskView(mode, new ArrayList<String>());
+        adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
+        oldTasks.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        Log.i("LifeCycle --->", "onResume is called");
+        //populate the array on start
+        //TODO - need to get the mode of user, assuming all rn
+        populateTaskView(mode, new ArrayList<String>());
+        adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
+        oldTasks.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+    }
 
     /**
      *
@@ -78,6 +107,8 @@ public class MenuActivity extends AppCompatActivity
      * @param terms
      */
     protected void populateTaskView(String mode, ArrayList<String> terms){
+        taskList.add(new Task("Hi", "weehaw"));
+        /*
         SuperBooleanBuilder builder = new SuperBooleanBuilder();
         //TODO - for loop to add terms
 
@@ -85,7 +116,7 @@ public class MenuActivity extends AppCompatActivity
             taskList = (ArrayList<Task>) controller.search(builder.toString(), "Task");
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
     }
     @Override
@@ -105,18 +136,6 @@ public class MenuActivity extends AppCompatActivity
         return true;
     }
 
-    /* This method loads the subList from savefile and sets the array adapter for the ListView
-     *
-     */
-    protected void onStart() {
-        super.onStart();
-        Log.i("LifeCycle --->", "onStart is called");
-        //populate the array on start
-        //TODO - need to get the mode of user, assuming all rn
-        populateTaskView("All", new ArrayList<String>());
-        adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
-        oldTasks.setAdapter(adapter);
-    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -138,12 +157,15 @@ public class MenuActivity extends AppCompatActivity
         } else if (id == R.id.nav_logout) {
 
         }  else if (id == R.id.nav_requester) {
+            mode = "Requester";
             Snackbar.make(snackView, "Changed view to \"Requester\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         } else if (id == R.id.nav_provider) {
+            mode = "Provider";
             Snackbar.make(snackView, "Changed view to \"Provider\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         } else if (id == R.id.nav_all) {
+            mode = "All";
             Snackbar.make(snackView, "Changed view to \"All\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
         }

@@ -16,16 +16,25 @@ package com.geotask.myapplication.Adapters;
  * https://stackoverflow.com/questions/11281952/listview-with-customized-row-layout-android
  *      For use of RelativeLayout.
  *      Author Sajmon, Jul 1, 2012, no licence stated
+ *
+ * https://stackoverflow.com/questions/8642823/using-setimagedrawable-dynamically-to-set-image-in-an-imageview
  */
 
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.geotask.myapplication.Controllers.ElasticsearchController;
@@ -64,6 +73,7 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> {
             headerSub.hits = (TextView) row.findViewById(R.id.task_list_hits);
             headerSub.desc = (TextView) row.findViewById(R.id.task_list_desc);
             headerSub.bids = (TextView) row.findViewById(R.id.task_list_bids);
+            headerSub.date = (TextView) row.findViewById(R.id.task_list_date);
 
             row.setTag(headerSub);
 
@@ -76,6 +86,35 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> {
         headerSub.hits.setText(String.format("Viewed %d times", item.getHitCounter()));
         headerSub.desc.setText(item.getDescription());
         headerSub.bids.setText(String.format("Bids: %d", item.getNumBidders()));
+        headerSub.date.setText(item.getDate());
+
+        Drawable dr = new Drawable() {
+            @Override
+            public void draw(@NonNull Canvas canvas) {
+                
+            }
+
+            @Override
+            public void setAlpha(int i) {
+
+            }
+
+            @Override
+            public void setColorFilter(@Nullable ColorFilter colorFilter) {
+
+            }
+
+            @Override
+            public int getOpacity() {
+                return 0;
+            }
+        }
+        if(item.getNumBidders() > 0) {
+            int id = getResources().getIdentifier("yourpackagename:drawable/" + StringGenerated, null, null);
+            headerSub.icon.setImageDrawable(getResources().getDrawable(R.drawable.icon));
+        } else {
+            headerSub.icon.setImageDrawable("@drawable/ic_circle_outline_grey600_24dp");
+        }
 
         return row;
     }
@@ -85,5 +124,7 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> {
         private TextView desc;
         private TextView hits;
         private TextView bids;
+        private TextView date;
+        private ImageView icon;
     }
 }
