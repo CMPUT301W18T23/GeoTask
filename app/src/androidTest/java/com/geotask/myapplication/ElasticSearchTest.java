@@ -7,6 +7,7 @@ import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -14,7 +15,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -30,6 +30,7 @@ public class ElasticSearchTest {
     public static void oneTimeSetUp() {
         controller = new ElasticsearchController();
         controller.verifySettings();
+        controller.setTestSettings(TestServerAddress.getTestAddress());
         try {
             controller.deleteIndex();
             controller.createIndex();
@@ -237,5 +238,10 @@ public class ElasticSearchTest {
     @Test
     public void testExistsProfile() {
 
+    }
+
+    @AfterClass
+    public static void oneTimeTearDown() {
+        controller.shutDown();
     }
 }

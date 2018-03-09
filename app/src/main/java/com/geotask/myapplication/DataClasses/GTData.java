@@ -21,4 +21,8 @@ public abstract class GTData implements Serializable{
     public String getObjectID() {
         return objectID;
     }
+
+    public void outToFile() {
+
+    }
 }

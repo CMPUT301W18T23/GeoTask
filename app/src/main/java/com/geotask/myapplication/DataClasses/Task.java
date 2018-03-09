@@ -15,7 +15,7 @@ public class Task extends GTData{
 		super.setType("task");
 		this.name = name;
 		this.description = description;
-		this.status = "Requested";
+		this.status = "requested";
 	}
 	public String getName() {
 		return this.name;
