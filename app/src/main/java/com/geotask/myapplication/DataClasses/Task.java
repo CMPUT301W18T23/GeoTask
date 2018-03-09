@@ -93,4 +93,7 @@ public class Task extends GTData{
 		String strDate = new SimpleDateFormat("EEEE MMMM d, yyyy").format(this.date);
 		return strDate;
 	}
+	public void addBid(Bid bid){
+		bidList.addBid(bid.getObjectID());
+	}
 }

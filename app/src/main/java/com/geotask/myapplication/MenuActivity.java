@@ -19,6 +19,7 @@ import android.widget.ListView;
 
 import com.geotask.myapplication.Adapters.TaskArrayAdapter;
 import com.geotask.myapplication.Controllers.ElasticsearchController;
+import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
@@ -63,13 +64,12 @@ public class MenuActivity extends AppCompatActivity
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 //TODO - this needs to work lol
-                /*
-                String test = Integer.toString(position);
+
+                Task task = taskList.get(position);
                 Intent intent = new Intent(MenuActivity.this, TaskViewActivity.class);
-                intent.putExtra("pos", position);
+                intent.putExtra("task", task);
                 startActivity(intent);
                 adapter.notifyDataSetChanged();
-                */
             }
         });
 
@@ -94,7 +94,9 @@ public class MenuActivity extends AppCompatActivity
         Log.i("LifeCycle --->", "onResume is called");
         //populate the array on start
         //TODO - need to get the mode of user, assuming all rn
-        populateTaskView(mode, new ArrayList<String>());
+        //populateTaskView(mode, new ArrayList<String>());
+        Task myTask = new Task("Hi2", "weehasdfsdfsdfsdfsdfsdfsjghfjghfjgfyughjfjgfjgfjgfgjhfgjfghjfjgfjgfgjfjgfjgfdfsdfsdfsdfsdfsw");
+        taskList.add(myTask);
         adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
         oldTasks.setAdapter(adapter);
         adapter.notifyDataSetChanged();
@@ -107,7 +109,10 @@ public class MenuActivity extends AppCompatActivity
      * @param terms
      */
     protected void populateTaskView(String mode, ArrayList<String> terms){
-        taskList.add(new Task("Hi", "weehaw"));
+        Task myTask = new Task("Ken Wong", "weehaw");
+        myTask.addBid(new Bid());
+        taskList.add(myTask);
+
         /*
         SuperBooleanBuilder builder = new SuperBooleanBuilder();
         //TODO - for loop to add terms
