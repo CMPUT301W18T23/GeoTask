@@ -83,20 +83,20 @@ public class ElasticsearchController {
      * @param ID - ID of the document
      * @return GTData object
      */
-    public GTData getDocument(String ID) throws IOException {
+    public GTData getDocument(String ID, String type) throws IOException {
         Get request = new Get.Builder(INDEX_NAME, ID).build();
 
         JestResult result = client.execute(request);
-        GTData data = result.getSourceAsObject(Bid.class);
 
-        if (data.getType().equals("bid")) {
-            return (Bid) data;
-        } else if (data.getType().equals("user")) {
-            return (User) data;
-        } else if (data.getType().equals("task")) {
-            return (Task) data;
-        } else if (data.getType().equals("bidList")) {
-            return (BidList) data;
+        GTData data = null;
+        if (type.equals("bid")) {
+            data = result.getSourceAsObject(Bid.class);
+        } else if (type.equals("task")) {
+            data = result.getSourceAsObject(Task.class);;
+        } else if (type.equals("user")) {
+            data = result.getSourceAsObject(User.class);;
+        } else if (type.equals("bidList")) {
+            data = result.getSourceAsObject(BidList.class);;
         }
         return data;
     }
@@ -109,7 +109,6 @@ public class ElasticsearchController {
      * @return - response code of deletion (200 on success, 400 on failure)
      */
     public int deleteDocument(String ID, String type) throws IOException {
-        Log.i("build", new Delete.Builder(ID).index(INDEX_NAME).type(type).build().toString());
         return client.execute(new Delete.Builder(ID).index(INDEX_NAME).type(type).build()).getResponseCode();
     }
 
@@ -119,12 +118,22 @@ public class ElasticsearchController {
      * @param query - query of terms that has been already formatted
      * @return a list of Bid objects
      */
-    public List<Bid> searchBids(String query) throws IOException {
+    public List<? extends GTData> search(String query, String type) throws IOException {
         Search search = new Search.Builder(query).addIndex(INDEX_NAME).addType("bid").build();
 
         SearchResult result = client.execute(search);
-        List<Bid> bids = result.getSourceAsObjectList(Bid.class);
-        return bids;
+
+        List<? extends GTData> dataList = null;
+        if (type.equals("bid")) {
+            dataList = result.getSourceAsObjectList(Bid.class);
+        } else if (type.equals("task")) {
+            dataList = result.getSourceAsObjectList(Task.class);;
+        } else if (type.equals("user")) {
+            dataList = result.getSourceAsObjectList(User.class);;
+        } else if (type.equals("bidList")) {
+            dataList = result.getSourceAsObjectList(BidList.class);;
+        }
+        return dataList;
     }
 
     /**

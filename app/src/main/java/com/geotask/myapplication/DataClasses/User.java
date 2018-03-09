@@ -6,6 +6,7 @@ public class User extends GTData{
     private String phonenum;
 
     public User(String name, String email, String phonenum){
+        super.setType("user");
         this.name = name;
         this.email = email;
         this.phonenum = phonenum;
@@ -31,5 +32,5 @@ public class User extends GTData{
         this.phonenum = phonenum;
     }
 
-    public String getType() { return "user"; }
+    public String getType() { return super.getType(); }
 }

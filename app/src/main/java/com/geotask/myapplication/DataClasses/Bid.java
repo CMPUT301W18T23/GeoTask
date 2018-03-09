@@ -5,11 +5,14 @@ public class Bid extends GTData {
 	private Double value;
 	private String taskID;
 
-	public Bid() {}
-	public Bid(String ProviderID, Double Value, String TaskID) {
-		this.providerID = ProviderID;
-		this.value = Value;	
-		this.taskID = TaskID;
+	public Bid() {
+		super.setType("bid");
+	}
+	public Bid(String providerID, Double value, String taskID) {
+		super.setType("bid");
+		this.providerID = providerID;
+		this.value = value;
+		this.taskID = taskID;
 	}
 	
 	public void setProviderID(String ProviderID) {
@@ -33,8 +36,7 @@ public class Bid extends GTData {
 
 	@Override
 	public String getType(){
-		return "bid";
-
+		return super.getType();
 	}
 
 	@Override

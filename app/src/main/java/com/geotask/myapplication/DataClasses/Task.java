@@ -11,9 +11,10 @@ public class Task extends GTData{
 	private String provider;
 	private String requester;
 	//i am not sure of what datatype for pictures
-	public Task(String Name, String Description) { //need string for pictures 
-		this.name = Name;
-		this.description = Description;
+	public Task(String name, String description) { //need string for pictures
+		super.setType("task");
+		this.name = name;
+		this.description = description;
 		this.status = "Requested";
 	}
 	public String getName() {
@@ -68,6 +69,6 @@ public class Task extends GTData{
 	}
 
 	public String getType() {
-		return "task";
+		return super.getType();
 	}
 }
