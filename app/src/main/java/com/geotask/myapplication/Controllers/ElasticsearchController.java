@@ -2,7 +2,9 @@ package com.geotask.myapplication.Controllers;
 
 import android.os.AsyncTask;
 import android.os.StrictMode;
+import android.util.Log;
 
+import com.geotask.myapplication.Controllers.ArgumentWrappers.AsyncArgumentWrapper;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
@@ -19,7 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.searchbox.client.JestResult;
+import io.searchbox.client.JestResultHandler;
 import io.searchbox.core.Delete;
+import io.searchbox.core.DocumentResult;
 import io.searchbox.core.Get;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;
@@ -40,22 +44,13 @@ https://github.com/searchbox-io/Jest/tree/master/jest
 public class ElasticsearchController {
     private static final String SERVER_ADDRESS = "http://cmput301.softwareprocess.es:8080";
     private static JestDroidClient client;
-    private String INDEX_NAME = "cmput301w18t23";
-
-    //ToDo: aync methods
-    public static class asyncCreateNewDocument extends AsyncTask<? extends GTData, void, void> {
-
-        @Override
-        protected void doInBackground(Object[] objects) {
-
-        }
-    }
+    private static String INDEX_NAME = "cmput301w18t23";
 
     /**
      * Creates the index
      * @throws IOException
      */
-    public void createIndex() throws IOException {
+    protected void createIndex() throws IOException {
         client.execute(new CreateIndex.Builder(INDEX_NAME).build());
     }
 
@@ -63,7 +58,7 @@ public class ElasticsearchController {
      * Delete the index
      * @throws IOException
      */
-    public int deleteIndex() throws IOException {
+    protected int deleteIndex() throws IOException {
         JestResult result = client.execute(new DeleteIndex.Builder(INDEX_NAME).build());
         return result.getResponseCode();
     }
@@ -77,13 +72,33 @@ public class ElasticsearchController {
      * @param data - GTData that should be added to the database
      * @return - ID of the document
      */
-    public String createNewDocument(GTData data) throws IOException {
+    protected void createNewDocument(GTData data) throws IOException {
         Gson gson = new Gson();
         String json = gson.toJson(data);
-        Index request = new Index.Builder(json).index(INDEX_NAME).type(data.getType().toString()).build();
+        Index request = new Index.Builder(json)
+                .index(INDEX_NAME)
+                .type(data.getType().toString())
+                .build();
 
         JestResult result = client.execute(request);
-        return result.getJsonObject().get("_id").toString().replace("\"", "");
+        String ID = result.getJsonObject()
+                .get("_id")
+                .toString()
+                .replace("\"", "");
+        data.setObjectID(ID);
+    }
+
+    protected void createNewDocument(GTData data, String docID) throws IOException {
+        Gson gson = new Gson();
+        String json = gson.toJson(data);
+        Index request = new Index.Builder(json)
+                .index(INDEX_NAME)
+                .type(data.getType().toString())
+                .id(docID)
+                .build();
+
+        JestResult result = client.execute(request);
+        result.getJsonObject().get("_id").toString().replace("\"", "");
     }
 
     /**
@@ -92,7 +107,7 @@ public class ElasticsearchController {
      * @param ID - ID of the document
      * @return GTData object
      */
-    public GTData getDocument(String ID, Type type) throws Exception {
+    protected GTData getDocument(String ID, Type type) throws Exception {
         Get request = new Get.Builder(INDEX_NAME, ID).build();
 
         JestResult result = client.execute(request);
@@ -115,8 +130,17 @@ public class ElasticsearchController {
      * @param type - type of document
      * @return - response code of deletion (200 on success, 400 on failure)
      */
-    public int deleteDocument(String ID, Class<Bid> type) throws IOException {
-        return client.execute(new Delete.Builder(ID).index(INDEX_NAME).type(type.toString()).build()).getResponseCode();
+    protected int deleteDocument(String ID, Class<Bid> type) throws IOException {
+        return client.execute(new Delete.Builder(ID)
+                        .index(INDEX_NAME)
+                        .type(type.toString())
+                        .build())
+                .getResponseCode();
+    }
+
+    protected void updateDocument(GTData data) throws IOException {
+        deleteDocument(data.getObjectID(), (Class<Bid>) data.getType());
+        createNewDocument(data, data.getObjectID());
     }
 
     /**
@@ -125,8 +149,11 @@ public class ElasticsearchController {
      * @param query - query of terms that has been already formatted
      * @return a list of Bid objects
      */
-    public List<? extends GTData> search(String query, Type type) throws IOException {
-        Search search = new Search.Builder(query).addIndex(INDEX_NAME).addType(type.toString()).build();
+    protected List<? extends GTData> search(String query, Type type) throws IOException {
+        Search search = new Search.Builder(query)
+                .addIndex(INDEX_NAME)
+                .addType(type.toString())
+                .build();
 
         SearchResult result = client.execute(search);
 
@@ -142,14 +169,13 @@ public class ElasticsearchController {
     }
 
     //ToDo: map email field to keyword
-    //ToDo: update document
     /**
      * existsProfile - Method for checking if an email is in use by another user
      *
      * @param email - email of the registering use
      * @return true if the email is in use, false otherwise
      */
-    public boolean emailNotUsed(String email){
+    protected boolean emailNotUsed(String email){
         /*ArrayList<String> arrayList = new ArrayList<String>();
         arrayList.add("email");
         arrayList.add(email);
@@ -169,7 +195,7 @@ public class ElasticsearchController {
     /**
      * verifySettings - Initializes client if not previously initialized
      */
-    public static void verifySettings() {
+    protected void verifySettings() {
         if(client == null) {
             DroidClientConfig.Builder builder = new DroidClientConfig.Builder(SERVER_ADDRESS);
             DroidClientConfig config = builder.build();
@@ -184,13 +210,13 @@ public class ElasticsearchController {
     /**
      * Turn off the light when you are done, this app is environmentally friendly
      */
-    public void shutDown() {
+    protected void shutDown() {
         if(client != null) {
             client.shutdownClient();
         }
     }
 
-    public void setTestSettings(String testServerAddress) {
-        this.INDEX_NAME = testServerAddress;
+    protected void setTestSettings(String testServerAddress) {
+        INDEX_NAME = testServerAddress;
     }
 }

@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.geotask.myapplication.Adapters.TaskArrayAdapter;
+import com.geotask.myapplication.Controllers.AsyncController;
 import com.geotask.myapplication.Controllers.ElasticsearchController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
@@ -41,7 +42,6 @@ public class MenuActivity extends AppCompatActivity
     private ListView oldTasks; //named taskListView
     private ArrayList<Task> taskList;
     private ArrayAdapter<Task> adapter;
-    private ElasticsearchController controller;
     private String mode;
     FloatingActionButton fab;
 
@@ -54,7 +54,7 @@ public class MenuActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         oldTasks = (ListView) findViewById(R.id.taskListView);
         taskList = new ArrayList<Task>();
-        controller.verifySettings();
+        AsyncController.verifySettings();
 
         mode = "all";
 

@@ -1,11 +1,14 @@
 package com.geotask.myapplication;
 
-import com.geotask.myapplication.Controllers.ElasticsearchController;
+import com.geotask.myapplication.Controllers.ArgumentWrappers.AsyncArgumentWrapper;
+import com.geotask.myapplication.Controllers.AsyncController;
+import com.geotask.myapplication.Controllers.AsyncController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -24,16 +27,14 @@ import static org.junit.Assert.assertTrue;
 @RunWith(JUnit4.class)
 public class ElasticSearchTest {
 
-    static ElasticsearchController controller;
 
     @BeforeClass
     public static void oneTimeSetUp() {
-        controller = new ElasticsearchController();
-        controller.verifySettings();
-        controller.setTestSettings(TestServerAddress.getTestAddress());
+        AsyncController.verifySettings();
+        AsyncController.setTestSettings(TestServerAddress.getTestAddress());
         try {
-            controller.deleteIndex();
-            controller.createIndex();
+            AsyncController.deleteIndex();
+            AsyncController.createIndex();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -41,86 +42,111 @@ public class ElasticSearchTest {
 
     @Before
     public void setUp() {
+        AsyncController.verifySettings();
     }
 
     @Test
-    public void testCreateAndGetBid() {
-        Bid bid = new Bid("test ProviderID", 1.1, "test TaskID");
-        String ID;
-        Bid remote = null;
-        
-        try {
-            ID = controller.createNewDocument(bid);
-            bid.setObjectID(ID);
-            remote = (Bid) controller.getDocument(ID, Bid.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void testAsyncCreateAndGetBid() throws InterruptedException {
+        Bid bid = new Bid("test async ProviderID", 1.2, "test async taskID");
 
-        assertEquals(bid.getProviderID(), remote.getProviderID());
-        assertEquals(bid.getValue(), remote.getValue());
-        assertEquals(bid.getTaskID(), remote.getTaskID());
+        AsyncController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new AsyncController.AsyncCreateNewDocument();
+        asyncCreateNewDocument.execute(bid);
+
+        TimeUnit.SECONDS.sleep(3);
+
+        AsyncController.AsyncGetDocument asyncGetDocument =
+                new AsyncController.AsyncGetDocument();
+        asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
     }
 
     @Test
-    public void testCreateAndGetTask() {
+    public void testAsyncCreateAndGetTask() throws InterruptedException {
         Task task = new Task("test Task", "test Description");
-        String ID;
-        Task remote = null;
 
-        try {
-            ID = controller.createNewDocument(task);
-            task.setObjectID(ID);
-            remote = (Task) controller.getDocument(ID, Task.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        AsyncController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new AsyncController.AsyncCreateNewDocument();
+        asyncCreateNewDocument.execute(task);
 
-        assertEquals(task.getName(), remote.getName());
-        assertEquals(task.getDescription(), remote.getDescription());
+        TimeUnit.SECONDS.sleep(3);
+
+        AsyncController.AsyncGetDocument asyncGetDocument =
+                new AsyncController.AsyncGetDocument();
+        asyncGetDocument.execute(new AsyncArgumentWrapper(task.getObjectID(), Task.class));
     }
 
-    @Test public void testCreateAndGetUser() {
+    @Test public void testCreateAndGetUser() throws InterruptedException {
         User user = new User("test user 1", "test_email@gmail.com", "555-555-5555");
-        String ID;
-        User remote = null;
 
-        try {
-            ID = controller.createNewDocument(user);
-            user.setObjectID(ID);
-            remote = (User) controller.getDocument(ID, User.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        AsyncController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new AsyncController.AsyncCreateNewDocument();
+        asyncCreateNewDocument.execute(user);
 
-        assertEquals(user.getEmail(), remote.getEmail());
-        assertEquals(user.getName(), remote.getName());
-        assertEquals(user.getPhonenum(), user.getPhonenum());
+        TimeUnit.SECONDS.sleep(3);
+
+        AsyncController.AsyncGetDocument asyncGetDocument =
+                new AsyncController.AsyncGetDocument();
+        asyncGetDocument.execute(new AsyncArgumentWrapper(user.getObjectID(), User.class));
     }
 
     @Test
-    public void testDeleteDocument() {
+    public void testDeleteDocument() throws InterruptedException {
         Bid bid = new Bid("test delete document", 2.1, "test delete document");
-        String ID = null;
-        int code = -1;
 
-        try {
-            ID = controller.createNewDocument(bid);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        AsyncController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new AsyncController.AsyncCreateNewDocument();
+        asyncCreateNewDocument.execute(bid);
 
-        try {
-            code = controller.deleteDocument(ID, Bid.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        TimeUnit.SECONDS.sleep(3);
 
-        assertEquals(200, code);
+        AsyncController.AsyncDeleteDocument asyncDeleteDocument =
+                new AsyncController.AsyncDeleteDocument();
+        asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
+    }
+
+    @Test
+    public void testUpdateBid() throws InterruptedException {
+        Bid bid = new Bid("test update document", 8.1, "test update document");
+
+        AsyncController.AsyncUpdateDocument asyncUpdateDocument =
+                new AsyncController.AsyncUpdateDocument();
+        asyncUpdateDocument.execute(bid);
+
+        TimeUnit.SECONDS.sleep(3);
+
+        AsyncController.AsyncGetDocument asyncGetDocument =
+                new AsyncController.AsyncGetDocument();
+        asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
+    }
+
+    @Test
+    public void testUpdateTask() throws InterruptedException {
+        Task task = new Task("test update task", "test update description");
+
+        AsyncController.AsyncUpdateDocument asyncUpdateDocument =
+                new AsyncController.AsyncUpdateDocument();
+        asyncUpdateDocument.execute(task);
+
+        TimeUnit.SECONDS.sleep(3);
+
+        AsyncController.AsyncGetDocument asyncGetDocument =
+                new AsyncController.AsyncGetDocument();
+        asyncGetDocument.execute(new AsyncArgumentWrapper(task.getObjectID(), Task.class));
+    }
+
+    @Test
+    public void testUpdateUser() throws InterruptedException {
+        User user = new User("test update user 1", "test_email@gmail.com", "555-555-5555");
+
+        AsyncController.AsyncUpdateDocument asyncUpdateDocument =
+                new AsyncController.AsyncUpdateDocument();
+        asyncUpdateDocument.execute(user);
+
+        TimeUnit.SECONDS.sleep(3);
+
+        AsyncController.AsyncGetDocument asyncGetDocument =
+                new AsyncController.AsyncGetDocument();
+        asyncGetDocument.execute(new AsyncArgumentWrapper(user.getObjectID(), User.class));
     }
 
     @Test
@@ -129,39 +155,21 @@ public class ElasticSearchTest {
         Bid bid2 = new Bid("bprovider", 3.2, "atask");
         Bid bid3 = new Bid("cprovider", 3.3, "atask");
 
-        try {
-            controller.createNewDocument(bid1);
-            controller.createNewDocument(bid2);
-            controller.createNewDocument(bid3);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        AsyncController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new AsyncController.AsyncCreateNewDocument();
+        asyncCreateNewDocument.execute(bid1, bid2, bid3);
 
-        TimeUnit.SECONDS.sleep(3);
-
-        List<Bid> searchResultList1 = null;
+        TimeUnit.SECONDS.sleep(5);
 
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
         builder1.put("taskID", "atask");
-        try {
-            searchResultList1 = (List<Bid>) controller.search(builder1.toString(), Bid.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        assertEquals(3, searchResultList1.size());
-        assertEquals(bid1.getValue(), searchResultList1.get(0).getValue());
-        assertEquals(bid2.getValue(), searchResultList1.get(1).getValue());
-        assertEquals(bid3.getValue(), searchResultList1.get(2).getValue());
-
         SuperBooleanBuilder builder2 = new SuperBooleanBuilder();
         builder2.put("providerID", "aprovider");
-        try {
-            searchResultList1 = (List<Bid>) controller.search(builder2.toString(), Bid.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        assertEquals(1, searchResultList1.size());
-        assertEquals(bid1.getValue(), searchResultList1.get(0).getValue());
+
+        AsyncController.AsyncSearch asyncSearch =
+                new AsyncController.AsyncSearch();
+        asyncSearch.execute(new AsyncArgumentWrapper(builder1.toString(), Bid.class),
+                            new AsyncArgumentWrapper(builder2.toString(), Bid.class));
     }
 
     @Test
@@ -171,25 +179,19 @@ public class ElasticSearchTest {
         Task task2 = new Task("task", "b");
         task2.setAcceptedBid(1.2);
 
-        try {
-            controller.createNewDocument(task1);
-            controller.createNewDocument(task2);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        AsyncController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new AsyncController.AsyncCreateNewDocument();
+        asyncCreateNewDocument.execute(task1, task2);
 
-        TimeUnit.SECONDS.sleep(3);
+        TimeUnit.SECONDS.sleep(5);
 
-        List<Task> searchResultList = null;
 
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
         builder1.put("description", "a");
-        try {
-            searchResultList = (List<Task>) controller.search(builder1.toString(), Task.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        assertEquals(1, searchResultList.size());
+
+        AsyncController.AsyncSearch asyncSearch =
+                new AsyncController.AsyncSearch();
+        asyncSearch.execute(new AsyncArgumentWrapper(builder1.toString(), Task.class));
     }
 
     @Test
@@ -200,28 +202,19 @@ public class ElasticSearchTest {
         User user4 = new User("user", "1@yahoo.com", "888");
         User user5 = new User("user", "1@yahoo.ca", "888");
 
-        try {
-            controller.createNewDocument(user1);
-            controller.createNewDocument(user2);
-            controller.createNewDocument(user3);
-            controller.createNewDocument(user4);
-            controller.createNewDocument(user5);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        AsyncController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new AsyncController.AsyncCreateNewDocument();
+        asyncCreateNewDocument.execute(user1, user2, user3, user4, user5);
 
         TimeUnit.SECONDS.sleep(5);
 
-        List<User> searchResultList = null;
 
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
         builder1.put("name", "user");
-        try {
-            searchResultList = (List<User>) controller.search(builder1.toString(), User.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        assertEquals(5, searchResultList.size());
+
+        AsyncController.AsyncSearch asyncSearch =
+                new AsyncController.AsyncSearch();
+        asyncSearch.execute(new AsyncArgumentWrapper(builder1.toString(), User.class));
     }
 
     @Test
@@ -231,27 +224,16 @@ public class ElasticSearchTest {
 
     @Test
     public void testExistsProfile() {
-        User user1 = new User("uniqueness test", "123@gmail.com", "1234566");
-        try {
-            controller.createNewDocument(user1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        List<User> searchResultList = null;
+    }
 
-        SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
-        builder1.put("email", "123@gmail.com");
-        try {
-            searchResultList = (List<User>) controller.search(builder1.toString(), User.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        assertTrue(searchResultList.size() == 0);
+    @After
+    public void tearDown() {
+        AsyncController.shutDown();
     }
 
     @AfterClass
     public static void oneTimeTearDown() {
-        controller.shutDown();
+        AsyncController.shutDown();
     }
 }
