@@ -1,5 +1,6 @@
 package com.geotask.myapplication.Controllers;
 
+import android.os.AsyncTask;
 import android.os.StrictMode;
 
 import com.geotask.myapplication.DataClasses.Bid;
@@ -41,6 +42,14 @@ public class ElasticsearchController {
     private static JestDroidClient client;
     private String INDEX_NAME = "cmput301w18t23";
 
+    //ToDo: aync methods
+    public static class asyncCreateNewDocument extends AsyncTask<? extends GTData, void, void> {
+
+        @Override
+        protected void doInBackground(Object[] objects) {
+
+        }
+    }
 
     /**
      * Creates the index
@@ -133,6 +142,7 @@ public class ElasticsearchController {
     }
 
     //ToDo: map email field to keyword
+    //ToDo: update document
     /**
      * existsProfile - Method for checking if an email is in use by another user
      *

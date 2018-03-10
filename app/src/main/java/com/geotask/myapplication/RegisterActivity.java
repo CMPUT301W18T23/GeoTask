@@ -40,6 +40,9 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
+    /**
+     *
+     */
     public void register_check(){
         if (isValid()){
             String ID;
@@ -58,16 +61,9 @@ public class RegisterActivity extends AppCompatActivity {
                     ID = newElasticSearch.createNewDocument(newUser);
                     newUser.setObjectID(ID);
                     Intent intent = new Intent(getBaseContext(), MainActivity.class);
-//                    intent.putExtra("EXTRA_SESSION_ID", 123);
                     intent.putExtra("MyClass", newUser); //ToDo: not catched on other side
                     startActivity(intent);
-
-
-
-
-// To retrieve object in second Activity
-
-
+                    //ToDo: progress dialog while waiting for internet
                 } catch  (java.io.IOException e) {
                     System.out.print("IO error, please wait and try again");
                 }
