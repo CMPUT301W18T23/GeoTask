@@ -2,7 +2,7 @@ package com.geotask.myapplication.Controllers;
 
 import android.os.AsyncTask;
 
-import com.geotask.myapplication.Controllers.ArgumentWrappers.AsyncArgumentWrapper;
+import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.DataClasses.GTData;
 
 import java.io.IOException;

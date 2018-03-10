@@ -1,10 +1,8 @@
 package com.geotask.myapplication;
 
-import android.util.Log;
-
-import com.geotask.myapplication.Controllers.ArgumentWrappers.AsyncArgumentWrapper;
+import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
-import com.geotask.myapplication.Controllers.ElasticsearchController;
+import com.geotask.myapplication.Controllers.Helpers.EmailConverter;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
@@ -12,7 +10,6 @@ import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
-import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -22,13 +19,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 
@@ -91,6 +88,15 @@ public class ElasticSearchTest implements AsyncCallBackManager {
         MasterController.AsyncGetDocument asyncGetDocument =
                 new MasterController.AsyncGetDocument(this);
         asyncGetDocument.execute(new AsyncArgumentWrapper(task.getObjectID(), Task.class));
+
+        Task remote = null;
+        try {
+            remote = (Task) asyncGetDocument.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(task.getDate(), remote.getDate());
     }
 
     @Test public void testCreateAndGetUser() throws InterruptedException {
@@ -105,6 +111,15 @@ public class ElasticSearchTest implements AsyncCallBackManager {
         MasterController.AsyncGetDocument asyncGetDocument =
                 new MasterController.AsyncGetDocument(this);
         asyncGetDocument.execute(new AsyncArgumentWrapper(user.getObjectID(), User.class));
+
+        User remote = null;
+        try {
+            remote = (User) asyncGetDocument.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(user.getName(), remote.getName());
     }
 
     @Test
@@ -117,24 +132,78 @@ public class ElasticSearchTest implements AsyncCallBackManager {
 
         TimeUnit.SECONDS.sleep(3);
 
+        MasterController.AsyncGetDocument asyncGetDocumentWhenDocumentExist =
+                new MasterController.AsyncGetDocument(this);
+        asyncGetDocumentWhenDocumentExist.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
+
+        Bid remote = null;
+        try {
+            remote = (Bid) asyncGetDocumentWhenDocumentExist.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        assertEquals(bid.getProviderID(), remote.getProviderID());
+
+
         MasterController.AsyncDeleteDocument asyncDeleteDocument =
                 new MasterController.AsyncDeleteDocument();
         asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
+
+        TimeUnit.SECONDS.sleep(3);
+
+        MasterController.AsyncGetDocument asyncGetDocumentWhenDocumentShouldNotExist =
+                new MasterController.AsyncGetDocument(this);
+        asyncGetDocumentWhenDocumentShouldNotExist.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
+
+        try {
+            remote = (Bid) asyncGetDocumentWhenDocumentShouldNotExist.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        assertNull(remote);
     }
 
     @Test
     public void testUpdateBid() throws InterruptedException {
         Bid bid = new Bid("test update document", 8.1, "test update document");
 
-        MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument();
-        asyncUpdateDocument.execute(bid);
+        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new MasterController.AsyncCreateNewDocument();
+        asyncCreateNewDocument.execute(bid);
 
         TimeUnit.SECONDS.sleep(3);
 
         MasterController.AsyncGetDocument asyncGetDocument =
                 new MasterController.AsyncGetDocument(this);
         asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
+
+        Bid remote = null;
+        try {
+            remote = (Bid) asyncGetDocument.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        assertEquals(bid.getProviderID(), remote.getProviderID());
+
+        bid.setProviderID("updated");
+        MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                new MasterController.AsyncUpdateDocument();
+        asyncUpdateDocument.execute(bid);
+
+        TimeUnit.SECONDS.sleep(3);
+
+        MasterController.AsyncGetDocument asyncGetDocumentAfterUpdate =
+                new MasterController.AsyncGetDocument(this);
+        asyncGetDocumentAfterUpdate.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
+
+        try {
+            remote = (Bid) asyncGetDocumentAfterUpdate.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(bid.getProviderID(), remote.getProviderID());
     }
 
     @Test
@@ -257,8 +326,8 @@ public class ElasticSearchTest implements AsyncCallBackManager {
     @Test
     public void testEmailConversion(){
         String email = "kyleg@email.com";
-        String convertedEmail = ElasticsearchController.convertEmailForElasticSearch(email);
-        String revertedEmail = ElasticsearchController.revertEmailFromElasticSearch(convertedEmail);
+        String convertedEmail = EmailConverter.convertEmailForElasticSearch(email);
+        String revertedEmail = EmailConverter.revertEmailFromElasticSearch(convertedEmail);
         assert(convertedEmail.compareTo("107c121c108c101c103c64c101c109c97c105c108c46c99c111c109c") == 0);
         assert(email.compareTo(revertedEmail) == 0);
     }

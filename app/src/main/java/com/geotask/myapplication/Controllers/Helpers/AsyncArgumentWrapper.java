@@ -1,4 +1,4 @@
-package com.geotask.myapplication.Controllers.ArgumentWrappers;
+package com.geotask.myapplication.Controllers.Helpers;
 
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 

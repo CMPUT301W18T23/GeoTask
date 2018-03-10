@@ -1,12 +1,9 @@
 package com.geotask.myapplication.Controllers;
 
-import android.util.Log;
-
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
-import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 import com.google.gson.Gson;
 import com.searchly.jestdroid.DroidClientConfig;
 import com.searchly.jestdroid.JestClientFactory;
@@ -14,7 +11,6 @@ import com.searchly.jestdroid.JestDroidClient;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 import io.searchbox.client.JestResult;
@@ -220,21 +216,4 @@ public class ElasticsearchController {
         INDEX_NAME = testServerAddress;
     }
 
-    public static String convertEmailForElasticSearch(String email){
-        String convertedEmail = "";
-        for(int i = 0; i < email.length(); i++){
-            int character = (int) email.charAt(i);
-            convertedEmail += Integer.toString(character) + "c";
-        }
-        return convertedEmail;
-    }
-
-    public static String revertEmailFromElasticSearch(String convertedEmail){
-        String email = "";
-        for(String character : convertedEmail.split("c")){
-            int intCharacter = Integer.valueOf(character);
-            email += (char) intCharacter;
-        }
-        return email;
-    }
 }
