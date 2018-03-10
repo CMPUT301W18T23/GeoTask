@@ -1,5 +1,7 @@
 package com.geotask.myapplication.Controllers;
 
+import android.os.StrictMode;
+
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
@@ -130,14 +132,15 @@ public class ElasticsearchController {
         return dataList;
     }
 
+    //ToDo: map email field to keyword
     /**
      * existsProfile - Method for checking if an email is in use by another user
      *
      * @param email - email of the registering use
      * @return true if the email is in use, false otherwise
      */
-    public boolean existsProfile(String email){
-        ArrayList<String> arrayList = new ArrayList<String>();
+    public boolean emailNotUsed(String email){
+        /*ArrayList<String> arrayList = new ArrayList<String>();
         arrayList.add("email");
         arrayList.add(email);
         SuperBooleanBuilder query = new SuperBooleanBuilder();
@@ -149,8 +152,8 @@ public class ElasticsearchController {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        return false;
+        }*/
+        return true;
     }
 
     /**
@@ -165,11 +168,14 @@ public class ElasticsearchController {
             factory.setDroidClientConfig(config);
 
             client = (JestDroidClient) factory.getObject();
+
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
         }
     }
 
     /**
-     * Turn off client
+     * Turn off the light when you are done, this app is environmentally friendly
      */
     public void shutDown() {
         if(client != null) {

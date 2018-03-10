@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 @RunWith(JUnit4.class)
@@ -212,6 +213,15 @@ public class ElasticSearchTest {
         TimeUnit.SECONDS.sleep(5);
 
         List<User> searchResultList = null;
+
+        SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
+        builder1.put("name", "user");
+        try {
+            searchResultList = (List<User>) controller.search(builder1.toString(), User.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assertEquals(5, searchResultList.size());
     }
 
     @Test
@@ -221,7 +231,23 @@ public class ElasticSearchTest {
 
     @Test
     public void testExistsProfile() {
+        User user1 = new User("uniqueness test", "123@gmail.com", "1234566");
+        try {
+            controller.createNewDocument(user1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
+        List<User> searchResultList = null;
+
+        SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
+        builder1.put("email", "123@gmail.com");
+        try {
+            searchResultList = (List<User>) controller.search(builder1.toString(), User.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assertTrue(searchResultList.size() == 0);
     }
 
     @AfterClass
