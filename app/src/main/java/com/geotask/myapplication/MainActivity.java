@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.geotask.myapplication.DataClasses.Task;
+import com.geotask.myapplication.DataClasses.User;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Task> taskArray;  //Array of Task Objects
     private ArrayAdapter<Task> adapter; //Adapter for listview
-
+    private User user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +36,11 @@ public class MainActivity extends AppCompatActivity {
         Button logoutButton = (Button) findViewById(R.id.buttonLogout);
         taskList = (ListView) findViewById(R.id.taskListView);
         taskList.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
+
+
+        Intent i = getIntent();
+        this.user = (User)i.getSerializableExtra("MyClass");
+        user.getName();
 
         //Click listener for listview, will eventually bring the user to the Task screen for selected task
         taskList.setOnItemClickListener(new AdapterView.OnItemClickListener() {

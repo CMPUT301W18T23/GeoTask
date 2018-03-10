@@ -129,6 +129,11 @@ public class MenuActivity extends AppCompatActivity
         myTask.addBid(new Bid());
         taskList.add(myTask);
 
+        Task myTask2 = new Task("Ken Wong2", "weehaw");
+        myTask2.addBid(new Bid());
+        myTask2.setAcceptedBid(0.0);
+        myTask2.setStatus("Accepted");
+        taskList.add(myTask2);
         /*
         SuperBooleanBuilder builder = new SuperBooleanBuilder();
         //TODO - for loop to add terms

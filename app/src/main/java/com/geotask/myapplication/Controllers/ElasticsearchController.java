@@ -11,6 +11,7 @@ import com.searchly.jestdroid.JestDroidClient;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.searchbox.client.JestResult;
@@ -130,7 +131,7 @@ public class ElasticsearchController {
     }
 
     protected void updateDocument(GTData data) throws IOException {
-        deleteDocument(data.getObjectID(), (Class<Bid>) data.getType());
+        deleteDocument(data.getObjectID(), data.getType());
         createNewDocument(data, data.getObjectID());
     }
 
@@ -159,28 +160,33 @@ public class ElasticsearchController {
         return dataList;
     }
 
-    //ToDo: map email field to keyword
     /**
      * existsProfile - Method for checking if an email is in use by another user
      *
      * @param email - email of the registering use
      * @return true if the email is in use, false otherwise
      */
-    protected boolean emailNotUsed(String email){
-        /*ArrayList<String> arrayList = new ArrayList<String>();
-        arrayList.add("email");
-        arrayList.add(email);
+    public boolean existsProfile(String email) {
         SuperBooleanBuilder query = new SuperBooleanBuilder();
-        query.put(arrayList);
+        query.put("email", ElasticsearchController.convertEmailForElasticSearch(email));
         Search search = new Search.Builder(query.toString()).addIndex(INDEX_NAME).addType("user").build();
         try {
+            Log.i("----->", query.toString());
+            Log.i("----->", client.execute(search).getJsonObject().toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            //List<User> searchResult = (List<User>) this.search(query.toString(), "user");
+            //Log.i("------>", searchResult.toString());
             if(client.execute(search).getTotal() > 0){
                 return true;
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
-        return true;
+        }
+
+        return false;
     }
 
     /**
@@ -209,5 +215,23 @@ public class ElasticsearchController {
 
     protected void setTestSettings(String testServerAddress) {
         INDEX_NAME = testServerAddress;
+    }
+
+    public static String convertEmailForElasticSearch(String email){
+        String convertedEmail = "";
+        for(int i = 0; i < email.length(); i++){
+            int character = (int) email.charAt(i);
+            convertedEmail += Integer.toString(character) + "c";
+        }
+        return convertedEmail;
+    }
+
+    public static String revertEmailFromElasticSearch(String convertedEmail){
+        String email = "";
+        for(String character : convertedEmail.split("c")){
+            int intCharacter = Integer.valueOf(character);
+            email += (char) intCharacter;
+        }
+        return email;
     }
 }

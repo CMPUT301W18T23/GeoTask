@@ -1,5 +1,9 @@
 package com.geotask.myapplication.DataClasses;
 
+import android.content.Context;
+
+import com.geotask.myapplication.Controllers.ElasticsearchController;
+
 import java.lang.reflect.Type;
 
 public class User extends GTData{
@@ -10,7 +14,7 @@ public class User extends GTData{
     public User(String name, String email, String phonenum){
         super.setType(User.class);
         this.name = name;
-        this.email = email;
+        this.email = ElasticsearchController.convertEmailForElasticSearch(email);
         this.phonenum = phonenum;
     }
 
@@ -19,11 +23,11 @@ public class User extends GTData{
     }
 
     public String getEmail(){
-        return email;
+        return ElasticsearchController.revertEmailFromElasticSearch(email);
     }
 
     public void setEmail(String email){
-        this.email=email;
+        this.email = ElasticsearchController.convertEmailForElasticSearch(email);
     }
 
     public String getPhonenum(){
