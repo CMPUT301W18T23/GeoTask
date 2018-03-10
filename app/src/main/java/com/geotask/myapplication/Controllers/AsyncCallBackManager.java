@@ -4,7 +4,10 @@ package com.geotask.myapplication.Controllers;
 
 import com.geotask.myapplication.DataClasses.GTData;
 
+import java.util.List;
+
 public interface AsyncCallBackManager {
 
     void onPostExecute(GTData data);
+    void onPostExecute(List<? extends GTData> searchResult);
 }

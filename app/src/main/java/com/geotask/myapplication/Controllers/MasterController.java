@@ -6,6 +6,7 @@ import com.geotask.myapplication.Controllers.ArgumentWrappers.AsyncArgumentWrapp
 import com.geotask.myapplication.DataClasses.GTData;
 
 import java.io.IOException;
+import java.util.List;
 
 public class MasterController {
 
@@ -52,9 +53,12 @@ public class MasterController {
         }
     }
 
-    //ToDo: return document
     public static class AsyncGetDocument extends AsyncTask<AsyncArgumentWrapper, Void, GTData> {
         private AsyncCallBackManager callBack = null;
+
+        public AsyncGetDocument(AsyncCallBackManager callback) {
+            this.callBack = callback;
+        }
 
         @Override
         protected GTData doInBackground(AsyncArgumentWrapper... argumentList) {
@@ -114,21 +118,36 @@ public class MasterController {
     }
 
     //ToDo return search results
-    public static class AsyncSearch extends AsyncTask<AsyncArgumentWrapper, Void, Void> {
+    public static class AsyncSearch extends AsyncTask<AsyncArgumentWrapper, Void, List<? extends GTData>> {
+        private AsyncCallBackManager callBack = null;
+
+        public AsyncSearch(AsyncCallBackManager callback) {
+            this.callBack = callback;
+        }
 
         @Override
-        protected Void doInBackground(AsyncArgumentWrapper... argumentWrappers) {
+        protected List<? extends GTData> doInBackground(AsyncArgumentWrapper... argumentWrappers) {
+            List<? extends GTData> resultList = null;
             controller.verifySettings();
 
             for(AsyncArgumentWrapper argument : argumentWrappers) {
                 try {
-                    controller.search(argument.getSearchQuery(), argument.getType());
+                    resultList = controller.search(argument.getSearchQuery(), argument.getType());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-            return null;
+            return resultList;
         }
+
+        @Override
+        protected void onPostExecute(List<? extends GTData> dataList) {
+            if(callBack != null) {
+                callBack.onPostExecute(dataList);
+            }
+        }
+
+
     }
 
 }

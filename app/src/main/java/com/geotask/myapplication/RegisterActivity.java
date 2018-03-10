@@ -14,6 +14,8 @@ import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.User;
 
+import java.util.List;
+
 
 //https://stackoverflow.com/questions/2736389/how-to-pass-an-object-from-one-activity-to-another-on-android
 public class RegisterActivity extends AppCompatActivity implements AsyncCallBackManager{
@@ -85,5 +87,10 @@ public class RegisterActivity extends AppCompatActivity implements AsyncCallBack
     @Override
     public void onPostExecute(GTData data) {
         newUser = (User) data;
+    }
+
+    @Override
+    public void onPostExecute(List<? extends GTData> searchResult) {
+
     }
 }

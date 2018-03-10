@@ -3,6 +3,7 @@ package com.geotask.myapplication;
 import android.util.Log;
 
 import com.geotask.myapplication.Controllers.ArgumentWrappers.AsyncArgumentWrapper;
+import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.ElasticsearchController;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
@@ -32,8 +33,10 @@ import static org.junit.Assert.assertTrue;
 
 
 @RunWith(JUnit4.class)
-public class ElasticSearchTest {
+public class ElasticSearchTest implements AsyncCallBackManager {
 
+    private GTData data = null;
+    private List<? extends GTData> searchResult = null;
 
     @BeforeClass
     public static void oneTimeSetUp() {
@@ -62,7 +65,7 @@ public class ElasticSearchTest {
         TimeUnit.SECONDS.sleep(3);
 
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument();
+                new MasterController.AsyncGetDocument(this);
         asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
 
         Bid remote = null;
@@ -86,7 +89,7 @@ public class ElasticSearchTest {
         TimeUnit.SECONDS.sleep(3);
 
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument();
+                new MasterController.AsyncGetDocument(this);
         asyncGetDocument.execute(new AsyncArgumentWrapper(task.getObjectID(), Task.class));
     }
 
@@ -100,7 +103,7 @@ public class ElasticSearchTest {
         TimeUnit.SECONDS.sleep(3);
 
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument();
+                new MasterController.AsyncGetDocument(this);
         asyncGetDocument.execute(new AsyncArgumentWrapper(user.getObjectID(), User.class));
     }
 
@@ -130,7 +133,7 @@ public class ElasticSearchTest {
         TimeUnit.SECONDS.sleep(3);
 
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument();
+                new MasterController.AsyncGetDocument(this);
         asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
     }
 
@@ -145,7 +148,7 @@ public class ElasticSearchTest {
         TimeUnit.SECONDS.sleep(3);
 
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument();
+                new MasterController.AsyncGetDocument(this);
         asyncGetDocument.execute(new AsyncArgumentWrapper(task.getObjectID(), Task.class));
     }
 
@@ -160,7 +163,7 @@ public class ElasticSearchTest {
         TimeUnit.SECONDS.sleep(3);
 
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument();
+                new MasterController.AsyncGetDocument(this);
         asyncGetDocument.execute(new AsyncArgumentWrapper(user.getObjectID(), User.class));
     }
 
@@ -182,9 +185,11 @@ public class ElasticSearchTest {
         builder2.put("providerID", "aprovider");
 
         MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch();
+                new MasterController.AsyncSearch(this);
         asyncSearch.execute(new AsyncArgumentWrapper(builder1.toString(), Bid.class),
                             new AsyncArgumentWrapper(builder2.toString(), Bid.class));
+
+
     }
 
     @Test
@@ -205,7 +210,7 @@ public class ElasticSearchTest {
         builder1.put("description", "a");
 
         MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch();
+                new MasterController.AsyncSearch(this);
         asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
     }
 
@@ -228,7 +233,7 @@ public class ElasticSearchTest {
         builder1.put("name", "user");
 
         MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch();
+                new MasterController.AsyncSearch(this);
         asyncSearch.execute(new AsyncArgumentWrapper(builder1.toString(), User.class));
     }
 
@@ -265,5 +270,15 @@ public class ElasticSearchTest {
     @AfterClass
     public static void oneTimeTearDown() {
         MasterController.shutDown();
+    }
+
+    @Override
+    public void onPostExecute(GTData data) {
+        this.data = data;
+    }
+
+    @Override
+    public void onPostExecute(List<? extends GTData> dataList) {
+        this.searchResult = dataList;
     }
 }
