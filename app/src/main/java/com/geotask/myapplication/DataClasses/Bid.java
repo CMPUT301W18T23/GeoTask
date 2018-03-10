@@ -1,7 +1,5 @@
 package com.geotask.myapplication.DataClasses;
 
-import android.content.Context;
-
 import java.lang.reflect.Type;
 
 public class Bid extends GTData {

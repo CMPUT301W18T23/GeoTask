@@ -8,11 +8,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.geotask.myapplication.Controllers.AsyncController;
-import com.geotask.myapplication.Controllers.ElasticsearchController;
+import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.User;
-
-import java.io.IOException;
 
 
 //https://stackoverflow.com/questions/2736389/how-to-pass-an-object-from-one-activity-to-another-on-android
@@ -51,13 +48,13 @@ public class RegisterActivity extends AppCompatActivity {
             String userPhone = newPhone.getText().toString().trim();
             String userEmail = newEmail.getText().toString().trim();
 
-            if(!AsyncController.emailNotUsed(userEmail)){
+            if(!MasterController.emailNotUsed(userEmail)){
                 Toast.makeText(this, "the name has been used", Toast.LENGTH_SHORT).show();
             } else {
                 User newUser = new User(userName, userEmail, userPhone);
 
-                AsyncController.AsyncCreateNewDocument asyncCreateNewDocument
-                        = new AsyncController.AsyncCreateNewDocument();
+                MasterController.AsyncCreateNewDocument asyncCreateNewDocument
+                        = new MasterController.AsyncCreateNewDocument();
                 asyncCreateNewDocument.execute(newUser);
 
                 Intent intent = new Intent(getBaseContext(), MainActivity.class);

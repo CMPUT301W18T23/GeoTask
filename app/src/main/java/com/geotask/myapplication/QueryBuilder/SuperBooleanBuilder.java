@@ -1,7 +1,6 @@
 package com.geotask.myapplication.QueryBuilder;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * SuperBooleanBuilder - because every other builder breaks our dependencies

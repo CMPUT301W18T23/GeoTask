@@ -7,7 +7,7 @@ import com.geotask.myapplication.DataClasses.GTData;
 
 import java.io.IOException;
 
-public class AsyncController {
+public class MasterController {
 
     static ElasticsearchController controller = new ElasticsearchController();
 
@@ -31,6 +31,7 @@ public class AsyncController {
         controller.shutDown();
     }
 
+    //ToDo
     public static boolean emailNotUsed(String userEmail) {
         return true;
     }
@@ -68,12 +69,28 @@ public class AsyncController {
             }
             return null;
         }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+
+        }
     }
 
     public static class AsyncDeleteDocument extends  AsyncTask<AsyncArgumentWrapper, Void, Void> {
 
         @Override
         protected Void doInBackground(AsyncArgumentWrapper... argumentList) {
+            controller.verifySettings();
+
+            for(AsyncArgumentWrapper argument : argumentList) {
+                try {
+                    controller.deleteDocument(argument.getID(), argument.getType());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             return null;
         }
     }
@@ -81,7 +98,16 @@ public class AsyncController {
     public static class AsyncUpdateDocument extends AsyncTask<GTData, Void, Void> {
 
         @Override
-        protected Void doInBackground(GTData... gtData) {
+        protected Void doInBackground(GTData... dataList) {
+            controller.verifySettings();
+
+            for(GTData data: dataList) {
+                try {
+                    controller.updateDocument(data);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             return null;
         }
     }
@@ -90,6 +116,15 @@ public class AsyncController {
 
         @Override
         protected Void doInBackground(AsyncArgumentWrapper... argumentWrappers) {
+            controller.verifySettings();
+
+            for(AsyncArgumentWrapper argument : argumentWrappers) {
+                try {
+                    controller.search(argument.getSearchQuery(), argument.getType());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             return null;
         }
     }

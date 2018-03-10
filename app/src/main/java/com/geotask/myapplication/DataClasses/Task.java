@@ -1,11 +1,7 @@
 package com.geotask.myapplication.DataClasses;
 
-import android.content.Context;
-
 import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class Task extends GTData{
 	private String name;

@@ -1,15 +1,9 @@
 package com.geotask.myapplication.Controllers;
 
-import android.os.AsyncTask;
-import android.os.StrictMode;
-import android.util.Log;
-
-import com.geotask.myapplication.Controllers.ArgumentWrappers.AsyncArgumentWrapper;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
-import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 import com.google.gson.Gson;
 import com.searchly.jestdroid.DroidClientConfig;
 import com.searchly.jestdroid.JestClientFactory;
@@ -17,13 +11,10 @@ import com.searchly.jestdroid.JestDroidClient;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 import io.searchbox.client.JestResult;
-import io.searchbox.client.JestResultHandler;
 import io.searchbox.core.Delete;
-import io.searchbox.core.DocumentResult;
 import io.searchbox.core.Get;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;
@@ -116,9 +107,9 @@ public class ElasticsearchController {
         if (type.equals(Bid.class)) {
             data = result.getSourceAsObject(Bid.class);
         } else if (type.equals(Task.class)) {
-            data = result.getSourceAsObject(Task.class);;
+            data = result.getSourceAsObject(Task.class);
         } else if (type.equals(User.class)) {
-            data = result.getSourceAsObject(User.class);;
+            data = result.getSourceAsObject(User.class);
         }
         return data;
     }
@@ -130,7 +121,7 @@ public class ElasticsearchController {
      * @param type - type of document
      * @return - response code of deletion (200 on success, 400 on failure)
      */
-    protected int deleteDocument(String ID, Class<Bid> type) throws IOException {
+    protected int deleteDocument(String ID, Type type) throws IOException {
         return client.execute(new Delete.Builder(ID)
                         .index(INDEX_NAME)
                         .type(type.toString())
@@ -161,9 +152,9 @@ public class ElasticsearchController {
         if (type.equals(Bid.class)) {
             dataList = result.getSourceAsObjectList(Bid.class);
         } else if (type.equals(Task.class)) {
-            dataList = result.getSourceAsObjectList(Task.class);;
+            dataList = result.getSourceAsObjectList(Task.class);
         } else if (type.equals(User.class)) {
-            dataList = result.getSourceAsObjectList(User.class);;
+            dataList = result.getSourceAsObjectList(User.class);
         }
         return dataList;
     }
