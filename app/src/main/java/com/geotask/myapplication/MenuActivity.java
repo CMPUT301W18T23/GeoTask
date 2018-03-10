@@ -22,6 +22,7 @@ import com.geotask.myapplication.Adapters.TaskArrayAdapter;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
+import com.geotask.myapplication.DataClasses.User;
 
 import junit.framework.Assert;
 
@@ -40,11 +41,15 @@ public class MenuActivity extends AppCompatActivity
     private ArrayAdapter<Task> adapter;
     private String mode;
     FloatingActionButton fab;
+    private User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i("LifeCycle --->", "onCreate is called");
         super.onCreate(savedInstanceState);
+
+        currentUser = (User) getIntent().getSerializableExtra("currentUser"); //ToDo switch to Parcelable
+
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

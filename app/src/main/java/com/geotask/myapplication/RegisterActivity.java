@@ -3,17 +3,20 @@ package com.geotask.myapplication;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.MasterController;
+import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.User;
 
 
 //https://stackoverflow.com/questions/2736389/how-to-pass-an-object-from-one-activity-to-another-on-android
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity implements AsyncCallBackManager{
 
     private EditText newName;
     private EditText newEmail;
@@ -21,6 +24,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private Button SaveUserButton;
 
+    private User newUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,17 +52,17 @@ public class RegisterActivity extends AppCompatActivity {
             String userPhone = newPhone.getText().toString().trim();
             String userEmail = newEmail.getText().toString().trim();
 
-            if(!MasterController.emailNotUsed(userEmail)){
+            if(!MasterController.existsProfile(userEmail)){
                 Toast.makeText(this, "the name has been used", Toast.LENGTH_SHORT).show();
             } else {
-                User newUser = new User(userName, userEmail, userPhone);
+                newUser = new User(userName, userEmail, userPhone);
 
                 MasterController.AsyncCreateNewDocument asyncCreateNewDocument
                         = new MasterController.AsyncCreateNewDocument();
                 asyncCreateNewDocument.execute(newUser);
 
-                Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                intent.putExtra("MyClass", newUser); //ToDo: not catched on other side
+                Intent intent = new Intent(getBaseContext(), MenuActivity.class);
+                intent.putExtra("currentUser", newUser);
                 startActivity(intent);
             }
         }
@@ -76,5 +80,10 @@ public class RegisterActivity extends AppCompatActivity {
         }
         return true;
 
+    }
+
+    @Override
+    public void onPostExecute(GTData data) {
+        newUser = (User) data;
     }
 }

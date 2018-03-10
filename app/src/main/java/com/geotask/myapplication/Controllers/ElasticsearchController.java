@@ -170,7 +170,7 @@ public class ElasticsearchController {
      * @return true if the email is in use, false otherwise
      */
     public boolean existsProfile(String email) {
-        SuperBooleanBuilder query = new SuperBooleanBuilder();
+        /*SuperBooleanBuilder query = new SuperBooleanBuilder();
         query.put("email", ElasticsearchController.convertEmailForElasticSearch(email));
         Search search = new Search.Builder(query.toString()).addIndex(INDEX_NAME).addType("user").build();
         try {
@@ -188,8 +188,8 @@ public class ElasticsearchController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return false;
+        */
+        return true;
     }
 
     /**

@@ -31,9 +31,8 @@ public class MasterController {
         controller.shutDown();
     }
 
-    //ToDo
-    public static boolean emailNotUsed(String userEmail) {
-        return true;
+    public static boolean existsProfile(String s) {
+        return controller.existsProfile(s);
     }
 
     public static class AsyncCreateNewDocument extends AsyncTask<GTData, Void, Void> {
@@ -54,27 +53,29 @@ public class MasterController {
     }
 
     //ToDo: return document
-    public static class AsyncGetDocument extends AsyncTask<AsyncArgumentWrapper, Void, Void> {
+    public static class AsyncGetDocument extends AsyncTask<AsyncArgumentWrapper, Void, GTData> {
+        private AsyncCallBackManager callBack = null;
 
         @Override
-        protected Void doInBackground(AsyncArgumentWrapper... argumentList) {
+        protected GTData doInBackground(AsyncArgumentWrapper... argumentList) {
+            GTData result = null;
             controller.verifySettings();
 
             for (AsyncArgumentWrapper argument : argumentList) {
                 try {
-                    controller.getDocument(argument.getID(), argument.getType());
+                    result = controller.getDocument(argument.getID(), argument.getType());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            return null;
+            return result;
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-
-
+        protected void onPostExecute(GTData data) {
+            if(callBack != null) {
+                callBack.onPostExecute(data);
+            }
         }
     }
 
@@ -112,6 +113,7 @@ public class MasterController {
         }
     }
 
+    //ToDo return search results
     public static class AsyncSearch extends AsyncTask<AsyncArgumentWrapper, Void, Void> {
 
         @Override

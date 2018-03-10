@@ -6,10 +6,12 @@ import com.geotask.myapplication.Controllers.ArgumentWrappers.AsyncArgumentWrapp
 import com.geotask.myapplication.Controllers.ElasticsearchController;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
+import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -21,6 +23,7 @@ import org.junit.runners.JUnit4;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
@@ -46,7 +49,6 @@ public class ElasticSearchTest {
 
     @Before
     public void setUp() {
-        MasterController.verifySettings();
     }
 
     @Test
@@ -62,6 +64,15 @@ public class ElasticSearchTest {
         MasterController.AsyncGetDocument asyncGetDocument =
                 new MasterController.AsyncGetDocument();
         asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
+
+        Bid remote = null;
+        try {
+            remote = (Bid) asyncGetDocument.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(bid.getProviderID(), remote.getProviderID());
     }
 
     @Test
@@ -226,30 +237,29 @@ public class ElasticSearchTest {
 
     }
 
-    /*@Test
-    public void testExistsProfile() throws IOException, InterruptedException {
-        assertFalse(controller.existsProfile("kyleg@email.com"));
+    @Test
+    public void testExistsProfile() throws InterruptedException {
+        assertFalse(MasterController.existsProfile("kyleg@email.com"));
 
         User user1 = new User("Kyle1", "kyleg@email.com", "555");
-        controller.createNewDocument(user1);
-        TimeUnit.SECONDS.sleep(1);
+        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new MasterController.AsyncCreateNewDocument();
+        asyncCreateNewDocument.execute(user1);
 
-        assertTrue(controller.existsProfile("kyleg@email.com"));
-    }*/
+        TimeUnit.SECONDS.sleep(2);
+    }
 
     @Test
     public void testEmailConversion(){
         String email = "kyleg@email.com";
         String convertedEmail = ElasticsearchController.convertEmailForElasticSearch(email);
         String revertedEmail = ElasticsearchController.revertEmailFromElasticSearch(convertedEmail);
-        Log.i("Emails ----->", convertedEmail + " " + revertedEmail);
         assert(convertedEmail.compareTo("107c121c108c101c103c64c101c109c97c105c108c46c99c111c109c") == 0);
         assert(email.compareTo(revertedEmail) == 0);
     }
 
     @After
     public void tearDown() {
-        MasterController.shutDown();
     }
 
     @AfterClass
