@@ -80,25 +80,6 @@ public class ElasticSearchTest {
         assertEquals(task.getDescription(), remote.getDescription());
     }
 
-    @Test
-    public void testCreateAndGetBidList() {
-        BidList bidList = new BidList("test taskID");
-        bidList.addBid("test ID1");
-        bidList.addBid("test ID2");
-        String ID;
-        BidList remote = null;
-
-        try {
-            ID = controller.createNewDocument(bidList);
-            bidList.setObjectID(ID);
-            remote = (BidList) controller.getDocument(ID, "bidList");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        assertEquals(bidList.getNumBids(), remote.getNumBids());
-    }
-
     @Test public void testCreateAndGetUser() {
         User user = new User("test user 1", "test_email@gmail.com", "555-555-5555");
         String ID;

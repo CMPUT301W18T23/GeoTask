@@ -52,8 +52,8 @@ public class TestTaskAdapter extends ActivityInstrumentationTestCase2<MenuActivi
 
         solo.assertCurrentActivity("not AddTaskActivity", AddTaskActivity.class, true);
 
-        EditText name = getActivity().findViewById(R.id.add_task_name);
-        EditText description = getActivity().findViewById(R.id.add_task_description);
+        EditText name = null; //getActivity().findViewById(R.id.add_task_name);
+        EditText description = null; //getActivity().findViewById(R.id.add_task_description);
         solo.enterText(name, "test add");
         solo.enterText(description, "test description");
         solo.clickOnButton("Request");

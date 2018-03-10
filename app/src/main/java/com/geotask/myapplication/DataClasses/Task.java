@@ -9,7 +9,7 @@ public class Task extends GTData{
 	private String description;
 	private String status;
 	private ArrayList<String> photoList = new ArrayList<String>();
-	private BidList bidList = new BidList(); //ToDo: delete BidList class
+	private ArrayList<String> bidList = new ArrayList<>();
 	private Double accpetedBid;
 	private String provider;
 	private String requester;
@@ -86,7 +86,7 @@ public class Task extends GTData{
 		return this.hitCounter;
 	}
 	public Integer getNumBidders(){
-		return this.bidList.getNumBids();
+		return this.bidList.size();
 	}
 
 	public String getDate(){
@@ -94,6 +94,6 @@ public class Task extends GTData{
 		return strDate;
 	}
 	public void addBid(Bid bid){
-		bidList.addBid(bid.getObjectID());
+		bidList.add(bid.getObjectID());
 	}
 }

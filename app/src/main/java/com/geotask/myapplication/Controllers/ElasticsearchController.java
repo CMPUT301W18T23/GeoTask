@@ -99,8 +99,6 @@ public class ElasticsearchController {
             data = result.getSourceAsObject(Task.class);;
         } else if (type.equals("user")) {
             data = result.getSourceAsObject(User.class);;
-        } else if (type.equals("bidList")) {
-            data = result.getSourceAsObject(BidList.class);;
         }
         return data;
     }
@@ -134,8 +132,6 @@ public class ElasticsearchController {
             dataList = result.getSourceAsObjectList(Task.class);;
         } else if (type.equals("user")) {
             dataList = result.getSourceAsObjectList(User.class);;
-        } else if (type.equals("bidList")) {
-            dataList = result.getSourceAsObjectList(BidList.class);;
         }
         return dataList;
     }
