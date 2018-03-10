@@ -22,3 +22,4 @@ public class TestSaveable extends ActivityInstrumentationTestCase2<MenuActivity>
 
     }
 }
+

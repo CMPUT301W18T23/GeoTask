@@ -174,20 +174,23 @@ public class ElasticsearchController {
      * @param email - email of the registering use
      * @return true if the email is in use, false otherwise
      */
-    public boolean existsProfile(String email){
-//        ArrayList<String> arrayList = new ArrayList<String>();
-//        arrayList.add("email");
-//        arrayList.add(email);
-//        SuperBooleanBuilder query = new SuperBooleanBuilder();
-//        query.put(arrayList);
-//        Search search = new Search.Builder(query.toString()).addIndex(INDEX_NAME).addType("user").build();
-//        try {
-//            if(client.execute(search).getTotal() > 0){
-//                return true;
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+    public boolean existsProfile(String email) {
+        SuperBooleanBuilder query = new SuperBooleanBuilder();
+        query.put("email", ElasticsearchController.convertEmailForElasticSearch(email));
+        Search search = new Search.Builder(query.toString()).addIndex(INDEX_NAME).addType("user").build();
+        try {
+            Log.i("----->", query.toString());
+            Log.i("----->", client.execute(search).getJsonObject().toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            if(client.execute(search).getTotal() > 0){
+                return true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
@@ -217,5 +220,23 @@ public class ElasticsearchController {
 
     public void setTestSettings(String testServerAddress) {
         this.INDEX_NAME = testServerAddress;
+    }
+
+    public static String convertEmailForElasticSearch(String email){
+        String convertedEmail = "";
+        for(int i = 0; i < email.length(); i++){
+            int character = (int) email.charAt(i);
+            convertedEmail += Integer.toString(character) + "C";
+        }
+        return convertedEmail;
+    }
+
+    public static String revertEmailFromElasticSearch(String convertedEmail){
+        String email = "";
+        for(String character : convertedEmail.split("C")){
+            int intCharacter = Integer.valueOf(character);
+            email += (char) intCharacter;
+        }
+        return email;
     }
 }

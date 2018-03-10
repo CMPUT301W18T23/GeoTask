@@ -43,6 +43,7 @@ public class TestTaskAdapter extends ActivityInstrumentationTestCase2<MenuActivi
     public void testListItemClickShouldStartSingleTaskViewActivity() {
     }
 
+    /*
     @Test
     public void testAddTaskUsingFloatingActionButton() {
         solo.assertCurrentActivity("not MenuActivity", MenuActivity.class);
@@ -64,4 +65,5 @@ public class TestTaskAdapter extends ActivityInstrumentationTestCase2<MenuActivi
 
         solo.assertCurrentActivity("not TaskViewActivity", TaskViewActivity.class);
     }
+    */
 }

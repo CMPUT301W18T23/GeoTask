@@ -1,5 +1,7 @@
 package com.geotask.myapplication;
 
+import android.util.Log;
+
 import com.geotask.myapplication.Controllers.ElasticsearchController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.BidList;
@@ -7,6 +9,7 @@ import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -82,7 +85,7 @@ public class ElasticSearchTest {
 
     @Test
     public void testCreateAndGetBidList() {
-        BidList bidList = new BidList("test taskID");
+        BidList bidList = new BidList();
         bidList.addBid("test ID1");
         bidList.addBid("test ID2");
         String ID;
@@ -236,7 +239,24 @@ public class ElasticSearchTest {
     }
 
     @Test
-    public void testExistsProfile() {
+    public void testExistsProfile() throws IOException, InterruptedException {
+        Assert.assertFalse(controller.existsProfile("kyleg@email.com"));
 
+        User user1 = new User("kyleg", "kyleg@email.com", "555");
+        controller.createNewDocument(user1);
+        TimeUnit.SECONDS.sleep(1);
+
+        Assert.assertTrue(controller.existsProfile("kyleg@email.com"));
     }
+
+    @Test
+    public void testEmailConversion(){
+        String email = "kyleg@email.com";
+        String convertedEmail = ElasticsearchController.convertEmailForElasticSearch(email);
+        String revertedEmail = ElasticsearchController.revertEmailFromElasticSearch(convertedEmail);
+        Log.i("Emails ----->", convertedEmail + " " + revertedEmail);
+        assert(convertedEmail.compareTo("107C121C108C101C103C64C101C109C97C105C108C46C99C111C109C") == 0);
+        assert(email.compareTo(revertedEmail) == 0);
+    }
+
 }

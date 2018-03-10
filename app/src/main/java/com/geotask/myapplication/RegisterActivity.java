@@ -11,6 +11,8 @@ import android.widget.Toast;
 import com.geotask.myapplication.Controllers.ElasticsearchController;
 import com.geotask.myapplication.DataClasses.User;
 
+import java.io.IOException;
+
 
 //https://stackoverflow.com/questions/2736389/how-to-pass-an-object-from-one-activity-to-another-on-android
 public class RegisterActivity extends AppCompatActivity {
@@ -35,13 +37,17 @@ public class RegisterActivity extends AppCompatActivity {
         SaveUserButton = (Button) findViewById(R.id.newSave);
         SaveUserButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                register_check();
+                try {
+                    register_check();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
     }
 
-    public void register_check(){
+    public void register_check() throws IOException {
         System.out.print("register_check");
 
         if (isValid()){

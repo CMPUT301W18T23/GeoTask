@@ -10,11 +10,11 @@ public class Task extends GTData{
 	private String status;
 	private ArrayList<String> photoList = new ArrayList<String>();
 	private BidList bidList = new BidList(); //ToDo: delete BidList class
-	private Double accpetedBid;
+	private Double accpetedBid; //Why is this double?
 	private String provider;
 	private String requester;
 	private int hitCounter;
-	private Date date;
+	private long date;
 	//i am not sure of what datatype for pictures
 	public Task(String name, String description) { //need string for pictures
 		super.setType("task");
@@ -22,7 +22,8 @@ public class Task extends GTData{
 		this.description = description;
 		this.hitCounter = 0;
 		this.status = "requested";
-		this.date = new Date();
+		this.date = new Date().getTime(); //get unix time in milliseconds
+		this.accpetedBid = -1.0;
 	}
 	public String getName() {
 		return this.name;
@@ -90,7 +91,7 @@ public class Task extends GTData{
 	}
 
 	public String getDate(){
-		String strDate = new SimpleDateFormat("EEEE MMMM d, yyyy").format(this.date);
+		String strDate = new SimpleDateFormat("EEEE MMMM d, yyyy").format(new java.util.Date((long)date));
 		return strDate;
 	}
 	public void addBid(Bid bid){
