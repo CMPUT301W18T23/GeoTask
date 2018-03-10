@@ -1,11 +1,13 @@
 package com.geotask.myapplication;
 
+import com.geotask.myapplication.Controllers.ArgumentWrappers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.ElasticsearchController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -24,16 +26,14 @@ import static org.junit.Assert.assertTrue;
 @RunWith(JUnit4.class)
 public class ElasticSearchTest {
 
-    static ElasticsearchController controller;
 
     @BeforeClass
     public static void oneTimeSetUp() {
-        controller = new ElasticsearchController();
-        controller.verifySettings();
-        controller.setTestSettings(TestServerAddress.getTestAddress());
+        ElasticsearchController.verifySettings();
+        ElasticsearchController.setTestSettings(TestServerAddress.getTestAddress());
         try {
-            controller.deleteIndex();
-            controller.createIndex();
+            ElasticsearchController.deleteIndex();
+            ElasticsearchController.createIndex();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -41,6 +41,7 @@ public class ElasticSearchTest {
 
     @Before
     public void setUp() {
+        ElasticsearchController.verifySettings();
     }
 
     @Test
@@ -48,11 +49,10 @@ public class ElasticSearchTest {
         Bid bid = new Bid("test ProviderID", 1.1, "test TaskID");
         String ID;
         Bid remote = null;
-        
+
         try {
-            ID = controller.createNewDocument(bid);
-            bid.setObjectID(ID);
-            remote = (Bid) controller.getDocument(ID, Bid.class);
+            ElasticsearchController.createNewDocument(bid);
+            remote = (Bid) ElasticsearchController.getDocument(bid.getObjectID(), Bid.class);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -65,15 +65,29 @@ public class ElasticSearchTest {
     }
 
     @Test
+    public void testAsyncCreateAndGetBid() throws InterruptedException {
+        Bid bid = new Bid("test async ProviderID", 1.2, "test async taskID");
+
+        ElasticsearchController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new ElasticsearchController.AsyncCreateNewDocument();
+        asyncCreateNewDocument.execute(bid);
+
+        TimeUnit.SECONDS.sleep(3);
+
+        ElasticsearchController.AsyncGetDocument asyncGetDocument =
+                new ElasticsearchController.AsyncGetDocument();
+        asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
+    }
+
+    @Test
     public void testCreateAndGetTask() {
         Task task = new Task("test Task", "test Description");
         String ID;
         Task remote = null;
 
         try {
-            ID = controller.createNewDocument(task);
-            task.setObjectID(ID);
-            remote = (Task) controller.getDocument(ID, Task.class);
+            ElasticsearchController.createNewDocument(task);
+            remote = (Task) ElasticsearchController.getDocument(task.getObjectID(), Task.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -88,9 +102,8 @@ public class ElasticSearchTest {
         User remote = null;
 
         try {
-            ID = controller.createNewDocument(user);
-            user.setObjectID(ID);
-            remote = (User) controller.getDocument(ID, User.class);
+            ElasticsearchController.createNewDocument(user);
+            remote = (User) ElasticsearchController.getDocument(user.getObjectID(), User.class);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -109,13 +122,13 @@ public class ElasticSearchTest {
         int code = -1;
 
         try {
-            ID = controller.createNewDocument(bid);
+            ElasticsearchController.createNewDocument(bid);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         try {
-            code = controller.deleteDocument(ID, Bid.class);
+            code = ElasticsearchController.deleteDocument(bid.getObjectID(), Bid.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -130,9 +143,9 @@ public class ElasticSearchTest {
         Bid bid3 = new Bid("cprovider", 3.3, "atask");
 
         try {
-            controller.createNewDocument(bid1);
-            controller.createNewDocument(bid2);
-            controller.createNewDocument(bid3);
+            ElasticsearchController.createNewDocument(bid1);
+            ElasticsearchController.createNewDocument(bid2);
+            ElasticsearchController.createNewDocument(bid3);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -144,7 +157,7 @@ public class ElasticSearchTest {
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
         builder1.put("taskID", "atask");
         try {
-            searchResultList1 = (List<Bid>) controller.search(builder1.toString(), Bid.class);
+            searchResultList1 = (List<Bid>) ElasticsearchController.search(builder1.toString(), Bid.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -156,7 +169,7 @@ public class ElasticSearchTest {
         SuperBooleanBuilder builder2 = new SuperBooleanBuilder();
         builder2.put("providerID", "aprovider");
         try {
-            searchResultList1 = (List<Bid>) controller.search(builder2.toString(), Bid.class);
+            searchResultList1 = (List<Bid>) ElasticsearchController.search(builder2.toString(), Bid.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -172,8 +185,8 @@ public class ElasticSearchTest {
         task2.setAcceptedBid(1.2);
 
         try {
-            controller.createNewDocument(task1);
-            controller.createNewDocument(task2);
+            ElasticsearchController.createNewDocument(task1);
+            ElasticsearchController.createNewDocument(task2);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -185,7 +198,7 @@ public class ElasticSearchTest {
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
         builder1.put("description", "a");
         try {
-            searchResultList = (List<Task>) controller.search(builder1.toString(), Task.class);
+            searchResultList = (List<Task>) ElasticsearchController.search(builder1.toString(), Task.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -201,11 +214,11 @@ public class ElasticSearchTest {
         User user5 = new User("user", "1@yahoo.ca", "888");
 
         try {
-            controller.createNewDocument(user1);
-            controller.createNewDocument(user2);
-            controller.createNewDocument(user3);
-            controller.createNewDocument(user4);
-            controller.createNewDocument(user5);
+            ElasticsearchController.createNewDocument(user1);
+            ElasticsearchController.createNewDocument(user2);
+            ElasticsearchController.createNewDocument(user3);
+            ElasticsearchController.createNewDocument(user4);
+            ElasticsearchController.createNewDocument(user5);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -217,7 +230,7 @@ public class ElasticSearchTest {
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
         builder1.put("name", "user");
         try {
-            searchResultList = (List<User>) controller.search(builder1.toString(), User.class);
+            searchResultList = (List<User>) ElasticsearchController.search(builder1.toString(), User.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -233,7 +246,7 @@ public class ElasticSearchTest {
     public void testExistsProfile() {
         User user1 = new User("uniqueness test", "123@gmail.com", "1234566");
         try {
-            controller.createNewDocument(user1);
+            ElasticsearchController.createNewDocument(user1);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -243,15 +256,20 @@ public class ElasticSearchTest {
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
         builder1.put("email", "123@gmail.com");
         try {
-            searchResultList = (List<User>) controller.search(builder1.toString(), User.class);
+            searchResultList = (List<User>) ElasticsearchController.search(builder1.toString(), User.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
         assertTrue(searchResultList.size() == 0);
     }
 
+    @After
+    public void tearDown() {
+        ElasticsearchController.shutDown();
+    }
+
     @AfterClass
     public static void oneTimeTearDown() {
-        controller.shutDown();
+        ElasticsearchController.shutDown();
     }
 }

@@ -20,7 +20,6 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText newPhone;
 
     private Button SaveUserButton;
-    private ElasticsearchController newElasticSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,31 +42,26 @@ public class RegisterActivity extends AppCompatActivity {
     /**
      *
      */
-    public void register_check(){
-        if (isValid()){
-            String ID;
+    public void register_check() {
+        if (isValid()) {
             String userName = newName.getText().toString().trim();
             String userPhone = newPhone.getText().toString().trim();
             String userEmail = newEmail.getText().toString().trim();
 
-            this.newElasticSearch = new ElasticsearchController();
-            newElasticSearch.verifySettings();
-            if(!newElasticSearch.emailNotUsed(userEmail)){
-                Toast.makeText(this, "the name has been used", Toast.LENGTH_SHORT).show();
-            }
-            else{
-                User newUser = new User(userName, userEmail, userPhone);
-                try {
-                    ID = newElasticSearch.createNewDocument(newUser);
-                    newUser.setObjectID(ID);
-                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                    intent.putExtra("MyClass", newUser); //ToDo: not catched on other side
-                    startActivity(intent);
-                    //ToDo: progress dialog while waiting for internet
-                } catch  (java.io.IOException e) {
-                    System.out.print("IO error, please wait and try again");
-                }
-            }
+            //if(!newElasticSearch.emailNotUsed(userEmail)){
+            //    Toast.makeText(this, "the name has been used", Toast.LENGTH_SHORT).show();
+            //}
+            //else{
+            //ToDo: check if email is already used
+            User newUser = new User(userName, userEmail, userPhone);
+
+            ElasticsearchController.AsyncCreateNewDocument asyncCreateNewDocument =
+                    new ElasticsearchController.AsyncCreateNewDocument();
+            asyncCreateNewDocument.execute(newUser);
+
+            Intent intent = new Intent(getBaseContext(), MainActivity.class);
+            intent.putExtra("MyClass", newUser); //ToDo: not catched on other side
+            startActivity(intent);
         }
     }
 
