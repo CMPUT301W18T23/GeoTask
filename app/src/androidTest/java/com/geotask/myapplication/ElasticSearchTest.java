@@ -201,7 +201,7 @@ public class ElasticSearchTest {
         List<Task> searchResultList = null;
 
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
-        builder1.put("description", "a");
+        builder1.put("name", "task");
         try {
             searchResultList = (List<Task>) controller.search(builder1.toString(), "task");
         } catch (IOException e) {
@@ -242,7 +242,7 @@ public class ElasticSearchTest {
     public void testExistsProfile() throws IOException, InterruptedException {
         Assert.assertFalse(controller.existsProfile("kyleg@email.com"));
 
-        User user1 = new User("kyleg", "kyleg@email.com", "555");
+        User user1 = new User("Kyle1", "kyleg@email.com", "555");
         controller.createNewDocument(user1);
         TimeUnit.SECONDS.sleep(1);
 
@@ -255,7 +255,7 @@ public class ElasticSearchTest {
         String convertedEmail = ElasticsearchController.convertEmailForElasticSearch(email);
         String revertedEmail = ElasticsearchController.revertEmailFromElasticSearch(convertedEmail);
         Log.i("Emails ----->", convertedEmail + " " + revertedEmail);
-        assert(convertedEmail.compareTo("107C121C108C101C103C64C101C109C97C105C108C46C99C111C109C") == 0);
+        assert(convertedEmail.compareTo("107c121c108c101c103c64c101c109c97c105c108c46c99c111c109c") == 0);
         assert(email.compareTo(revertedEmail) == 0);
     }
 

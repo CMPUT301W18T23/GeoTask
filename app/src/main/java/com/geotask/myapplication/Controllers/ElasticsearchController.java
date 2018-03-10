@@ -123,7 +123,7 @@ public class ElasticsearchController {
      * @return a list of Bid objects
      */
     public List<? extends GTData> search(String query, String type) throws IOException {
-        Search search = new Search.Builder(query).addIndex(INDEX_NAME).addType("bid").build();
+        Search search = new Search.Builder(query).addIndex(INDEX_NAME).addType("user").build();
 
         SearchResult result = client.execute(search);
 
@@ -185,12 +185,15 @@ public class ElasticsearchController {
             e.printStackTrace();
         }
         try {
+            //List<User> searchResult = (List<User>) this.search(query.toString(), "user");
+            //Log.i("------>", searchResult.toString());
             if(client.execute(search).getTotal() > 0){
                 return true;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return false;
     }
 
@@ -226,14 +229,14 @@ public class ElasticsearchController {
         String convertedEmail = "";
         for(int i = 0; i < email.length(); i++){
             int character = (int) email.charAt(i);
-            convertedEmail += Integer.toString(character) + "C";
+            convertedEmail += Integer.toString(character) + "c";
         }
         return convertedEmail;
     }
 
     public static String revertEmailFromElasticSearch(String convertedEmail){
         String email = "";
-        for(String character : convertedEmail.split("C")){
+        for(String character : convertedEmail.split("c")){
             int intCharacter = Integer.valueOf(character);
             email += (char) intCharacter;
         }
