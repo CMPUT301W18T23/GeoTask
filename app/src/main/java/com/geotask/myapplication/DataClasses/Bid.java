@@ -47,8 +47,4 @@ public class Bid extends GTData {
 	public String toString(){
 		return this.providerID + this.value + this.taskID ;
 	}
-
-	public void saveFile() {
-
-	}
 }

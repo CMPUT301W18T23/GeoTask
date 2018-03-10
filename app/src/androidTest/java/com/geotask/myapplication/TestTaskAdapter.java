@@ -17,6 +17,7 @@ public class TestTaskAdapter extends ActivityInstrumentationTestCase2<MenuActivi
     @Override
     public void setUp() throws Exception {
         solo = new Solo(getInstrumentation(), getActivity());
+        //ToDo: add stuff to list so there's something to click on
     }
 
     @Override
@@ -34,5 +35,8 @@ public class TestTaskAdapter extends ActivityInstrumentationTestCase2<MenuActivi
 
     @Test
     public void testListItemClickShouldStartSingleTaskViewActivity() {
+        solo.assertCurrentActivity("Error: not in MenuActivity", MenuActivity.class);
+        solo.clickInList(0);
+        solo.assertCurrentActivity("Error: not in TaskViewActivity", TaskViewActivity.class);
     }
 }
