@@ -48,13 +48,7 @@ public class Bid extends GTData {
 		return this.providerID + this.value + this.taskID ;
 	}
 
-	@Override
-	public void writeFile(Context context) {
-		this.writeFile(context);
-	}
+	public void saveFile() {
 
-	@Override
-	public GTData readFile(String filename, Context context, Type type) {
-		return super.readFile(filename, context, type);
 	}
 }

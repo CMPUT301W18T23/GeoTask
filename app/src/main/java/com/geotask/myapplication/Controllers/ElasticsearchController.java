@@ -1,9 +1,6 @@
 package com.geotask.myapplication.Controllers;
 
-import android.util.Log;
-
 import com.geotask.myapplication.DataClasses.Bid;
-import com.geotask.myapplication.DataClasses.BidList;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
@@ -84,7 +81,7 @@ public class ElasticsearchController {
      * @param ID - ID of the document
      * @return GTData object
      */
-    public GTData getDocument(String ID, Type type) throws IOException {
+    public GTData getDocument(String ID, Type type) throws Exception {
         Get request = new Get.Builder(INDEX_NAME, ID).build();
 
         JestResult result = client.execute(request);
@@ -96,8 +93,6 @@ public class ElasticsearchController {
             data = result.getSourceAsObject(Task.class);;
         } else if (type.equals(User.class)) {
             data = result.getSourceAsObject(User.class);;
-        } else if (type.equals(BidList.class)) {
-            data = result.getSourceAsObject(BidList.class);;
         }
         return data;
     }
@@ -131,8 +126,6 @@ public class ElasticsearchController {
             dataList = result.getSourceAsObjectList(Task.class);;
         } else if (type.equals(User.class)) {
             dataList = result.getSourceAsObjectList(User.class);;
-        } else if (type.equals(BidList.class)) {
-            dataList = result.getSourceAsObjectList(BidList.class);;
         }
         return dataList;
     }

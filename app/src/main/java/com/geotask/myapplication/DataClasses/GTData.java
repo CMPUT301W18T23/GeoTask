@@ -14,7 +14,7 @@ import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 
-public abstract class GTData implements Serializable, Fileable{
+public abstract class GTData implements Serializable{
     private String objectID = "";
     private transient Type type;
 

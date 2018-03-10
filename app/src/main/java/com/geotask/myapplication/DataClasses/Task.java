@@ -4,8 +4,6 @@ import android.content.Context;
 
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
-import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -14,20 +12,20 @@ public class Task extends GTData{
 	private String description;
 	private String status;
 	private ArrayList<String> photoList = new ArrayList<String>();
-	private BidList bidList = new BidList();
+	private ArrayList<String> bidList = new ArrayList<>();
 	private Double accpetedBid;
 	private String provider;
 	private String requester;
 	private int hitCounter;
-	private Date date;
-	//i am not sure of what datatype for pictures
+	//private Date date;
+
 	public Task(String name, String description) { //need string for pictures
 		super.setType(Task.class);
 		this.name = name;
 		this.description = description;
 		this.hitCounter = 0;
 		this.status = "requested";
-		this.date = new Date();
+		//this.date = new Date();
 	}
 	public String getName() {
 		return this.name;
@@ -84,16 +82,6 @@ public class Task extends GTData{
 		return super.getType();
 	}
 
-	@Override
-	public void writeFile(Context context) {
-		this.writeFile(context);
-	}
-
-	@Override
-	public GTData readFile(String filename, Context context, Type type) {
-		return super.readFile(filename, context, type);
-	}
-
 	public void addHit(){
 		this.hitCounter ++;
 	}
@@ -101,14 +89,14 @@ public class Task extends GTData{
 		return this.hitCounter;
 	}
 	public Integer getNumBidders(){
-		return this.bidList.getNumBids();
+		return this.bidList.size();
 	}
 
-	public String getDate(){
-		String strDate = new SimpleDateFormat("EEEE MMMM d, yyyy").format(this.date);
-		return strDate;
-	}
+	//public String getDate(){
+	//	String strDate = new SimpleDateFormat("EEEE MMMM d, yyyy").format(this.date);
+	//	return strDate;
+	//}
 	public void addBid(Bid bid){
-		bidList.addBid(bid.getObjectID());
+		bidList.add(bid.getObjectID());
 	}
 }

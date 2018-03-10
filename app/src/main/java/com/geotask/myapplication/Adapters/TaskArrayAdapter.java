@@ -88,7 +88,7 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> {
         headerSub.hits.setText(String.format("Viewed %d times", item.getHitCounter()));
         headerSub.desc.setText(item.getDescription());
         headerSub.bids.setText(String.format("Bids: %d", item.getNumBidders()));
-        headerSub.date.setText(item.getDate());
+        //headerSub.date.setText(item.getDate());
 
         if(item.getNumBidders() > 0) {
 

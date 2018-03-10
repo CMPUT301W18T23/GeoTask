@@ -37,14 +37,4 @@ public class User extends GTData{
     }
 
     public Type getType() { return super.getType(); }
-
-    @Override
-    public void writeFile(Context context) {
-        this.writeFile(context);
-    }
-
-    @Override
-    public GTData readFile(String filename, Context context, Type type) {
-        return super.readFile(filename, context, type);
-    }
 }

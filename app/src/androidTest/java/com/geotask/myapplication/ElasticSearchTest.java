@@ -2,7 +2,6 @@ package com.geotask.myapplication;
 
 import com.geotask.myapplication.Controllers.ElasticsearchController;
 import com.geotask.myapplication.DataClasses.Bid;
-import com.geotask.myapplication.DataClasses.BidList;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
@@ -55,6 +54,8 @@ public class ElasticSearchTest {
             remote = (Bid) controller.getDocument(ID, Bid.class);
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         assertEquals(bid.getProviderID(), remote.getProviderID());
@@ -72,31 +73,12 @@ public class ElasticSearchTest {
             ID = controller.createNewDocument(task);
             task.setObjectID(ID);
             remote = (Task) controller.getDocument(ID, Task.class);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         assertEquals(task.getName(), remote.getName());
         assertEquals(task.getDescription(), remote.getDescription());
-    }
-
-    @Test
-    public void testCreateAndGetBidList() {
-        BidList bidList = new BidList("test taskID");
-        bidList.addBid("test ID1");
-        bidList.addBid("test ID2");
-        String ID;
-        BidList remote = null;
-
-        try {
-            ID = controller.createNewDocument(bidList);
-            bidList.setObjectID(ID);
-            remote = (BidList) controller.getDocument(ID, BidList.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        assertEquals(bidList.getNumBids(), remote.getNumBids());
     }
 
     @Test public void testCreateAndGetUser() {
@@ -109,6 +91,8 @@ public class ElasticSearchTest {
             user.setObjectID(ID);
             remote = (User) controller.getDocument(ID, User.class);
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
