@@ -1,13 +1,23 @@
 package com.geotask.myapplication.DataClasses;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+import android.arch.persistence.room.util.TableInfo;
+
 import com.geotask.myapplication.Controllers.Helpers.EmailConverter;
 
 import java.lang.reflect.Type;
 
+@Entity(tableName = "users")
 public class User extends GTData{
+    @ColumnInfo(name = "name", typeAffinity = ColumnInfo.TEXT)
     private String name;
+    @ColumnInfo(name = "email", typeAffinity = ColumnInfo.TEXT)
     private String email;
+    @ColumnInfo(name = "phonenum", typeAffinity = ColumnInfo.TEXT)
     private String phonenum;
+
 
     public User(String name, String email, String phonenum){
         super.setType(User.class);
@@ -15,8 +25,6 @@ public class User extends GTData{
         this.email = EmailConverter.convertEmailForElasticSearch(email);
         this.phonenum = phonenum;
     }
-
-    public User() {}
 
     public String getName(){
         return name;
@@ -39,12 +47,6 @@ public class User extends GTData{
     }
 
     public Type getType() { return super.getType(); }
-
-    //ToDo
-    @Override
-    public GTData loadFile() {
-        return null;
-    }
 
     public void setName(String name) {
         this.name = name;

@@ -1,22 +1,43 @@
 package com.geotask.myapplication.DataClasses;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.TypeConverters;
+
+import com.geotask.myapplication.Controllers.Helpers.BidListConverter;
+
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+@Entity(tableName = "tasks")
 public class Task extends GTData{
+	@ColumnInfo(name = "task_name")
 	private String name;
+	@ColumnInfo
 	private String description;
+	@ColumnInfo //ToDo change type to Enum
 	private String status;
+	@Ignore
 	private ArrayList<String> photoList = new ArrayList<String>();
+	@TypeConverters(BidListConverter.class)
 	private ArrayList<String> bidList = new ArrayList<>();
+	@ColumnInfo
 	private Double accpetedBid;
-	private String provider;
-	private String requester;
+	@ColumnInfo(name = "requester_id")
+	private String requesterID;
+	@ColumnInfo
+	private String acceptedProviderID;
+	@ColumnInfo
 	private int hitCounter;
+	@ColumnInfo
 	private long date;
-	//i am not sure of what datatype for pictures
+	//ToDo pictures
+	//ToDo locations
+
+
 	public Task(String name, String description) { //need string for pictures
 		super.setType(Task.class);
 		this.name = name;
@@ -26,8 +47,6 @@ public class Task extends GTData{
 		this.date = new Date().getTime(); //get unix time in milliseconds
 		this.accpetedBid = -1.0; //ToDo
 	}
-
-    public Task() {}
 
     public String getName() {
 		return this.name;
@@ -66,28 +85,22 @@ public class Task extends GTData{
 		return this.accpetedBid;
 	}
 	
-	public void setProvider(String Provider) {
-		this.provider = Provider;
+	public void setRequesterID(String Provider) {
+		this.requesterID = Provider;
 	}
-	public String getProvider(){
-		return this.provider;
+	public String getRequesterID(){
+		return this.requesterID;
 	}
 	
-	public void setRequester(String Requester) {
-		this.requester = Requester;
+	public void setAcceptedProviderID(String Requester) {
+		this.acceptedProviderID = Requester;
 	}
-	public String getRequester() {
-		return this.requester;
+	public String getAcceptedProviderID() {
+		return this.acceptedProviderID;
 	}
 
 	public Type getType() {
 		return super.getType();
-	}
-
-	//ToDo body
-	@Override
-	public GTData loadFile() {
-		return null;
 	}
 
 	public void addHit(){
@@ -100,11 +113,42 @@ public class Task extends GTData{
 		return this.bidList.size();
 	}
 
-	public String getDate(){
+	public String getDateString(){
 		String strDate = new SimpleDateFormat("EEEE MMMM d, yyyy").format(new java.util.Date((long)date));
 		return strDate;
 	}
 	public void addBid(Bid bid){
 		bidList.add(bid.getObjectID());
+	}
+
+	public void setDate(long date) {
+		this.date = date;
+	}
+	public ArrayList<String> getPhotoList() {
+		return photoList;
+	}
+
+	public ArrayList<String> getBidList() {
+		return bidList;
+	}
+
+	public Double getAccpetedBid() {
+		return accpetedBid;
+	}
+
+	public void setBidList(ArrayList<String> bidList) {
+		this.bidList = bidList;
+	}
+
+	public void setAccpetedBid(Double accpetedBid) {
+		this.accpetedBid = accpetedBid;
+	}
+
+	public void setHitCounter(int hitCounter) {
+		this.hitCounter = hitCounter;
+	}
+
+	public long getDate(){
+		return this.date;
 	}
 }

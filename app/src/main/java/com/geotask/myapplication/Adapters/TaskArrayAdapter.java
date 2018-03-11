@@ -79,7 +79,7 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> {
         headerSub.hits.setText(String.format("Viewed %d times", item.getHitCounter()));
         headerSub.desc.setText(item.getDescription());
         headerSub.bids.setText(String.format("Bids: %d", item.getNumBidders()));
-        //headerSub.date.setText(item.getDate());
+        //headerSub.date.setText(item.getDateString());
 
         if (item.getStatus().compareTo("Accepted") == 0){ //ToDo: avoid using strings, write function in Task
             headerSub.icon.setImageResource(R.drawable.ic_checkbox_blank_circle_grey600_24dp);

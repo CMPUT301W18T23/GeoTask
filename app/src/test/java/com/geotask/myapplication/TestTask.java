@@ -33,14 +33,14 @@ public class TestTask {
 		String Provider = "James";
 		String Requester = "Jewitt";
 		Task task = new Task(Name, Description);
-		task.setProvider(Provider);
-		task.setRequester(Requester);
+		task.setRequesterID(Provider);
+		task.setAcceptedProviderID(Requester);
 		assert(Name == task.getName());
 		assert(Description  ==  task.getDescription());
 		assert(Status == task.getStatus());
-		assert(Provider == task.getProvider());
-		assert(Requester == task.getRequester());
-		System.out.print(task.getName()+" "+  task.getDescription() + " "+ task.getStatus()+ " "+ task.getProvider() + " " + task.getRequester());
+		assert(Provider == task.getRequesterID());
+		assert(Requester == task.getAcceptedProviderID());
+		System.out.print(task.getName()+" "+  task.getDescription() + " "+ task.getStatus()+ " "+ task.getRequesterID() + " " + task.getAcceptedProviderID());
 	}
 	
 	public static void testChanged() { //check if adding new data
@@ -58,16 +58,16 @@ public class TestTask {
 		task.setName(newName);
 		task.setDescription(newDescription);
 		task.setStatus(newStatus);
-		task.setProvider(Provider);
-		task.setRequester(Requester);
-		task.setProvider(newProvider);
-		task.setRequester(newRequester);
+		task.setRequesterID(Provider);
+		task.setAcceptedProviderID(Requester);
+		task.setRequesterID(newProvider);
+		task.setAcceptedProviderID(newRequester);
 		assert(newName == task.getName());
 		assert(newDescription  ==  task.getDescription());
 		assert(newStatus == task.getStatus());
-		assert(newProvider == task.getProvider());
-		assert(newRequester == task.getRequester());
-		System.out.print(task.getName()+" "+  task.getDescription() + " "+ task.getStatus()+ " "+ task.getProvider() + " " + task.getRequester());
+		assert(newProvider == task.getRequesterID());
+		assert(newRequester == task.getAcceptedProviderID());
+		System.out.print(task.getName()+" "+  task.getDescription() + " "+ task.getStatus()+ " "+ task.getRequesterID() + " " + task.getAcceptedProviderID());
 	}
 	
 	

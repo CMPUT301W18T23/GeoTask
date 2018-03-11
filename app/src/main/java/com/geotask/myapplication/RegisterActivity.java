@@ -53,8 +53,7 @@ public class RegisterActivity extends AppCompatActivity implements AsyncCallBack
             String userName = newName.getText().toString().trim();
             String userPhone = newPhone.getText().toString().trim();
             String userEmail = newEmail.getText().toString().trim();
-
-            if(!MasterController.existsProfile(userEmail)){
+            if(MasterController.existsProfile(userEmail)){
                 Toast.makeText(this, "the name has been used", Toast.LENGTH_SHORT).show();
             } else {
                 newUser = new User(userName, userEmail, userPhone);

@@ -1,15 +1,24 @@
 package com.geotask.myapplication.DataClasses;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+
 import java.lang.reflect.Type;
 
+@Entity(tableName = "bids")
 public class Bid extends GTData {
+
+	@ColumnInfo(name = "provider_id")
 	private String providerID;
+	@ColumnInfo
 	private Double value;
+	@ColumnInfo(name = "task_id")
 	private String taskID;
 
-	public Bid() {
-		super.setType(Bid.class);
-	}
+	@Ignore
+	public Bid(){};
+
 	public Bid(String providerID, Double value, String taskID) {
 		super.setType(Bid.class);
 		this.providerID = providerID;
@@ -39,12 +48,6 @@ public class Bid extends GTData {
 	@Override
 	public Type getType(){
 		return super.getType();
-	}
-
-	//ToDo
-	@Override
-	public GTData loadFile() {
-		return null;
 	}
 
 	@Override
