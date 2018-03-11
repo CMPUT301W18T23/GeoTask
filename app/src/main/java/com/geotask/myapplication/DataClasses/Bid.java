@@ -41,6 +41,12 @@ public class Bid extends GTData {
 		return super.getType();
 	}
 
+	//ToDo
+	@Override
+	public GTData loadFile() {
+		return null;
+	}
+
 	@Override
 	public String toString(){
 		return this.providerID + this.value + this.taskID ;

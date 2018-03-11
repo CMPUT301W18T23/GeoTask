@@ -117,7 +117,9 @@ public class MasterController {
         }
     }
 
-    //ToDo return search results
+    public static List<? extends GTData> Search(AsyncArgumentWrapper argumentWrapper) throws IOException {
+        return controller.search(argumentWrapper.getSearchQuery(), argumentWrapper.getType());
+    }
     public static class AsyncSearch extends AsyncTask<AsyncArgumentWrapper, Void, List<? extends GTData>> {
         private AsyncCallBackManager callBack = null;
 

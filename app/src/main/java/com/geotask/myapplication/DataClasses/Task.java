@@ -26,7 +26,10 @@ public class Task extends GTData{
 		this.date = new Date().getTime(); //get unix time in milliseconds
 		this.accpetedBid = -1.0; //ToDo
 	}
-	public String getName() {
+
+    public Task() {}
+
+    public String getName() {
 		return this.name;
 	}
 	public void setName(String Name) {
@@ -79,6 +82,12 @@ public class Task extends GTData{
 
 	public Type getType() {
 		return super.getType();
+	}
+
+	//ToDo body
+	@Override
+	public GTData loadFile() {
+		return null;
 	}
 
 	public void addHit(){

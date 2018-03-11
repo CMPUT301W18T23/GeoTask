@@ -45,7 +45,6 @@ public class MenuActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i("LifeCycle --->", "onCreate is called");
         super.onCreate(savedInstanceState);
 
         currentUser = (User) getIntent().getSerializableExtra("currentUser"); //ToDo switch to Parcelable

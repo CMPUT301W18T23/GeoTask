@@ -16,6 +16,8 @@ public class User extends GTData{
         this.phonenum = phonenum;
     }
 
+    public User() {}
+
     public String getName(){
         return name;
     }
@@ -37,4 +39,14 @@ public class User extends GTData{
     }
 
     public Type getType() { return super.getType(); }
+
+    //ToDo
+    @Override
+    public GTData loadFile() {
+        return null;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

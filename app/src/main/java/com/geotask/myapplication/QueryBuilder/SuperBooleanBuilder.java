@@ -1,5 +1,7 @@
 package com.geotask.myapplication.QueryBuilder;
 
+import com.geotask.myapplication.Controllers.Helpers.EmailConverter;
+
 import java.util.ArrayList;
 
 /**
@@ -25,6 +27,9 @@ public class SuperBooleanBuilder {
      * @param term - value of the pair
      */
     public void put(String field, String term) {
+        if (field.equals("email")) {
+            term = EmailConverter.convertEmailForElasticSearch(term);
+        }
         if (!terms.equals("")) {
             terms += ",";
         }

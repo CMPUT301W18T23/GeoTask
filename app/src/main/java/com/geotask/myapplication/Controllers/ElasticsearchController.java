@@ -1,9 +1,11 @@
 package com.geotask.myapplication.Controllers;
 
+import com.geotask.myapplication.Controllers.Helpers.EmailConverter;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
+import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 import com.google.gson.Gson;
 import com.searchly.jestdroid.DroidClientConfig;
 import com.searchly.jestdroid.JestClientFactory;
@@ -73,8 +75,7 @@ public class ElasticsearchController {
 
         JestResult result = client.execute(request);
         String ID = result.getJsonObject()
-                .get("_id")
-                .toString()
+                .get("_id").toString()
                 .replace("\"", "");
         data.setObjectID(ID);
     }
@@ -89,7 +90,10 @@ public class ElasticsearchController {
                 .build();
 
         JestResult result = client.execute(request);
-        result.getJsonObject().get("_id").toString().replace("\"", "");
+        String ID = result.getJsonObject()
+                .get("_id").toString()
+                .replace("\"", "");
+        data.setObjectID(ID);
     }
 
     /**
@@ -131,7 +135,7 @@ public class ElasticsearchController {
 
     protected void updateDocument(GTData data) throws IOException {
         deleteDocument(data.getObjectID(), data.getType());
-        createNewDocument(data, data.getObjectID());
+        createNewDocument(data, "dfasdf");
     }
 
     /**
@@ -166,26 +170,20 @@ public class ElasticsearchController {
      * @return true if the email is in use, false otherwise
      */
     public boolean existsProfile(String email) {
-        /*SuperBooleanBuilder query = new SuperBooleanBuilder();
-        query.put("email", ElasticsearchController.convertEmailForElasticSearch(email));
-        Search search = new Search.Builder(query.toString()).addIndex(INDEX_NAME).addType("user").build();
+        SuperBooleanBuilder query = new SuperBooleanBuilder();
+        query.put("email", email);
+        Search search = new Search.Builder(query.toString())
+                .addIndex(INDEX_NAME)
+                .addType(User.class.toString())
+                .build();
         try {
-            Log.i("----->", query.toString());
-            Log.i("----->", client.execute(search).getJsonObject().toString());
-        } catch (IOException e) {
-            e.printStackTrace();
+            if(client.execute(search).getTotal() != 0){
+                    return true;
+                }
+        } catch (IOException e1) {
+            e1.printStackTrace();
         }
-        try {
-            //List<User> searchResult = (List<User>) this.search(query.toString(), "user");
-            //Log.i("------>", searchResult.toString());
-            if(client.execute(search).getTotal() > 0){
-                return true;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        */
-        return true;
+        return false;
     }
 
     /**

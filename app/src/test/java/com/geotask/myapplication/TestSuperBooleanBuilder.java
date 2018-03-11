@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
-public class SuperBooleanBuilderTest {
+public class TestSuperBooleanBuilder {
 
     @Test
     public void builderTest(){

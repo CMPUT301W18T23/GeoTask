@@ -1,5 +1,7 @@
 package com.geotask.myapplication;
 
+import android.util.Log;
+
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.Helpers.EmailConverter;
@@ -30,13 +32,18 @@ import static org.junit.Assert.assertTrue;
 
 
 @RunWith(JUnit4.class)
-public class ElasticSearchTest implements AsyncCallBackManager {
+public class TestElasticSearch implements AsyncCallBackManager {
 
     private GTData data = null;
     private List<? extends GTData> searchResult = null;
 
     @BeforeClass
     public static void oneTimeSetUp() {
+
+    }
+
+    @Before
+    public void setUp() {
         MasterController.verifySettings();
         MasterController.setTestSettings(TestServerAddress.getTestAddress());
         try {
@@ -45,10 +52,6 @@ public class ElasticSearchTest implements AsyncCallBackManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Before
-    public void setUp() {
     }
 
     @Test
@@ -99,7 +102,8 @@ public class ElasticSearchTest implements AsyncCallBackManager {
         assertEquals(task.getDate(), remote.getDate());
     }
 
-    @Test public void testCreateAndGetUser() throws InterruptedException {
+    @Test
+    public void testCreateAndGetUser() throws InterruptedException {
         User user = new User("test user 1", "test_email@gmail.com", "555-555-5555");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
@@ -186,7 +190,8 @@ public class ElasticSearchTest implements AsyncCallBackManager {
         }
         assertEquals(bid.getProviderID(), remote.getProviderID());
 
-        bid.setProviderID("updated");
+        String updateString = "updated";
+        bid.setProviderID(updateString);
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
                 new MasterController.AsyncUpdateDocument();
         asyncUpdateDocument.execute(bid);
@@ -203,37 +208,93 @@ public class ElasticSearchTest implements AsyncCallBackManager {
             e.printStackTrace();
         }
 
-        assertEquals(bid.getProviderID(), remote.getProviderID());
+        assertEquals(updateString, remote.getProviderID());
     }
 
     @Test
     public void testUpdateTask() throws InterruptedException {
         Task task = new Task("test update task", "test update description");
 
-        MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument();
-        asyncUpdateDocument.execute(task);
+        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new MasterController.AsyncCreateNewDocument();
+        asyncCreateNewDocument.execute(task);
 
         TimeUnit.SECONDS.sleep(3);
 
         MasterController.AsyncGetDocument asyncGetDocument =
                 new MasterController.AsyncGetDocument(this);
         asyncGetDocument.execute(new AsyncArgumentWrapper(task.getObjectID(), Task.class));
+
+        Task remote = null;
+        try {
+            remote = (Task) asyncGetDocument.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        assertEquals(task.getName(), remote.getName());
+
+        String updateString = "updated";
+        task.setName(updateString);
+        MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                new MasterController.AsyncUpdateDocument();
+        asyncUpdateDocument.execute(task);
+
+        TimeUnit.SECONDS.sleep(3);
+
+        MasterController.AsyncGetDocument asyncGetDocumentAfterUpdate =
+                new MasterController.AsyncGetDocument(this);
+        asyncGetDocumentAfterUpdate.execute(new AsyncArgumentWrapper(task.getObjectID(), Task.class));
+
+        try {
+            remote = (Task) asyncGetDocumentAfterUpdate.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(updateString, remote.getName());
     }
 
     @Test
     public void testUpdateUser() throws InterruptedException {
         User user = new User("test update user 1", "test_email@gmail.com", "555-555-5555");
 
-        MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument();
-        asyncUpdateDocument.execute(user);
+        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new MasterController.AsyncCreateNewDocument();
+        asyncCreateNewDocument.execute(user);
 
         TimeUnit.SECONDS.sleep(3);
 
         MasterController.AsyncGetDocument asyncGetDocument =
                 new MasterController.AsyncGetDocument(this);
         asyncGetDocument.execute(new AsyncArgumentWrapper(user.getObjectID(), User.class));
+
+        User remote = null;
+        try {
+            remote = (User) asyncGetDocument.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        assertEquals(user.getName(), remote.getName());
+
+        String updateString = "updated";
+        user.setName(updateString);
+        MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                new MasterController.AsyncUpdateDocument();
+        asyncUpdateDocument.execute(user);
+
+        TimeUnit.SECONDS.sleep(3);
+
+        MasterController.AsyncGetDocument asyncGetDocumentAfterUpdate =
+                new MasterController.AsyncGetDocument(this);
+        asyncGetDocumentAfterUpdate.execute(new AsyncArgumentWrapper(user.getObjectID(), User.class));
+
+        try {
+            remote = (User) asyncGetDocumentAfterUpdate.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(updateString, remote.getName());
     }
 
     @Test
@@ -255,17 +316,31 @@ public class ElasticSearchTest implements AsyncCallBackManager {
 
         MasterController.AsyncSearch asyncSearch =
                 new MasterController.AsyncSearch(this);
-        asyncSearch.execute(new AsyncArgumentWrapper(builder1.toString(), Bid.class),
-                            new AsyncArgumentWrapper(builder2.toString(), Bid.class));
+        asyncSearch.execute(new AsyncArgumentWrapper(builder1, Bid.class));
+        MasterController.AsyncSearch asyncSearch1 =
+                new MasterController.AsyncSearch(this);
+        asyncSearch1.execute(new AsyncArgumentWrapper(builder2, Bid.class));
 
+        List<Bid> result1 = null;
+        List<Bid> result2 = null;
 
+        try {
+            result1 = (List<Bid>) asyncSearch.get();
+            result2 = (List<Bid>) asyncSearch1.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(3, result1.size());
+        assertEquals(1, result2.size());
     }
 
     @Test
     public void testSearchTasks() throws InterruptedException {
-        Task task1 = new Task("task", "a");
+        String targetName = "task1";
+        Task task1 = new Task(targetName, "a");
         task1.setAcceptedBid(1.1);
-        Task task2 = new Task("task", "b");
+        Task task2 = new Task("task2", "b");
         task2.setAcceptedBid(1.2);
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
@@ -281,15 +356,27 @@ public class ElasticSearchTest implements AsyncCallBackManager {
         MasterController.AsyncSearch asyncSearch =
                 new MasterController.AsyncSearch(this);
         asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
+
+        List<Task> result = null;
+
+        try {
+            result = (List<Task>) asyncSearch.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(1, result.size());
+        assertEquals(targetName, result.get(0).getName());
     }
 
     @Test
     public void testSearchUsers() throws InterruptedException {
+        String targetUser = "target";
         User user1 = new User("user", "1@gmail.com", "555");
         User user2 = new User("user", "2@gmail.com", "666");
         User user3 = new User("user", "1@gmail.com", "777");
         User user4 = new User("user", "1@yahoo.com", "888");
-        User user5 = new User("user", "1@yahoo.ca", "888");
+        User user5 = new User(targetUser, "1@yahoo.ca", "888");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
                 new MasterController.AsyncCreateNewDocument();
@@ -297,13 +384,31 @@ public class ElasticSearchTest implements AsyncCallBackManager {
 
         TimeUnit.SECONDS.sleep(5);
 
-
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
-        builder1.put("name", "user");
+        builder1.put("phonenum", "888");
+        SuperBooleanBuilder builder2 = new SuperBooleanBuilder();
+        builder2.put("email", "1@yahoo.ca");
 
-        MasterController.AsyncSearch asyncSearch =
+        MasterController.AsyncSearch asyncSearch1 =
                 new MasterController.AsyncSearch(this);
-        asyncSearch.execute(new AsyncArgumentWrapper(builder1.toString(), User.class));
+        asyncSearch1.execute(new AsyncArgumentWrapper(builder1, User.class));
+        MasterController.AsyncSearch asyncSearch2 =
+                new MasterController.AsyncSearch(this);
+        asyncSearch2.execute(new AsyncArgumentWrapper(builder2, User.class));
+
+        List<User> result1 = null;
+        List<User> result2 = null;
+
+        try {
+            result1 = (List<User>) asyncSearch1.get();
+            result2 = (List<User>) asyncSearch2.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(2, result1.size());
+        assertEquals(1, result2.size());
+        assertEquals(targetUser, result2.get(0).getName());
     }
 
     @Test
@@ -321,24 +426,17 @@ public class ElasticSearchTest implements AsyncCallBackManager {
         asyncCreateNewDocument.execute(user1);
 
         TimeUnit.SECONDS.sleep(2);
-    }
 
-    @Test
-    public void testEmailConversion(){
-        String email = "kyleg@email.com";
-        String convertedEmail = EmailConverter.convertEmailForElasticSearch(email);
-        String revertedEmail = EmailConverter.revertEmailFromElasticSearch(convertedEmail);
-        assert(convertedEmail.compareTo("107c121c108c101c103c64c101c109c97c105c108c46c99c111c109c") == 0);
-        assert(email.compareTo(revertedEmail) == 0);
+        assertTrue(MasterController.existsProfile("kyleg@email.com"));
     }
 
     @After
     public void tearDown() {
+        MasterController.shutDown();
     }
 
     @AfterClass
     public static void oneTimeTearDown() {
-        MasterController.shutDown();
     }
 
     @Override
