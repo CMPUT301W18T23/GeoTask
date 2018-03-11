@@ -27,13 +27,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button allButton = (Button) findViewById(R.id.buttonAll);
-        Button requestButton = (Button) findViewById(R.id.buttonRequest);
-        Button providerButton = (Button) findViewById(R.id.buttonProvider);
-        Button filterButton = (Button) findViewById(R.id.buttonFilter);
-        Button profileButton = (Button) findViewById(R.id.buttonProfile);
-        Button mapButton = (Button) findViewById(R.id.buttonMap);
-        Button logoutButton = (Button) findViewById(R.id.buttonLogout);
+
         taskList = (ListView) findViewById(R.id.taskListView);
         taskList.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
 
@@ -53,57 +47,6 @@ public class MainActivity extends AppCompatActivity {
                 //startActivity(intent);
             }
         });
-
-        //On-Click listener for All button to show all tasks
-        allButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                setResult(RESULT_OK);
-            }
-        });
-
-        //On-Click listener for Request button to show tasks that you have requested
-        requestButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                setResult(RESULT_OK);
-            }
-        });
-
-        //On-Click listener for Provider button to show tasks with status requested or bidded
-        providerButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                setResult(RESULT_OK);
-            }
-        });
-
-        //On-Click listener for Filter button to take the user to an activity where they can apply filters
-        filterButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                setResult(RESULT_OK);
-            }
-        });
-
-        //On-Click listener for Profile button to take the user to their own profile activity
-        profileButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                setResult(RESULT_OK);
-            }
-        });
-
-        //On-Click listener for Map button to the the user to a Map activity showing tasks in the current task list
-        mapButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                setResult(RESULT_OK);
-            }
-        });
-
-        //On-Click listener for Logout button to log the user out and return them to the login activity
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                setResult(RESULT_OK);
-            }
-        });
-
-
     }
 
 

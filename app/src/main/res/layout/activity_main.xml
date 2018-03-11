@@ -12,77 +12,7 @@
         android:layout_height="500dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/buttonAll"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:backgroundTint="@android:color/holo_purple"
-        android:text="@string/all"
-        app:layout_constraintEnd_toStartOf="@+id/taskListView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/buttonRequest"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@android:color/holo_purple"
-        android:text="@string/request"
-        app:layout_constraintEnd_toStartOf="@+id/taskListView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonAll" />
-
-    <Button
-        android:id="@+id/buttonProvider"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@android:color/holo_purple"
-        android:text="@string/provider"
-        app:layout_constraintEnd_toStartOf="@+id/taskListView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonRequest" />
-
-    <Button
-        android:id="@+id/buttonFilter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@android:color/holo_orange_light"
-        android:text="@string/filter"
-        app:layout_constraintEnd_toStartOf="@+id/taskListView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonProvider" />
-
-    <Button
-        android:id="@+id/buttonProfile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@android:color/holo_blue_light"
-        android:text="@string/profile"
-        app:layout_constraintEnd_toStartOf="@+id/taskListView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonFilter" />
-
-    <Button
-        android:id="@+id/buttonMap"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@android:color/holo_green_light"
-        android:text="@string/map"
-        app:layout_constraintEnd_toStartOf="@+id/taskListView"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonProfile" />
-
-    <Button
-        android:id="@+id/buttonLogout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@android:color/holo_red_light"
-        android:text="@string/logout"
-        app:layout_constraintBottom_toBottomOf="@+id/taskListView"
-        app:layout_constraintEnd_toStartOf="@+id/taskListView"
-        app:layout_constraintStart_toStartOf="parent" />
 </android.support.constraint.ConstraintLayout>
