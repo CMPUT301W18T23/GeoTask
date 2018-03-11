@@ -69,11 +69,12 @@ public class RegisterActivity extends AppCompatActivity implements AsyncCallBack
     }
 
     public Boolean isValid() {
-        if (newName.getText().toString().trim().equals("") && newName.length() < 8 && newName.length() > 30) {
+        if (newName.getText().toString().trim().equals("") ) {
             Toast.makeText(this, "Empty name", Toast.LENGTH_SHORT).show();
             return false;
-
-
+        }else if(newName.length() < 8 || newName.length() > 30){
+            Toast.makeText(this,"Name should be in 8 to 30 characters", Toast.LENGTH_SHORT).show();
+            return false;
         } else if (newEmail.getText().toString().trim().equals("")) {
             Toast.makeText(this, "Empty password", Toast.LENGTH_SHORT).show();
             return false;

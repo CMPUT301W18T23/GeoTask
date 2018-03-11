@@ -43,6 +43,7 @@ public class MenuActivity extends AppCompatActivity
     FloatingActionButton fab;
     private User currentUser;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i("LifeCycle --->", "onCreate is called");
@@ -92,6 +93,8 @@ public class MenuActivity extends AppCompatActivity
                 adapter.notifyDataSetChanged();
             }
         });
+
+
 
     }
     /* This method loads the subList from savefile and sets the array adapter for the ListView
@@ -182,6 +185,18 @@ public class MenuActivity extends AppCompatActivity
         } else if (id == R.id.nav_filter) {
 
         } else if (id == R.id.nav_profile) {
+
+           //currentUser = (User) getIntent().getSerializableExtra("currentUser");
+           // String userName = currentUser.getName();
+           // String userPhone = currentUser.getPhonenum();
+            //String userEmail = currentUser.getEmail();
+            Intent intent = new Intent(MenuActivity.this, EditProfile.class);
+            intent.putExtra("user", currentUser);
+            startActivity(intent);
+
+
+
+
 
         } else if (id == R.id.nav_map) {
 

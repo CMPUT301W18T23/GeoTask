@@ -89,7 +89,6 @@ public class ElasticsearchController {
         Index request = new Index.Builder(json)
                 .index(INDEX_NAME)
                 .type(data.getType().toString())
-                .id(docID)
                 .build();
 
         JestResult result = client.execute(request);
