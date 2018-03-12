@@ -33,6 +33,7 @@ public class MasterController {
     }
 
     public static boolean existsProfile(String s) {
+        controller.verifySettings();
         return controller.existsProfile(s);
     }
 

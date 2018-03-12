@@ -1,5 +1,7 @@
 package com.geotask.myapplication.Controllers;
 
+import android.os.StrictMode;
+
 import com.geotask.myapplication.Controllers.Helpers.EmailConverter;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
@@ -170,6 +172,8 @@ public class ElasticsearchController {
      * @return true if the email is in use, false otherwise
      */
     public boolean existsProfile(String email) {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         SuperBooleanBuilder query = new SuperBooleanBuilder();
         query.put("email", email);
         Search search = new Search.Builder(query.toString())
