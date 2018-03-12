@@ -16,7 +16,7 @@ public abstract class LocalDataBase extends RoomDatabase{
 
     public abstract UserDAO userDAO();
     public abstract TaskDAO taskDAO();
-    public abstract BidDAO bidDao();
+    public abstract BidDAO bidDAO();
 
     public static LocalDataBase getDatabase(Context context) {
         if(instance == null) {
@@ -25,9 +25,5 @@ public abstract class LocalDataBase extends RoomDatabase{
                                             "local_data").build();
         }
         return instance;
-    }
-
-    public static void shutDown() {
-        instance = null;
     }
 }

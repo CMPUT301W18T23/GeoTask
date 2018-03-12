@@ -31,4 +31,7 @@ public interface UserDAO {
 
     @Delete
     void delete(User user);
+
+    @Query("DELETE FROM bids")
+    void delete();
 }

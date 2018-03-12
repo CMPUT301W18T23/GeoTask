@@ -11,7 +11,7 @@ import com.geotask.myapplication.DataClasses.Task;
 import java.util.List;
 
 @Dao
-interface TaskDAO {
+public interface TaskDAO {
 
     @Insert
     void insert(Task task);
@@ -33,4 +33,7 @@ interface TaskDAO {
 
     @Delete
     void delete(Task task);
+
+    @Query("DELETE FROM bids")
+    void delete();
 }

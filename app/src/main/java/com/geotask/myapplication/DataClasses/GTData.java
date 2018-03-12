@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 
-public abstract class GTData implements Serializable {
+public abstract class GTData implements Serializable{
 
     public long getId() {
         return id;

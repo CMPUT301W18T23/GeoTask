@@ -12,7 +12,7 @@ import com.geotask.myapplication.DataClasses.Task;
 import java.util.List;
 
 @Dao
-interface BidDAO {
+public interface BidDAO {
 
     @Insert
     void insert(Bid bid);
@@ -27,11 +27,14 @@ interface BidDAO {
 
     //ToDo: enfore that provider can only bid once on a task
     @Query("SELECT * FROM bids WHERE provider_id LIKE :providerID AND task_id LIKE :taskID")
-    Bid selectTask(String providerID, String taskID);
+    Bid selectBid(String providerID, String taskID);
 
     @Update
     void update(Bid bid);
 
     @Delete
     void delete(Bid bid);
+
+    @Query("DELETE FROM bids")
+    void delete();
 }
