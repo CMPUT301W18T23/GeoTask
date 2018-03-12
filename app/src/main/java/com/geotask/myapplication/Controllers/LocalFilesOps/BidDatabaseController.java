@@ -8,6 +8,9 @@ import com.geotask.myapplication.DataClasses.Bid;
 
 import java.util.List;
 
+/**
+ * controls all local data changes for Bid. Do not call explicitly, use MasterController
+ */
 public class BidDatabaseController {
     private LocalDataBase database;
     private Context context;
@@ -17,6 +20,9 @@ public class BidDatabaseController {
         this.database = LocalDataBase.getDatabase(context);
     }
 
+    /**
+     * AsyncTask for inserting into table
+     */
     public class insertBid extends AsyncTask<Bid, Void, Void> {
 
         @Override

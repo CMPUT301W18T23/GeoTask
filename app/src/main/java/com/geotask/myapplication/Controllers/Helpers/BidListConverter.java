@@ -12,6 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 //https://stackoverflow.com/questions/44580702/android-room-persistent-library-how-to-insert-class-that-has-a-list-object-fie
+
+/**
+ * Used by SQL operations to store bidList field in Task.
+ * DO not call explicitly.
+ */
 public class BidListConverter {
 
     @TypeConverter

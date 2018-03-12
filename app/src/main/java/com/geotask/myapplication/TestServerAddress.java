@@ -1,7 +1,8 @@
 package com.geotask.myapplication;
 
+
 /**
- * Created by Michael on 3/9/2018.
+ * global static reference to test server address
  */
 
 class TestServerAddress {

@@ -1,24 +1,28 @@
 package com.geotask.myapplication;
 
 import android.test.ActivityInstrumentationTestCase2;
+import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 
 import com.robotium.solo.Solo;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.time.temporal.JulianFields;
 
+
 @RunWith(JUnit4.class)
 public class TestTaskAdapter extends ActivityInstrumentationTestCase2<MenuActivity> {
 
     private Solo solo;
 
-    public TestTaskAdapter(String pkg, Class<MenuActivity> activityClass) {
-        super(pkg, activityClass);
+    public TestTaskAdapter() {
+        super(MenuActivity.class);
     }
 
     @Override

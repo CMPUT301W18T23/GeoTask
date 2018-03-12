@@ -1,5 +1,8 @@
 package com.geotask.myapplication.Controllers.Helpers;
 
+/**
+ * Converts email to alphaNumeric string to avoid funky things with elastic search
+ */
 public class EmailConverter {
     public static String convertEmailForElasticSearch(String email) {
         String convertedEmail = "";

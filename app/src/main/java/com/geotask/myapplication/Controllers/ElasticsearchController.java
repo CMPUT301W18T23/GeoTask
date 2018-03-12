@@ -33,7 +33,7 @@ https://github.com/searchbox-io/Jest/tree/master/jest
 
 
 /**
- * ElasticsearchController - Our heart and soul
+ * controls all server networking code. Do not call explicitly. Use MasterController
  *
  */
 public class ElasticsearchController {
@@ -215,6 +215,10 @@ public class ElasticsearchController {
         }
     }
 
+    /**
+     * point server address to test index
+     * @param testServerAddress
+     */
     protected void setTestSettings(String testServerAddress) {
         INDEX_NAME = testServerAddress;
     }

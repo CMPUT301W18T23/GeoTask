@@ -11,6 +11,9 @@ import com.geotask.myapplication.DataClasses.Task;
 
 import java.util.List;
 
+/**
+ * DataAccessObject for Bid and local SQL database
+ */
 @Dao
 public interface BidDAO {
 
@@ -35,6 +38,9 @@ public interface BidDAO {
     @Delete
     void delete(Bid bid);
 
+    /**
+     * wipes bids table, use responsibly
+     */
     @Query("DELETE FROM bids")
     void delete();
 }

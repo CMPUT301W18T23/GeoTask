@@ -10,6 +10,9 @@ import com.geotask.myapplication.DataClasses.Task;
 
 import java.util.List;
 
+/**
+ * Data Access Object for Task and local SQL database
+ */
 @Dao
 public interface TaskDAO {
 
@@ -34,6 +37,9 @@ public interface TaskDAO {
     @Delete
     void delete(Task task);
 
+    /**
+     * wipes task table, use responsibly
+     */
     @Query("DELETE FROM bids")
     void delete();
 }

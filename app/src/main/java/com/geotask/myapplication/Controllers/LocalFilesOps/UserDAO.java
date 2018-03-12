@@ -12,6 +12,9 @@ import com.geotask.myapplication.DataClasses.User;
 
 import java.util.List;
 
+/**
+ * Data Access Object for User and local SQL database
+ */
 @Dao
 public interface UserDAO {
 
@@ -32,6 +35,9 @@ public interface UserDAO {
     @Delete
     void delete(User user);
 
-    @Query("DELETE FROM bids")
+    /**
+     * wipes users table, use responsibly
+     */
+    @Query("DELETE FROM users")
     void delete();
 }
