@@ -17,13 +17,15 @@ public class User extends GTData{
     private String email;
     @ColumnInfo(name = "phonenum", typeAffinity = ColumnInfo.TEXT)
     private String phonenum;
-
+    @ColumnInfo
+    private Integer completedTasks; //metric of completed tasks
 
     public User(String name, String email, String phonenum){
         super.setType(User.class);
         this.name = name;
         this.email = EmailConverter.convertEmailForElasticSearch(email);
         this.phonenum = phonenum;
+        this.completedTasks = 0;
     }
 
     public String getName(){
@@ -50,5 +52,17 @@ public class User extends GTData{
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getCompletedTasks() {
+        return completedTasks;
+    }
+
+    public void setCompletedTasks(Integer completedTasks) {
+        this.completedTasks = completedTasks;
+    }
+
+    public void incrementCompletedTasks() {
+        this.completedTasks++;
     }
 }

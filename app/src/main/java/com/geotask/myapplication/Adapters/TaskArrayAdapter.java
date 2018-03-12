@@ -24,6 +24,7 @@ package com.geotask.myapplication.Adapters;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,7 +80,8 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> {
         headerSub.hits.setText(String.format("Viewed %d times", item.getHitCounter()));
         headerSub.desc.setText(item.getDescription());
         headerSub.bids.setText(String.format("Bids: %d", item.getNumBidders()));
-        //headerSub.date.setText(item.getDateString());
+        headerSub.date.setText(item.getDateString());
+        Log.i("-------->", item.getDateString());
 
         if (item.getStatus().compareTo("Accepted") == 0){ //ToDo: avoid using strings, write function in Task
             headerSub.icon.setImageResource(R.drawable.ic_checkbox_blank_circle_grey600_24dp);
