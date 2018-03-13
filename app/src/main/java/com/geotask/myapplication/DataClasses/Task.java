@@ -26,6 +26,8 @@ public class Task extends GTData{
 	private ArrayList<String> bidList = new ArrayList<>();
 	@ColumnInfo
 	private Double accpetedBid;
+	@ColumnInfo
+	private String accpeptedBidID;
 	@ColumnInfo(name = "requester_id")
 	private String requesterID;
 	@ColumnInfo
@@ -150,5 +152,21 @@ public class Task extends GTData{
 
 	public long getDate(){
 		return this.date;
+	}
+
+	public String getAccpeptedBidID() {
+		return accpeptedBidID;
+	}
+
+	public void setAccpeptedBidID(String accpeptedBidID) {
+		this.accpeptedBidID = accpeptedBidID;
+	}
+
+	public void setStatusAccepted(){
+		this.status = "Accepted";
+	}
+
+	public void setStatusCompleted(){
+		this.status = "Completed";
 	}
 }

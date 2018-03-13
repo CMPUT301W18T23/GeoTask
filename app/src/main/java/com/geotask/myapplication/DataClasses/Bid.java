@@ -5,6 +5,8 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Entity(tableName = "bids")
 public class Bid extends GTData {
@@ -15,6 +17,8 @@ public class Bid extends GTData {
 	private Double value;
 	@ColumnInfo(name = "task_id")
 	private String taskID;
+	@ColumnInfo
+	private long date;
 
 	@Ignore
 	public Bid(){};
@@ -24,6 +28,7 @@ public class Bid extends GTData {
 		this.providerID = providerID;
 		this.value = value;
 		this.taskID = taskID;
+		this.date = new Date().getTime();
 	}
 	
 	public void setProviderID(String ProviderID) {
@@ -44,7 +49,19 @@ public class Bid extends GTData {
 	public String getTaskID() {
 		return this.taskID;
 	}
-
+	public String getDateString(){
+		String strDate = new SimpleDateFormat("EEEE MMMM d, yyyy").format(new java.util.Date((long)date));
+		return strDate;
+	}
+    public long getDate(){
+	    return this.date;
+    }
+    public void setDate(Date newDate){
+        this.date = newDate.getTime();
+    }
+    public void setDate(long newDate){
+        this.date = newDate;
+    }
 	@Override
 	public Type getType(){
 		return super.getType();

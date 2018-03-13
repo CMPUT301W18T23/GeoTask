@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.GTData;
+import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
 import java.util.List;
@@ -42,7 +43,6 @@ public class RegisterActivity extends AppCompatActivity implements AsyncCallBack
                 register_check();
             }
         });
-
     }
 
     /**
