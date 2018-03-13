@@ -169,4 +169,8 @@ public class Task extends GTData{
 	public void setStatusCompleted(){
 		this.status = "Completed";
 	}
+
+	public String toString(){
+		return this.name + " " + this.description + " " + bidList.toString();
+	}
 }

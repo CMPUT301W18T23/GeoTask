@@ -5,6 +5,7 @@ package com.geotask.myapplication.Controllers.LocalFilesOps;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
@@ -18,16 +19,16 @@ import java.util.List;
 @Dao
 public interface UserDAO {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(User user);
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertMultiple(User... users);
 
     @Query("SELECT * FROM users")
     List<User> selectAll();
 
     @Query("SELECT * FROM users WHERE name LIKE :name")
-    User selectByName(String name);
+    List<User> selectByName(String name);
 
     @Update
     void update(User user);

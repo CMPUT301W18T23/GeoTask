@@ -65,4 +65,10 @@ public class User extends GTData{
     public void incrementCompletedTasks() {
         this.completedTasks++;
     }
+
+    public String toString()  {
+        return this.name + " " +
+                EmailConverter.revertEmailFromElasticSearch(email) + " " +
+                this.phonenum;
+    }
 }
