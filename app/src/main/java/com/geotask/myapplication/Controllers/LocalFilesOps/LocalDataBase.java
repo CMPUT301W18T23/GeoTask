@@ -12,7 +12,7 @@ import com.geotask.myapplication.DataClasses.User;
 /**
  * singleton RoomDataBase object used to instanstiate reference used to access database
  */
-@Database(entities = {User.class, Bid.class, Task.class}, version = 4)
+@Database(entities = {User.class, Bid.class, Task.class}, version = 5)
 public abstract class LocalDataBase extends RoomDatabase{
 
     private static LocalDataBase instance;

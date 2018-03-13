@@ -5,6 +5,8 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.content.Context;
 
+import com.geotask.myapplication.Controllers.Helpers.UniqueIDGenerator;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,24 +15,14 @@ import java.lang.reflect.Type;
 
 public abstract class GTData implements Serializable{
 
-    public long getId() {
-        return id;
-    }
-
-    //ToDo put in some ID voodoo
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "local_id")
     private long id;
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
     @ColumnInfo(name = "object_id")
-    private String objectID = "";
-
+    private String objectID = UniqueIDGenerator.generate();
     @Ignore
     private transient Type type;
+
 
     public void setType(Type type) {
         this.type = type;
@@ -47,4 +39,13 @@ public abstract class GTData implements Serializable{
     public String getObjectID() {
         return objectID;
     }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getId() {
+        return id;
+    }
+
 }
