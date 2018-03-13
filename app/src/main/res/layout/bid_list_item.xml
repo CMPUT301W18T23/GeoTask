@@ -40,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
         <TextView
-            android:id="@+id/bid_list_numProvided"
+            android:id="@+id/bid_list_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
@@ -50,7 +50,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
-            android:id="@+id/bid_list_date"
+            android:id="@+id/bid_list_numProvided"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"

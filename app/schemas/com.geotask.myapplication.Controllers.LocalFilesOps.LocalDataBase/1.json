@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "476182d6afbaa07d7b47e8466c418565",
+    "identityHash": "02b8138df2e51679b84f85eb3b6916aa",
     "entities": [
       {
         "tableName": "users",
@@ -106,7 +106,7 @@
       },
       {
         "tableName": "tasks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`task_name` TEXT, `description` TEXT, `status` TEXT, `bidList` TEXT, `accpetedBid` REAL, `requester_id` TEXT, `acceptedProviderID` TEXT, `hitCounter` INTEGER NOT NULL, `date` INTEGER NOT NULL, `local_id` INTEGER NOT NULL, `object_id` TEXT, PRIMARY KEY(`local_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`task_name` TEXT, `description` TEXT, `status` TEXT, `bidList` TEXT, `accpetedBid` REAL, `accpeptedBidID` TEXT, `requester_id` TEXT, `acceptedProviderID` TEXT, `hitCounter` INTEGER NOT NULL, `date` INTEGER NOT NULL, `local_id` INTEGER NOT NULL, `object_id` TEXT, PRIMARY KEY(`local_id`))",
         "fields": [
           {
             "fieldPath": "name",
@@ -136,6 +136,12 @@
             "fieldPath": "accpetedBid",
             "columnName": "accpetedBid",
             "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "accpeptedBidID",
+            "columnName": "accpeptedBidID",
+            "affinity": "TEXT",
             "notNull": false
           },
           {
@@ -187,7 +193,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"476182d6afbaa07d7b47e8466c418565\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"02b8138df2e51679b84f85eb3b6916aa\")"
     ]
   }
 }

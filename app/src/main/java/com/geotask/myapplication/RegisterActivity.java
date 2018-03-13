@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.GTData;
+import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
 import java.util.List;
@@ -43,6 +44,11 @@ public class RegisterActivity extends AppCompatActivity implements AsyncCallBack
             }
         });
 
+
+        Task newTask = new Task("kyletask1", "nah");
+        Intent intent = new Intent(getBaseContext(), ViewBidsActivity.class);
+        intent.putExtra("task", newTask);
+        startActivity(intent);
     }
 
     /**
