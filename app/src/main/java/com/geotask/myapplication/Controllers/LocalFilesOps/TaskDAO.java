@@ -42,4 +42,7 @@ public interface TaskDAO {
      */
     @Query("DELETE FROM bids")
     void delete();
+
+    @Query("SELECT * FROM tasks WHERE object_id LIKE :taskID")
+    Task selectByID(String taskID);
 }
