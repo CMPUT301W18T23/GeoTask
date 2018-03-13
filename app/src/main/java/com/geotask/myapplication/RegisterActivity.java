@@ -43,12 +43,6 @@ public class RegisterActivity extends AppCompatActivity implements AsyncCallBack
                 register_check();
             }
         });
-
-
-        Task newTask = new Task("kyletask1", "nah");
-        Intent intent = new Intent(getBaseContext(), ViewBidsActivity.class);
-        intent.putExtra("task", newTask);
-        startActivity(intent);
     }
 
     /**
