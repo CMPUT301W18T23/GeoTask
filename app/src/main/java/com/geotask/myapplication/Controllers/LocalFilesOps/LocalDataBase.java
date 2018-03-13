@@ -12,7 +12,7 @@ import com.geotask.myapplication.DataClasses.User;
 /**
  * singleton RoomDataBase object used to instanstiate reference used to access database
  */
-@Database(entities = {User.class, Bid.class, Task.class}, version = 1)
+@Database(entities = {User.class, Bid.class, Task.class}, version = 2)
 public abstract class LocalDataBase extends RoomDatabase{
 
     private static LocalDataBase instance;
@@ -25,7 +25,9 @@ public abstract class LocalDataBase extends RoomDatabase{
         if(instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(),
                                             LocalDataBase.class,
-                                            "local_data").build();
+                                            "local_data")
+                                            .fallbackToDestructiveMigration()
+                                            .build();
         }
         return instance;
     }
