@@ -29,7 +29,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     /**
      *
-     * @param account for account services, not used
+     * @param account for account services, not used, use CreateSyncAccount(this) for dummy account
      * @param extras extra information sent by event
      * @param authority authority of content provider
      * @param provider
