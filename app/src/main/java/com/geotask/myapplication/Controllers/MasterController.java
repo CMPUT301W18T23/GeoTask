@@ -13,6 +13,7 @@ import java.util.List;
  * Contains ElasticsearchController and 3 DatabaseController.
  * Do not call ElasticSearchController and DatabaseControllers explicitly, use this instead.
  */
+//ToDo add sync logic between local and server
 public class MasterController {
 
     static ElasticsearchController controller = new ElasticsearchController();

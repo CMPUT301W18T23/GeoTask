@@ -22,6 +22,7 @@ public abstract class GTData implements Serializable{
     private String objectID = UniqueIDGenerator.generate();
     @Ignore
     private transient Type type;
+    //ToDo refactor date from children
 
 
     public void setType(Type type) {

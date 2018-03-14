@@ -1,77 +1,41 @@
 package com.geotask.myapplication;
 
-import android.test.ActivityInstrumentationTestCase2;
-import android.view.Menu;
-import android.view.View;
-import android.widget.EditText;
+import android.support.test.espresso.contrib.DrawerActions;
+import android.support.test.espresso.contrib.NavigationViewActions;
+import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
+import android.view.Gravity;
 
-import com.robotium.solo.Solo;
-
-import org.junit.After;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
-import java.time.temporal.JulianFields;
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.contrib.DrawerMatchers.isClosed;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
+@RunWith(AndroidJUnit4.class)
+public class TestTaskAdapter{
 
-@RunWith(JUnit4.class)
-public class TestTaskAdapter extends ActivityInstrumentationTestCase2<MenuActivity> {
-
-    private Solo solo;
-
-    public TestTaskAdapter() {
-        super(MenuActivity.class);
-    }
-
-    @Override
-    public void setUp() throws Exception {
-        solo = new Solo(getInstrumentation(), getActivity());
-        //ToDo: add stuff to list so there's something to click on
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        solo.finishOpenedActivities();
-    }
+    @Rule
+    public ActivityTestRule<MenuActivity> menuActivityRule = new ActivityTestRule<>(MenuActivity.class);
 
     @Test
-    public void testRegisterButtonClickShouldStartMenuActivity() {
+    public void testDrawer() throws InterruptedException {
+        /**
+         * onView(item).perform(action)
+         */
+        Thread.sleep(2000);
+
+        onView(withId(R.id.drawer_layout))
+                .check(matches(isClosed(Gravity.LEFT)))
+                .perform(DrawerActions.open());
+        Thread.sleep(1000);
+
+        onView(withId(R.id.nav_view))
+                .perform(NavigationViewActions.navigateTo(R.id.nav_provider));
+        Thread.sleep(1000);
     }
-
-    @Test
-    public void testAddItemToList() {
-    }
-
-    @Test
-    public void testListItemClickShouldStartSingleTaskViewActivity() {
-        solo.assertCurrentActivity("Error: not in MenuActivity", MenuActivity.class);
-        solo.clickInList(0);
-        solo.assertCurrentActivity("Error: not in TaskViewActivity", TaskViewActivity.class);
-    }
-
-    /*
-    @Test
-    public void testAddTaskUsingFloatingActionButton() {
-        solo.assertCurrentActivity("not MenuActivity", MenuActivity.class);
-
-        View floatingActionButton = getActivity().findViewById(R.id.fab);
-        solo.clickOnView(floatingActionButton);
-
-        solo.assertCurrentActivity("not AddTaskActivity", AddTaskActivity.class, true);
-
-        EditText name = getActivity().findViewById(R.id.add_task_name);
-        EditText description = getActivity().findViewById(R.id.add_task_description);
-        solo.enterText(name, "test add");
-        solo.enterText(description, "test description");
-        solo.clickOnButton("Request");
-
-        solo.assertCurrentActivity("not MenuActivity", MenuActivity.class);
-
-        solo.clickInList(0);
-
-        solo.assertCurrentActivity("not TaskViewActivity", TaskViewActivity.class);
-    }
-    */
 }
