@@ -4,6 +4,7 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.geotask.myapplication.Controllers.Helpers.UniqueIDGenerator;
 
@@ -15,9 +16,8 @@ import java.lang.reflect.Type;
 
 public abstract class GTData implements Serializable{
 
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "local_id")
-    private long id;
+    @PrimaryKey
+    @NonNull
     @ColumnInfo(name = "object_id")
     private String objectID = UniqueIDGenerator.generate();
     @Ignore
@@ -39,13 +39,4 @@ public abstract class GTData implements Serializable{
     public String getObjectID() {
         return objectID;
     }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public long getId() {
-        return id;
-    }
-
 }

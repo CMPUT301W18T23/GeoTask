@@ -92,7 +92,7 @@ public class TestFileOps {
         User user1 = new User("primary key test", "eaa@gmail.com", "2342342");
         String target = "violator";
         User user2 = new User(target, "adsga@gmail.com", "3498723");
-        user2.setId(user1.getId());
+        user2.setObjectID(user1.getObjectID());
 
         dataBase.userDAO().insert(user1);
         try {
@@ -163,7 +163,7 @@ public class TestFileOps {
         Bid bid2 = new Bid("multi test", 6.2, "multi 2");
         String target = "multi 3";
         Bid bid3 = new Bid("multi test", 6.3, target);
-        bid3.setId(bid2.getId());
+        bid3.setObjectID(bid2.getObjectID());
 
         dataBase.bidDAO().insertMultiple(bid1, bid2, bid3);
 
