@@ -337,10 +337,11 @@ public class TestElasticSearch implements AsyncCallBackManager {
 
     @Test
     public void testSearchTasks() throws InterruptedException {
-        String targetName = "task1";
-        Task task1 = new Task(targetName, "a");
+        Task task1 = new Task("test search task", "test search task");
         task1.setAcceptedBid(1.1);
-        Task task2 = new Task("task2", "b");
+        String target = "targettargettarget";
+        String targetName = "task2";
+        Task task2 = new Task(targetName, target);
         task2.setAcceptedBid(1.2);
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
@@ -351,7 +352,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
 
 
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
-        builder1.put("description", "a");
+        builder1.put("description", target);
 
         MasterController.AsyncSearch asyncSearch =
                 new MasterController.AsyncSearch(this);
