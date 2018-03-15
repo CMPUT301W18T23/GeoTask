@@ -8,6 +8,7 @@ import android.arch.persistence.room.util.TableInfo;
 import com.geotask.myapplication.Controllers.Helpers.EmailConverter;
 
 import java.lang.reflect.Type;
+import java.util.Date;
 
 @Entity(tableName = "users")
 public class User extends GTData{
@@ -15,7 +16,7 @@ public class User extends GTData{
     private String name;
     @ColumnInfo(name = "email", typeAffinity = ColumnInfo.TEXT)
     private String email;
-    @ColumnInfo(name = "phonenum", typeAffinity = ColumnInfo.TEXT)
+    @ColumnInfo(name = "phonenum", typeAffinity = ColumnInfo.TEXT) //ToDo validation
     private String phonenum;
     @ColumnInfo
     private Integer completedTasks; //metric of completed tasks
@@ -26,6 +27,7 @@ public class User extends GTData{
         this.email = EmailConverter.convertEmailForElasticSearch(email);
         this.phonenum = phonenum;
         this.completedTasks = 0;
+        super.setDate(new Date().getTime());
     }
 
     public String getName(){
@@ -47,8 +49,6 @@ public class User extends GTData{
     public void setPhonenum(String phonenum){
         this.phonenum = phonenum;
     }
-
-    public Type getType() { return super.getType(); }
 
     public void setName(String name) {
         this.name = name;
