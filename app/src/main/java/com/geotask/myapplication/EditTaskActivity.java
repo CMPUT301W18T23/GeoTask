@@ -1,5 +1,6 @@
 package com.geotask.myapplication;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,11 +27,12 @@ public class EditTaskActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_task);
 
-        Task testTask = new Task("need to test task", "i need a task to test so here is my task");
-        testTask.setRequesterID("h55p98a2ac9ye1kf");    //user named tennis
-        Intent intent = new Intent(EditTaskActivity.this, EditTaskActivity.class);
-        intent.putExtra("user", testTask);
-        this.editTask = (Task)intent.getSerializableExtra("user");
+//        Task testTask = new Task("need to test task", "i need a task to test so here is my task");
+//        testTask.setRequesterID("h55p98a2ac9ye1kf");    //user named tennis
+//        Intent intent = new Intent(EditTaskActivity.this, EditTaskActivity.class);
+//        intent.putExtra("user", testTask);
+        Intent i = getIntent();
+        this.editTask = (Task)i.getSerializableExtra("Task");
 
 //        h55p98a2ac9ye1kf
         editTitle = (EditText) findViewById(R.id.editTitle);
@@ -64,11 +66,14 @@ public class EditTaskActivity extends AppCompatActivity {
         if (check.checkText(name, description)){
             editTask.setName(name);
             editTask.setDescription(description);
-            //possible wrong
-            MasterController.AsyncUpdateDocument asyncUpdateDocument
-                    = new MasterController.AsyncUpdateDocument();
-            asyncUpdateDocument.execute(editTask);
-
+            //possible wrong commented out for now
+//            MasterController.AsyncUpdateDocument asyncUpdateDocument
+//                    = new MasterController.AsyncUpdateDocument();
+//            asyncUpdateDocument.execute(editTask);
+            Intent back = new Intent();
+            back.putExtra("updatedTask", editTask);
+            setResult(Activity.RESULT_OK, back);
+            finish();
 
         }else{
             Toast.makeText(this, "please enter valid data", Toast.LENGTH_SHORT).show();
