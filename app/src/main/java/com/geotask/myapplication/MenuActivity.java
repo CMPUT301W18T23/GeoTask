@@ -71,8 +71,9 @@ public class MenuActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Intent intent = new Intent(MenuActivity.this, AddTaskActivity.class);
-                //startActivity(intent);
+                Log.v("myTag","FAB Clicked");
+                Intent intent = new Intent(MenuActivity.this, newAddTaskActivity.class);
+                startActivity(intent);
                 adapter.notifyDataSetChanged();
             }
         });
@@ -207,6 +208,10 @@ public class MenuActivity extends AppCompatActivity
             mode = "Requester";
             Snackbar.make(snackView, "Changed view to \"Requester\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
+
+           // Intent intent = new Intent(MenuActivity.this, AddTaskActivity.class);
+            //startActivity(intent);
+
         } else if (id == R.id.nav_provider) {
             fab.hide();
             mode = "Provider";
