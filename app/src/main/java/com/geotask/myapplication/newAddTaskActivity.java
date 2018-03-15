@@ -1,5 +1,6 @@
 package com.geotask.myapplication;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -68,6 +69,9 @@ public class newAddTaskActivity extends AppCompatActivity implements AsyncCallBa
             MasterController.AsyncCreateNewDocument asyncCreateNewDocument
                     = new MasterController.AsyncCreateNewDocument();
             asyncCreateNewDocument.execute(newTask);
+
+            Intent intent = new Intent(getBaseContext(), MenuActivity.class);
+            startActivity(intent);
 
         }else{
             Toast.makeText(this,"please enter valid data", Toast.LENGTH_SHORT).show();
