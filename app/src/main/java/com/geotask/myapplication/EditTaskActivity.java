@@ -81,6 +81,7 @@ public class EditTaskActivity extends AppCompatActivity {
 
     }
     private void deleteData() {
-
+        // i dont know what code will go here to delete it yet
+        finish();
     }
 }
