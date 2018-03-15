@@ -185,7 +185,8 @@ public class MenuActivity extends AppCompatActivity
         } else if (id == R.id.nav_map) {
 
         } else if (id == R.id.nav_logout) {
-
+            Intent intent = new Intent(getBaseContext(), LoginActivity.class);
+            startActivity(intent);
         }  else if (id == R.id.nav_requester) {
             fab.show();
             mode = "Requester";

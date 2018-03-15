@@ -54,7 +54,7 @@ public class RegisterActivity extends AppCompatActivity implements AsyncCallBack
             String userPhone = newPhone.getText().toString().trim();
             String userEmail = newEmail.getText().toString().trim();
             if(MasterController.existsProfile(userEmail)){
-                Toast.makeText(this, "the name has been used", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "This email has been used.", Toast.LENGTH_SHORT).show();
             } else {
                 newUser = new User(userName, userEmail, userPhone);
 
@@ -62,8 +62,8 @@ public class RegisterActivity extends AppCompatActivity implements AsyncCallBack
                         = new MasterController.AsyncCreateNewDocument();
                 asyncCreateNewDocument.execute(newUser);
 
-                Intent intent = new Intent(getBaseContext(), MenuActivity.class);
-                intent.putExtra("currentUser", newUser);
+
+                Intent intent = new Intent(getBaseContext(), LoginActivity.class);
                 startActivity(intent);
             }
         }
@@ -71,12 +71,12 @@ public class RegisterActivity extends AppCompatActivity implements AsyncCallBack
 
     public Boolean isValid() {
         if (newName.getText().toString().trim().equals("") && newName.length() < 8 && newName.length() > 30) {
-            Toast.makeText(this, "Empty name", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Empty name.", Toast.LENGTH_SHORT).show();
             return false;
 
 
         } else if (newEmail.getText().toString().trim().equals("")) {
-            Toast.makeText(this, "Empty password", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Empty password.", Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
