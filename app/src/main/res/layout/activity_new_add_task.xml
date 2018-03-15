@@ -73,7 +73,7 @@
         android:id="@+id/TaskSave"
         android:layout_width="115dp"
         android:layout_height="71dp"
-        android:layout_marginBottom="52dp"
+        android:layout_marginBottom="88dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
