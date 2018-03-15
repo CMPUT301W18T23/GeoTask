@@ -27,7 +27,7 @@ public class TestLoginRegister extends ActivityInstrumentationTestCase2<LoginAct
 
     @Override
     public void setUp() throws Exception {
-        solo = new Solo(getInstrumentation(), getActivity());
+
     }
 
 
@@ -43,25 +43,7 @@ public class TestLoginRegister extends ActivityInstrumentationTestCase2<LoginAct
 
         String testEmail = RandomStringUtility.generateString();
 
-        solo.assertCurrentActivity("Wrong Activity", LoginActivity.class);
-        /*solo.clickOnButton("Register");
 
-        solo.assertCurrentActivity("Wrong Activity", RegisterActivity.class);
-        solo.enterText((EditText) solo.getView(R.id.newName), "TestName");
-        solo.enterText((EditText) solo.getView(R.id.newEmail), testEmail);
-        solo.enterText((EditText) solo.getView(R.id.newPhone), "111-222-3333");
-        solo.clickOnButton("Save");
-
-        solo.assertCurrentActivity("Wrong Activity", LoginActivity.class);
-        solo.enterText((EditText) solo.getView(R.id.emailText), testEmail);
-        solo.clickOnButton("Login");
-
-        solo.assertCurrentActivity("Wrong Activity", MenuActivity.class);
-
-*/
-        
-        //check that user was created on server
-        //check that user was passed correctly
 
 
 
@@ -69,7 +51,7 @@ public class TestLoginRegister extends ActivityInstrumentationTestCase2<LoginAct
 
     @Override
     public void tearDown() throws Exception {
-        solo.finishOpenedActivities();
+
     }
 
 
