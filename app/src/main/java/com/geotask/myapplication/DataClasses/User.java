@@ -8,6 +8,7 @@ import android.arch.persistence.room.util.TableInfo;
 import com.geotask.myapplication.Controllers.Helpers.EmailConverter;
 
 import java.lang.reflect.Type;
+import java.util.Date;
 
 @Entity(tableName = "users")
 public class User extends GTData{
@@ -26,6 +27,7 @@ public class User extends GTData{
         this.email = EmailConverter.convertEmailForElasticSearch(email);
         this.phonenum = phonenum;
         this.completedTasks = 0;
+        super.setDate(new Date().getTime());
     }
 
     public String getName(){
