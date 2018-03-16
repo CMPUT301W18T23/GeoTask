@@ -43,6 +43,7 @@ public class MenuActivity extends AppCompatActivity
     FloatingActionButton fab;
     private User currentUser;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,8 +70,9 @@ public class MenuActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Intent intent = new Intent(MenuActivity.this, AddTaskActivity.class);
-                //startActivity(intent);
+                Log.v("myTag","FAB Clicked");
+                Intent intent = new Intent(MenuActivity.this, newAddTaskActivity.class);
+                startActivity(intent);
                 adapter.notifyDataSetChanged();
             }
         });
@@ -91,6 +93,8 @@ public class MenuActivity extends AppCompatActivity
                 adapter.notifyDataSetChanged();
             }
         });
+
+
 
     }
     /* This method loads the subList from savefile and sets the array adapter for the ListView
@@ -182,6 +186,18 @@ public class MenuActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_profile) {
 
+           //currentUser = (User) getIntent().getSerializableExtra("currentUser");
+           // String userName = currentUser.getName();
+           // String userPhone = currentUser.getPhonenum();
+            //String userEmail = currentUser.getEmail();
+            Intent intent = new Intent(MenuActivity.this, EditProfile.class);
+            intent.putExtra("user", currentUser);
+            startActivity(intent);
+
+
+
+
+
         } else if (id == R.id.nav_map) {
 
         } else if (id == R.id.nav_logout) {
@@ -191,6 +207,10 @@ public class MenuActivity extends AppCompatActivity
             mode = "Requester";
             Snackbar.make(snackView, "Changed view to \"Requester\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
+
+           // Intent intent = new Intent(MenuActivity.this, AddTaskActivity.class);
+            //startActivity(intent);
+
         } else if (id == R.id.nav_provider) {
             fab.hide();
             mode = "Provider";

@@ -26,7 +26,10 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_menu"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".ViewBidsActivity"></activity>
+        <activity
+            android:name=".EditProfile"
+            android:label="Edit Profile"></activity>
+        <activity android:name=".newAddTaskActivity"></activity>
     </application>
 
 </manifest>
