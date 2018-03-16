@@ -179,7 +179,9 @@ public class MenuActivity extends AppCompatActivity
         if (id == R.id.nav_browse) {
             // Handle the camera action
         } else if (id == R.id.nav_filter) {
-
+            Intent intent = new Intent(getBaseContext(), FilterActivity.class);
+            intent.putExtra("currentUser", currentUser);
+            startActivity(intent);
         } else if (id == R.id.nav_profile) {
 
         } else if (id == R.id.nav_map) {
