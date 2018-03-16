@@ -34,6 +34,15 @@ public class Task extends GTData{
 	private String acceptedProviderID;
 	@ColumnInfo
 	private int hitCounter;
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
 	@ColumnInfo
 	private String location;
 	//ToDo pictures
