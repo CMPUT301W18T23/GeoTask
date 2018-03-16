@@ -17,6 +17,7 @@ import com.geotask.myapplication.DataClasses.User;
 
 import java.io.IOError;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class EditProfile extends AppCompatActivity implements AsyncCallBackManager {
@@ -107,6 +108,11 @@ public class EditProfile extends AppCompatActivity implements AsyncCallBackManag
     @Override
     public void onPostExecute(GTData data) {
         currentUser = (User) data;
+    }
+
+    @Override
+    public void onPostExecute(List<? extends GTData> searchResult) {
+
     }
 
 }

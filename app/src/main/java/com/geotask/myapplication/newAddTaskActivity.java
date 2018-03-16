@@ -15,6 +15,8 @@ import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
+import java.util.List;
+
 public class newAddTaskActivity extends AppCompatActivity implements AsyncCallBackManager {
 
 
@@ -80,6 +82,11 @@ public class newAddTaskActivity extends AppCompatActivity implements AsyncCallBa
     @Override
     public void onPostExecute(GTData data) {
         newTask = (Task) data;
+    }
+
+    @Override
+    public void onPostExecute(List<? extends GTData> searchResult) {
+
     }
 
 }
