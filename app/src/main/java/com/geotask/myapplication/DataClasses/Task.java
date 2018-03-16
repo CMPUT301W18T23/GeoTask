@@ -34,8 +34,6 @@ public class Task extends GTData{
 	private String acceptedProviderID;
 	@ColumnInfo
 	private int hitCounter;
-	@ColumnInfo
-	private long date;
 	//ToDo pictures
 	//ToDo locations
 
@@ -46,7 +44,7 @@ public class Task extends GTData{
 		this.description = description;
 		this.hitCounter = 0;
 		this.status = "requested";
-		this.date = new Date().getTime(); //get unix time in milliseconds
+		super.setDate(new Date().getTime());
 		this.accpetedBid = -1.0; //ToDo
 	}
 
@@ -115,17 +113,10 @@ public class Task extends GTData{
 		return this.bidList.size();
 	}
 
-	public String getDateString(){
-		String strDate = new SimpleDateFormat("EEEE MMMM d, yyyy").format(new java.util.Date((long)date));
-		return strDate;
-	}
 	public void addBid(Bid bid){
 		bidList.add(bid.getObjectID());
 	}
 
-	public void setDate(long date) {
-		this.date = date;
-	}
 	public ArrayList<String> getPhotoList() {
 		return photoList;
 	}
@@ -150,9 +141,6 @@ public class Task extends GTData{
 		this.hitCounter = hitCounter;
 	}
 
-	public long getDate(){
-		return this.date;
-	}
 
 	public String getAccpeptedBidID() {
 		return accpeptedBidID;

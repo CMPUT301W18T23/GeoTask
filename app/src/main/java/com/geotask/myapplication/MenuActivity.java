@@ -89,6 +89,7 @@ public class MenuActivity extends AppCompatActivity
                 Task task = taskList.get(position);
                 Intent intent = new Intent(MenuActivity.this, TaskViewActivity.class);
                 intent.putExtra("task", task);
+                intent.putExtra("Id", currentUser);
                 startActivity(intent);
                 adapter.notifyDataSetChanged();
             }
@@ -183,7 +184,9 @@ public class MenuActivity extends AppCompatActivity
         if (id == R.id.nav_browse) {
             // Handle the camera action
         } else if (id == R.id.nav_filter) {
-
+            Intent intent = new Intent(getBaseContext(), FilterActivity.class);
+            intent.putExtra("currentUser", currentUser);
+            startActivity(intent);
         } else if (id == R.id.nav_profile) {
 
            //currentUser = (User) getIntent().getSerializableExtra("currentUser");
@@ -201,7 +204,8 @@ public class MenuActivity extends AppCompatActivity
         } else if (id == R.id.nav_map) {
 
         } else if (id == R.id.nav_logout) {
-
+            Intent intent = new Intent(getBaseContext(), LoginActivity.class);
+            startActivity(intent);
         }  else if (id == R.id.nav_requester) {
             fab.show();
             mode = "Requester";

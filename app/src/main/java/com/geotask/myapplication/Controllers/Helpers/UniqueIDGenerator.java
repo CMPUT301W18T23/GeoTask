@@ -4,8 +4,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class UniqueIDGenerator {
-    private static final UniqueIDGenerator ourInstance = new UniqueIDGenerator();
-    private static AtomicInteger unique;
+    private static final UniqueIDGenerator generator = new UniqueIDGenerator();
     private static String source = "abcdefghijklmnopqrstuvwxyz1234567890";
     private static Random random = new Random();
 

@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 6,
-    "identityHash": "6eccd865bbf8df966e2811d0da8116f2",
+    "identityHash": "25685ee7a5a6b20f3e2d5bff99ae8bab",
     "entities": [
       {
         "tableName": "users",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `email` TEXT, `phonenum` TEXT, `completedTasks` INTEGER, `object_id` TEXT NOT NULL, PRIMARY KEY(`object_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `email` TEXT, `phonenum` TEXT, `completedTasks` INTEGER, `object_id` TEXT NOT NULL, `date` INTEGER NOT NULL, PRIMARY KEY(`object_id`))",
         "fields": [
           {
             "fieldPath": "name",
@@ -37,6 +37,12 @@
             "columnName": "object_id",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -50,7 +56,7 @@
       },
       {
         "tableName": "bids",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`provider_id` TEXT, `value` REAL, `task_id` TEXT, `date` INTEGER NOT NULL, `object_id` TEXT NOT NULL, PRIMARY KEY(`object_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`provider_id` TEXT, `value` REAL, `task_id` TEXT, `object_id` TEXT NOT NULL, `date` INTEGER NOT NULL, PRIMARY KEY(`object_id`))",
         "fields": [
           {
             "fieldPath": "providerID",
@@ -71,15 +77,15 @@
             "notNull": false
           },
           {
-            "fieldPath": "date",
-            "columnName": "date",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
             "fieldPath": "objectID",
             "columnName": "object_id",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -94,7 +100,7 @@
       },
       {
         "tableName": "tasks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`task_name` TEXT, `description` TEXT, `status` TEXT, `bidList` TEXT, `accpetedBid` REAL, `accpeptedBidID` TEXT, `requester_id` TEXT, `acceptedProviderID` TEXT, `hitCounter` INTEGER NOT NULL, `date` INTEGER NOT NULL, `object_id` TEXT NOT NULL, PRIMARY KEY(`object_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`task_name` TEXT, `description` TEXT, `status` TEXT, `bidList` TEXT, `accpetedBid` REAL, `accpeptedBidID` TEXT, `requester_id` TEXT, `acceptedProviderID` TEXT, `hitCounter` INTEGER NOT NULL, `object_id` TEXT NOT NULL, `date` INTEGER NOT NULL, PRIMARY KEY(`object_id`))",
         "fields": [
           {
             "fieldPath": "name",
@@ -151,15 +157,15 @@
             "notNull": true
           },
           {
-            "fieldPath": "date",
-            "columnName": "date",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
             "fieldPath": "objectID",
             "columnName": "object_id",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -175,7 +181,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"6eccd865bbf8df966e2811d0da8116f2\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"25685ee7a5a6b20f3e2d5bff99ae8bab\")"
     ]
   }
 }

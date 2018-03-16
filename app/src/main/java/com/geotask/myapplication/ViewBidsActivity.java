@@ -34,7 +34,7 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
     private ListView oldBids; //named taskListView
     private ArrayList<Bid> bidList;
     private ArrayAdapter<Bid> adapter;
-    //private User currentUser; //TODO - get current user
+    private User currentUser; //TODO - get current user
     private Task task;
     private PopupWindow POPUP_WINDOW_DELETION = null;   //popup for error message
     private GTData data = null;
@@ -45,7 +45,7 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_bids);
 
-        //currentUser = (User) getIntent().getSerializableExtra("currentUser"); //ToDo switch to Parcelable
+        currentUser = (User) getIntent().getSerializableExtra("currentUser"); //ToDo switch to Parcelable
 
         oldBids = (ListView) findViewById(R.id.bidListView);
         bidList = new ArrayList<Bid>();

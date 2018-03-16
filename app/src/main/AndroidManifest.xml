@@ -11,13 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".RegisterActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".RegisterActivity"></activity>
         <activity
             android:name=".MenuActivity"
             android:label="@string/title_activity_menu"
@@ -30,6 +24,17 @@
             android:name=".EditProfile"
             android:label="Edit Profile"></activity>
         <activity android:name=".newAddTaskActivity"></activity>
+        <activity android:name=".ViewBidsActivity" />
+         <activity android:name=".EditTaskActivity" />
+        <activity android:name=".TaskViewActivity"></activity>
+        <activity android:name=".LoginActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".FilterActivity"></activity>
     </application>
 
 </manifest>

@@ -13,6 +13,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public abstract class GTData implements Serializable{
 
@@ -22,6 +24,8 @@ public abstract class GTData implements Serializable{
     private String objectID = UniqueIDGenerator.generate();
     @Ignore
     private transient Type type;
+    @ColumnInfo
+    private long date;
     //ToDo refactor date from children
 
 
@@ -39,5 +43,22 @@ public abstract class GTData implements Serializable{
 
     public String getObjectID() {
         return objectID;
+    }
+
+    public long getDate() {
+        return date;
+    }
+
+    public void setDate(long date) {
+        this.date = date;
+    }
+
+    public void setDate(Date newDate){
+        this.date = newDate.getTime();
+    }
+
+    public String getDateString(){
+        String strDate = new SimpleDateFormat("EEEE MMMM d, yyyy").format(new java.util.Date((long)date));
+        return strDate;
     }
 }
