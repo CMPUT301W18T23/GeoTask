@@ -74,10 +74,6 @@ public class EditTaskActivity extends AppCompatActivity  implements AsyncCallBac
         if (check.checkText(name, description)){
             editTask.setName(name);
             editTask.setDescription(description);
-            //possible wrong commented out for now
-//            MasterController.AsyncUpdateDocument asyncUpdateDocument
-//                    = new MasterController.AsyncUpdateDocument();
-//            asyncUpdateDocument.execute(editTask);
             updateTask();
             Intent back = new Intent();
             back.putExtra("updatedTask", editTask);
