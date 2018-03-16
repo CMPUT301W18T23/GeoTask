@@ -87,7 +87,7 @@ public class MenuActivity extends AppCompatActivity
                 Task task = taskList.get(position);
                 Intent intent = new Intent(MenuActivity.this, TaskViewActivity.class);
                 intent.putExtra("task", task);
-                intent.putExtra("Id", currentUser.getObjectID());
+                intent.putExtra("Id", currentUser);
                 startActivity(intent);
                 adapter.notifyDataSetChanged();
             }

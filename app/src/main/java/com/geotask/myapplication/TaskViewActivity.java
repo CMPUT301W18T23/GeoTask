@@ -8,20 +8,31 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.geotask.myapplication.Controllers.AsyncCallBackManager;
+import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
+import com.geotask.myapplication.Controllers.MasterController;
+import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
+import com.geotask.myapplication.DataClasses.User;
+
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 
 //https://stackoverflow.com/questions/4127725/how-can-i-remove-a-button-or-make-it-invisible-in-android
-public class TaskViewActivity extends AppCompatActivity {
+public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBackManager {
     private TextView title;
     private TextView name;
     private TextView description;
     private TextView status;
     private Task viewTask;
+    private User currentUser;
     private String currentuserId;
     private String taskUserId;
     private Button editTaskButton;
-
+    private Button bidButton;
+    private GTData data = null;
+    private List<? extends GTData> searchResult = null;
 
 
 //    private ArrayList<String> bidArray;  //Array of bid Objects
@@ -36,23 +47,30 @@ public class TaskViewActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         this.viewTask = (Task)intent.getSerializableExtra("task");
-        this.currentuserId = (String)intent.getSerializableExtra("ID");
+        this.currentUser = (User)intent.getSerializableExtra("Id");
+        this.currentuserId = currentUser.getObjectID(); //get specific ID
+
         this.taskUserId = viewTask.getRequesterID();
         this.title = (TextView)findViewById(R.id.textViewTitle);
         this.name = (TextView)findViewById(R.id.textViewName);
         this.description = (TextView)findViewById(R.id.textViewDescription);
         this.status = (TextView)findViewById(R.id.textViewStatus);
         this.editTaskButton = (Button) findViewById(R.id.editTaskButton);
+        this.bidButton = (Button) findViewById(R.id.bidsButton);
 
-//        this.bidList = (ListView) findViewById(R.id.taskListView);
-//        this.bidArray = viewTask.getBidList();
-//
-//        this.adapter = new BidArrayAdapter(this, R.layout.activity_task_view, bidArray);
-//        bidList.setAdapter(adapter);
-//        adapter.notifyDataSetChanged();
+
         update();
+        setupButtons();
+        getTaskUser();
+//        if (currentuserId != taskUserId){
+//            View b = findViewById(R.id.editTaskButton);
+////            b.setVisibility(View.GONE);
+//            this.editTaskButton.setVisibility(b.GONE);
+//        }
+    }
 
 
+    private void setupButtons(){
         this.editTaskButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 Intent intent = new Intent(TaskViewActivity.this, EditTaskActivity.class);
@@ -61,13 +79,38 @@ public class TaskViewActivity extends AppCompatActivity {
 //                startActivity(intent);
             }
         });
-        if (currentuserId != taskUserId){
-            View b = findViewById(R.id.editTaskButton);
-            b.setVisibility(View.GONE);
-//            this.editTaskButton.setVisibility(View.GONE);
-        }
+
+        this.bidButton.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                Intent intent = new Intent(TaskViewActivity.this, ViewBidsActivity.class);
+                intent.putExtra("task", viewTask);
+                intent.putExtra("currentUser", currentUser);
+                startActivity(intent);
+            }
+        });
+
     }
 
+    private void getTaskUser(){  //this should work when get really data to get
+        MasterController.AsyncGetDocument asyncGetDocument =
+                new MasterController.AsyncGetDocument(this);
+        asyncGetDocument.execute(new AsyncArgumentWrapper(taskUserId, User.class));
+
+        User remote = null;
+        try {
+            remote = (User) asyncGetDocument.get();
+
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (remote == null){
+            this.name.setText("Unknown");
+        }else{
+            this.name.setText(remote.getName());
+        }
+    }
     private void update(){
         this.title.setText(viewTask.getName());
 //        this.name.setText(taskUserId); //need to change to get user from the id
@@ -88,16 +131,15 @@ public class TaskViewActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onPostExecute(GTData data) {
+        this.data = data;
+    }
 
-
-
-
-
-
-
-
-
-
+    @Override
+    public void onPostExecute(List<? extends GTData> dataList) {
+        this.searchResult = dataList;
+    }
 
 
 }

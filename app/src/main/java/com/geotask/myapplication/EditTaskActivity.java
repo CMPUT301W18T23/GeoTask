@@ -10,17 +10,25 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.geotask.myapplication.Controllers.AsyncCallBackManager;
+import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.MasterController;
+import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
-public class EditTaskActivity extends AppCompatActivity {
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
+public class EditTaskActivity extends AppCompatActivity  implements AsyncCallBackManager {
     private EditText editTitle;
     private EditText editDescription;
     private Button editButton;
     private Button deleteButton;
-
     private Task editTask;
+    private GTData data = null;
+    private List<? extends GTData> searchResult = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +78,7 @@ public class EditTaskActivity extends AppCompatActivity {
 //            MasterController.AsyncUpdateDocument asyncUpdateDocument
 //                    = new MasterController.AsyncUpdateDocument();
 //            asyncUpdateDocument.execute(editTask);
+            updateTask();
             Intent back = new Intent();
             back.putExtra("updatedTask", editTask);
             setResult(Activity.RESULT_OK, back);
@@ -81,7 +90,37 @@ public class EditTaskActivity extends AppCompatActivity {
 
     }
     private void deleteData() {
-        // i dont know what code will go here to delete it yet
+        MasterController.AsyncDeleteDocument asyncDeleteDocument =
+                new MasterController.AsyncDeleteDocument();
+        asyncDeleteDocument.execute(new AsyncArgumentWrapper(editTask.getRequesterID(), Task.class));
+
+        try {
+            TimeUnit.SECONDS.sleep(3);
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         finish();
+    }
+    private void updateTask(){  //this should hopefully work when get really data to get
+
+        MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                new MasterController.AsyncUpdateDocument();
+        asyncUpdateDocument.execute(editTask);
+
+        try {
+            TimeUnit.SECONDS.sleep(3);
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+    @Override
+    public void onPostExecute(GTData data) {
+        this.data = data;
+    }
+
+    @Override
+    public void onPostExecute(List<? extends GTData> dataList) {
+        this.searchResult = dataList;
     }
 }
