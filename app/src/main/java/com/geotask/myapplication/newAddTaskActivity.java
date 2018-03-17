@@ -76,7 +76,7 @@ public class newAddTaskActivity extends AppCompatActivity implements AsyncCallBa
             startActivity(intent);
 
         }else{
-            Toast.makeText(this,"please enter valid data", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Please enter valid task data.", Toast.LENGTH_SHORT).show();
         }
     }
     @Override

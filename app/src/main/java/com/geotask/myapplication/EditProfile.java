@@ -66,7 +66,7 @@ public class EditProfile extends AppCompatActivity implements AsyncCallBackManag
             String userEmailString = userEmail.getText().toString().trim();
 
             if(!MasterController.existsProfile(userEmailString)){
-                Toast.makeText(this, "the name has been used", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "This email has been registered.", Toast.LENGTH_SHORT).show();
             } else {
                 User currentUser = new User(userNameString, userEmailString, userPhoneString);
                 MasterController.AsyncUpdateDocument asyncUpdateDocument
@@ -88,18 +88,16 @@ public class EditProfile extends AppCompatActivity implements AsyncCallBackManag
 
     public Boolean isValid() {
         if (userName.getText().toString().trim().equals("") ) {
-            Toast.makeText(this, "Empty name", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Empty name.", Toast.LENGTH_SHORT).show();
             return false;
         }else if(userName.length() < 8 || userName.length() > 30){
-            Toast.makeText(this,"Name should be in 8 to 30 characters", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Name should be in 8 to 30 characters.", Toast.LENGTH_SHORT).show();
             return false;
         } else if (userName.getText().toString().trim().equals("") && userName.length() < 8 && userName.length() > 30) {
-            Toast.makeText(this, "Empty name", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Empty name.", Toast.LENGTH_SHORT).show();
             return false;
-
-
         } else if (userEmail.getText().toString().trim().equals("")) {
-            Toast.makeText(this, "Empty password", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Empty email.", Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;

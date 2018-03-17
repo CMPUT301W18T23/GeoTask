@@ -81,7 +81,7 @@ public class EditTaskActivity extends AppCompatActivity  implements AsyncCallBac
             finish();
 
         }else{
-            Toast.makeText(this, "please enter valid data", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please enter valid task data.", Toast.LENGTH_SHORT).show();
         }
 
     }
