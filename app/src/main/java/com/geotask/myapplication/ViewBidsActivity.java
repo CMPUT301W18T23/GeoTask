@@ -187,12 +187,12 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
                 POPUP_WINDOW_DELETION.dismiss();
                 Log.i("LifeCycle --->", bid.getValue().toString() + " clicked");
                 //TODO - Once ViewProfileActivity is added, uncomment this
-                /*
-                Intent intent = new Intent(ViewBidsActivity.this, ViewProileActivity.class);
-                intent.putExtra("userID", bid.getProviderID());
-                intent.putExtra("currentUser", currentUser);
+
+                Intent intent = new Intent(ViewBidsActivity.this, ViewProfile.class);
+//                intent.putExtra("userID", bid.getProviderID());
+                intent.putExtra("user", currentUser);
                 startActivity(intent);
-                */
+
             }
         });
     }

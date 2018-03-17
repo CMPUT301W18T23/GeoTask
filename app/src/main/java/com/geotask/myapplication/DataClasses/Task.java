@@ -41,6 +41,10 @@ public class Task extends GTData{
 		return location;
 	}
 
+	public float getLocationX() { return Float.parseFloat(location.split("[,]")[0]); }
+
+	public float getLocationY() { return Float.parseFloat(location.split("[,]")[1]); }
+
 	public void setLocation(String location) {
 		this.location = location;
 	}
