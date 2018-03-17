@@ -7,6 +7,7 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.geotask.myapplication.DataClasses.Task;
+import com.geotask.myapplication.DataClasses.User;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -48,7 +49,41 @@ public class TestStartFromViewTask {
                     Intent result = new Intent(targetContext, TaskViewActivity.class);
                     result.putExtra("task",
                             new Task("TestTest", "TestTest", "TestTest"));
+                    result.putExtra("Id",
+                            new User("TestUSer", "TestUser", "TestUser"));
+                    result.putExtra("currentUser",
+                            new User("testtestUser", "testtestUser", "testtestUser"));
+
                     return result;
                 }
             };
+
+    @Test
+    public void testViewBidShouldDisplayListOfBidsOnTask() {
+
+    }
+
+    @Test
+    public void testAddBidShouldLetYouAddBidIfProviderModeAndNotYourOwnTask() {
+    }
+
+    @Test
+    public void testAddBidButtonShouldNotShowIfYourOwnTask() {
+
+    }
+
+    @Test
+    public void testAcceptBid() {
+
+    }
+
+    @Test
+    public void testDeclineBid() {
+
+    }
+
+    @Test
+    public void testClickOnUserNameShouldStartViewUserActivity() {
+
+    }
 }
