@@ -14,24 +14,7 @@
         android:theme="@style/Theme.AppCompat.Light">
 
         //map related things START here
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
 
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyANt2O8-rJiER0WG_dDgPipg0YI2Zto90c" />
-
-        <activity
-            android:name=".MapActivity"
-            android:label="MapActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        //map related thing END here
 
         <activity android:name=".RegisterActivity"></activity>
         <activity
@@ -57,6 +40,17 @@
             </intent-filter>
         </activity>
         <activity android:name=".FilterActivity"></activity>
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyANt2O8-rJiER0WG_dDgPipg0YI2Zto90c" />
+
+        <activity
+            android:name=".MapActivity"
+            android:label="MapActivity" ></activity>
     </application>
 
 </manifest>
