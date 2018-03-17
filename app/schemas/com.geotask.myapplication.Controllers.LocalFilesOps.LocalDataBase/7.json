@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 7,
-    "identityHash": "6ae72d46f380f577ca28c5f5a0cd5693",
+    "identityHash": "e32acf34338e732e36ea86774afce518",
     "entities": [
       {
         "tableName": "users",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `email` TEXT, `phonenum` TEXT, `completedTasks` INTEGER, `object_id` TEXT NOT NULL, `date` INTEGER NOT NULL, PRIMARY KEY(`object_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `email` TEXT, `phonenum` TEXT, `completedTasks` INTEGER, `location` TEXT, `object_id` TEXT NOT NULL, `date` INTEGER NOT NULL, PRIMARY KEY(`object_id`))",
         "fields": [
           {
             "fieldPath": "name",
@@ -30,6 +30,12 @@
             "fieldPath": "completedTasks",
             "columnName": "completedTasks",
             "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "location",
+            "columnName": "location",
+            "affinity": "TEXT",
             "notNull": false
           },
           {
@@ -187,7 +193,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"6ae72d46f380f577ca28c5f5a0cd5693\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"e32acf34338e732e36ea86774afce518\")"
     ]
   }
 }
