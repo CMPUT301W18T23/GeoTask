@@ -72,7 +72,6 @@ public class newAddTaskActivity extends AppCompatActivity implements AsyncCallBa
         ValidateTask check = new ValidateTask();
         if(check.checkText(titleString, descriptionString)){
             newTask = new Task(titleString, descriptionString);
-            newTask.setRequesterID(convertEmailForElasticSearch(currentUser.getEmail()));
             MasterController.AsyncCreateNewDocument asyncCreateNewDocument
                     = new MasterController.AsyncCreateNewDocument();
             asyncCreateNewDocument.execute(newTask);
