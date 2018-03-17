@@ -110,7 +110,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
                 intent.putExtra("task", viewTask);
                 intent.putExtra("currentUser", currentUser);
                 startActivity(intent);
-//                updateStatus();  //for later
+                updateStatus();  //for later
             }
         });
 
@@ -145,7 +145,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
     private void update(){
         this.title.setText(viewTask.getName());
 //        this.name.setText(taskUserId); //need to change to get user from the id
-        this.name.setText("placeolder");
+//        this.name.setText("placeolder");
 
         this.description.setText(viewTask.getDescription());
         this.status.setText(viewTask.getStatus());
@@ -214,7 +214,8 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
             e.printStackTrace();
         }
         if (viewTask.getStatus() != "Bidded") {
-//    taskBidded(); //need to uncomment when taskId is given
+    taskBidded(); //need to uncomment when taskId is given
+            update();
         }
     }
 
@@ -259,10 +260,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-
-
-
+    update();
     }
 
     @Override
