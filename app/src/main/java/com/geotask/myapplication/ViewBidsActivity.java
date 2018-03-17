@@ -55,9 +55,12 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Bid bid = bidList.get(position);
-                triggerPopup(view, bid, task);
-                adapter.notifyDataSetChanged();
+                Log.i("ViewBids --->",task.getRequesterID() + " " + currentUser.getObjectID());
+                if(task.getRequesterID().compareTo(currentUser.getObjectID()) == 0){
+                    Bid bid = bidList.get(position);
+                    triggerPopup(view, bid, task);
+                    adapter.notifyDataSetChanged();
+                }
             }
         });
     }
