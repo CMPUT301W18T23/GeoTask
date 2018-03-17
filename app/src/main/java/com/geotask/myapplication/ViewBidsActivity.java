@@ -1,6 +1,7 @@
 package com.geotask.myapplication;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -63,7 +64,7 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
 
     private void populateBidView(){
         //TODO - build query that returns list of bids that all have task ID == this.taskID
-        // THIS SHOULD WORK BUT IS CURRENTLY COMMENTED OUT
+        /// THIS SHOULD WORK BUT IS CURRENTLY COMMENTED OUT
         SuperBooleanBuilder builder = new SuperBooleanBuilder();
         builder.put("taskID", task.getObjectID());
 
@@ -83,15 +84,6 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         }
 
 
-        /*
-        //TEMP I WILL ADD SOME MYSELF
-        ArrayList<Bid> newBidList = new ArrayList<Bid>();
-        Bid bid1 = new Bid("kyle1",2048.0,"kyletask1");
-        Bid bid2 = new Bid("kyle2",1024.0,"kyletask1");
-        newBidList.add(bid1);
-        newBidList.add(bid2);
-        bidList = newBidList;
-        */
     }
 
     protected void onStart() {
@@ -99,6 +91,7 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         Log.i("LifeCycle --->", "onStart is called");
         this.task = (Task) getIntent().getSerializableExtra("task");
         Log.i("LifeCycle --->", "extracted task with name:" + this.task.getName());
+        Log.i("LifeCycle --->", "extracted user with name:" + this.currentUser.getName());
         //populate the array on start
         populateBidView();
         adapter = new BidArrayAdapter(this, R.layout.bid_list_item, bidList);
@@ -133,6 +126,20 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
                 new MasterController.AsyncUpdateDocument();
         asyncUpdateDocument.execute(task);
 
+        //go back to TaskViewActivity
+        Intent intent = new Intent(ViewBidsActivity.this, TaskViewActivity.class);
+        intent.putExtra("currentUser", currentUser);
+        intent.putExtra("Id", currentUser);
+        intent.putExtra("task", task);
+        startActivity(intent);
+
+    }
+
+    public void deleteBid(Bid bid, Task task){
+        MasterController.AsyncDeleteDocument asyncDeleteDocument =
+                new MasterController.AsyncDeleteDocument();
+        asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
+        bidList.remove(bid);
     }
 
     public void triggerPopup(View view, final Bid bid, final Task task){
@@ -145,13 +152,15 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         POPUP_WINDOW_DELETION.setBackgroundDrawable(null);
         POPUP_WINDOW_DELETION.showAtLocation(layout, Gravity.CENTER, 1, 1);
 
-        Button cancelBtn = (Button) layout.findViewById(R.id.btn_cancel);
-        cancelBtn.setOnClickListener(new View.OnClickListener()
+        Button deleteBtn = (Button) layout.findViewById(R.id.btn_delete);
+        deleteBtn.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
                 POPUP_WINDOW_DELETION.dismiss();
+                deleteBid(bid, task);
+                adapter.notifyDataSetChanged();
             }
         });
 
@@ -175,9 +184,11 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
             {
                 POPUP_WINDOW_DELETION.dismiss();
                 Log.i("LifeCycle --->", bid.getValue().toString() + " clicked");
-                /*//TODO - Once ViewProfileActivity is added, uncomment this
+                //TODO - Once ViewProfileActivity is added, uncomment this
+                /*
                 Intent intent = new Intent(ViewBidsActivity.this, ViewProileActivity.class);
                 intent.putExtra("userID", bid.getProviderID());
+                intent.putExtra("currentUser", currentUser);
                 startActivity(intent);
                 */
             }
