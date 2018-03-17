@@ -37,6 +37,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
     private TextView status;
     private Task viewTask;
     private User currentUser;
+    private User remote;
     private String currentuserId;
     private String taskUserId;
     private Button editTaskButton;
@@ -77,7 +78,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         update();
         setupButtons();
         getTaskUser();
-
+        profile();
 
         if (!currentuserId.equals(taskUserId)){   //hide editbutton if not user
             View b = findViewById(R.id.editTaskButton);
@@ -125,7 +126,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
                 new MasterController.AsyncGetDocument(this);
         asyncGetDocument.execute(new AsyncArgumentWrapper(taskUserId, User.class));
 
-        User remote = null;
+        remote = null;
         try {
             remote = (User) asyncGetDocument.get();
 
@@ -226,6 +227,20 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
             e.printStackTrace();
         }
 
+    }
+
+
+
+
+    private void profile(){  //need to wait for viewProfile activity to enable. this has not been tested because of that
+        name.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TaskViewActivity.this, ViewProfile.class);
+                intent.putExtra("user", remote);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
