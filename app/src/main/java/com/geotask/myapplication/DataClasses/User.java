@@ -21,7 +21,7 @@ public class User extends GTData{
     @ColumnInfo
     private Integer completedTasks; //metric of completed tasks
     @ColumnInfo(name = "location", typeAffinity = ColumnInfo.TEXT)
-    private String location;
+    private String location;                                        //format example: "47.55,-82.11"
 
     public User(String name, String email, String phonenum){
         super.setType(User.class);
@@ -30,6 +30,10 @@ public class User extends GTData{
         this.phonenum = phonenum;
         this.completedTasks = 0;
         super.setDate(new Date().getTime());
+    }
+
+    public String getLocation() {
+        return location;
     }
 
     public String getName(){
@@ -48,7 +52,9 @@ public class User extends GTData{
         return phonenum;
     }
 
-    public String getLocation() { return location; }
+    public float getLocationX() { return Float.parseFloat(location.split("[,]")[0]); }
+
+    public float getLocationY() { return Float.parseFloat(location.split("[,]")[1]); }
 
     public void setLocation(String location) { this.location = location; }
 
