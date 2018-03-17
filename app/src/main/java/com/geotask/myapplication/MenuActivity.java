@@ -134,6 +134,7 @@ public class MenuActivity extends AppCompatActivity
      * @param terms
      */
     protected void populateTaskView(String mode, ArrayList<String> terms){
+        taskList.clear();
         Task myTask = new Task("Ken Wong", "weehaw");
         myTask.addBid(new Bid());
         taskList.add(myTask);
