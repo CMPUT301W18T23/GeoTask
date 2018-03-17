@@ -29,11 +29,13 @@ public class EditTaskActivity extends AppCompatActivity  implements AsyncCallBac
     private Task editTask;
     private GTData data = null;
     private List<? extends GTData> searchResult = null;
+    private User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_task);
+        currentUser = (User) getIntent().getSerializableExtra("currentUser");
 
 //        Task testTask = new Task("need to test task", "i need a task to test so here is my task");
 //        testTask.setRequesterID("h55p98a2ac9ye1kf");    //user named tennis
@@ -77,6 +79,7 @@ public class EditTaskActivity extends AppCompatActivity  implements AsyncCallBac
             updateTask();
             Intent back = new Intent();
             back.putExtra("updatedTask", editTask);
+            back.putExtra("currentUser", currentUser);
             setResult(Activity.RESULT_OK, back);
             finish();
 

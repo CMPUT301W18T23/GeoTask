@@ -25,6 +25,7 @@ public class newAddTaskActivity extends AppCompatActivity implements AsyncCallBa
     private Button Picture;
     private Button Map;
     private Button Save;
+    private User currentUser;
 
     private Task newTask;
 
@@ -32,6 +33,8 @@ public class newAddTaskActivity extends AppCompatActivity implements AsyncCallBa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_add_task);
+
+        currentUser = (User) getIntent().getSerializableExtra("currentUser");
 
         Title = (EditText) findViewById(R.id.TaskTitle);
         Description = (EditText) findViewById(R.id.TaskDescription);
@@ -67,12 +70,13 @@ public class newAddTaskActivity extends AppCompatActivity implements AsyncCallBa
         ValidateTask check = new ValidateTask();
         if(check.checkText(titleString, descriptionString)){
             newTask = new Task(titleString, descriptionString);
-
+            //newTask.setRequesterID(currentUser.getEmail());
             MasterController.AsyncCreateNewDocument asyncCreateNewDocument
                     = new MasterController.AsyncCreateNewDocument();
             asyncCreateNewDocument.execute(newTask);
 
             Intent intent = new Intent(getBaseContext(), MenuActivity.class);
+            intent.putExtra("currentUser", currentUser);
             startActivity(intent);
 
         }else{

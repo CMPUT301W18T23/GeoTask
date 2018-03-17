@@ -49,6 +49,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         this.viewTask = (Task)intent.getSerializableExtra("task");
         this.currentUser = (User)intent.getSerializableExtra("Id");
         this.currentuserId = currentUser.getObjectID(); //get specific ID
+        currentUser = (User) getIntent().getSerializableExtra("currentUser");
 
         this.taskUserId = viewTask.getRequesterID();
         this.title = (TextView)findViewById(R.id.textViewTitle);

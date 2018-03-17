@@ -43,6 +43,7 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_bids);
 
+
         currentUser = (User) getIntent().getSerializableExtra("currentUser"); //ToDo switch to Parcelable
 
         oldBids = (ListView) findViewById(R.id.bidListView);

@@ -121,12 +121,10 @@ public class MenuActivity extends AppCompatActivity
     @Override
     protected void onResume(){
         super.onResume();
+        currentUser = (User) getIntent().getSerializableExtra("currentUser"); //ToDo switch to Parcelable
         Log.i("LifeCycle --->", "onResume is called");
         //populate the array on start
-        //TODO - need to get the mode of user, assuming all rn
-        //populateTaskView(mode, new ArrayList<String>());
-        //Task myTask = new Task("Hi2", "weehasdfsdfsdfsdfsdfsdfsjghfjghfjgfyughjfjgfjgfjgfgjhfgjfghjfjgfjgfgjfjgfjgfdfsdfsdfsdfsdfsw");
-        //taskList.add(myTask);
+        populateTaskView(mode, new ArrayList<String>());
         adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
         oldTasks.setAdapter(adapter);
         adapter.notifyDataSetChanged();
@@ -190,10 +188,12 @@ public class MenuActivity extends AppCompatActivity
 
         if (id == R.id.nav_browse) {
             // Handle the camera action
+
         } else if (id == R.id.nav_filter) {
             Intent intent = new Intent(getBaseContext(), FilterActivity.class);
             intent.putExtra("currentUser", currentUser);
             startActivity(intent);
+
         } else if (id == R.id.nav_profile) {
 
            //currentUser = (User) getIntent().getSerializableExtra("currentUser");
@@ -209,11 +209,17 @@ public class MenuActivity extends AppCompatActivity
         } else if (id == R.id.nav_logout) {
             Intent intent = new Intent(getBaseContext(), LoginActivity.class);
             startActivity(intent);
+
         }  else if (id == R.id.nav_requester) {
             fab.show();
             mode = "Requester";
             Snackbar.make(snackView, "Changed view to \"Requester\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
+
+            populateTaskView(mode, new ArrayList<String>());
+            adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
+            oldTasks.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
 
            // Intent intent = new Intent(MenuActivity.this, AddTaskActivity.class);
             //startActivity(intent);
@@ -223,11 +229,22 @@ public class MenuActivity extends AppCompatActivity
             mode = "Provider";
             Snackbar.make(snackView, "Changed view to \"Provider\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
+
+            populateTaskView(mode, new ArrayList<String>());
+            adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
+            oldTasks.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+
         } else if (id == R.id.nav_all) {
             fab.hide();
             mode = "All";
             Snackbar.make(snackView, "Changed view to \"All\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
+
+            populateTaskView(mode, new ArrayList<String>());
+            adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
+            oldTasks.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
