@@ -1,12 +1,12 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 6,
-    "identityHash": "6ae72d46f380f577ca28c5f5a0cd5693",
+    "version": 2,
+    "identityHash": "02b8138df2e51679b84f85eb3b6916aa",
     "entities": [
       {
         "tableName": "users",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `email` TEXT, `phonenum` TEXT, `completedTasks` INTEGER, `object_id` TEXT NOT NULL, `date` INTEGER NOT NULL, PRIMARY KEY(`object_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `email` TEXT, `phonenum` TEXT, `completedTasks` INTEGER, `local_id` INTEGER NOT NULL, `object_id` TEXT, PRIMARY KEY(`local_id`))",
         "fields": [
           {
             "fieldPath": "name",
@@ -33,21 +33,21 @@
             "notNull": false
           },
           {
-            "fieldPath": "objectID",
-            "columnName": "object_id",
-            "affinity": "TEXT",
+            "fieldPath": "id",
+            "columnName": "local_id",
+            "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "date",
-            "columnName": "date",
-            "affinity": "INTEGER",
-            "notNull": true
+            "fieldPath": "objectID",
+            "columnName": "object_id",
+            "affinity": "TEXT",
+            "notNull": false
           }
         ],
         "primaryKey": {
           "columnNames": [
-            "object_id"
+            "local_id"
           ],
           "autoGenerate": false
         },
@@ -56,7 +56,7 @@
       },
       {
         "tableName": "bids",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`provider_id` TEXT, `value` REAL, `task_id` TEXT, `object_id` TEXT NOT NULL, `date` INTEGER NOT NULL, PRIMARY KEY(`object_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`provider_id` TEXT, `value` REAL, `task_id` TEXT, `date` INTEGER NOT NULL, `local_id` INTEGER NOT NULL, `object_id` TEXT, PRIMARY KEY(`local_id`))",
         "fields": [
           {
             "fieldPath": "providerID",
@@ -77,21 +77,27 @@
             "notNull": false
           },
           {
-            "fieldPath": "objectID",
-            "columnName": "object_id",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
             "fieldPath": "date",
             "columnName": "date",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "local_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "objectID",
+            "columnName": "object_id",
+            "affinity": "TEXT",
+            "notNull": false
           }
         ],
         "primaryKey": {
           "columnNames": [
-            "object_id"
+            "local_id"
           ],
           "autoGenerate": false
         },
@@ -100,7 +106,7 @@
       },
       {
         "tableName": "tasks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`task_name` TEXT, `description` TEXT, `status` TEXT, `bidList` TEXT, `accpetedBid` REAL, `accpeptedBidID` TEXT, `requester_id` TEXT, `acceptedProviderID` TEXT, `hitCounter` INTEGER NOT NULL, `location` TEXT, `object_id` TEXT NOT NULL, `date` INTEGER NOT NULL, PRIMARY KEY(`object_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`task_name` TEXT, `description` TEXT, `status` TEXT, `bidList` TEXT, `accpetedBid` REAL, `accpeptedBidID` TEXT, `requester_id` TEXT, `acceptedProviderID` TEXT, `hitCounter` INTEGER NOT NULL, `date` INTEGER NOT NULL, `local_id` INTEGER NOT NULL, `object_id` TEXT, PRIMARY KEY(`local_id`))",
         "fields": [
           {
             "fieldPath": "name",
@@ -157,27 +163,27 @@
             "notNull": true
           },
           {
-            "fieldPath": "location",
-            "columnName": "location",
-            "affinity": "TEXT",
-            "notNull": false
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "local_id",
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "objectID",
             "columnName": "object_id",
             "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "date",
-            "columnName": "date",
-            "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           }
         ],
         "primaryKey": {
           "columnNames": [
-            "object_id"
+            "local_id"
           ],
           "autoGenerate": false
         },
@@ -187,7 +193,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"6ae72d46f380f577ca28c5f5a0cd5693\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"02b8138df2e51679b84f85eb3b6916aa\")"
     ]
   }
 }

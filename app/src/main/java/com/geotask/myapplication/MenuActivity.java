@@ -192,7 +192,9 @@ public class MenuActivity extends AppCompatActivity
             startActivity(intent);
 
         } else if (id == R.id.nav_map) {
-
+            Intent intent = new Intent(getBaseContext(), MapActivity.class);
+            intent.putExtra("currentUser", currentUser);
+            startActivity(intent);
         } else if (id == R.id.nav_logout) {
             Intent intent = new Intent(getBaseContext(), LoginActivity.class);
             startActivity(intent);
