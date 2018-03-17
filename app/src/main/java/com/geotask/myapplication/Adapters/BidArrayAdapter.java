@@ -86,7 +86,7 @@ public class BidArrayAdapter extends ArrayAdapter<Bid> implements AsyncCallBackM
             }
             User provider = remote;
 
-            //User provider = new User("Kyle", "kyleG@email.es","911"); //TEMP
+            //provider = new User("Kyle", "kyleG@email.es","911"); //TEMP
             headerSub.providerName.setText(provider.getName());
             headerSub.numProvided.setText(String.format("%d tasks completed", provider.getCompletedTasks()));
             headerSub.date.setText(item.getDateString());
