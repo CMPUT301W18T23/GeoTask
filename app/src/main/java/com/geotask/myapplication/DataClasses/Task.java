@@ -49,7 +49,7 @@ public class Task extends GTData{
 
 
 	public Task(String requesterID, String name, String description) { //need string for pictures
-		super.setType(Task.class);
+		super.setType(Task.class.toString());
 		this.name = name;
 		this.description = description;
 		this.hitCounter = 0;
@@ -57,17 +57,6 @@ public class Task extends GTData{
 		super.setDate(new Date().getTime());
 		this.accpetedBid = -1.0; //ToDo
 		this.requesterID = requesterID;
-	}
-
-	@Ignore
-	public Task(String name, String description) { //need string for pictures
-		super.setType(Task.class);
-		this.name = name;
-		this.description = description;
-		this.hitCounter = 0;
-		this.status = "requested";
-		super.setDate(new Date().getTime());
-		this.accpetedBid = -1.0; //ToDo
 	}
 
     public String getName() {
@@ -119,10 +108,6 @@ public class Task extends GTData{
 	}
 	public String getAcceptedProviderID() {
 		return this.acceptedProviderID;
-	}
-
-	public Type getType() {
-		return super.getType();
 	}
 
 	public void addHit(){

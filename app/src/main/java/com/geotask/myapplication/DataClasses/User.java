@@ -24,7 +24,7 @@ public class User extends GTData{
     private String location;
 
     public User(String name, String email, String phonenum){
-        super.setType(User.class);
+        super.setType(User.class.toString());
         this.name = name;
         this.email = EmailConverter.convertEmailForElasticSearch(email);
         this.phonenum = phonenum;

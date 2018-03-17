@@ -72,7 +72,7 @@ public class ElasticsearchController {
         String json = gson.toJson(data);
         Index request = new Index.Builder(json)
                 .index(INDEX_NAME)
-                .type(data.getType().toString())
+                .type(data.getClass().toString())
                 .id(data.getObjectID())
                 .build();
 
@@ -123,7 +123,7 @@ public class ElasticsearchController {
      * @throws IOException
      */
     protected void updateDocument(GTData data) throws IOException {
-        deleteDocument(data.getObjectID(), data.getType());
+        deleteDocument(data.getObjectID(), data.getClass());
         createNewDocument(data);
     }
 

@@ -80,7 +80,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
 
     @Test
     public void testAsyncCreateAndGetTask() throws InterruptedException {
-        Task task = new Task("test Task", "test Description");
+        Task task = new Task("randomid","test Task", "test Description");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
                 new MasterController.AsyncCreateNewDocument();
@@ -213,7 +213,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
 
     @Test
     public void testUpdateTask() throws InterruptedException {
-        Task task = new Task("test update task", "test update description");
+        Task task = new Task("randomid","test update task", "test update description");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
                 new MasterController.AsyncCreateNewDocument();
@@ -337,11 +337,11 @@ public class TestElasticSearch implements AsyncCallBackManager {
 
     @Test
     public void testSearchTasks() throws InterruptedException {
-        Task task1 = new Task("test search task", "test search task");
+        Task task1 = new Task("random id","test search task", "test search task");
         task1.setAcceptedBid(1.1);
         String target = "targettargettarget";
         String targetName = "task2";
-        Task task2 = new Task(targetName, target);
+        Task task2 = new Task("random ID", targetName, target);
         task2.setAcceptedBid(1.2);
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
