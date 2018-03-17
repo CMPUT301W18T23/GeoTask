@@ -110,6 +110,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
                 intent.putExtra("task", viewTask);
                 intent.putExtra("currentUser", currentUser);
                 startActivity(intent);
+//                updateStatus();  //for later
             }
         });
 
@@ -241,6 +242,25 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
                 startActivity(intent);
             }
         });
+    }
+
+    private void updateStatus(){
+
+        MasterController.AsyncGetDocument asyncGetDocumentWhenDocumentExist =
+                new MasterController.AsyncGetDocument(this);
+        asyncGetDocumentWhenDocumentExist.execute(new AsyncArgumentWrapper(viewTask.getObjectID(), Task.class));
+
+        try {
+            viewTask = (Task) asyncGetDocumentWhenDocumentExist.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+
+
     }
 
     @Override
