@@ -7,13 +7,22 @@ import android.widget.TextView;
 
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
-
+/**
+ * simple class to view user data
+ */
 public class ViewProfile extends AppCompatActivity {
     private TextView name;
     private TextView phone;
     private TextView email;
     private User viewUser;
 
+    /**
+     * sets up vars from intent to view user data
+     * can be called from viewBidsActivity
+     * can be called from TaskViewActivity
+     * @see ViewBidsActivity
+     * @see TaskViewActivity
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

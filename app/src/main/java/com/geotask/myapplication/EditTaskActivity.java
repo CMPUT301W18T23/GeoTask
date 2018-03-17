@@ -21,6 +21,11 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+
+/**
+ * handles editing a task by the task requester
+ */
+
 public class EditTaskActivity extends AppCompatActivity  implements AsyncCallBackManager {
     private EditText editTitle;
     private EditText editDescription;
@@ -31,20 +36,20 @@ public class EditTaskActivity extends AppCompatActivity  implements AsyncCallBac
     private List<? extends GTData> searchResult = null;
     private User currentUser;
 
+
+    /**
+     * inits vars and view items, and buttons
+
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_task);
         currentUser = (User) getIntent().getSerializableExtra("currentUser");
 
-//        Task testTask = new Task("need to test task", "i need a task to test so here is my task");
-//        testTask.setRequesterID("h55p98a2ac9ye1kf");    //user named tennis
-//        Intent intent = new Intent(EditTaskActivity.this, EditTaskActivity.class);
-//        intent.putExtra("user", testTask);
         Intent i = getIntent();
         this.editTask = (Task)i.getSerializableExtra("Task");
 
-//        h55p98a2ac9ye1kf
         editTitle = (EditText) findViewById(R.id.editTitle);
         editDescription = (EditText) findViewById(R.id.editDescription);
 
@@ -68,7 +73,12 @@ public class EditTaskActivity extends AppCompatActivity  implements AsyncCallBac
         });
     }
 
-
+    /**
+     *handles data editing - called from editButton press
+     * takes data from paramaters and sends to the update
+     * returns udated task to update data
+     * @see TaskViewActivity
+     */
     private void editData() {
         String name =   editTitle.getText().toString();
         String description = editDescription.getText().toString();
@@ -88,6 +98,12 @@ public class EditTaskActivity extends AppCompatActivity  implements AsyncCallBac
         }
 
     }
+
+    /**
+     *handles data deleting - called from deleteButton press
+     * nothing returned and no result code returned
+     * @see TaskViewActivity
+     */
     private void deleteData() {
         MasterController.AsyncDeleteDocument asyncDeleteDocument =
                 new MasterController.AsyncDeleteDocument();
@@ -100,6 +116,11 @@ public class EditTaskActivity extends AppCompatActivity  implements AsyncCallBac
         }
         finish();
     }
+
+    /**
+     *sends updated class to elasticsearch
+     * @throws InterruptedException
+     */
     private void updateTask(){  //this should hopefully work when get really data to get
 
         MasterController.AsyncUpdateDocument asyncUpdateDocument =

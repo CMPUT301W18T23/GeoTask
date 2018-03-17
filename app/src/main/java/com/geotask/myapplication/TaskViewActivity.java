@@ -28,7 +28,12 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-
+/**
+ * handles veiwing a task
+ * bids
+ * adding bids
+ * going to profile if username is clicked on
+ */
 //https://stackoverflow.com/questions/4127725/how-can-i-remove-a-button-or-make-it-invisible-in-android
 public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBackManager {
     private TextView title;
@@ -48,10 +53,12 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
     private List<? extends GTData> searchResult = null;
 
 
-//    private ArrayList<String> bidArray;  //Array of bid Objects
-//    private ArrayAdapter<String> adapter; //Adapter for bidView
-//    private ListView bidList; //named taskListView
-
+    /**
+     * inits vars and view items, and button
+     * also gets current Task, Current User, and the USer of the Task currently viewed
+     * it hides the edit button if current user != the tasks User
+     * it hides the add bit button if this is the requestes task
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,7 +99,9 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         }
     }
 
-
+    /**
+     * sets up buttons (cleaner than in the one methood
+     */
     private void setupButtons(){
         this.editTaskButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
@@ -122,6 +131,12 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
 
     }
 
+    /**
+     * gets the User of the task
+     * if no user is found, unknown is shown
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     private void getTaskUser(){  //this should work when get really data to get
         MasterController.AsyncGetDocument asyncGetDocument =
                 new MasterController.AsyncGetDocument(this);
@@ -142,6 +157,11 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
             this.name.setText(remote.getName());
         }
     }
+
+    /**
+     * updates edittext for the title, description and status
+     * these are local changes
+     */
     private void update(){
         this.title.setText(viewTask.getName());
 //        this.name.setText(taskUserId); //need to change to get user from the id
@@ -150,6 +170,14 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         this.description.setText(viewTask.getDescription());
         this.status.setText(viewTask.getStatus());
     }
+
+    /**
+     * handles return from editTaskACtivity
+     * if it was edit, it updates locally the data.
+     * if deleted it returns to MenueActivity
+     * @see EditTaskActivity
+     * @see MenuActivity
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){  //handles return values from addSub and SubDetails
         if(requestCode==1){  //update task
@@ -162,6 +190,11 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         }
     }
 
+    /**
+     * sets  up popup for bid
+     * accept_bid_popout xml file for popout
+     * @param view
+     */
     public void triggerPopup(View view){
 
         LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -202,6 +235,12 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
 
     }
 
+    /**
+     *  uses MasterController to add a new bid. value is passode over
+      @throws InterruptedException
+
+     * @param value
+     */
     private void addBid(Double value){
     Bid bid = new Bid(currentUser.getObjectID(), value, viewTask.getObjectID());
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
@@ -218,7 +257,11 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
             update();
         }
     }
+    /**
+     * updates tasks status to bided
+     * @throws InterruptedException
 
+     */
     private void taskBidded(){  //this should hopefully work when get really data to get
         viewTask.setStatus("Bidded");
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
@@ -233,9 +276,10 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
 
     }
 
-
-
-
+    /**
+     * sets up clickavle viewtext to go to User profile
+     * @see ViewProfile
+     */
     private void profile(){  //need to wait for viewProfile activity to enable. this has not been tested because of that
         name.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -247,6 +291,12 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         });
     }
 
+
+    /**
+     *  gets new status in case it has changed and not updated locally
+     *  @throws InterruptedException
+     *  @throws ExecutionException
+     */
     private void updateStatus(){
 
         MasterController.AsyncGetDocument asyncGetDocumentWhenDocumentExist =
