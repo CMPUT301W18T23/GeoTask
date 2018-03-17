@@ -79,13 +79,13 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         getTaskUser();
 
 
-        if (currentuserId != taskUserId){   //hide editbutton if not user
+        if (!currentuserId.equals(taskUserId)){   //hide editbutton if not user
             View b = findViewById(R.id.editTaskButton);
 //            b.setVisibility(View.GONE);
             this.editTaskButton.setVisibility(b.GONE);
         }
 
-        if (currentuserId == taskUserId){  //
+        if (currentuserId.equals(taskUserId)){  //
             View b = findViewById(R.id.addBidButton);
             this.addBid.setVisibility(b.GONE);
         }

@@ -91,7 +91,7 @@ public class EditTaskActivity extends AppCompatActivity  implements AsyncCallBac
     private void deleteData() {
         MasterController.AsyncDeleteDocument asyncDeleteDocument =
                 new MasterController.AsyncDeleteDocument();
-        asyncDeleteDocument.execute(new AsyncArgumentWrapper(editTask.getRequesterID(), Task.class));
+        asyncDeleteDocument.execute(new AsyncArgumentWrapper(editTask.getObjectID(), Task.class));
 
         try {
             TimeUnit.SECONDS.sleep(3);
