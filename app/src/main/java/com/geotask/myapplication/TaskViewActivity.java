@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.MasterController;
+import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
