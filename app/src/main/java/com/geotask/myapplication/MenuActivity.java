@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import static com.geotask.myapplication.Controllers.Helpers.EmailConverter.convertEmailForElasticSearch;
 
 /*
 *
@@ -50,7 +49,6 @@ public class MenuActivity extends AppCompatActivity
     FloatingActionButton fab;
     private User currentUser;
     private GTData data = null;
-    private List<? extends GTData> searchResult = null;
 
 
     @Override
@@ -60,21 +58,25 @@ public class MenuActivity extends AppCompatActivity
         currentUser = (User) getIntent().getSerializableExtra("currentUser"); //ToDo switch to Parcelable
 
         setContentView(R.layout.activity_menu);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        oldTasks = (ListView) findViewById(R.id.taskListView);
-        taskList = new ArrayList<Task>();
+        oldTasks = findViewById(R.id.taskListView);
+        taskList = new ArrayList<>();
         MasterController.verifySettings();
 
         mode = "all";
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this,
+                drawer,
+                toolbar,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,7 +89,7 @@ public class MenuActivity extends AppCompatActivity
             }
         });
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         oldTasks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -135,35 +137,23 @@ public class MenuActivity extends AppCompatActivity
      * @param mode
      * @param terms
      */
-    protected void populateTaskView(String mode, ArrayList<String> terms){
+    private void populateTaskView(String mode, ArrayList<String> terms){
 
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
         if(mode.compareTo("Requester") == 0){
-            builder1.put("requester_id", convertEmailForElasticSearch(currentUser.getEmail()));
+            builder1.put("requesterID", currentUser.getObjectID());
         }
 
         MasterController.AsyncSearch asyncSearch =
                 new MasterController.AsyncSearch(this);
         asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
 
-        List<Task> result1 = null;
 
-        try {
-            result1 = (List<Task>) asyncSearch.get();
-            taskList = new ArrayList<Task>(result1);
-            adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
-            oldTasks.setAdapter(adapter);
-            adapter.notifyDataSetChanged();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
     }
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -241,6 +231,9 @@ public class MenuActivity extends AppCompatActivity
 
     @Override
     public void onPostExecute(List<? extends GTData> dataList) {
-        this.searchResult = dataList;
+        this.taskList = (ArrayList<Task>) dataList;
+        adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
+        oldTasks.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 }

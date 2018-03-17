@@ -28,16 +28,17 @@ public class RegisterActivity extends AppCompatActivity implements AsyncCallBack
     private Button SaveUserButton;
 
     private User newUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reigister);
 
-        newName = (EditText) findViewById(R.id.newName);
-        newPhone = (EditText) findViewById(R.id.newPhone);
-        newEmail = (EditText) findViewById(R.id.newEmail);
+        newName = findViewById(R.id.newName);
+        newPhone = findViewById(R.id.newPhone);
+        newEmail = findViewById(R.id.newEmail);
 
-        SaveUserButton = (Button) findViewById(R.id.newSave);
+        SaveUserButton = findViewById(R.id.newSave);
         SaveUserButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 register_check();
@@ -48,7 +49,7 @@ public class RegisterActivity extends AppCompatActivity implements AsyncCallBack
     /**
      *
      */
-    public void register_check() {
+    protected void register_check() {
         if (isValid()) {
             String userName = newName.getText().toString().trim();
             String userPhone = newPhone.getText().toString().trim();
@@ -69,7 +70,7 @@ public class RegisterActivity extends AppCompatActivity implements AsyncCallBack
         }
     }
 
-    public Boolean isValid() {
+    private Boolean isValid() {
         if (newName.getText().toString().trim().equals("") ) {
             Toast.makeText(this, "Empty name", Toast.LENGTH_SHORT).show();
             return false;
