@@ -213,7 +213,9 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         }catch (InterruptedException e) {
             e.printStackTrace();
         }
+        if (viewTask.getStatus() != "Bidded") {
 //    taskBidded(); //need to uncomment when taskId is given
+        }
     }
 
     private void taskBidded(){  //this should hopefully work when get really data to get
