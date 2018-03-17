@@ -22,7 +22,7 @@ public class Bid extends GTData {
 	public Bid(){};
 
 	public Bid(String providerID, Double value, String taskID) {
-		super.setType(Bid.class);
+		super.setType(Bid.class.toString());
 		this.providerID = providerID;
 		this.value = value;
 		this.taskID = taskID;
@@ -46,11 +46,6 @@ public class Bid extends GTData {
 	}
 	public String getTaskID() {
 		return this.taskID;
-	}
-
-	@Override
-	public Type getType(){
-		return super.getType();
 	}
 
 

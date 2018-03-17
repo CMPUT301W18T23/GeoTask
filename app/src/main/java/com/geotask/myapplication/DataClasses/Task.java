@@ -34,18 +34,33 @@ public class Task extends GTData{
 	private String acceptedProviderID;
 	@ColumnInfo
 	private int hitCounter;
+	@ColumnInfo
+	private String location;
+
+	public String getLocation() {
+		return location;
+	}
+
+	public float getLocationX() { return Float.parseFloat(location.split("[,]")[0]); }
+
+	public float getLocationY() { return Float.parseFloat(location.split("[,]")[1]); }
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
 	//ToDo pictures
 	//ToDo locations
 
 
-	public Task(String name, String description) { //need string for pictures
-		super.setType(Task.class);
+	public Task(String requesterID, String name, String description) { //need string for pictures
+		super.setType(Task.class.toString());
 		this.name = name;
 		this.description = description;
 		this.hitCounter = 0;
 		this.status = "requested";
 		super.setDate(new Date().getTime());
 		this.accpetedBid = -1.0; //ToDo
+		this.requesterID = requesterID;
 	}
 
     public String getName() {
@@ -97,10 +112,6 @@ public class Task extends GTData{
 	}
 	public String getAcceptedProviderID() {
 		return this.acceptedProviderID;
-	}
-
-	public Type getType() {
-		return super.getType();
 	}
 
 	public void addHit(){

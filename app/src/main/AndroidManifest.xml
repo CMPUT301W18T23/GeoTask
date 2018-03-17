@@ -3,6 +3,7 @@
     package="com.geotask.myapplication">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -10,8 +11,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".RegisterActivity"></activity>
+        android:theme="@style/Theme.AppCompat.Light">
+        //map related things START here
+        <activity android:name=".RegisterActivity" />
         <activity
             android:name=".MenuActivity"
             android:label="@string/title_activity_menu"
@@ -22,11 +24,11 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".EditProfile"
-            android:label="Edit Profile"></activity>
-        <activity android:name=".newAddTaskActivity"></activity>
+            android:label="Edit Profile" />
+        <activity android:name=".newAddTaskActivity" />
         <activity android:name=".ViewBidsActivity" />
-         <activity android:name=".EditTaskActivity" />
-        <activity android:name=".TaskViewActivity"></activity>
+        <activity android:name=".EditTaskActivity" />
+        <activity android:name=".TaskViewActivity" />
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,7 +36,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".FilterActivity"></activity>
+        <activity android:name=".FilterActivity" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyANt2O8-rJiER0WG_dDgPipg0YI2Zto90c" />
+
+        <activity
+            android:name=".MapActivity"
+            android:label="MapActivity" />
+        <activity android:name=".ViewProfile"></activity>
     </application>
 
 </manifest>

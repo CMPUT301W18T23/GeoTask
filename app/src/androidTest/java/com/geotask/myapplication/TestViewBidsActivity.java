@@ -36,7 +36,7 @@ public class TestViewBidsActivity implements AsyncCallBackManager {
     private User user = new User("kylerequest", "kyle.google@org", "911");
     private User provider1 = new User("kyleprovide1", "kyle.yahoo@org", "191");
     private User provider2  = new User("kyleprovide2", "kyle.weehaw@org", "119");
-    private Task task = new Task("kylestast", "do it for me");
+    private Task task = new Task(user.getObjectID(), "kylestast", "do it for me");
     private Bid bid1;
     private Bid bid2;
 

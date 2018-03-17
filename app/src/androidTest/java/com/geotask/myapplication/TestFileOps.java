@@ -64,7 +64,7 @@ public class TestFileOps {
         Bid bid = new Bid("testtest", 1.1, "database test");
 
         String targetName = "database_task_test";
-        Task task = new Task(targetName, "test description1");
+        Task task = new Task("randomid", targetName, "test description1");
         task.addBid(bid);
         dataBase.taskDAO().insert(task);
 

@@ -17,7 +17,6 @@ import com.geotask.myapplication.DataClasses.User;
 
 import java.util.List;
 
-import static com.geotask.myapplication.Controllers.Helpers.EmailConverter.convertEmailForElasticSearch;
 
 public class newAddTaskActivity extends AppCompatActivity implements AsyncCallBackManager {
 
@@ -71,8 +70,7 @@ public class newAddTaskActivity extends AppCompatActivity implements AsyncCallBa
         String descriptionString = Description.getText().toString().trim();
         ValidateTask check = new ValidateTask();
         if(check.checkText(titleString, descriptionString)){
-            newTask = new Task(titleString, descriptionString);
-            newTask.setRequesterID(convertEmailForElasticSearch(currentUser.getEmail()));
+            newTask = new Task(currentUser.getObjectID(), titleString, descriptionString);
             MasterController.AsyncCreateNewDocument asyncCreateNewDocument
                     = new MasterController.AsyncCreateNewDocument();
             asyncCreateNewDocument.execute(newTask);

@@ -36,11 +36,9 @@ public class LoginActivity extends AppCompatActivity implements AsyncCallBackMan
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        emailText = (EditText) findViewById(R.id.emailText);
-        System.out.print("register_check");
-
-        loginButton = (Button) findViewById(R.id.loginButton);
-        registerButton = (Button) findViewById(R.id.registerButton);
+        emailText = findViewById(R.id.emailText);
+        loginButton = findViewById(R.id.loginButton);
+        registerButton = findViewById(R.id.registerButton);
 
         //Check UserName entered in edit text field and log the user in if valid
         //Sends the user to MainActivity
@@ -60,7 +58,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncCallBackMan
 
     }
 
-    public void login_check() {
+    private void login_check() {
         String email = emailText.getText().toString().trim();
 
         if(!MasterController.existsProfile(email)){
@@ -95,12 +93,9 @@ public class LoginActivity extends AppCompatActivity implements AsyncCallBackMan
 
     @Override
     public void onPostExecute(GTData data) {
-
     }
 
     @Override
     public void onPostExecute(List<? extends GTData> searchResult) {
-        user = (User) searchResult.get(0);
-
     }
 }
