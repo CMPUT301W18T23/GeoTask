@@ -116,7 +116,7 @@ public class MenuActivity extends AppCompatActivity
         //populate the array on start
         fab.hide();
         //TODO - need to get the mode of user, assuming all rn
-        populateTaskView(mode, new ArrayList<String>());
+
 
     }
 
