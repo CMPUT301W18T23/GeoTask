@@ -33,10 +33,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         // add marker at and move camera to user location
-        /*LatLng user_location = new LatLng(-33.852, 151.211); //get user location, input as floats to the LatLng function
+        LatLng user_location = new LatLng(-33.852, 151.211); //get user location, input as floats to the LatLng function
         googleMap.addMarker(new MarkerOptions().position(user_location)
                 .title("You are here."));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(user_location));*/
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(user_location));
 
         //add the rest of the markers by iterating over the list of tasks and getting location
         /*
