@@ -20,6 +20,8 @@ public class User extends GTData{
     private String phonenum;
     @ColumnInfo
     private Integer completedTasks; //metric of completed tasks
+    @ColumnInfo(name = "location", typeAffinity = ColumnInfo.TEXT)
+    private String location;
 
     public User(String name, String email, String phonenum){
         super.setType(User.class);
@@ -45,6 +47,10 @@ public class User extends GTData{
     public String getPhonenum(){
         return phonenum;
     }
+
+    public String getLocation() { return location; }
+
+    public void setLocation(String location) { this.location = location; }
 
     public void setPhonenum(String phonenum){
         this.phonenum = phonenum;
