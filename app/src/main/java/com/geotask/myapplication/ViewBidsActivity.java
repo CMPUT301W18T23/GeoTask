@@ -172,7 +172,6 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
             {
                 POPUP_WINDOW_DELETION.dismiss();
                 acceptBid(bid, task);
-                //TODO - go back to previous intent
             }
         });
 

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -52,6 +53,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         currentUser = (User) getIntent().getSerializableExtra("currentUser");
 
         this.taskUserId = viewTask.getRequesterID();
+        //this.taskUserId = viewTask.getObjectID();
         this.title = (TextView)findViewById(R.id.textViewTitle);
         this.name = (TextView)findViewById(R.id.textViewName);
         this.description = (TextView)findViewById(R.id.textViewDescription);
@@ -101,7 +103,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         User remote = null;
         try {
             remote = (User) asyncGetDocument.get();
-
+            //Log.i("TaskView --->", remote.getName());
         } catch (ExecutionException e) {
             e.printStackTrace();
         }catch (InterruptedException e) {
