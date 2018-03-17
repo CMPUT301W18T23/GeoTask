@@ -2,16 +2,11 @@ package com.geotask.myapplication.Adapters;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.arch.persistence.room.Ignore;
 import android.content.Context;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
@@ -75,7 +70,7 @@ public class BidArrayAdapter extends ArrayAdapter<Bid> implements AsyncCallBackM
 
             //setting values
             headerSub.value.setText(String.format("$%.2f", item.getValue()));
-            /* REAL
+            // REAL
             MasterController.AsyncGetDocument asyncGetDocument =
                     new MasterController.AsyncGetDocument(this);
 
@@ -90,8 +85,8 @@ public class BidArrayAdapter extends ArrayAdapter<Bid> implements AsyncCallBackM
                 e.printStackTrace();
             }
             User provider = remote;
-            */
-            User provider = new User("Kyle", "kyleG@email.es","911"); //TEMP
+
+            //User provider = new User("Kyle", "kyleG@email.es","911"); //TEMP
             headerSub.providerName.setText(provider.getName());
             headerSub.numProvided.setText(String.format("%d tasks completed", provider.getCompletedTasks()));
             headerSub.date.setText(item.getDateString());

@@ -19,14 +19,19 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.geotask.myapplication.Adapters.TaskArrayAdapter;
+import com.geotask.myapplication.Controllers.AsyncCallBackManager;
+import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.MasterController;
-import com.geotask.myapplication.DataClasses.Bid;
+import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
+import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import junit.framework.Assert;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /*
 *
@@ -34,7 +39,7 @@ import java.util.ArrayList;
 *
 */
 public class MenuActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, AsyncCallBackManager {
 
     private ListView oldTasks; //named taskListView
     private ArrayList<Task> taskList;
@@ -42,6 +47,8 @@ public class MenuActivity extends AppCompatActivity
     private String mode;
     FloatingActionButton fab;
     private User currentUser;
+    private GTData data = null;
+    private List<? extends GTData> searchResult = null;
 
 
     @Override
@@ -95,8 +102,6 @@ public class MenuActivity extends AppCompatActivity
             }
         });
 
-
-
     }
     /* This method loads the subList from savefile and sets the array adapter for the ListView
      *
@@ -120,8 +125,8 @@ public class MenuActivity extends AppCompatActivity
         //populate the array on start
         //TODO - need to get the mode of user, assuming all rn
         //populateTaskView(mode, new ArrayList<String>());
-        Task myTask = new Task("Hi2", "weehasdfsdfsdfsdfsdfsdfsjghfjghfjgfyughjfjgfjgfjgfgjhfgjfghjfjgfjgfgjfjgfjgfdfsdfsdfsdfsdfsw");
-        taskList.add(myTask);
+        //Task myTask = new Task("Hi2", "weehasdfsdfsdfsdfsdfsdfsjghfjghfjgfyughjfjgfjgfjgfgjhfgjfghjfjgfjgfgjfjgfjgfdfsdfsdfsdfsdfsw");
+        //taskList.add(myTask);
         adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
         oldTasks.setAdapter(adapter);
         adapter.notifyDataSetChanged();
@@ -134,25 +139,26 @@ public class MenuActivity extends AppCompatActivity
      * @param terms
      */
     protected void populateTaskView(String mode, ArrayList<String> terms){
-        taskList.clear();
-        Task myTask = new Task("Ken Wong", "weehaw");
-        myTask.addBid(new Bid());
-        taskList.add(myTask);
 
-        Task myTask2 = new Task("Ken Wong2", "weehaw");
-        myTask2.addBid(new Bid());
-        myTask2.setAcceptedBid(0.0);
-        myTask2.setStatus("Accepted");
-        taskList.add(myTask2);
-        /*
-        SuperBooleanBuilder builder = new SuperBooleanBuilder();
-        //TODO - for loop to add terms
+        SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
+        if(mode.compareTo("Requester") == 0){
+            builder1.put("requester_id", currentUser.getObjectID());
+        }
+
+        MasterController.AsyncSearch asyncSearch =
+                new MasterController.AsyncSearch(this);
+        asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
+
+        List<Task> result1 = null;
 
         try {
-            taskList = (ArrayList<Task>) controller.search(builder.toString(), "Task");
-        } catch (IOException e) {
+            result1 = (List<Task>) asyncSearch.get();
+            taskList = new ArrayList<Task>(result1);
+        } catch (ExecutionException e) {
             e.printStackTrace();
-        }*/
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
     @Override
@@ -198,10 +204,6 @@ public class MenuActivity extends AppCompatActivity
             intent.putExtra("user", currentUser);
             startActivity(intent);
 
-
-
-
-
         } else if (id == R.id.nav_map) {
 
         } else if (id == R.id.nav_logout) {
@@ -231,5 +233,15 @@ public class MenuActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onPostExecute(GTData data) {
+        this.data = data;
+    }
+
+    @Override
+    public void onPostExecute(List<? extends GTData> dataList) {
+        this.searchResult = dataList;
     }
 }

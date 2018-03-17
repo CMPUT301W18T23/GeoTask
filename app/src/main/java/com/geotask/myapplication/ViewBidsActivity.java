@@ -1,9 +1,8 @@
 package com.geotask.myapplication;
 
 import android.content.Context;
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -15,7 +14,6 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 
 import com.geotask.myapplication.Adapters.BidArrayAdapter;
-import com.geotask.myapplication.Adapters.TaskArrayAdapter;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.MasterController;
@@ -64,9 +62,9 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
 
     private void populateBidView(){
         //TODO - build query that returns list of bids that all have task ID == this.taskID
-        /* THIS SHOULD WORK BUT IS CURRENTLY COMMENTED OUT
+        // THIS SHOULD WORK BUT IS CURRENTLY COMMENTED OUT
         SuperBooleanBuilder builder = new SuperBooleanBuilder();
-        builder.put("taskID", "atask");
+        builder.put("taskID", task.getObjectID());
 
         MasterController.AsyncSearch asyncSearch =
                 new MasterController.AsyncSearch(this);
@@ -82,8 +80,9 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        */
 
+
+        /*
         //TEMP I WILL ADD SOME MYSELF
         ArrayList<Bid> newBidList = new ArrayList<Bid>();
         Bid bid1 = new Bid("kyle1",2048.0,"kyletask1");
@@ -91,6 +90,7 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         newBidList.add(bid1);
         newBidList.add(bid2);
         bidList = newBidList;
+        */
     }
 
     protected void onStart() {
@@ -127,11 +127,11 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
 
         //The following should wok, but needs to be tested after the array is truly populated by the
         //master controller
-        /*
+
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
                 new MasterController.AsyncUpdateDocument();
         asyncUpdateDocument.execute(task);
-        */
+
     }
 
     public void triggerPopup(View view, final Bid bid, final Task task){
@@ -181,6 +181,10 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
                 */
             }
         });
+    }
+
+    public void setForTest(){
+        MasterController.setTestSettings(TestServerAddress.getTestAddress());
     }
 
     @Override
