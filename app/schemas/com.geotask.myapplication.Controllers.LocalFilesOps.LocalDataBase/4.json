@@ -1,0 +1,199 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 4,
+    "identityHash": "02b8138df2e51679b84f85eb3b6916aa",
+    "entities": [
+      {
+        "tableName": "users",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `email` TEXT, `phonenum` TEXT, `completedTasks` INTEGER, `local_id` INTEGER NOT NULL, `object_id` TEXT, PRIMARY KEY(`local_id`))",
+        "fields": [
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "phonenum",
+            "columnName": "phonenum",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "completedTasks",
+            "columnName": "completedTasks",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "local_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "objectID",
+            "columnName": "object_id",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "local_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "bids",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`provider_id` TEXT, `value` REAL, `task_id` TEXT, `date` INTEGER NOT NULL, `local_id` INTEGER NOT NULL, `object_id` TEXT, PRIMARY KEY(`local_id`))",
+        "fields": [
+          {
+            "fieldPath": "providerID",
+            "columnName": "provider_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "value",
+            "columnName": "value",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "taskID",
+            "columnName": "task_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "local_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "objectID",
+            "columnName": "object_id",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "local_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "tasks",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`task_name` TEXT, `description` TEXT, `status` TEXT, `bidList` TEXT, `accpetedBid` REAL, `accpeptedBidID` TEXT, `requester_id` TEXT, `acceptedProviderID` TEXT, `hitCounter` INTEGER NOT NULL, `date` INTEGER NOT NULL, `local_id` INTEGER NOT NULL, `object_id` TEXT, PRIMARY KEY(`local_id`))",
+        "fields": [
+          {
+            "fieldPath": "name",
+            "columnName": "task_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "bidList",
+            "columnName": "bidList",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "accpetedBid",
+            "columnName": "accpetedBid",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "accpeptedBidID",
+            "columnName": "accpeptedBidID",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "requesterID",
+            "columnName": "requester_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "acceptedProviderID",
+            "columnName": "acceptedProviderID",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "hitCounter",
+            "columnName": "hitCounter",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "local_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "objectID",
+            "columnName": "object_id",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "local_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"02b8138df2e51679b84f85eb3b6916aa\")"
+    ]
+  }
+}
