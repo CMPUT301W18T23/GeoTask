@@ -59,6 +59,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(user_location));
 
         for (int i = 0; i < taskList.size(); i++) {
+            if(taskList.get(i).getLocation() == ""){ continue; }
             LatLng taskLocation = new LatLng(taskList.get(i).getLocationX(), taskList.get(i).getLocationY());
             googleMap.addMarker(new MarkerOptions().position(taskLocation).title(taskList.get(i).getName()));
         }
