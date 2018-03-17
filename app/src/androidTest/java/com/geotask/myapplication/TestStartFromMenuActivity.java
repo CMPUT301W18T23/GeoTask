@@ -10,6 +10,10 @@ import android.view.Menu;
 
 import com.geotask.myapplication.DataClasses.Task;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,7 +36,29 @@ import static android.support.test.espresso.Espresso.onData;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
-public class TestUiBasic {
+public class TestStartFromMenuActivity {
+
+    @BeforeClass
+    public static void oneTimeSetUp() {
+
+    }
+
+    @AfterClass
+    public static void oneTimeTearDown() {
+
+    }
+
+    @Before
+    public void setUp() {
+
+    }
+
+    @After
+    public void tearDown() {
+
+    }
+
+
 
     @Rule
     public ActivityTestRule<MenuActivity> menuActivityRule = new ActivityTestRule<>(MenuActivity.class);
@@ -48,7 +74,7 @@ public class TestUiBasic {
     }
 
     @Test
-    public void testAddNewTaskFromMenuAndDeleteTask() {
+    public void testAddNewTaskFromMenuShouldAddTaskToList() {
         onView(withId(R.id.drawer_layout))
                 .check(matches(isClosed(Gravity.LEFT)))
                 .perform(DrawerActions.open());
@@ -58,5 +84,40 @@ public class TestUiBasic {
 
         onView(withId(R.id.fab))
                 .perform(click());
+    }
+
+    @Test
+    public void testDeleteTaskFromListShouldRemoveIt() {
+
+    }
+
+    @Test
+    public void testChangeToRequesterModeShouldSeeOnlyYourRequestedTasks() {
+
+    }
+
+    @Test
+    public void testChangeToProviderModeShouldSeeOnlyYourProvicedTasks() {
+
+    }
+
+    @Test
+    public void testChangeToAllShouldShowAllTask() {
+
+    }
+
+    @Test
+    public void testEditProfile() {
+
+    }
+
+    @Test
+    public void testLogOut() {
+
+    }
+
+    @Test
+    public void testLogInThenLogOutThenLogInThenBackButtonShouldNotGoBackToFirstLogin() {
+
     }
 }
