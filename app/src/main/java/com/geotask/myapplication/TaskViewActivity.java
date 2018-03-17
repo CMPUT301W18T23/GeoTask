@@ -37,6 +37,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
     private TextView status;
     private Task viewTask;
     private User currentUser;
+    private User remote;
     private String currentuserId;
     private String taskUserId;
     private Button editTaskButton;
@@ -77,7 +78,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         update();
         setupButtons();
         getTaskUser();
-
+        profile();
 
         if (!currentuserId.equals(taskUserId)){   //hide editbutton if not user
             View b = findViewById(R.id.editTaskButton);
@@ -109,6 +110,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
                 intent.putExtra("task", viewTask);
                 intent.putExtra("currentUser", currentUser);
                 startActivity(intent);
+                updateStatus();  //for later
             }
         });
 
@@ -125,7 +127,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
                 new MasterController.AsyncGetDocument(this);
         asyncGetDocument.execute(new AsyncArgumentWrapper(taskUserId, User.class));
 
-        User remote = null;
+        remote = null;
         try {
             remote = (User) asyncGetDocument.get();
 
@@ -143,7 +145,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
     private void update(){
         this.title.setText(viewTask.getName());
 //        this.name.setText(taskUserId); //need to change to get user from the id
-        this.name.setText("placeolder");
+//        this.name.setText("placeolder");
 
         this.description.setText(viewTask.getDescription());
         this.status.setText(viewTask.getStatus());
@@ -211,7 +213,10 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         }catch (InterruptedException e) {
             e.printStackTrace();
         }
-//    taskBidded(); //need to uncomment when taskId is given
+        if (viewTask.getStatus() != "Bidded") {
+    taskBidded(); //need to uncomment when taskId is given
+            update();
+        }
     }
 
     private void taskBidded(){  //this should hopefully work when get really data to get
@@ -226,6 +231,36 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
             e.printStackTrace();
         }
 
+    }
+
+
+
+
+    private void profile(){  //need to wait for viewProfile activity to enable. this has not been tested because of that
+        name.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TaskViewActivity.this, ViewProfile.class);
+                intent.putExtra("user", remote);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void updateStatus(){
+
+        MasterController.AsyncGetDocument asyncGetDocumentWhenDocumentExist =
+                new MasterController.AsyncGetDocument(this);
+        asyncGetDocumentWhenDocumentExist.execute(new AsyncArgumentWrapper(viewTask.getObjectID(), Task.class));
+
+        try {
+            viewTask = (Task) asyncGetDocumentWhenDocumentExist.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    update();
     }
 
     @Override

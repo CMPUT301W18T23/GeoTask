@@ -22,18 +22,18 @@ public abstract class GTData implements Serializable{
     @NonNull
     @ColumnInfo(name = "object_id")
     private String objectID = UniqueIDGenerator.generate();
-    @Ignore
-    private transient Type type;
+    @ColumnInfo
+    private String type;
     @ColumnInfo
     private long date;
     //ToDo refactor date from children
 
 
-    public void setType(Type type) {
+    public void setType(String type) {
         this.type = type;
     }
 
-    public Type getType(){
+    public String getType(){
         return type;
     }
 
