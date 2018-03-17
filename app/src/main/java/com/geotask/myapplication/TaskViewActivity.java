@@ -76,6 +76,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
             public void onClick(View v){
                 Intent intent = new Intent(TaskViewActivity.this, EditTaskActivity.class);
                 intent.putExtra("Task", viewTask);
+                intent.putExtra("currentUser", currentUser);
                 startActivityForResult(intent,1);
 //                startActivity(intent);
             }

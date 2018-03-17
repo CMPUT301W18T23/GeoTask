@@ -37,7 +37,7 @@ public class EditProfile extends AppCompatActivity implements AsyncCallBackManag
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-        currentUser = (User) getIntent().getSerializableExtra("user");
+       currentUser = (User) getIntent().getSerializableExtra("currentUser");
 
         userName = (EditText) findViewById(R.id.UserName);
         userName.setText(currentUser.getName());

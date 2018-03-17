@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static com.geotask.myapplication.Controllers.Helpers.EmailConverter.convertEmailForElasticSearch;
+
 /*
 *
 * FOR WISHLIST BUTTON LATER https://stackoverflow.com/questions/8244252/star-button-in-android
@@ -79,6 +81,7 @@ public class MenuActivity extends AppCompatActivity
             public void onClick(View view) {
                 Log.v("myTag","FAB Clicked");
                 Intent intent = new Intent(MenuActivity.this, newAddTaskActivity.class);
+                intent.putExtra("currentUser", currentUser);
                 startActivity(intent);
                 adapter.notifyDataSetChanged();
             }
@@ -97,6 +100,7 @@ public class MenuActivity extends AppCompatActivity
                 Intent intent = new Intent(MenuActivity.this, TaskViewActivity.class);
                 intent.putExtra("task", task);
                 intent.putExtra("Id", currentUser);
+                intent.putExtra("currentUser", currentUser);
                 startActivity(intent);
                 adapter.notifyDataSetChanged();
             }
@@ -113,9 +117,7 @@ public class MenuActivity extends AppCompatActivity
         fab.hide();
         //TODO - need to get the mode of user, assuming all rn
         populateTaskView(mode, new ArrayList<String>());
-        adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
-        oldTasks.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+
     }
 
     @Override
@@ -125,9 +127,6 @@ public class MenuActivity extends AppCompatActivity
         Log.i("LifeCycle --->", "onResume is called");
         //populate the array on start
         populateTaskView(mode, new ArrayList<String>());
-        adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
-        oldTasks.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
     }
 
     /**
@@ -140,7 +139,7 @@ public class MenuActivity extends AppCompatActivity
 
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
         if(mode.compareTo("Requester") == 0){
-            builder1.put("requester_id", currentUser.getObjectID());
+            builder1.put("requester_id", convertEmailForElasticSearch(currentUser.getEmail()));
         }
 
         MasterController.AsyncSearch asyncSearch =
@@ -152,6 +151,9 @@ public class MenuActivity extends AppCompatActivity
         try {
             result1 = (List<Task>) asyncSearch.get();
             taskList = new ArrayList<Task>(result1);
+            adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
+            oldTasks.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -195,13 +197,8 @@ public class MenuActivity extends AppCompatActivity
             startActivity(intent);
 
         } else if (id == R.id.nav_profile) {
-
-           //currentUser = (User) getIntent().getSerializableExtra("currentUser");
-           // String userName = currentUser.getName();
-           // String userPhone = currentUser.getPhonenum();
-            //String userEmail = currentUser.getEmail();
             Intent intent = new Intent(MenuActivity.this, EditProfile.class);
-            intent.putExtra("user", currentUser);
+            intent.putExtra("currentUser", currentUser);
             startActivity(intent);
 
         } else if (id == R.id.nav_map) {
@@ -215,36 +212,21 @@ public class MenuActivity extends AppCompatActivity
             mode = "Requester";
             Snackbar.make(snackView, "Changed view to \"Requester\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
-
             populateTaskView(mode, new ArrayList<String>());
-            adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
-            oldTasks.setAdapter(adapter);
-            adapter.notifyDataSetChanged();
-
-           // Intent intent = new Intent(MenuActivity.this, AddTaskActivity.class);
-            //startActivity(intent);
 
         } else if (id == R.id.nav_provider) {
             fab.hide();
             mode = "Provider";
             Snackbar.make(snackView, "Changed view to \"Provider\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
-
             populateTaskView(mode, new ArrayList<String>());
-            adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
-            oldTasks.setAdapter(adapter);
-            adapter.notifyDataSetChanged();
 
         } else if (id == R.id.nav_all) {
             fab.hide();
             mode = "All";
             Snackbar.make(snackView, "Changed view to \"All\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
-
             populateTaskView(mode, new ArrayList<String>());
-            adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
-            oldTasks.setAdapter(adapter);
-            adapter.notifyDataSetChanged();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
