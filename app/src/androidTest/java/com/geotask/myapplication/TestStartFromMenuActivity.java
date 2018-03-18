@@ -6,11 +6,15 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.view.Gravity;
 
+import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Task;
 
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.io.IOException;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
@@ -25,6 +29,18 @@ import static org.junit.Assert.assertTrue;
 //https://developer.android.com/training/testing/espresso/recipes.html
 @RunWith(AndroidJUnit4.class)
 public class TestStartFromMenuActivity {
+
+    @BeforeClass
+    public static void oneTimeSetUp() {
+        MasterController.verifySettings();
+        MasterController.setTestSettings(TestServerAddress.getTestAddress());
+        try {
+            MasterController.deleteIndex();
+            MasterController.createIndex();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Rule
     public ActivityTestRule<MenuActivity> menuActivityRule = new ActivityTestRule<>(MenuActivity.class);
