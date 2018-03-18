@@ -1,3 +1,13 @@
+/*
+    Map Activity
+        This file contains the logic for the map activity
+        It will load and display a google map with a marker at the university of alberta
+    Outstanding Issues
+        -will not draw the tasks because tasks are not added with a location
+        -task markers are not clickable (click task to go to task view)
+        -the filtered tasklist is not passed in from the main activity
+ */
+
 //https://developers.google.com/maps/documentation/android-api/map-with-marker
 //https://developer.android.com/training/maps/index.html
 
