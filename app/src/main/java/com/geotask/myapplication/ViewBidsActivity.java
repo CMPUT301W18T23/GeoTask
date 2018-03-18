@@ -54,9 +54,13 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 //Log.i("ViewBids --->",task.getRequesterID() + " " + currentUser.getObjectID());
+                Bid bid = bidList.get(position);
                 if(task.getRequesterID().compareTo(currentUser.getObjectID()) == 0){
-                    Bid bid = bidList.get(position);
+//                    Bid bid = bidList.get(position);
                     triggerPopup(view, bid, task);
+                    adapter.notifyDataSetChanged();
+                }else if (currentUser.getObjectID().equals(bid.getProviderID())){
+                    triggerDeletePopup(view, bid, task);
                     adapter.notifyDataSetChanged();
                 }
             }
@@ -87,6 +91,11 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         super.onStart();
         //Log.i("LifeCycle --->", "onStart is called");
         this.task = (Task) getIntent().getSerializableExtra(getString(R.string.CURRENT_TASK_BEING_VIEWED));
+        adapter = new BidArrayAdapter(this, R.layout.bid_list_item, bidList);
+        oldBids.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+
+        populateBidView();
         //Log.i("LifeCycle --->", "extracted task with name:" + this.task.getName());
         //Log.i("LifeCycle --->", "extracted user with name:" + this.currentUser.getName());
         //populate the array on start
@@ -185,6 +194,36 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
                 startActivity(intent);
             }
         });
+    }
+    public void triggerDeletePopup(View view, final Bid bid, final Task task){
+        LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = layoutInflater.inflate(R.layout.layout_bidlist_popout, null);
+
+        POPUP_WINDOW_DELETION = new PopupWindow(this);
+        POPUP_WINDOW_DELETION.setContentView(layout);
+        POPUP_WINDOW_DELETION.setFocusable(true);
+        POPUP_WINDOW_DELETION.setBackgroundDrawable(null);
+        POPUP_WINDOW_DELETION.showAtLocation(layout, Gravity.CENTER, 1, 1);
+
+        Button deleteBtn = (Button) layout.findViewById(R.id.btn_delete);
+        deleteBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                POPUP_WINDOW_DELETION.dismiss();
+                deleteBid(bid, task);
+                adapter.notifyDataSetChanged();
+                finish();
+            }
+        });
+
+        Button acceptBtn = (Button) layout.findViewById(R.id.btn_accept);
+        Button viewProfileBtn = (Button) layout.findViewById(R.id.btn_visit_profile);
+        acceptBtn.setVisibility(layout.INVISIBLE);
+        viewProfileBtn.setVisibility(layout.INVISIBLE);
+
+
     }
 
     public void setForTest(){
