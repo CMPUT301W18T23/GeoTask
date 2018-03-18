@@ -19,9 +19,6 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Created by Kyle on 2018-03-17.
- */
 
 @RunWith(AndroidJUnit4.class)
 public class TestKyle implements AsyncCallBackManager {
