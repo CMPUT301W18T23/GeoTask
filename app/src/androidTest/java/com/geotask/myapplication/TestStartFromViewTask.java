@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -47,8 +46,8 @@ public class TestStartFromViewTask {
             = new ActivityTestRule<>(TaskViewActivity.class, true, false);
 
     @Test
-    public void testViewBidShouldDisplayListOfBidsOnTask() throws InterruptedException {
-        String targetUserId = "testViewBidShouldDisplayListOfBidsOnTask_id";
+    public void testEditTask() throws InterruptedException {
+        String targetUserId = "testEditTask_id";
 
         Task task = new Task(targetUserId, "TestTest", "TestTest", "2234");
         User user = new User("testtestUser", "testtestUser", "testtestUser");

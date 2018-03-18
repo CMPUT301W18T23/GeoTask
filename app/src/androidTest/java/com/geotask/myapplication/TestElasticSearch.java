@@ -410,6 +410,50 @@ public class TestElasticSearch implements AsyncCallBackManager {
     }
 
     @Test
+    public void testSearchReturnMoreThanTenItems() throws InterruptedException {
+        User user1 = new User("user", "1@gmail.com", "555");
+        User user2 = new User("user", "2@gmail.com", "666");
+        User user3 = new User("user", "1@gmail.com", "777");
+        User user4 = new User("user", "1@yahoo.com", "888");
+        User user5 = new User("user", "1@yahoo.ca", "888");
+        User user6 = new User("user", "1@gmail.com", "555");
+        User user7 = new User("user", "2@gmail.com", "666");
+        User user8 = new User("user", "1@gmail.com", "777");
+        User user9 = new User("user", "1@yahoo.com", "888");
+        User user10 = new User("user", "1@yahoo.ca", "888");
+        User user11 = new User("user", "1@gmail.com", "555");
+        User user12 = new User("user", "2@gmail.com", "666");
+        User user13 = new User("user", "1@gmail.com", "777");
+        User user14 = new User("user", "1@yahoo.com", "888");
+        User user15 = new User("user", "1@yahoo.ca", "888");
+
+        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new MasterController.AsyncCreateNewDocument();
+        asyncCreateNewDocument.execute(user1, user2, user3, user4, user5,
+                                        user6, user7, user8, user9, user10,
+                                        user11, user12, user13, user14, user15);
+
+        TimeUnit.SECONDS.sleep(10);
+
+        SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
+        builder1.put("name", "user");
+
+        MasterController.AsyncSearch asyncSearch1 =
+                new MasterController.AsyncSearch(this);
+        asyncSearch1.execute(new AsyncArgumentWrapper(builder1, User.class));
+
+        List<User> result1 = null;
+
+        try {
+            result1 = (List<User>) asyncSearch1.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(15, result1.size());
+    }
+
+    @Test
     public void testMultiSearch() {
 
     }

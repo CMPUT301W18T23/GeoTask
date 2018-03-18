@@ -24,6 +24,7 @@ import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 import io.searchbox.indices.CreateIndex;
 import io.searchbox.indices.DeleteIndex;
+import io.searchbox.params.Parameters;
 
 /*
 API DOCUMENTATION
@@ -139,6 +140,7 @@ public class ElasticsearchController {
         Search search = new Search.Builder(query)
                 .addIndex(INDEX_NAME)
                 .addType(type.toString())
+                .setParameter(Parameters.SIZE, 10000)
                 .build();
 
         SearchResult result = client.execute(search);
