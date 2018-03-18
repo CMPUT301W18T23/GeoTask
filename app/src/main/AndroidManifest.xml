@@ -28,7 +28,7 @@
             android:noHistory="true"/>
         <activity android:name=".AddTaskActivity"
             android:noHistory="true"/>
-        <activity android:name=".ViewBidsActivity" />
+        <activity android:name=".ViewBidsActivity" android:noHistory="true"/>
         <activity android:name=".EditTaskActivity"
             android:exported= "true"/>
         <activity android:name=".TaskViewActivity" />
