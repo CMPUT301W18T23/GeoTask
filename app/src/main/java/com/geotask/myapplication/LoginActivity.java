@@ -55,10 +55,11 @@ public class LoginActivity extends AppCompatActivity implements AsyncCallBackMan
         String email = emailText.getText().toString().trim();
 
         if(!MasterController.existsProfile(email)){
-            Toast.makeText(this, "This email has not been registered.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,
+                    R.string.FAILED_LOGIN_EMAIL_NOT_REGISTERED,
+                    Toast.LENGTH_SHORT)
+                    .show();
         } else {
-
-
             SuperBooleanBuilder builder = new SuperBooleanBuilder();
             builder.put("email", email);
 
@@ -67,12 +68,11 @@ public class LoginActivity extends AppCompatActivity implements AsyncCallBackMan
             asyncSearch.execute(new AsyncArgumentWrapper(builder, User.class));
 
             List<User> result;
-
             try {
                 result = (List<User>) asyncSearch.get();
                 User user = result.get(0);
                 Intent intent = new Intent(getBaseContext(), MenuActivity.class);
-                intent.putExtra("currentUser", user);
+                intent.putExtra(getString(R.string.CURRENT_USER), user);
                 startActivity(intent);
             } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();

@@ -18,5 +18,10 @@
     <string name="NAME_IS_EMPTY_WHEN_REGISTER_OR_EDITING_USER">Empty name.</string>
     <string name="NAME_EXCEEDS_30_CHARACTER_WHEN_REGISTER_AND_EDIT_USER">Name cannot exceed 30 characters</string>
     <string name="EMAIL_IS_EMPTY_WHEN_REGISTER_OR_EDITING_USER">Empty email.</string>
+    <string name="FAILED_LOGIN_EMAIL_NOT_REGISTERED">This email has not been registered.</string>
+    <string name="CURRENT_USER">currentUser</string>
+    <string name="MODE_ALL">all</string>
+    <string name="MODE_REQUESTER">Requester</string>
+    <string name="MODE_PROVIDER">Provider</string>
 
 </resources>
