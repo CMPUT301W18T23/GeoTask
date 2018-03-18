@@ -30,8 +30,8 @@ import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 import junit.framework.Assert;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 
 /*
@@ -46,25 +46,24 @@ public class MenuActivity extends AppCompatActivity
     private ArrayList<Task> taskList;
     private ArrayAdapter<Task> adapter;
     private String mode;
-    FloatingActionButton fab;
+    private FloatingActionButton fab;
     private User currentUser;
-    private GTData data = null;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        currentUser = (User) getIntent().getSerializableExtra("currentUser"); //ToDo switch to Parcelable
+        currentUser = (User) getIntent().getSerializableExtra(getString(R.string.CURRENT_USER)); //ToDo switch to Parcelable
 
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         oldTasks = findViewById(R.id.taskListView);
         taskList = new ArrayList<>();
-        MasterController.verifySettings();
+        adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
 
-        mode = "all";
+        mode = getString(R.string.MODE_ALL);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -77,15 +76,13 @@ public class MenuActivity extends AppCompatActivity
         toggle.syncState();
 
         fab = findViewById(R.id.fab);
-
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.v("myTag","FAB Clicked");
-                Intent intent = new Intent(MenuActivity.this, newAddTaskActivity.class);
-                intent.putExtra("currentUser", currentUser);
+                Intent intent = new Intent(MenuActivity.this, AddTaskActivity.class);
+                intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
                 startActivity(intent);
-                adapter.notifyDataSetChanged();
             }
         });
 
@@ -100,11 +97,9 @@ public class MenuActivity extends AppCompatActivity
 
                 Task task = taskList.get(position);
                 Intent intent = new Intent(MenuActivity.this, TaskViewActivity.class);
-                intent.putExtra("task", task);
-                intent.putExtra("Id", currentUser);
-                intent.putExtra("currentUser", currentUser);
+                intent.putExtra(getString(R.string.TASK_BEING_VIEWED), task);
+                intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
                 startActivity(intent);
-                adapter.notifyDataSetChanged();
             }
         });
 
@@ -112,11 +107,14 @@ public class MenuActivity extends AppCompatActivity
     /* This method loads the subList from savefile and sets the array adapter for the ListView
      *
      */
+    @Override
     protected void onStart() {
         super.onStart();
-        Log.i("LifeCycle --->", "onStart is called");
+        //Log.i("LifeCycle --->", "onStart is called");
         //populate the array on start
         fab.hide();
+        oldTasks.setAdapter(adapter);
+        populateTaskView();
         //TODO - need to get the mode of user, assuming all rn
 
 
@@ -125,32 +123,29 @@ public class MenuActivity extends AppCompatActivity
     @Override
     protected void onResume(){
         super.onResume();
-        currentUser = (User) getIntent().getSerializableExtra("currentUser"); //ToDo switch to Parcelable
-        Log.i("LifeCycle --->", "onResume is called");
-        //populate the array on start
-        populateTaskView(mode, new ArrayList<String>());
+    }
+
+    @Override
+    protected void onRestart(){
+        super.onRestart();
+        currentUser = (User) getIntent().getSerializableExtra(getString(R.string.CURRENT_USER)); //ToDo switch to Parcelable
     }
 
     /**
      *
      *
-     * @param mode
-     * @param terms
      */
-    private void populateTaskView(String mode, ArrayList<String> terms){
-
+    private void populateTaskView(){
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
-        if(mode.compareTo("Requester") == 0){
+        if(mode.compareTo(getString(R.string.MODE_REQUESTER)) == 0){
             builder1.put("requesterID", currentUser.getObjectID());
         }
 
         MasterController.AsyncSearch asyncSearch =
                 new MasterController.AsyncSearch(this);
         asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
-
-
-
     }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -183,17 +178,15 @@ public class MenuActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_filter) {
             Intent intent = new Intent(getBaseContext(), FilterActivity.class);
-            intent.putExtra("currentUser", currentUser);
+            intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
             startActivity(intent);
-
         } else if (id == R.id.nav_profile) {
-            Intent intent = new Intent(MenuActivity.this, EditProfile.class);
-            intent.putExtra("currentUser", currentUser);
+            Intent intent = new Intent(MenuActivity.this, EditProfileActivity.class);
+            intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
             startActivity(intent);
-
         } else if (id == R.id.nav_map) {
             Intent intent = new Intent(getBaseContext(), MapActivity.class);
-            intent.putExtra("currentUser", currentUser);
+            intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
             startActivity(intent);
         } else if (id == R.id.nav_logout) {
             Intent intent = new Intent(getBaseContext(), LoginActivity.class);
@@ -201,41 +194,39 @@ public class MenuActivity extends AppCompatActivity
 
         }  else if (id == R.id.nav_requester) {
             fab.show();
-            mode = "Requester";
+            mode = getString(R.string.MODE_REQUESTER);
             Snackbar.make(snackView, "Changed view to \"Requester\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
-            populateTaskView(mode, new ArrayList<String>());
+            populateTaskView();
 
         } else if (id == R.id.nav_provider) {
             fab.hide();
-            mode = "Provider";
+            mode = getString(R.string.MODE_PROVIDER);
             Snackbar.make(snackView, "Changed view to \"Provider\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
-            populateTaskView(mode, new ArrayList<String>());
+            populateTaskView();
 
         } else if (id == R.id.nav_all) {
             fab.hide();
-            mode = "All";
+            mode = getString(R.string.MODE_ALL);
             Snackbar.make(snackView, "Changed view to \"All\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
-            populateTaskView(mode, new ArrayList<String>());
+            populateTaskView();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
     @Override
     public void onPostExecute(GTData data) {
-        this.data = data;
     }
 
     @Override
     public void onPostExecute(List<? extends GTData> dataList) {
-        this.taskList = (ArrayList<Task>) dataList;
-        adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
-        oldTasks.setAdapter(adapter);
+        taskList.clear();
+        taskList.addAll((Collection<? extends Task>) dataList);
         adapter.notifyDataSetChanged();
     }
 }

@@ -1,10 +1,7 @@
 package com.geotask.myapplication.Controllers.Helpers;
 
 import android.arch.persistence.room.TypeConverter;
-import android.arch.persistence.room.TypeConverters;
-import android.util.Log;
 
-import com.geotask.myapplication.DataClasses.Bid;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 

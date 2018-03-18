@@ -1,24 +1,19 @@
 package com.geotask.myapplication;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.MasterController;
-import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
-import java.util.List;
 
-
-public class newAddTaskActivity extends AppCompatActivity implements AsyncCallBackManager {
+public class AddTaskActivity extends AppCompatActivity {
 
 
     private EditText Title;
@@ -27,7 +22,6 @@ public class newAddTaskActivity extends AppCompatActivity implements AsyncCallBa
     private Button Map;
     private Button Save;
     private User currentUser;
-
     private Task newTask;
 
     @Override
@@ -35,14 +29,14 @@ public class newAddTaskActivity extends AppCompatActivity implements AsyncCallBa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_add_task);
 
-        currentUser = (User) getIntent().getSerializableExtra("currentUser");
+        currentUser = (User) getIntent().getSerializableExtra(getString(R.string.CURRENT_USER));
 
-        Title = (EditText) findViewById(R.id.TaskTitle);
-        Description = (EditText) findViewById(R.id.TaskDescription);
+        Title = findViewById(R.id.TaskTitle);
+        Description = findViewById(R.id.TaskDescription);
         //String Status = "requested";
-        Picture = (Button) findViewById(R.id.TaskPictures);
-        Map = (Button) findViewById(R.id.TaskMap);
-        Save = (Button) findViewById(R.id.TaskSave);
+        Picture = findViewById(R.id.TaskPictures);
+        Map = findViewById(R.id.TaskMap);
+        Save = findViewById(R.id.TaskSave);
 
         Picture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,7 +62,8 @@ public class newAddTaskActivity extends AppCompatActivity implements AsyncCallBa
     private void addTask(){
         String titleString = Title.getText().toString().trim();
         String descriptionString = Description.getText().toString().trim();
-        ValidateTask check = new ValidateTask();
+
+        UserEntryStringValidator check = new UserEntryStringValidator();
         if(check.checkText(titleString, descriptionString)){
             newTask = new Task(currentUser.getObjectID(), titleString, descriptionString);
             MasterController.AsyncCreateNewDocument asyncCreateNewDocument
@@ -76,21 +71,14 @@ public class newAddTaskActivity extends AppCompatActivity implements AsyncCallBa
             asyncCreateNewDocument.execute(newTask);
 
             Intent intent = new Intent(getBaseContext(), MenuActivity.class);
-            intent.putExtra("currentUser", currentUser);
+            intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
             startActivity(intent);
 
         }else{
-            Toast.makeText(this,"Please enter valid task data.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,
+                    getString(R.string.INVALID_TASK_DATA_WHEN_CREATING_NEW_TASK),
+                    Toast.LENGTH_SHORT)
+                    .show();
         }
     }
-    @Override
-    public void onPostExecute(GTData data) {
-        newTask = (Task) data;
-    }
-
-    @Override
-    public void onPostExecute(List<? extends GTData> searchResult) {
-
-    }
-
 }

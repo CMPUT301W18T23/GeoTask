@@ -4,8 +4,6 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 
-import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Entity(tableName = "bids")

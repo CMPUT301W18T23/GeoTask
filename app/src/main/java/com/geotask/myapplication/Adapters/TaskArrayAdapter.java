@@ -41,7 +41,6 @@ import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 import com.geotask.myapplication.R;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;

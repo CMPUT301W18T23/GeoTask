@@ -2,12 +2,9 @@ package com.geotask.myapplication.DataClasses;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
-import android.arch.persistence.room.util.TableInfo;
 
 import com.geotask.myapplication.Controllers.Helpers.EmailConverter;
 
-import java.lang.reflect.Type;
 import java.util.Date;
 
 @Entity(tableName = "users")

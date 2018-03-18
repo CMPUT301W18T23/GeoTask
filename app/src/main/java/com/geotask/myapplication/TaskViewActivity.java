@@ -3,14 +3,11 @@ package com.geotask.myapplication;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupWindow;
@@ -26,7 +23,6 @@ import com.geotask.myapplication.DataClasses.User;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 /**
  * handles veiwing a task
@@ -40,17 +36,13 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
     private TextView name;
     private TextView description;
     private TextView status;
-    private Task viewTask;
+    private Task currentTask;
     private User currentUser;
-    private User remote;
-    private String currentuserId;
-    private String taskUserId;
     private Button editTaskButton;
     private Button bidButton;
-    private Button addBid;
+    private Button addBidButton;
     private PopupWindow POPUP_WINDOW_DELETION = null;   //popup for error message
-    private GTData data = null;
-    private List<? extends GTData> searchResult = null;
+    private User userBeingViewed;
 
 
     /**
@@ -65,39 +57,33 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         setContentView(R.layout.activity_task_view);
 
 
-        Intent intent = getIntent();
-        this.viewTask = (Task)intent.getSerializableExtra("task");
-        this.currentUser = (User)intent.getSerializableExtra("Id");
-        this.currentuserId = currentUser.getObjectID(); //get specific ID
-        currentUser = (User) getIntent().getSerializableExtra("currentUser");
-        this.taskUserId = viewTask.getRequesterID();
-        this.title = (TextView)findViewById(R.id.textViewTitle);
-        this.name = (TextView)findViewById(R.id.textViewName);
-        this.description = (TextView)findViewById(R.id.textViewDescription);
-        this.status = (TextView)findViewById(R.id.textViewStatus);
-        this.editTaskButton = (Button) findViewById(R.id.editTaskButton);
-        this.bidButton = (Button) findViewById(R.id.bidsButton);
-        this.addBid = (Button) findViewById(R.id.addBidButton);
+        currentTask = (Task) getIntent().getSerializableExtra(getString(R.string.TASK_BEING_VIEWED));
+        currentUser = (User) getIntent().getSerializableExtra(getString(R.string.CURRENT_USER));
 
+        String currentUserId = currentUser.getObjectID();
 
+        title = findViewById(R.id.textViewTitle);
+        name = findViewById(R.id.textViewName);
+        description = findViewById(R.id.textViewDescription);
+        status = findViewById(R.id.textViewStatus);
 
+        editTaskButton = findViewById(R.id.editTaskButton);
+        bidButton = findViewById(R.id.bidsButton);
+        addBidButton = findViewById(R.id.addBidButton);
 
-        update();
+        updateDisplayedValues();
         setupButtons();
         getTaskUser();
-        profile();
 
-        if (!currentuserId.equals(taskUserId)){   //hide editbutton if not user
-            View b = findViewById(R.id.editTaskButton);
-//            b.setVisibility(View.GONE);
-            this.editTaskButton.setVisibility(b.GONE);
-        }
-
-        if (currentuserId.equals(taskUserId)){  //
-            View b = findViewById(R.id.addBidButton);
-            this.addBid.setVisibility(b.GONE);
+        if (currentUserId.equals(currentTask.getRequesterID())){   //hide editbutton if not user
+            editTaskButton.setVisibility(View.VISIBLE);
+            addBidButton.setVisibility(View.INVISIBLE);
+        } else {
+            editTaskButton.setVisibility(View.INVISIBLE);
+            addBidButton.setVisibility(View.VISIBLE);
         }
     }
+
 
     /**
      * sets up buttons (cleaner than in the one methood
@@ -106,8 +92,8 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         this.editTaskButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 Intent intent = new Intent(TaskViewActivity.this, EditTaskActivity.class);
-                intent.putExtra("Task", viewTask);
-                intent.putExtra("currentUser", currentUser);
+                intent.putExtra(getString(R.string.CURRENT_TASK_BEING_VIEWED), currentTask);
+                intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
                 startActivityForResult(intent,1);
 //                startActivity(intent);
             }
@@ -116,14 +102,14 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         this.bidButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 Intent intent = new Intent(TaskViewActivity.this, ViewBidsActivity.class);
-                intent.putExtra("task", viewTask);
-                intent.putExtra("currentUser", currentUser);
+                intent.putExtra(getString(R.string.CURRENT_TASK_BEING_VIEWED), currentTask);
+                intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
                 startActivity(intent);
-                updateStatus();  //for later
+                updateStatus();  //for later ToDo ?????
             }
         });
 
-        this.addBid.setOnClickListener(new View.OnClickListener(){
+        this.addBidButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 triggerPopup(v);
             }
@@ -140,36 +126,21 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
     private void getTaskUser(){  //this should work when get really data to get
         MasterController.AsyncGetDocument asyncGetDocument =
                 new MasterController.AsyncGetDocument(this);
-        asyncGetDocument.execute(new AsyncArgumentWrapper(taskUserId, User.class));
-
-        remote = null;
-        try {
-            remote = (User) asyncGetDocument.get();
-
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        if (remote == null){
-            this.name.setText("Unknown");
-        }else{
-            this.name.setText(remote.getName());
-        }
+        asyncGetDocument.execute(new AsyncArgumentWrapper(currentTask.getRequesterID(), User.class));
     }
 
     /**
      * updates edittext for the title, description and status
      * these are local changes
      */
-    private void update(){
-        this.title.setText(viewTask.getName());
+    private void updateDisplayedValues(){
+        this.title.setText(currentTask.getName());
 //        this.name.setText(taskUserId); //need to change to get user from the id
 //        this.name.setText("placeolder");
-
-        this.description.setText(viewTask.getDescription());
-        this.status.setText(viewTask.getStatus());
+        this.description.setText(currentTask.getDescription());
+        this.status.setText(currentTask.getStatus());
     }
+
 
     /**
      * handles return from editTaskACtivity
@@ -182,8 +153,8 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
     protected void onActivityResult(int requestCode, int resultCode, Intent data){  //handles return values from addSub and SubDetails
         if(requestCode==1){  //update task
             if (resultCode == Activity.RESULT_OK) {
-                this.viewTask = (Task) data.getSerializableExtra("updatedTask");  //need to return that in implementation
-                update();
+                this.currentTask = (Task) data.getSerializableExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT));  //need to return that in implementation
+                updateDisplayedValues();
             }else{
                 finish();
             }
@@ -242,39 +213,28 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
      * @param value
      */
     private void addBid(Double value){
-    Bid bid = new Bid(currentUser.getObjectID(), value, viewTask.getObjectID());
+        Bid bid = new Bid(currentUser.getObjectID(), value, currentTask.getObjectID());
+
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
                 new MasterController.AsyncCreateNewDocument();
         asyncCreateNewDocument.execute(bid);
 
-        try {
-            TimeUnit.SECONDS.sleep(3);
-        }catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        if (viewTask.getStatus() != "Bidded") {
-    taskBidded(); //need to uncomment when taskId is given
-            update();
+        if (currentTask.getStatus() != getString(R.string.TASK_STATUS_BIDDED)) {
+            taskBidded(); //need to uncomment when taskId is given
+            updateDisplayedValues();
         }
     }
     /**
      * updates tasks status to bided
      * @throws InterruptedException
-
      */
     private void taskBidded(){  //this should hopefully work when get really data to get
-        viewTask.setStatus("Bidded");
+        currentTask.setStatus(getString(R.string.TASK_STATUS_BIDDED));
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
                 new MasterController.AsyncUpdateDocument();
-        asyncUpdateDocument.execute(viewTask);
-
-        try {
-            TimeUnit.SECONDS.sleep(3);
-        }catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+        asyncUpdateDocument.execute(currentTask);
     }
+
 
     /**
      * sets up clickavle viewtext to go to User profile
@@ -284,8 +244,8 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         name.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(TaskViewActivity.this, ViewProfile.class);
-                intent.putExtra("user", remote);
+                Intent intent = new Intent(TaskViewActivity.this, ViewProfileActivity.class);
+                intent.putExtra(getString(R.string.VIEW_USER), userBeingViewed);
                 startActivity(intent);
             }
         });
@@ -298,29 +258,33 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
      *  @throws ExecutionException
      */
     private void updateStatus(){
-
         MasterController.AsyncGetDocument asyncGetDocumentWhenDocumentExist =
                 new MasterController.AsyncGetDocument(this);
-        asyncGetDocumentWhenDocumentExist.execute(new AsyncArgumentWrapper(viewTask.getObjectID(), Task.class));
+        asyncGetDocumentWhenDocumentExist.execute(new AsyncArgumentWrapper(currentTask.getObjectID(), Task.class));
 
         try {
-            viewTask = (Task) asyncGetDocumentWhenDocumentExist.get();
+            currentTask = (Task) asyncGetDocumentWhenDocumentExist.get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    update();
+    updateDisplayedValues();
     }
 
     @Override
     public void onPostExecute(GTData data) {
-        this.data = data;
+        if(data instanceof User) {
+            userBeingViewed = (User) data;
+            profile();
+            this.name.setText(userBeingViewed.getName());
+        } else if (data instanceof Task){
+            //ToDo ?????
+        }
     }
 
     @Override
     public void onPostExecute(List<? extends GTData> dataList) {
-        this.searchResult = dataList;
     }
 
 
