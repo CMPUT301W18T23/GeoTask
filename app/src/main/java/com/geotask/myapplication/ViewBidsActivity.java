@@ -25,6 +25,7 @@ import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -44,18 +45,16 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_bids);
 
-
         currentUser = (User) getIntent().getSerializableExtra(getString(R.string.CURRENT_USER)); //ToDo switch to Parcelable
 
-        oldBids = (ListView) findViewById(R.id.bidListView);
-        bidList = new ArrayList<Bid>();
-        MasterController.verifySettings();
+        oldBids = findViewById(R.id.bidListView);
+        bidList = new ArrayList<>();
 
         oldBids.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Log.i("ViewBids --->",task.getRequesterID() + " " + currentUser.getObjectID());
+                //Log.i("ViewBids --->",task.getRequesterID() + " " + currentUser.getObjectID());
                 if(task.getRequesterID().compareTo(currentUser.getObjectID()) == 0){
                     Bid bid = bidList.get(position);
                     triggerPopup(view, bid, task);
@@ -74,49 +73,34 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         MasterController.AsyncSearch asyncSearch =
                 new MasterController.AsyncSearch(this);
         asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
-
-        List<Bid> result = null;
-
-        try {
-            result = (List<Bid>) asyncSearch.get();
-            bidList = new ArrayList<Bid>(result);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
     }
 
+    @Override
     protected void onStart() {
         super.onStart();
-        Log.i("LifeCycle --->", "onStart is called");
+        //Log.i("LifeCycle --->", "onStart is called");
         this.task = (Task) getIntent().getSerializableExtra(getString(R.string.CURRENT_TASK_BEING_VIEWED));
-        Log.i("LifeCycle --->", "extracted task with name:" + this.task.getName());
-        Log.i("LifeCycle --->", "extracted user with name:" + this.currentUser.getName());
+        //Log.i("LifeCycle --->", "extracted task with name:" + this.task.getName());
+        //Log.i("LifeCycle --->", "extracted user with name:" + this.currentUser.getName());
         //populate the array on start
-        populateBidView();
-        adapter = new BidArrayAdapter(this, R.layout.bid_list_item, bidList);
-        oldBids.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
     }
 
+
+    @Override
     protected void onResume() {
         super.onResume();
-        Log.i("LifeCycle --->", "onResume is called");
+        //Log.i("LifeCycle --->", "onResume is called");
         //populate the array on start
-        populateBidView();
         adapter = new BidArrayAdapter(this, R.layout.bid_list_item, bidList);
         oldBids.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+
+        populateBidView();
     }
 
     private void acceptBid(Bid bid, Task task){
         Log.i("LifeCycle --->", "Accepted bid");
         //TODO - update the database by notifying the provider
-
-
 
         task.setAcceptedProviderID(bid.getProviderID());
         task.setAccpeptedBidID(bid.getObjectID());
@@ -185,14 +169,13 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
             public void onClick(View v)
             {
                 POPUP_WINDOW_DELETION.dismiss();
-                Log.i("LifeCycle --->", bid.getValue().toString() + " clicked");
+                //Log.i("LifeCycle --->", bid.getValue().toString() + " clicked");
                 //TODO - Once ViewProfileActivity is added, uncomment this
 
                 Intent intent = new Intent(ViewBidsActivity.this, ViewProfileActivity.class);
 //                intent.putExtra("userID", bid.getProviderID());
-                intent.putExtra("user", currentUser);
+                intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
                 startActivity(intent);
-
             }
         });
     }
@@ -208,6 +191,8 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
 
     @Override
     public void onPostExecute(List<? extends GTData> dataList) {
-        this.searchResult = dataList;
+        bidList.clear();
+        bidList.addAll((Collection<? extends Bid>) dataList);
+        adapter.notifyDataSetChanged();
     }
 }
