@@ -29,6 +29,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.List;
 
+import static android.Manifest.permission.ACCESS_CHECKIN_PROPERTIES;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 
@@ -90,47 +91,24 @@ public class newAddTaskActivity extends AppCompatActivity implements AsyncCallBa
         String descriptionString = Description.getText().toString().trim();
 
         //check if location permission is given, if not just make location = ""
-        // Here, thisActivity is the current activity
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Permission is not granted
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            } else {
-
-                // No explanation needed; request the permission
-                /*ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_READ_CONTACTS);*/
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
-            }
-        } else {
-            // Permission has already been granted
-        }
-
-        mFusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            //give server the correct location, formatted
-                            coordString = Double.toString(location.getLatitude()) + "," + Double.toString(location.getLongitude());
+        /*if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED){
+            mFusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                //give server the correct location, formatted
+                                coordString = Double.toString(location.getLatitude()) + "," + Double.toString(location.getLongitude());
+                            }
+                            else { coordString = ""; }
                         }
-                        else { coordString = ""; }
-                    }
-                });
+                    });
+        } else {
+            //give server no location
+            coordString = "";
+        }*/
 
         ValidateTask check = new ValidateTask();
         if(check.checkText(titleString, descriptionString)){
