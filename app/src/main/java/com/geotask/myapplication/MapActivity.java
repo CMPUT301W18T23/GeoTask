@@ -17,6 +17,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -54,17 +55,24 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        // add marker at and move camera to user location
+        // add a default marker at and move camera to user location
         LatLng user_location = new LatLng( 53.523, -113.526);//currentUser.getLocationX(), currentUser.getLocationY()); //get user location, input as floats to the LatLng function
         googleMap.addMarker(new MarkerOptions().position(user_location)
                 .title("You are here."));
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(user_location));
         googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));
 
+        //
+
+        //add a marker for each task
         /*for (int i = 0; i < taskList.size(); i++) {
             if(taskList.get(i).getLocation() == ""){ continue; }
+            //add custom marker for this task
             LatLng taskLocation = new LatLng(taskList.get(i).getLocationX(), taskList.get(i).getLocationY());
-            googleMap.addMarker(new MarkerOptions().position(taskLocation).title(taskList.get(i).getName()));
+            googleMap.addMarker(new MarkerOptions()         //add the marker to the map
+                .position(taskLocation)
+                .title(taskList.get(i).getName())
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
         }*/
 
     }
