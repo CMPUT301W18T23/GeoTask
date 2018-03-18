@@ -10,18 +10,23 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.MasterController;
+import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
+import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * handles editing a task by the task requester
  */
-public class EditTaskActivity extends AppCompatActivity {
+public class EditTaskActivity extends AppCompatActivity implements AsyncCallBackManager {
     private EditText editTitle;
     private EditText editDescription;
     private Task taskBeingEdited;
@@ -40,13 +45,8 @@ public class EditTaskActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_task);
         currentUser = (User) getIntent().getSerializableExtra("currentUser");
 
-//        Task testTask = new Task("need to test task", "i need a task to test so here is my task");
-//        testTask.setRequesterID("h55p98a2ac9ye1kf");    //user named tennis
-//        Intent intent = new Intent(EditTaskActivity.this, EditTaskActivity.class);
-//        intent.putExtra("user", testTask);
         taskBeingEdited = (Task)getIntent().getSerializableExtra(getString(R.string.CURRENT_TASK_BEING_VIEWED));
 
-//        h55p98a2ac9ye1kf
         editTitle = findViewById(R.id.editTitle);
         editDescription = findViewById(R.id.editDescription);
 
@@ -101,9 +101,32 @@ public class EditTaskActivity extends AppCompatActivity {
     /**
      *handles data deleting - called from deleteButton press
      * nothing returned and no result code returned
+     * gets all bids for the task
+     * deletes them 1 by 1
+     * then deletes task
      * @see TaskViewActivity
      */
     private void deleteData() {
+
+        SuperBooleanBuilder builder = new SuperBooleanBuilder();
+        builder.put("taskID", taskBeingEdited.getObjectID());
+
+        MasterController.AsyncSearch asyncSearch =
+                new MasterController.AsyncSearch(this);
+        asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
+        ArrayList<Bid> bidList = new ArrayList<Bid>();
+        try {
+            bidList = (ArrayList<Bid>) asyncSearch.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        for (Bid bid : bidList) {
+            MasterController.AsyncDeleteDocument asyncDeleteDocument =
+                    new MasterController.AsyncDeleteDocument();
+            asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
+        }
+
+
         MasterController.AsyncDeleteDocument asyncDeleteDocument =
                 new MasterController.AsyncDeleteDocument();
         asyncDeleteDocument.execute(new AsyncArgumentWrapper(taskBeingEdited.getObjectID(), Task.class));
@@ -120,5 +143,17 @@ public class EditTaskActivity extends AppCompatActivity {
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
                 new MasterController.AsyncUpdateDocument();
         asyncUpdateDocument.execute(taskBeingEdited);
+    }
+
+    @Override
+    public void onPostExecute(GTData data) {
+        this.data = data;
+    }
+
+    @Override
+    public void onPostExecute(List<? extends GTData> dataList) {
+        //bidList.clear();
+        //bidList.addAll((Collection<? extends Bid>) dataList);
+        //adapter.notifyDataSetChanged();
     }
 }
