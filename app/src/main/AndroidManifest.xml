@@ -21,7 +21,7 @@
         <activity
             android:name=".EditProfileActivity"
             android:label="Edit Profile" />
-        <activity android:name=".newAddTaskActivity" />
+        <activity android:name=".AddTaskActivity" />
         <activity android:name=".ViewBidsActivity" />
         <activity android:name=".EditTaskActivity" />
         <activity android:name=".TaskViewActivity" />

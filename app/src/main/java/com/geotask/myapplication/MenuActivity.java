@@ -80,7 +80,7 @@ public class MenuActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 Log.v("myTag","FAB Clicked");
-                Intent intent = new Intent(MenuActivity.this, newAddTaskActivity.class);
+                Intent intent = new Intent(MenuActivity.this, AddTaskActivity.class);
                 intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
                 startActivity(intent);
             }

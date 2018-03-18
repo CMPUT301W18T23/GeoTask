@@ -13,7 +13,7 @@ import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
 
-public class newAddTaskActivity extends AppCompatActivity {
+public class AddTaskActivity extends AppCompatActivity {
 
 
     private EditText Title;
@@ -62,6 +62,7 @@ public class newAddTaskActivity extends AppCompatActivity {
     private void addTask(){
         String titleString = Title.getText().toString().trim();
         String descriptionString = Description.getText().toString().trim();
+
         UserEntryStringValidator check = new UserEntryStringValidator();
         if(check.checkText(titleString, descriptionString)){
             newTask = new Task(currentUser.getObjectID(), titleString, descriptionString);
