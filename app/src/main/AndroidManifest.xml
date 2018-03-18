@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.geotask.myapplication">
+    <!--http://www.gmarwaha.com/blog/2012/01/18/android-remove-activity-from-history-stack/ - gets rid of history on apps that we dont need it on-->
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
