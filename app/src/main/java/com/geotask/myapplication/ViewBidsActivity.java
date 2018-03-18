@@ -143,8 +143,19 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
                 new MasterController.AsyncDeleteDocument();
         asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
         bidList.remove(bid);
+        if (bid.getProviderID().equals(task.getAcceptedProviderID())){
+            updateTask(bid, task);
+        }
     }
+    public void updateTask(Bid bid , Task task){
+        task.setAcceptedProviderID(null);
+        task.setAccpeptedBidID(null);
+        task.setStatus("Bidded");
 
+        MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                new MasterController.AsyncUpdateDocument();
+        asyncUpdateDocument.execute(task);
+    }
     public void triggerPopup(View view, final Bid bid, final Task task){
         LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layout = layoutInflater.inflate(R.layout.layout_bidlist_popout, null);
