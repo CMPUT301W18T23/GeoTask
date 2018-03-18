@@ -131,6 +131,12 @@ public class EditTaskActivity extends AppCompatActivity implements AsyncCallBack
                 new MasterController.AsyncDeleteDocument();
         asyncDeleteDocument.execute(new AsyncArgumentWrapper(taskBeingEdited.getObjectID(), Task.class));
 
+        Intent back = new Intent();
+        back.putExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT), taskBeingEdited);
+        back.putExtra(getString(R.string.CURRENT_USER), currentUser);
+        back.putExtra("del", "1");
+
+        setResult(Activity.RESULT_OK, back);
         finish();
     }
 
