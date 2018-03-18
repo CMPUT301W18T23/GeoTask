@@ -10,6 +10,11 @@ import com.geotask.myapplication.Controllers.Helpers.BidListConverter;
 import java.util.ArrayList;
 import java.util.Date;
 
+
+/**
+ *data stucture for a task
+ * stores general needed information and the Ids of people related to the task
+ */
 @Entity(tableName = "tasks")
 public class Task extends GTData{
 	@ColumnInfo(name = "task_name")
@@ -63,6 +68,13 @@ public class Task extends GTData{
 		this.location = location;
 	}
 
+	/**
+	 *constructor for task
+	 * gets reuqiester ID, anme and the description. locatiion is later to be inplemented by overload
+	 * @param requesterID
+	 * @param name
+	 * @param description
+	 */
 	public Task(String requesterID, String name, String description) { //need string for pictures
 		super.setType(Task.class.toString());
 		this.name = name;
@@ -74,113 +86,227 @@ public class Task extends GTData{
 		this.requesterID = requesterID;
 	}
 
-
+	/**
+	 *gets nae
+	 * @return this.name
+	 */
     public String getName() {
 		return this.name;
 	}
+	/**
+	 *sets Name
+	 * @param Name
+	 */
 	public void setName(String Name) {
 		this.name = Name;
 	}
-	
+	/**
+	 *gets description
+	 * @return this.description
+	 */
 	public String getDescription() {
 		return this.description;
 	}
+	/**
+	 *sets description
+	 * @param Description
+	 */
 	public void setDescription(String Description) {
 		this.description = Description;
 	}
-	
+
+	/**
+	 *gets status
+	 * @return this.status
+	 */
 	public String getStatus() {
 		return this.status;
 	}
+	/**
+	 *set status
+	 * @param Status
+	 */
 	public void setStatus(String Status) {
 		this.status = Status;
 	}
-	
+
+	/**
+	 *gets list of pictures
+	 * @return this.photoList
+	 */
 	public ArrayList<String> getPictures() { 
 		return this.photoList; 
 	}
+	/**
+	 *sets a picture
+	 * @param Picture
+	 */
 	public void setPicture(String Picture) { 	
 		this.photoList.add(Picture);
 	}
+	/**
+	 *deletes a picture from arraylist
+	 * @param Picture
+	 */
 	public void deletePicture(String Picture) { 
 		this.photoList.remove(Picture);
 	}
+	/**
+	 *sets the ammount of accepted Bid
+	 * @param Bid
+	 */
 	public void setAcceptedBid(Double Bid) {
 		this.accpetedBid = Bid;
 	}
+	/**
+	 *get ammount of the accepted bid
+	 * @return this.accpetedBid
+	 */
 	public Double getAcceptedBid() {
 		return this.accpetedBid;
 	}
-	
+
+	/**
+	 * sets  the requester ID
+	 * @param Provider
+	 */
 	public void setRequesterID(String Provider) {
 		this.requesterID = Provider;
 	}
+
+	/**
+	 * gets the requesterId
+	 * @return this.requesterID
+	 */
 	public String getRequesterID(){
 		return this.requesterID;
 	}
-	
+
+	/**
+	 * sets the provider ID from the accepted bid
+	 * @param Requester
+	 */
 	public void setAcceptedProviderID(String Requester) {
 		this.acceptedProviderID = Requester;
 	}
+
+	/**
+	 * gets the provider Id of the requested bid
+	 * @return this.acceptedProviderID
+	 */
 	public String getAcceptedProviderID() {
 		return this.acceptedProviderID;
 	}
 
+	/**
+	 * increment it counter
+	 */
 	public void addHit(){
 		this.hitCounter ++;
 	}
+	/**
+	 *get hit counter ammount
+	 */
 	public Integer getHitCounter(){
 		return this.hitCounter;
 	}
+	/**
+	 *gets the number of biders
+	 * @return bidList.size()
+	 */
 	public Integer getNumBidders(){
 		return this.bidList.size();
 	}
 
+	/**
+	 *add a bid id to bids associated with task
+	 * @param bid
+	 */
 	public void addBid(Bid bid){
 		bidList.add(bid.getObjectID());
 	}
 
+	/**
+	 *gets list of photolist
+	 * @return photolist
+	 */
 	public ArrayList<String> getPhotoList() {
 		return photoList;
 	}
 
+	/**
+	 *gets list of bids
+	 * @return bidList
+	 */
 	public ArrayList<String> getBidList() {
 		return bidList;
 	}
 
+	/**
+	 *gets the accepted bid
+	 * @return acceptedBid
+	 */
 	public Double getAccpetedBid() {
 		return accpetedBid;
 	}
 
+	/**
+	 *sets bidlist from given value
+	 * @param bidList
+	 */
 	public void setBidList(ArrayList<String> bidList) {
 		this.bidList = bidList;
 	}
 
+	/**
+	 *sets the amount of accepted bids
+	 * @param accpetedBid
+	 */
 	public void setAccpetedBid(Double accpetedBid) {
 		this.accpetedBid = accpetedBid;
 	}
 
+	/**
+	 *sets the hitcounter to specified ammount
+	 * @param hitCounter
+	 */
 	public void setHitCounter(int hitCounter) {
 		this.hitCounter = hitCounter;
 	}
 
-
+	/**
+	 *gets the id of the accpted bid
+	 */
 	public String getAccpeptedBidID() {
 		return accpeptedBidID;
 	}
 
+	/**
+	 *sets Id of the accpted Bid
+	 * @param accpeptedBidID
+	 */
 	public void setAccpeptedBidID(String accpeptedBidID) {
 		this.accpeptedBidID = accpeptedBidID;
 	}
 
+	/**
+	 *sets the status to Accepted
+	 */
 	public void setStatusAccepted(){
 		this.status = "Accepted";
 	}
 
+	/**
+	 *sets the status to Completed
+	 */
 	public void setStatusCompleted(){
 		this.status = "Completed";
 	}
 
+	/**
+	 *retunrs all items in string format
+	 * @return  this.name + " " + this.description + " " + bidList.toString()
+	 */
 	public String toString(){
 		return this.name + " " + this.description + " " + bidList.toString();
 	}
