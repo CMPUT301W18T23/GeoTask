@@ -25,8 +25,8 @@ import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBackManager {
 
@@ -72,6 +72,14 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         MasterController.AsyncSearch asyncSearch =
                 new MasterController.AsyncSearch(this);
         asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
+
+        try {
+            bidList = (ArrayList<Bid>) asyncSearch.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -190,8 +198,8 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
 
     @Override
     public void onPostExecute(List<? extends GTData> dataList) {
-        bidList.clear();
-        bidList.addAll((Collection<? extends Bid>) dataList);
-        adapter.notifyDataSetChanged();
+        //bidList.clear();
+        //bidList.addAll((Collection<? extends Bid>) dataList);
+        //adapter.notifyDataSetChanged();
     }
 }

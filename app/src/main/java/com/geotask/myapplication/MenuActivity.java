@@ -30,8 +30,8 @@ import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 import junit.framework.Assert;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 
 /*
@@ -62,6 +62,7 @@ public class MenuActivity extends AppCompatActivity
         oldTasks = findViewById(R.id.taskListView);
         taskList = new ArrayList<>();
         adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
+        oldTasks.setAdapter(adapter);
 
         mode = getString(R.string.MODE_ALL);
 
@@ -113,7 +114,6 @@ public class MenuActivity extends AppCompatActivity
         //Log.i("LifeCycle --->", "onStart is called");
         //populate the array on start
         fab.hide();
-        oldTasks.setAdapter(adapter);
         populateTaskView();
         //TODO - need to get the mode of user, assuming all rn
 
@@ -144,6 +144,15 @@ public class MenuActivity extends AppCompatActivity
         MasterController.AsyncSearch asyncSearch =
                 new MasterController.AsyncSearch(this);
         asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
+
+        try {
+            taskList = (ArrayList<Task>) asyncSearch.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
+        oldTasks.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -225,8 +234,8 @@ public class MenuActivity extends AppCompatActivity
 
     @Override
     public void onPostExecute(List<? extends GTData> dataList) {
-        taskList.clear();
-        taskList.addAll((Collection<? extends Task>) dataList);
-        adapter.notifyDataSetChanged();
+        //taskList.clear();
+        //taskList.addAll((Collection<? extends Task>) dataList);
+        //adapter.notifyDataSetChanged();
     }
 }
