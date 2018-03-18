@@ -137,7 +137,8 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         startActivity(intent);
 
     }
-
+    //        bidList.remove(bid);
+    //     adapter.notifyDataSetChanged();
     public void deleteBid(Bid bid, Task task){
         MasterController.AsyncDeleteDocument asyncDeleteDocument =
                 new MasterController.AsyncDeleteDocument();
@@ -150,9 +151,8 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
     public void updateTask(Bid bid , Task task){
         task.setAcceptedProviderID(null);
         task.setAccpeptedBidID(null);
-        if (task.getBidList().size() ==0 ){
+        if (bidList.size() ==0 ){
             task.setStatus("Requested");
-
         }else{
             task.setStatus("Bidded");
         }
