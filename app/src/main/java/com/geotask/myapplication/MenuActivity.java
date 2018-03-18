@@ -32,7 +32,6 @@ import junit.framework.Assert;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 
 /*
@@ -182,7 +181,7 @@ public class MenuActivity extends AppCompatActivity
             intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
             startActivity(intent);
         } else if (id == R.id.nav_profile) {
-            Intent intent = new Intent(MenuActivity.this, EditProfile.class);
+            Intent intent = new Intent(MenuActivity.this, EditProfileActivity.class);
             intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
             startActivity(intent);
         } else if (id == R.id.nav_map) {

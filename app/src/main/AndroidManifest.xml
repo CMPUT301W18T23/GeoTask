@@ -19,7 +19,7 @@
             android:label="@string/title_activity_menu"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".EditProfile"
+            android:name=".EditProfileActivity"
             android:label="Edit Profile" />
         <activity android:name=".newAddTaskActivity" />
         <activity android:name=".ViewBidsActivity" />

@@ -15,7 +15,7 @@ import com.geotask.myapplication.DataClasses.User;
 
 import java.util.List;
 
-public class EditProfile extends AppCompatActivity {
+public class EditProfileActivity extends AppCompatActivity {
 
     private EditText userName;
     private EditText userPhone;

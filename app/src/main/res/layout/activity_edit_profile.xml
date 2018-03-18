@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.geotask.myapplication.EditProfile">
+    tools:context="com.geotask.myapplication.EditProfileActivity">
 
     <EditText
         android:id="@+id/UserPhone"
