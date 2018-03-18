@@ -29,6 +29,11 @@ import java.util.List;
 
 import static android.Manifest.permission.ACCESS_CHECKIN_PROPERTIES;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+/**
+ * handles adding a task by the task requester
+ * the user must be in requester mode for the button to show to go to this activity
+ * @see MenuActivity
+ */
 
 public class AddTaskActivity extends AppCompatActivity {
 
@@ -44,6 +49,11 @@ public class AddTaskActivity extends AppCompatActivity {
     private FusedLocationProviderClient mFusedLocationClient; //for location grabbing
     private String coordString;
 
+    /**
+     *sets up buttons
+     * @param savedInstanceState
+     * nothing is returned
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +92,15 @@ public class AddTaskActivity extends AppCompatActivity {
 
     }
 
+    /**
+     *gets text for adding task,
+     * checks if it is valid,
+     * then adds a new task through master controller
+     * if text is not valid it notifies the user
+     * no paramaters or return values
+     * uses UserEntryStringValidator to validate if the text is correct
+     * @see UserEntryStringValidator
+     */
     private void addTask(){
         String titleString = Title.getText().toString().trim();
         String descriptionString = Description.getText().toString().trim();

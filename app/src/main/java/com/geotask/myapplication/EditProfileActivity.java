@@ -11,6 +11,11 @@ import android.widget.Toast;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.User;
 
+/**
+ * allows user to edit their profile
+ * their profile data includes:
+ * name, phone and Number
+ */
 public class EditProfileActivity extends AppCompatActivity {
 
     private EditText userName;
@@ -19,7 +24,9 @@ public class EditProfileActivity extends AppCompatActivity {
     private Button saveEdit;
     private User currentUser;
 
-
+    /**
+     *init buttons edit text etc
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +52,11 @@ public class EditProfileActivity extends AppCompatActivity {
 
     }
 
+    /**
+     *gets text
+     * checks if valid
+     * then updates new data
+     */
     private void Edit_Check(){
         if(isValid()){
             String userNameString = userName.getText().toString().trim();
@@ -68,6 +80,11 @@ public class EditProfileActivity extends AppCompatActivity {
 
     }
 
+    /**
+     *mkaes sure that the data is valid
+     * checks if empty
+     * checks char limit
+     */
     private Boolean isValid() {
         if (userName.getText().toString().trim().equals("") ) {
             Toast.makeText(this,

@@ -15,9 +15,6 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Created by Kyle on 2018-03-17.
- */
 
 @RunWith(AndroidJUnit4.class)
 public class TestKyle implements AsyncCallBackManager {
@@ -30,7 +27,7 @@ public class TestKyle implements AsyncCallBackManager {
         User user = new User("kylerequest", "kyle.google@org", "911");
         User provider1 = new User("kyleprovide1", "kyle.yahoo@org", "191");
         User provider2  = new User("kyleprovide2", "kyle.weehaw@org", "119");
-        Task task = new Task("randomid","kylestast", "do it for me");
+        Task task = new Task("randomid","kylestast", "do it for me", "12");
         Bid bid1;
         Bid bid2;
 

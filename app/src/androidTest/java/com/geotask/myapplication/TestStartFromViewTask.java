@@ -27,13 +27,19 @@ public class TestStartFromViewTask {
 
     @Test
     public void testViewBidShouldDisplayListOfBidsOnTask() throws InterruptedException {
+        String targetUserId = "testViewBidShouldDisplayListOfBidsOnTask_id";
+
+        Task task = new Task(targetUserId, "TestTest", "TestTest", "2234");
+        User user = new User("testtestUser", "testtestUser", "testtestUser");
+        user.setObjectID(targetUserId);
+
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent result = new Intent(targetContext, TaskViewActivity.class);
-        result.putExtra("task",
-                new Task("TestTest", "TestTest", "TestTest"));
-        result.putExtra("currentUser",
-                new User("testtestUser", "testtestUser", "testtestUser"));
+
+        result.putExtra("task", task);
+        result.putExtra("currentUser", user);
+
         activityRule.launchActivity(result);
 
         Thread.sleep(1000);
