@@ -27,7 +27,7 @@ public class TestKyle implements AsyncCallBackManager {
         User user = new User("kylerequest", "kyle.google@org", "911");
         User provider1 = new User("kyleprovide1", "kyle.yahoo@org", "191");
         User provider2  = new User("kyleprovide2", "kyle.weehaw@org", "119");
-        Task task = new Task("randomid","kylestast", "do it for me");
+        Task task = new Task("randomid","kylestast", "do it for me", "12");
         Bid bid1;
         Bid bid2;
 

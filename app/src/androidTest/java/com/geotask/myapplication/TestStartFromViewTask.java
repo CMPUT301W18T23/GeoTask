@@ -31,7 +31,7 @@ public class TestStartFromViewTask {
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent result = new Intent(targetContext, TaskViewActivity.class);
         result.putExtra("task",
-                new Task("TestTest", "TestTest", "TestTest"));
+                new Task("TestTest", "TestTest", "TestTest", "2234"));
         result.putExtra("currentUser",
                 new User("testtestUser", "testtestUser", "testtestUser"));
         activityRule.launchActivity(result);

@@ -72,10 +72,6 @@ public class TestStartFromMenuActivity {
 
     }
 
-    @Test
-    public void testEditProfile() {
-
-    }
 
     @Test
     public void testLogOut() {
