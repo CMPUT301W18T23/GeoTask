@@ -11,7 +11,7 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 
 @RunWith(AndroidJUnit4.class)
-public class TestStoryTaskAssignmentInteractions {
+public class TestStorySixTaskAssignmentInteractions {
 
     @BeforeClass
     public static void oneTimeSetUp() {

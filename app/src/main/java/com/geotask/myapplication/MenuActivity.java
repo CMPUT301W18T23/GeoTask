@@ -117,7 +117,6 @@ public class MenuActivity extends AppCompatActivity
         //Log.i("LifeCycle --->", "onStart is called");
         //populate the array on start
         fab.hide();
-        populateTaskView();
         //TODO - need to get the mode of user, assuming all rn
 
 
