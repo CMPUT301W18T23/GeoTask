@@ -153,10 +153,11 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
     protected void onActivityResult(int requestCode, int resultCode, Intent data){  //handles return values from addSub and SubDetails
         if(requestCode==1){  //update task
             if (resultCode == Activity.RESULT_OK) {
+                if ("1".equals(data.getStringExtra("del"))){
+                    finish();
+                }
                 this.currentTask = (Task) data.getSerializableExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT));  //need to return that in implementation
                 updateDisplayedValues();
-            }else{
-                finish();
             }
         }
     }

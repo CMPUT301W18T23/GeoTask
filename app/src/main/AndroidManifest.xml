@@ -14,19 +14,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light">
         //map related things START here
-        <activity android:name=".RegisterActivity" />
+        <activity android:name=".RegisterActivity"
+            android:noHistory="true"/>
         <activity
             android:name=".MenuActivity"
             android:label="@string/title_activity_menu"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".EditProfileActivity"
-            android:label="Edit Profile" />
-        <activity android:name=".AddTaskActivity" />
+            android:label="Edit Profile"
+            android:noHistory="true"/>
+        <activity android:name=".AddTaskActivity"
+            android:noHistory="true"/>
         <activity android:name=".ViewBidsActivity" />
         <activity android:name=".EditTaskActivity" />
         <activity android:name=".TaskViewActivity" />
-        <activity android:name=".LoginActivity">
+        <activity android:name=".LoginActivity" android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
