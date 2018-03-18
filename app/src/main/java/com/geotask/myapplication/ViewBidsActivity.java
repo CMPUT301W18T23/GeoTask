@@ -144,6 +144,9 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
                 new MasterController.AsyncDeleteDocument();
         asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
         bidList.remove(bid);
+        adapter = new BidArrayAdapter(this, R.layout.bid_list_item, bidList);
+        oldBids.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
         if (bid.getProviderID().equals(task.getAcceptedProviderID())){
             updateTask(bid, task);
         }
