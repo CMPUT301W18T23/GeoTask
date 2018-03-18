@@ -22,6 +22,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertTrue;
 
+//https://developer.android.com/training/testing/espresso/recipes.html
 @RunWith(AndroidJUnit4.class)
 public class TestStartFromMenuActivity {
 
@@ -30,7 +31,7 @@ public class TestStartFromMenuActivity {
 
     @Test
     public void testOnClickItemInListShouldOpenTaskDetail() {
-        assertTrue(menuActivityRule.getActivity() instanceof MenuActivity);
+        assertTrue(menuActivityRule.getActivity() != null);
 
         onData(instanceOf(Task.class))
                 .atPosition(0)
