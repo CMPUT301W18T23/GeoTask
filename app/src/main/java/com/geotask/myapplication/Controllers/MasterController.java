@@ -1,11 +1,9 @@
 package com.geotask.myapplication.Controllers;
 
-import android.app.ProgressDialog;
 import android.os.AsyncTask;
 
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.DataClasses.GTData;
-import com.geotask.myapplication.MenuActivity;
 
 import java.io.IOException;
 import java.util.List;

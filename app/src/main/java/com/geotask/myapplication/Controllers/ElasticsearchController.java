@@ -2,7 +2,6 @@ package com.geotask.myapplication.Controllers;
 
 import android.os.StrictMode;
 
-import com.geotask.myapplication.Controllers.Helpers.EmailConverter;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;

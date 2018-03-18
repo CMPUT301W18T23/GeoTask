@@ -1,18 +1,17 @@
 package com.geotask.myapplication;
 
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
+
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 /**
  * Created by james on 2018-03-14.
  */
 
-public class TestValidateTask {
+public class TestUserEntryStringValidator {
     String name = "small name";
     String description = "small description";
-    ValidateTask over = new ValidateTask();
+    UserEntryStringValidator over = new UserEntryStringValidator();
 
     @Test
     public void testGood(){ //test if normal data is good

@@ -13,10 +13,7 @@ import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,10 +49,6 @@ public class TestViewBidsActivity implements AsyncCallBackManager {
         }
     };
 
-    @BeforeClass
-    public static void oneTimeSetUp() {
-
-    }
 
     @Before
     public void setUp() throws InterruptedException {
@@ -100,15 +93,6 @@ public class TestViewBidsActivity implements AsyncCallBackManager {
         }
 
         assertEquals(task.getDate(), remote.getDate());
-    }
-
-    @After
-    public void tearDown() {
-        MasterController.shutDown();
-    }
-
-    @AfterClass
-    public static void oneTimeTearDown() {
     }
 
     @Override

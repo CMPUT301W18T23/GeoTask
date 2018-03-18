@@ -21,6 +21,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by James on 2018-03-17.
@@ -36,10 +37,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         currentUser = (User) getIntent().getSerializableExtra("currentUser");
 
         //get the tasks form the server
-        SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
+        /*SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
         MasterController.AsyncSearch asyncSearch =
                 new MasterController.AsyncSearch(this);
-        asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
+        asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));*/
+
 
         // Retrieve the content view that renders the map.
         setContentView(R.layout.activity_map);
@@ -53,16 +55,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         // add marker at and move camera to user location
-        LatLng user_location = new LatLng(currentUser.getLocationX(), currentUser.getLocationY()); //get user location, input as floats to the LatLng function
+        LatLng user_location = new LatLng( 53.523, -113.526);//currentUser.getLocationX(), currentUser.getLocationY()); //get user location, input as floats to the LatLng function
         googleMap.addMarker(new MarkerOptions().position(user_location)
                 .title("You are here."));
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(user_location));
+        googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));
 
-        for (int i = 0; i < taskList.size(); i++) {
+        /*for (int i = 0; i < taskList.size(); i++) {
             if(taskList.get(i).getLocation() == ""){ continue; }
             LatLng taskLocation = new LatLng(taskList.get(i).getLocationX(), taskList.get(i).getLocationY());
             googleMap.addMarker(new MarkerOptions().position(taskLocation).title(taskList.get(i).getName()));
-        }
+        }*/
 
     }
 

@@ -8,7 +8,6 @@ import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
 import com.geotask.myapplication.DataClasses.Bid;
-import com.geotask.myapplication.DataClasses.Task;
 
 import java.util.List;
 

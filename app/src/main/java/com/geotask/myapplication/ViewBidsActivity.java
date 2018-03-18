@@ -44,21 +44,23 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_bids);
 
+        currentUser = (User) getIntent().getSerializableExtra(getString(R.string.CURRENT_USER)); //ToDo switch to Parcelable
 
-        currentUser = (User) getIntent().getSerializableExtra("currentUser"); //ToDo switch to Parcelable
-
-        oldBids = (ListView) findViewById(R.id.bidListView);
-        bidList = new ArrayList<Bid>();
-        MasterController.verifySettings();
+        oldBids = findViewById(R.id.bidListView);
+        bidList = new ArrayList<>();
 
         oldBids.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Log.i("ViewBids --->",task.getRequesterID() + " " + currentUser.getObjectID());
+                //Log.i("ViewBids --->",task.getRequesterID() + " " + currentUser.getObjectID());
+                Bid bid = bidList.get(position);
                 if(task.getRequesterID().compareTo(currentUser.getObjectID()) == 0){
-                    Bid bid = bidList.get(position);
+//                    Bid bid = bidList.get(position);
                     triggerPopup(view, bid, task);
+                    adapter.notifyDataSetChanged();
+                }else if (currentUser.getObjectID().equals(bid.getProviderID())){
+                    triggerDeletePopup(view, bid, task);
                     adapter.notifyDataSetChanged();
                 }
             }
@@ -75,48 +77,46 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
                 new MasterController.AsyncSearch(this);
         asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
 
-        List<Bid> result = null;
-
         try {
-            result = (List<Bid>) asyncSearch.get();
-            bidList = new ArrayList<Bid>(result);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+            bidList = (ArrayList<Bid>) asyncSearch.get();
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
 
-
+        adapter.notifyDataSetChanged();
     }
 
+    @Override
     protected void onStart() {
         super.onStart();
-        Log.i("LifeCycle --->", "onStart is called");
-        this.task = (Task) getIntent().getSerializableExtra("task");
-        Log.i("LifeCycle --->", "extracted task with name:" + this.task.getName());
-        Log.i("LifeCycle --->", "extracted user with name:" + this.currentUser.getName());
-        //populate the array on start
-        populateBidView();
+        //Log.i("LifeCycle --->", "onStart is called");
+        this.task = (Task) getIntent().getSerializableExtra(getString(R.string.CURRENT_TASK_BEING_VIEWED));
         adapter = new BidArrayAdapter(this, R.layout.bid_list_item, bidList);
         oldBids.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+
+        populateBidView();
+        //Log.i("LifeCycle --->", "extracted task with name:" + this.task.getName());
+        //Log.i("LifeCycle --->", "extracted user with name:" + this.currentUser.getName());
+        //populate the array on start
     }
 
+
+    @Override
     protected void onResume() {
         super.onResume();
-        Log.i("LifeCycle --->", "onResume is called");
+        //Log.i("LifeCycle --->", "onResume is called");
         //populate the array on start
-        populateBidView();
         adapter = new BidArrayAdapter(this, R.layout.bid_list_item, bidList);
         oldBids.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+
+        populateBidView();
     }
 
     private void acceptBid(Bid bid, Task task){
         Log.i("LifeCycle --->", "Accepted bid");
         //TODO - update the database by notifying the provider
-
-
 
         task.setAcceptedProviderID(bid.getProviderID());
         task.setAccpeptedBidID(bid.getObjectID());
@@ -143,8 +143,19 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
                 new MasterController.AsyncDeleteDocument();
         asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
         bidList.remove(bid);
+        if (bid.getProviderID().equals(task.getAcceptedProviderID())){
+            updateTask(bid, task);
+        }
     }
+    public void updateTask(Bid bid , Task task){
+        task.setAcceptedProviderID(null);
+        task.setAccpeptedBidID(null);
+        task.setStatus("Bidded");
 
+        MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                new MasterController.AsyncUpdateDocument();
+        asyncUpdateDocument.execute(task);
+    }
     public void triggerPopup(View view, final Bid bid, final Task task){
         LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layout = layoutInflater.inflate(R.layout.layout_bidlist_popout, null);
@@ -185,16 +196,45 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
             public void onClick(View v)
             {
                 POPUP_WINDOW_DELETION.dismiss();
-                Log.i("LifeCycle --->", bid.getValue().toString() + " clicked");
+                //Log.i("LifeCycle --->", bid.getValue().toString() + " clicked");
                 //TODO - Once ViewProfileActivity is added, uncomment this
 
-                Intent intent = new Intent(ViewBidsActivity.this, ViewProfile.class);
+                Intent intent = new Intent(ViewBidsActivity.this, ViewProfileActivity.class);
 //                intent.putExtra("userID", bid.getProviderID());
-                intent.putExtra("user", currentUser);
+                intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
                 startActivity(intent);
-
             }
         });
+    }
+    public void triggerDeletePopup(View view, final Bid bid, final Task task){
+        LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = layoutInflater.inflate(R.layout.layout_bidlist_popout, null);
+
+        POPUP_WINDOW_DELETION = new PopupWindow(this);
+        POPUP_WINDOW_DELETION.setContentView(layout);
+        POPUP_WINDOW_DELETION.setFocusable(true);
+        POPUP_WINDOW_DELETION.setBackgroundDrawable(null);
+        POPUP_WINDOW_DELETION.showAtLocation(layout, Gravity.CENTER, 1, 1);
+
+        Button deleteBtn = (Button) layout.findViewById(R.id.btn_delete);
+        deleteBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                POPUP_WINDOW_DELETION.dismiss();
+                deleteBid(bid, task);
+                adapter.notifyDataSetChanged();
+                finish();
+            }
+        });
+
+        Button acceptBtn = (Button) layout.findViewById(R.id.btn_accept);
+        Button viewProfileBtn = (Button) layout.findViewById(R.id.btn_visit_profile);
+        acceptBtn.setVisibility(layout.INVISIBLE);
+        viewProfileBtn.setVisibility(layout.INVISIBLE);
+
+
     }
 
     public void setForTest(){
@@ -208,6 +248,8 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
 
     @Override
     public void onPostExecute(List<? extends GTData> dataList) {
-        this.searchResult = dataList;
+        //bidList.clear();
+        //bidList.addAll((Collection<? extends Bid>) dataList);
+        //adapter.notifyDataSetChanged();
     }
 }

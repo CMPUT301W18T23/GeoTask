@@ -9,7 +9,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
-import com.geotask.myapplication.Controllers.ElasticsearchController;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.GTData;
@@ -25,23 +24,17 @@ public class LoginActivity extends AppCompatActivity implements AsyncCallBackMan
 
     private EditText emailText;
 
-
-    private Button loginButton;
-    private Button registerButton;
-    private ElasticsearchController newElasticSearch;
-    private User user;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         emailText = findViewById(R.id.emailText);
-        loginButton = findViewById(R.id.loginButton);
-        registerButton = findViewById(R.id.registerButton);
+        Button loginButton = findViewById(R.id.loginButton);
+        Button registerButton = findViewById(R.id.registerButton);
 
         //Check UserName entered in edit text field and log the user in if valid
-        //Sends the user to MainActivity
+        //Sends the user to MenuActivity
         loginButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 login_check();
@@ -62,10 +55,11 @@ public class LoginActivity extends AppCompatActivity implements AsyncCallBackMan
         String email = emailText.getText().toString().trim();
 
         if(!MasterController.existsProfile(email)){
-            Toast.makeText(this, "This email has not been registered.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,
+                    R.string.FAILED_LOGIN_EMAIL_NOT_REGISTERED,
+                    Toast.LENGTH_SHORT)
+                    .show();
         } else {
-
-
             SuperBooleanBuilder builder = new SuperBooleanBuilder();
             builder.put("email", email);
 
@@ -73,18 +67,15 @@ public class LoginActivity extends AppCompatActivity implements AsyncCallBackMan
                     new MasterController.AsyncSearch(this);
             asyncSearch.execute(new AsyncArgumentWrapper(builder, User.class));
 
-            List<User> result = null;
-
+            List<User> result;
             try {
                 result = (List<User>) asyncSearch.get();
-                user = result.get(0);
+                User user = result.get(0);
                 Intent intent = new Intent(getBaseContext(), MenuActivity.class);
-                intent.putExtra("currentUser", user);
+                intent.putExtra(getString(R.string.CURRENT_USER), user);
                 startActivity(intent);
-            } catch (ExecutionException e) {
+            } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
-            } catch (InterruptedException i) {
-                i.printStackTrace();
             }
 
         }

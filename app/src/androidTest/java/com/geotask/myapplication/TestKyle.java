@@ -9,10 +9,6 @@ import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -24,16 +20,6 @@ import java.util.List;
 public class TestKyle implements AsyncCallBackManager {
     private GTData data = null;
     private List<? extends GTData> searchResult = null;
-
-    @BeforeClass
-    public static void oneTimeSetUp() {
-
-    }
-
-    @Before
-    public void setup(){
-        MasterController.verifySettings();
-    }
 
     @Test
     public void addData(){
@@ -68,15 +54,6 @@ public class TestKyle implements AsyncCallBackManager {
 
         assert(bid1.getDate() > 0);
 
-    }
-
-    @After
-    public void tearDown() {
-        MasterController.shutDown();
-    }
-
-    @AfterClass
-    public static void oneTimeTearDown() {
     }
 
     @Override

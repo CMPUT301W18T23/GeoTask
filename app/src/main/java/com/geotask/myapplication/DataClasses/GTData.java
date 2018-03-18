@@ -1,18 +1,12 @@
 package com.geotask.myapplication.DataClasses;
 
 import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
-import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.geotask.myapplication.Controllers.Helpers.UniqueIDGenerator;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
-import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
