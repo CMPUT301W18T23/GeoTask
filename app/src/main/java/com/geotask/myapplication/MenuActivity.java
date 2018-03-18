@@ -37,7 +37,10 @@ import java.util.concurrent.ExecutionException;
 /*
 *
 * FOR WISHLIST BUTTON LATER https://stackoverflow.com/questions/8244252/star-button-in-android
+*
+* allows for user to use back button without closeing app:
 * https://stackoverflow.com/questions/2354336/android-pressing-back-button-should-exit-the-app
+*
 */
 public class MenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, AsyncCallBackManager {
