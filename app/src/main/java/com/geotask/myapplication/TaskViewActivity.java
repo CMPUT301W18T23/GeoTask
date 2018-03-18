@@ -239,7 +239,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
 
     /**
      * sets up clickavle viewtext to go to User profile
-     * @see ViewProfile
+     * @see ViewProfileActivity
      */
     private void profile(){  //need to wait for viewProfile activity to enable. this has not been tested because of that
         name.setOnClickListener(new View.OnClickListener() {

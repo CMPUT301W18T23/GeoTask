@@ -150,7 +150,13 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
     public void updateTask(Bid bid , Task task){
         task.setAcceptedProviderID(null);
         task.setAccpeptedBidID(null);
-        task.setStatus("Bidded");
+        if (task.getBidList().size() ==0 ){
+            task.setStatus("Requested");
+
+        }else{
+            task.setStatus("Bidded");
+        }
+
 
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
                 new MasterController.AsyncUpdateDocument();
