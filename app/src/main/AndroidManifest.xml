@@ -19,10 +19,6 @@
             android:label="@string/title_activity_menu"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".MainActivity"
-            android:label="@string/title_activity_menu"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".EditProfile"
             android:label="Edit Profile" />
         <activity android:name=".newAddTaskActivity" />
@@ -48,7 +44,7 @@
         <activity
             android:name=".MapActivity"
             android:label="MapActivity" />
-        <activity android:name=".ViewProfile"></activity>
+        <activity android:name=".ViewProfileActivity"></activity>
     </application>
 
 </manifest>

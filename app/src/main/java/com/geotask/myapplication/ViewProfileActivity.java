@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import com.geotask.myapplication.DataClasses.User;
 
-public class ViewProfile extends AppCompatActivity {
+public class ViewProfileActivity extends AppCompatActivity {
     private TextView name;
     private TextView phone;
     private TextView email;

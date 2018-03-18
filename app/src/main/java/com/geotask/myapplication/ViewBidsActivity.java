@@ -188,7 +188,7 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
                 Log.i("LifeCycle --->", bid.getValue().toString() + " clicked");
                 //TODO - Once ViewProfileActivity is added, uncomment this
 
-                Intent intent = new Intent(ViewBidsActivity.this, ViewProfile.class);
+                Intent intent = new Intent(ViewBidsActivity.this, ViewProfileActivity.class);
 //                intent.putExtra("userID", bid.getProviderID());
                 intent.putExtra("user", currentUser);
                 startActivity(intent);

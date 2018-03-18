@@ -15,15 +15,12 @@ import com.geotask.myapplication.DataClasses.User;
 
 import java.util.List;
 
-public class EditProfile extends AppCompatActivity implements AsyncCallBackManager {
+public class EditProfile extends AppCompatActivity {
 
     private EditText userName;
     private EditText userPhone;
     private EditText userEmail;
-
     private Button saveEdit;
-    //private ElasticsearchController newElasticSearch;
-
     private User currentUser;
 
 
@@ -32,17 +29,15 @@ public class EditProfile extends AppCompatActivity implements AsyncCallBackManag
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-       currentUser = (User) getIntent().getSerializableExtra("currentUser");
+        currentUser = (User) getIntent().getSerializableExtra(getString(R.string.CURRENT_USER));
 
-        userName = (EditText) findViewById(R.id.UserName);
+        userName = findViewById(R.id.UserName);
         userName.setText(currentUser.getName());
-        userPhone = (EditText) findViewById(R.id.UserPhone);
+        userPhone = findViewById(R.id.UserPhone);
         userPhone.setText(currentUser.getPhonenum());
-        userEmail = (EditText) findViewById(R.id.UserEmail);
+        userEmail = findViewById(R.id.UserEmail);
         userEmail.setText(currentUser.getEmail());
-
-        saveEdit = (Button) findViewById(R.id.SaveEdit);
-
+        saveEdit = findViewById(R.id.SaveEdit);
         saveEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -61,19 +56,18 @@ public class EditProfile extends AppCompatActivity implements AsyncCallBackManag
             String userEmailString = userEmail.getText().toString().trim();
 
             if(!MasterController.existsProfile(userEmailString)){
-                Toast.makeText(this, "This email has been registered.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.EMAIL_ALREADY_IN_USE_WHEN_REGISTERING_AND_EDITING), Toast.LENGTH_SHORT).show();
             } else {
-                User currentUser = new User(userNameString, userEmailString, userPhoneString);
+                currentUser.setName(userNameString);
+                currentUser.setPhonenum(userPhoneString);
+                currentUser.setEmail(userEmailString);
+
                 MasterController.AsyncUpdateDocument asyncUpdateDocument
                         = new MasterController.AsyncUpdateDocument();
                 asyncUpdateDocument.execute(currentUser);
-                try {
-                    asyncUpdateDocument.get();
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
+
                 Intent intent = new Intent(getBaseContext(), MenuActivity.class);
-                intent.putExtra("currentUser", currentUser);
+                intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
                 startActivity(intent);
             }
         }
@@ -81,31 +75,30 @@ public class EditProfile extends AppCompatActivity implements AsyncCallBackManag
 
     }
 
-    public Boolean isValid() {
+    private Boolean isValid() {
         if (userName.getText().toString().trim().equals("") ) {
-            Toast.makeText(this, "Empty name.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,
+                    R.string.NAME_IS_EMPTY_WHEN_REGISTER_OR_EDITING_USER,
+                    Toast.LENGTH_SHORT)
+                    .show();
             return false;
-        }else if(userName.length() < 8 || userName.length() > 30){
-            Toast.makeText(this,"Name should be in 8 to 30 characters.", Toast.LENGTH_SHORT).show();
+        }else if(userName.length() > 30){
+            Toast.makeText(this,
+                    R.string.NAME_EXCEEDS_30_CHARACTER_WHEN_REGISTER_AND_EDIT_USER,
+                    Toast.LENGTH_SHORT)
+                    .show();
             return false;
         } else if (userName.getText().toString().trim().equals("") && userName.length() < 8 && userName.length() > 30) {
-            Toast.makeText(this, "Empty name.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,
+                    R.string.NAME_IS_EMPTY_WHEN_REGISTER_OR_EDITING_USER,
+                    Toast.LENGTH_SHORT).show();
             return false;
-        } else if (userEmail.getText().toString().trim().equals("")) {
-            Toast.makeText(this, "Empty email.", Toast.LENGTH_SHORT).show();
+        } else if (userName.getText().toString().trim().equals("")) {
+            Toast.makeText(this,
+                    R.string.EMAIL_IS_EMPTY_WHEN_REGISTER_OR_EDITING_USER,
+                    Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
-
     }
-    @Override
-    public void onPostExecute(GTData data) {
-        currentUser = (User) data;
-    }
-
-    @Override
-    public void onPostExecute(List<? extends GTData> searchResult) {
-
-    }
-
 }

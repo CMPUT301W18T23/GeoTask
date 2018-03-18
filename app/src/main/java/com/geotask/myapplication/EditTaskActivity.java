@@ -71,7 +71,7 @@ public class EditTaskActivity extends AppCompatActivity  implements AsyncCallBac
     private void editData() {
         String name =   editTitle.getText().toString();
         String description = editDescription.getText().toString();
-        ValidateTask check = new ValidateTask();
+        UserEntryStringValidator check = new UserEntryStringValidator();
         if (check.checkText(name, description)){
             editTask.setName(name);
             editTask.setDescription(description);

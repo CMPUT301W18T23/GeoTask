@@ -34,7 +34,7 @@ public class LoginActivity extends AppCompatActivity implements AsyncCallBackMan
         Button registerButton = findViewById(R.id.registerButton);
 
         //Check UserName entered in edit text field and log the user in if valid
-        //Sends the user to MainActivity
+        //Sends the user to MenuActivity
         loginButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 login_check();

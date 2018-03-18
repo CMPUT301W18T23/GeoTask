@@ -23,7 +23,6 @@ import com.geotask.myapplication.DataClasses.User;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 
 //https://stackoverflow.com/questions/4127725/how-can-i-remove-a-button-or-make-it-invisible-in-android
@@ -197,7 +196,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         name.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(TaskViewActivity.this, ViewProfile.class);
+                Intent intent = new Intent(TaskViewActivity.this, ViewProfileActivity.class);
                 intent.putExtra(getString(R.string.VIEW_USER), userBeingViewed);
                 startActivity(intent);
             }

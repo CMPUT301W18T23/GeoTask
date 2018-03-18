@@ -8,13 +8,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.MasterController;
-import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
-
-import java.util.List;
 
 
 public class newAddTaskActivity extends AppCompatActivity {
@@ -66,7 +62,7 @@ public class newAddTaskActivity extends AppCompatActivity {
     private void addTask(){
         String titleString = Title.getText().toString().trim();
         String descriptionString = Description.getText().toString().trim();
-        ValidateTask check = new ValidateTask();
+        UserEntryStringValidator check = new UserEntryStringValidator();
         if(check.checkText(titleString, descriptionString)){
             newTask = new Task(currentUser.getObjectID(), titleString, descriptionString);
             MasterController.AsyncCreateNewDocument asyncCreateNewDocument
