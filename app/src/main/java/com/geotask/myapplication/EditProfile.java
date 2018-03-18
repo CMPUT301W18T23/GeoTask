@@ -1,24 +1,19 @@
 package com.geotask.myapplication;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
-import com.geotask.myapplication.Controllers.ElasticsearchController;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.User;
 
-import java.io.IOError;
-import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class EditProfile extends AppCompatActivity implements AsyncCallBackManager {
 

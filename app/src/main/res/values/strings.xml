@@ -14,5 +14,9 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="EMAIL_ALREADY_IN_USE_WHEN_REGISTERING_AND_EDITING">This email has been used.</string>
+    <string name="NAME_IS_EMPTY_WHEN_REGISTER_OR_EDITING_USER">Empty name.</string>
+    <string name="NAME_EXCEEDS_30_CHARACTER_WHEN_REGISTER_AND_EDIT_USER">Name cannot exceed 30 characters</string>
+    <string name="EMAIL_IS_EMPTY_WHEN_REGISTER_OR_EDITING_USER">Empty email.</string>
 
 </resources>

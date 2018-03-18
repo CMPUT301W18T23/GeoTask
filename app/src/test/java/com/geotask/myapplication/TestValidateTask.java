@@ -1,9 +1,8 @@
 package com.geotask.myapplication;
 
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
+
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 /**
  * Created by james on 2018-03-14.

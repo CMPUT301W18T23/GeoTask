@@ -7,8 +7,6 @@ import android.arch.persistence.room.TypeConverters;
 
 import com.geotask.myapplication.Controllers.Helpers.BidListConverter;
 
-import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 

@@ -9,10 +9,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import dalvik.annotation.TestTarget;
 
 @RunWith(AndroidJUnit4.class)
 public class TestFilter {

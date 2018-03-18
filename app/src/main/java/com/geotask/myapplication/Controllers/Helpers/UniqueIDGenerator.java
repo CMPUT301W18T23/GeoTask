@@ -1,7 +1,6 @@
 package com.geotask.myapplication.Controllers.Helpers;
 
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public final class UniqueIDGenerator {
     private static final UniqueIDGenerator generator = new UniqueIDGenerator();
