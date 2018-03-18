@@ -51,21 +51,18 @@ public class EditProfileActivity extends AppCompatActivity {
             String userPhoneString = userPhone.getText().toString().trim();
             String userEmailString = userEmail.getText().toString().trim();
 
-            if(!MasterController.existsProfile(userEmailString)){
-                Toast.makeText(this, getString(R.string.EMAIL_ALREADY_IN_USE_WHEN_REGISTERING_AND_EDITING), Toast.LENGTH_SHORT).show();
-            } else {
-                currentUser.setName(userNameString);
-                currentUser.setPhonenum(userPhoneString);
-                currentUser.setEmail(userEmailString);
 
-                MasterController.AsyncUpdateDocument asyncUpdateDocument
-                        = new MasterController.AsyncUpdateDocument();
-                asyncUpdateDocument.execute(currentUser);
+            currentUser.setName(userNameString);
+            currentUser.setPhonenum(userPhoneString);
+            currentUser.setEmail(userEmailString);
 
-                Intent intent = new Intent(getBaseContext(), MenuActivity.class);
-                intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
-                startActivity(intent);
-            }
+            MasterController.AsyncUpdateDocument asyncUpdateDocument
+                    = new MasterController.AsyncUpdateDocument();
+            asyncUpdateDocument.execute(currentUser);
+            Intent intent = new Intent(getBaseContext(), MenuActivity.class);
+            intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
+            startActivity(intent);
+
         }
 
 

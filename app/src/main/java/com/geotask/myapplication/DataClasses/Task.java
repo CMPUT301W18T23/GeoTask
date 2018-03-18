@@ -51,7 +51,7 @@ public class Task extends GTData{
 
 
 
-	public Task(String requesterID, String name, String description, String location) { //need string for pictures
+	public Task(String requesterID, String name, String description) { //need string for pictures
 		super.setType(Task.class.toString());
 		this.name = name;
 		this.description = description;
@@ -60,7 +60,6 @@ public class Task extends GTData{
 		super.setDate(new Date().getTime());
 		this.accpetedBid = -1.0; //ToDo
 		this.requesterID = requesterID;
-		this.location = location;
 	}
 
 

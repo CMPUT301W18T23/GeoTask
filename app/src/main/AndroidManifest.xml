@@ -24,7 +24,8 @@
             android:label="Edit Profile" />
         <activity android:name=".AddTaskActivity" />
         <activity android:name=".ViewBidsActivity" />
-        <activity android:name=".EditTaskActivity" />
+        <activity android:name=".EditTaskActivity"
+            android:exported= "true"/>
         <activity android:name=".TaskViewActivity" />
         <activity android:name=".LoginActivity">
             <intent-filter>

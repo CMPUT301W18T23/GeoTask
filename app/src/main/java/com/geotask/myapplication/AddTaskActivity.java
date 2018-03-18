@@ -110,7 +110,7 @@ public class AddTaskActivity extends AppCompatActivity {
 
         UserEntryStringValidator check = new UserEntryStringValidator();
         if(check.checkText(titleString, descriptionString)){
-            newTask = new Task(currentUser.getObjectID(), titleString, descriptionString, coordString);
+            newTask = new Task(currentUser.getObjectID(), titleString, descriptionString);
             MasterController.AsyncCreateNewDocument asyncCreateNewDocument
                     = new MasterController.AsyncCreateNewDocument();
             asyncCreateNewDocument.execute(newTask);
