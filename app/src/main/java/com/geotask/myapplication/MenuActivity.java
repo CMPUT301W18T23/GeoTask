@@ -32,6 +32,7 @@ import junit.framework.Assert;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 /*
@@ -97,7 +98,7 @@ public class MenuActivity extends AppCompatActivity
 
                 Task task = taskList.get(position);
                 Intent intent = new Intent(MenuActivity.this, TaskViewActivity.class);
-                intent.putExtra("task", task);
+                intent.putExtra(getString(R.string.TASK_BEING_VIEWED), task);
                 intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
                 startActivity(intent);
             }

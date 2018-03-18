@@ -77,7 +77,7 @@ public class EditTaskActivity extends AppCompatActivity  implements AsyncCallBac
             editTask.setDescription(description);
             updateTask();
             Intent back = new Intent();
-            back.putExtra("updatedTask", editTask);
+            back.putExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT), editTask);
             back.putExtra("currentUser", currentUser);
             setResult(Activity.RESULT_OK, back);
             finish();

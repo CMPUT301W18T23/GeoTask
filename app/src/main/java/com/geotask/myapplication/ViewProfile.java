@@ -19,15 +19,12 @@ public class ViewProfile extends AppCompatActivity {
         setContentView(R.layout.activity_view_profile);
 
         Intent intent = getIntent();
-        this.viewUser = (User)intent.getSerializableExtra("user");
-        this.name = (TextView)findViewById(R.id.profileName);
-        this.phone = (TextView)findViewById(R.id.profilePhone);
-        this.email = (TextView)findViewById(R.id.profileEmail);
+        this.viewUser = (User)intent.getSerializableExtra(getString(R.string.VIEW_USER));
+        this.name = findViewById(R.id.profileName);
+        this.phone = findViewById(R.id.profilePhone);
+        this.email = findViewById(R.id.profileEmail);
         this.name.setText(viewUser.getName());
         this.phone.setText(viewUser.getPhonenum());
         this.email.setText(viewUser.getEmail());
-
-
-
     }
 }

@@ -45,7 +45,7 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         setContentView(R.layout.activity_view_bids);
 
 
-        currentUser = (User) getIntent().getSerializableExtra("currentUser"); //ToDo switch to Parcelable
+        currentUser = (User) getIntent().getSerializableExtra(getString(R.string.CURRENT_USER)); //ToDo switch to Parcelable
 
         oldBids = (ListView) findViewById(R.id.bidListView);
         bidList = new ArrayList<Bid>();
@@ -92,7 +92,7 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
     protected void onStart() {
         super.onStart();
         Log.i("LifeCycle --->", "onStart is called");
-        this.task = (Task) getIntent().getSerializableExtra("task");
+        this.task = (Task) getIntent().getSerializableExtra(getString(R.string.CURRENT_TASK_BEING_VIEWED));
         Log.i("LifeCycle --->", "extracted task with name:" + this.task.getName());
         Log.i("LifeCycle --->", "extracted user with name:" + this.currentUser.getName());
         //populate the array on start

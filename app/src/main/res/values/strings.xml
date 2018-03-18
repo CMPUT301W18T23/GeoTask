@@ -23,5 +23,11 @@
     <string name="MODE_ALL">all</string>
     <string name="MODE_REQUESTER">Requester</string>
     <string name="MODE_PROVIDER">Provider</string>
+    <string name="INVALID_TASK_DATA_WHEN_CREATING_NEW_TASK">Please enter valid task data.</string>
+    <string name="TASK_BEING_VIEWED">task</string>
+    <string name="UPDATED_TASK_AFTER_EDIT">updatedTask</string>
+    <string name="TASK_STATUS_BIDDED">Bidded</string>
+    <string name="CURRENT_TASK_BEING_VIEWED">Task</string>
+    <string name="VIEW_USER">user_being_viewed</string>
 
 </resources>
