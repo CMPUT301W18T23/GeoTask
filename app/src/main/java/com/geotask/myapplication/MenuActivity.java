@@ -37,7 +37,7 @@ import java.util.concurrent.ExecutionException;
 /*
 *
 * FOR WISHLIST BUTTON LATER https://stackoverflow.com/questions/8244252/star-button-in-android
-*
+* https://stackoverflow.com/questions/2354336/android-pressing-back-button-should-exit-the-app
 */
 public class MenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, AsyncCallBackManager {
@@ -162,9 +162,17 @@ public class MenuActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
+        }else{
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         }
+//        else {
+//            super.onBackPressed();
+//        }
+//
+
     }
 
     @Override
