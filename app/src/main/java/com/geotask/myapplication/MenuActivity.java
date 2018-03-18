@@ -123,6 +123,8 @@ public class MenuActivity extends AppCompatActivity
     @Override
     protected void onResume(){
         super.onResume();
+        populateTaskView();
+
     }
 
     @Override
@@ -199,6 +201,7 @@ public class MenuActivity extends AppCompatActivity
             startActivity(intent);
         } else if (id == R.id.nav_logout) {
             Intent intent = new Intent(getBaseContext(), LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
 
         }  else if (id == R.id.nav_requester) {
