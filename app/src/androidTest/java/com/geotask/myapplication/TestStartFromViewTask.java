@@ -8,6 +8,7 @@ import android.support.test.espresso.contrib.NavigationViewActions;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.view.Gravity;
+import android.view.Menu;
 
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Task;
@@ -80,18 +81,14 @@ public class TestStartFromViewTask {
     @Test
     public void testAddBidShouldLetYouAddBidIfProviderModeAndNotYourOwnTask() {
 
-        onView(withId(R.id.drawer_layout))
-                .check(matches(isClosed(Gravity.LEFT)))
-                .perform(DrawerActions.open());
 
-        onView(withId(R.id.nav_view))
-                .perform(NavigationViewActions.navigateTo(R.id.nav_provider));
 
         String targetUserId = "testAddBidShouldLetYouAddBidIfProviderModeAndNotYourOwnTask_id";
-
+        String requesterId = "testAddBidShouldLetYouAddBidIfProviderModeAndNotYourOwnTask_id2";
         Task task = new Task(targetUserId, "TestTest", "TestTest", "2234");
         User user = new User("testtestUser", "testtestUser", "testtestUser");
         user.setObjectID(targetUserId);
+        task.setRequesterID(requesterId);
 
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
@@ -101,6 +98,8 @@ public class TestStartFromViewTask {
         result.putExtra("currentUser", user);
 
         activityRule.launchActivity(result);
+
+
 
         onView(withId(R.id.addBidButton))
                 .perform(click());
