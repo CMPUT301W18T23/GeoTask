@@ -10,6 +10,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.view.Gravity;
 
 import com.geotask.myapplication.Controllers.MasterController;
+import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
 import org.junit.BeforeClass;
@@ -19,14 +20,18 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 
+import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.contrib.DrawerMatchers.isClosed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static org.hamcrest.CoreMatchers.anything;
 
 @RunWith(AndroidJUnit4.class)
 public class TestStoryOneBasicUserInteractions {
@@ -78,7 +83,7 @@ public class TestStoryOneBasicUserInteractions {
 
     //1.b
     @Test
-    public void testRequestNewTask() {
+    public void testRequestNewTask() throws InterruptedException {
         User user = new User("KehanWang", "kehan1@ualberta.ca", "7808858151");
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
@@ -90,22 +95,62 @@ public class TestStoryOneBasicUserInteractions {
                 .perform(clearText(),typeText("cmput301 project."),closeSoftKeyboard());
         onView(withId(R.id.TaskDescription))
                 .perform(clearText(),typeText("Project 4 user case test bugs."),closeSoftKeyboard());
+        Thread.sleep(1000);
+
 
         onView(withId(R.id.TaskSave))
                 .perform(click());
+        Thread.sleep(1000);
+
+        onView(withId(R.id.drawer_layout))
+                .check(matches(isClosed(Gravity.LEFT)))
+                .perform(DrawerActions.open());
+        Thread.sleep(1000);
+
+        onView(withId(R.id.nav_view))
+                .perform(NavigationViewActions.navigateTo(R.id.nav_requester));
+        Thread.sleep(1000);
+
+        onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).perform(click());
 
     }
 
     //1.c
     @Test
     public void testViewMyTasksAsRequester() throws InterruptedException {
-
+        String userId = "requester";
         User user = new User("KehanWang", "kehan1@ualberta.ca", "7808858151");
+        user.setObjectID(userId);
+        Task task = new Task (userId,"Cmput301", "TestStory1 bugs");
+        MasterController.AsyncCreateNewDocument asyncCreateNewDocument
+                = new MasterController.AsyncCreateNewDocument();
+        asyncCreateNewDocument.execute(user, task);
+
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent result = new Intent(targetContext, MenuActivity.class);
         result.putExtra("currentUser", user);
+        result.putExtra("task", task);
         testMenu.launchActivity(result);
+
+
+        onView(withId(R.id.drawer_layout))
+                .check(matches(isClosed(Gravity.LEFT)))
+                .perform(DrawerActions.open());
+        Thread.sleep(1000);
+
+        onView(withId(R.id.nav_view))
+                .perform(NavigationViewActions.navigateTo(R.id.nav_requester));
+        Thread.sleep(1000);
+
+
+       // onView(withId(R.id.taskListView)).check(matches(withAdaptorData));
+
+        onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).perform(click());
+        pressBack();
+        //onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).check(doesNotExist());
+
+
 
 
 
@@ -118,22 +163,100 @@ public class TestStoryOneBasicUserInteractions {
 
     //1.d
     @Test
-    public void testDeleteTask() {
+    public void testDeleteTask() throws InterruptedException {
+        String userId = "requester";
+        User user = new User("KehanWang", "kehan1@ualberta.ca", "7808858151");
+        user.setObjectID(userId);
+        Task task = new Task (userId,"Cmput301", "TestStory1 bugs");
+        MasterController.AsyncCreateNewDocument asyncCreateNewDocument
+                = new MasterController.AsyncCreateNewDocument();
+        asyncCreateNewDocument.execute(user, task);
+
+        Context targetContext =
+                InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Intent result = new Intent(targetContext, MenuActivity.class);
+        result.putExtra("currentUser", user);
+        result.putExtra("task", task);
+        testMenu.launchActivity(result);
 
 
+        onView(withId(R.id.drawer_layout))
+                .check(matches(isClosed(Gravity.LEFT)))
+                .perform(DrawerActions.open());
+        Thread.sleep(1000);
 
+        onView(withId(R.id.nav_view))
+                .perform(NavigationViewActions.navigateTo(R.id.nav_requester));
+        Thread.sleep(1000);
+
+        onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).perform(click());
+        Thread.sleep(1000);
+
+        onView(withId(R.id.editTaskButton)).perform(click());
+        Thread.sleep(1000);onView(withId(R.id.deleteButton)).perform(click());
+        Thread.sleep(1000);
+
+        onData(anything()).inAdapterView(withId(R.id.taskListView)).check(doesNotExist());
+        //onView((withId(R.id.taskListView))).check(doesNotExist());
+        Thread.sleep(1000);
 
     }
 
     //1.e
     @Test
-    public void testLogout() {
+    public void testLogout() throws InterruptedException {
+        User user = new User("KehanWang", "kehan1@ualberta.ca", "7808858151");
+        Context targetContext =
+                InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Intent result = new Intent(targetContext, MenuActivity.class);
+        result.putExtra("currentUser", user);
+        testMenu.launchActivity(result);
 
+        onView(withId(R.id.drawer_layout))
+                .check(matches(isClosed(Gravity.LEFT)))
+                .perform(DrawerActions.open());
+        Thread.sleep(1000);
+
+        onView(withId(R.id.nav_view))
+                .perform(NavigationViewActions.navigateTo(R.id.nav_logout));
+        Thread.sleep(1000);
+        onView(withId(R.id.emailText)).perform(click());
+        Thread.sleep(1000);
     }
 
     //1.f
     @Test
-    public void testViewAllAvailableTasks() {
+    public void testViewAllAvailableTasks() throws InterruptedException {
+        String userId = "requester";
+        User user = new User("KehanWang", "kehan1@ualberta.ca", "7808858151");
+        user.setObjectID(userId);
+        Task task = new Task (userId,"Cmput301", "TestStory1 bugs");
+        Task task2 = new Task ("provider", "Cmput3012", "test view all availble tasks");
+        MasterController.AsyncCreateNewDocument asyncCreateNewDocument
+                = new MasterController.AsyncCreateNewDocument();
+        asyncCreateNewDocument.execute(user, task,task2);
+
+        Context targetContext =
+                InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Intent result = new Intent(targetContext, MenuActivity.class);
+        result.putExtra("currentUser", user);
+        result.putExtra("task", task);
+        result.putExtra("task",task2);
+        testMenu.launchActivity(result);
+
+
+        onView(withId(R.id.drawer_layout))
+                .check(matches(isClosed(Gravity.LEFT)))
+                .perform(DrawerActions.open());
+        Thread.sleep(1000);
+
+        onView(withId(R.id.nav_view))
+                .perform(NavigationViewActions.navigateTo(R.id.nav_all));
+        Thread.sleep(1000);
+
+        onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).perform(click());
+        pressBack();
+        onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(1).perform(click());
 
     }
 
