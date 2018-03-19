@@ -169,17 +169,20 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         adapter = new BidArrayAdapter(this, R.layout.bid_list_item, bidList);
         oldBids.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-        if (bid.getProviderID().equals(task.getAcceptedProviderID())){
-            updateTask(bid, task);
-        }
+        updateTask(bid, task);
     }
     public void updateTask(Bid bid , Task task){
-        task.setAcceptedProviderID(null);
-        task.setAccpeptedBidID(null);
-        if (bidList.size() ==0 ){
+
+        if (bid.getObjectID().equals(task.getAccpeptedBidID())){
+            task.setAcceptedProviderID(null);
+            task.setAccpeptedBidID(null);
+            if (bidList.size() ==0 ){
+                task.setStatus("Requested");
+            }else{
+                task.setStatus("Bidded");
+            }
+        }else if (bidList.size() ==0){
             task.setStatus("Requested");
-        }else{
-            task.setStatus("Bidded");
         }
 
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
