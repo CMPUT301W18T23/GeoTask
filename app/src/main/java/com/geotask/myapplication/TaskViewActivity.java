@@ -81,6 +81,12 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         } else {
             editTaskButton.setVisibility(View.INVISIBLE);
             addBidButton.setVisibility(View.VISIBLE);
+
+            //Increasing Hits
+            currentTask.addHit();
+            MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                    new MasterController.AsyncUpdateDocument();
+            asyncUpdateDocument.execute(currentTask);
         }
     }
 
@@ -104,7 +110,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
                 Intent intent = new Intent(TaskViewActivity.this, ViewBidsActivity.class);
                 intent.putExtra(getString(R.string.CURRENT_TASK_BEING_VIEWED), currentTask);
                 intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
-                startActivity(intent);
+                startActivityForResult(intent, 2);
                 updateStatus();  //for later ToDo ?????
             }
         });
@@ -159,6 +165,11 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
                 this.currentTask = (Task) data.getSerializableExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT));  //need to return that in implementation
                 updateDisplayedValues();
             }
+        }else if (requestCode == 2){
+            if (resultCode == Activity.RESULT_OK) {
+                this.currentTask = (Task) data.getSerializableExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT));  //need to return that in implementation
+                updateDisplayedValues();
+            }
         }
     }
 
@@ -196,11 +207,13 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
             @Override
             public void onClick(View v)
             {
-                POPUP_WINDOW_DELETION.dismiss();
-//                String test = value.getText().toString();
-//                System.out.print(test);
-                Double number = Double.parseDouble(value.getText().toString());
-                addBid(number);
+
+                if (!value.getText().toString().isEmpty()) {
+                    POPUP_WINDOW_DELETION.dismiss();
+                    Double number = Double.parseDouble(value.getText().toString());
+                    addBid(number);
+
+                }
                 //TODO - go back to previous intent
             }
         });
@@ -220,7 +233,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
                 new MasterController.AsyncCreateNewDocument();
         asyncCreateNewDocument.execute(bid);
 
-        if (currentTask.getStatus() != getString(R.string.TASK_STATUS_BIDDED)) {
+        if (currentTask.getStatus().equals(getString(R.string.TASK_STATUS_BIDDED))) {
             taskBidded(); //need to uncomment when taskId is given
             updateDisplayedValues();
         }
@@ -239,7 +252,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
 
     /**
      * sets up clickavle viewtext to go to User profile
-     * @see ViewProfile
+     * @see ViewProfileActivity
      */
     private void profile(){  //need to wait for viewProfile activity to enable. this has not been tested because of that
         name.setOnClickListener(new View.OnClickListener() {

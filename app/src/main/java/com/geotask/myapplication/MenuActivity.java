@@ -49,6 +49,7 @@ public class MenuActivity extends AppCompatActivity
     private ArrayList<Task> taskList;
     private ArrayAdapter<Task> adapter;
     private String mode;
+    private String filters;
     private FloatingActionButton fab;
     private User currentUser;
 
@@ -68,6 +69,13 @@ public class MenuActivity extends AppCompatActivity
         oldTasks.setAdapter(adapter);
 
         mode = getString(R.string.MODE_ALL);
+        filters = "";
+        try {
+            filters = getIntent().getStringExtra("searchFilters");
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            filters = "";
+        }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -117,7 +125,6 @@ public class MenuActivity extends AppCompatActivity
         //Log.i("LifeCycle --->", "onStart is called");
         //populate the array on start
         fab.hide();
-        populateTaskView();
         //TODO - need to get the mode of user, assuming all rn
 
 
@@ -145,6 +152,14 @@ public class MenuActivity extends AppCompatActivity
         if(mode.compareTo(getString(R.string.MODE_REQUESTER)) == 0){
             builder1.put("requesterID", currentUser.getObjectID());
         }
+        try {
+            if(!filters.equals("")) {
+                builder1.put("description", filters);
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
 
         MasterController.AsyncSearch asyncSearch =
                 new MasterController.AsyncSearch(this);
