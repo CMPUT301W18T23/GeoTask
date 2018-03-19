@@ -22,8 +22,11 @@ import java.io.IOException;
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.pressBack;
+import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.replaceText;
+import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -85,7 +88,7 @@ public class TestStoryFiveTaskBiddingInteractions {
         testPlaceBidActivityRule.launchActivity(intent);
 
         onView(withId(R.id.addBidButton)).perform(click());
-        onView(withId(R.id.editTextAmmount)).perform(replaceText("333"));
+        onView(withId(R.id.editTextAmmount)).perform(clearText(),typeText("233"),closeSoftKeyboard());
         onView(withId(R.id.btn_accept_bid)).perform(click());
         onView(withId(R.id.bidsButton)).perform(click());
 
