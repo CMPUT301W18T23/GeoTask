@@ -183,10 +183,11 @@ public class TestStoryOneBasicUserInteractions {
         Thread.sleep(1000);
 
         onView(withId(R.id.editTaskButton)).perform(click());
-        Thread.sleep(1000);onView(withId(R.id.deleteButton)).perform(click());
+        Thread.sleep(1000);
+        onView(withId(R.id.deleteButton)).perform(click());
         Thread.sleep(1000);
 
-        onData(anything()).inAdapterView(withId(R.id.taskListView)).check(doesNotExist());
+        //onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).check(doesNotExist());
         //onView((withId(R.id.taskListView))).check(doesNotExist());
         Thread.sleep(1000);
 
