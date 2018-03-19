@@ -52,6 +52,18 @@ public class TestElasticSearch implements AsyncCallBackManager {
     }
 
     @Test
+    public void kyleSetUp() {
+        MasterController.verifySettings();
+        MasterController.setTestSettings(TestServerAddress.getTestAddress());
+        try {
+            MasterController.deleteIndex();
+            MasterController.createIndex();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
     public void testAsyncCreateAndGetBid() throws InterruptedException {
         Bid bid = new Bid("test async ProviderID", 1.2, "test async taskID");
 

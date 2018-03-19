@@ -384,7 +384,12 @@ public class Task extends GTData{
 	public void syncBidData(){
 		ArrayList<Double> newVals = new GetLowestBidFromServer().searchAndReturnLowest(this);
 		assert(newVals.size() == 2);
-		this.setNumBids(newVals.get(1).intValue());
-		this.setLowestBid(newVals.get(0));
+		this.numBids = newVals.get(1).intValue();
+		this.lowestBid = newVals.get(0);
+		if(this.getNumBids() == 0){
+			this.setStatusRequested();
+		} else if (this.getNumBids() > 0){
+			this.setStatusBidded();
+		}
 	}
 }

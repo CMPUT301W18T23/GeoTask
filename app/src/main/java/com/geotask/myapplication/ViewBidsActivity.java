@@ -178,12 +178,12 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         if (bid.getObjectID().equals(task.getAccpeptedBidID())){
             task.setAcceptedProviderID(null);
             task.setAccpeptedBidID(null);
-            if (bidList.size() ==0 ){
-                task.setStatus("Requested");
-            }else{
-                task.setStatus("Bidded");
-            }
-        }else if (bidList.size() ==0){
+        if (bidList.size() ==0 ){
+            task.setStatus("Requested");
+        } else {
+            task.setStatus("Bidded");
+        }
+        } else if (bidList.size() ==0){
             task.setStatus("Requested");
         }
         Intent back = new Intent();
@@ -192,7 +192,11 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         back.putExtra("del", "1");
 
         setResult(Activity.RESULT_OK, back);
-
+        try {
+            Thread.sleep(400);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
                 new MasterController.AsyncUpdateDocument();
         asyncUpdateDocument.execute(task);

@@ -113,7 +113,7 @@ public FastTaskArrayAdapter(Context context, int resource, ArrayList<Task> objec
             headerSub.desc.setText(item.getDescription());
             headerSub.date.setText(item.getDateString());
 
-            Log.i("-------->", item.getDateString());
+            Log.i("-------->", item.getObjectID());
 
             /*
                 Setting the icon for the task
