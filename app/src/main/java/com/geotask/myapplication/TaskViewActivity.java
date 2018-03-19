@@ -148,7 +148,6 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         this.status.setText(currentTask.getStatus());
     }
 
-
     /**
      * handles return from editTaskACtivity
      * if it was edit, it updates locally the data.

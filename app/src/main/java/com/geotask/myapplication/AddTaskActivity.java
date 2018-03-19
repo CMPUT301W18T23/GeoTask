@@ -136,6 +136,11 @@ public class AddTaskActivity extends AppCompatActivity {
 
             Intent intent = new Intent(getBaseContext(), MenuActivity.class);
             intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             startActivity(intent);
 
         }else{
