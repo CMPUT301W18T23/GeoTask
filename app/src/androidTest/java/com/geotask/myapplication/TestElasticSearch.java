@@ -56,7 +56,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
     //@Ignore
     public void kyleSetUp() {
         MasterController.verifySettings();
-        MasterController.setTestSettings(TestServerAddress.getTestAddress());
+        //MasterController.setTestSettings(TestServerAddress.getTestAddress());
         try {
             MasterController.deleteIndex();
             MasterController.createIndex();
