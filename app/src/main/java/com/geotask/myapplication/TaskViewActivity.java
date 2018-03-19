@@ -85,6 +85,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
 
             //Increasing Hits
             currentTask.addHit();
+            //currentTask.syncBidData();
             MasterController.AsyncUpdateDocument asyncUpdateDocument =
                     new MasterController.AsyncUpdateDocument();
             asyncUpdateDocument.execute(currentTask);
@@ -240,7 +241,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         }
 
         if (currentTask.getStatus().equals("Requested")) {
-            taskBidded(); //need to uncomment when taskId is given
+            //taskBidded(); //need to uncomment when taskId is given
             updateDisplayedValues();
         }
         currentTask.incrementNumBids();
@@ -259,7 +260,6 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
      */
     private void taskBidded() {  //this should hopefully work when get really data to get
         currentTask.setStatus(getString(R.string.TASK_STATUS_BIDDED));
-        currentTask.syncBidData();
         try {
             Thread.sleep(400);
         } catch (InterruptedException e) {

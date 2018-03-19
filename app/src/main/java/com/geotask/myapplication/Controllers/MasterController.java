@@ -217,4 +217,14 @@ public class MasterController {
 
     }
 
+    public static List<? extends GTData> slowSearch(AsyncArgumentWrapper argument){
+        List<? extends GTData> resultList = null;
+        try {
+            resultList = controller.search(argument.getSearchQuery(), argument.getType());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return resultList;
+    }
+
 }

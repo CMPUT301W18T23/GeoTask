@@ -1,6 +1,7 @@
 package com.geotask.myapplication.Controllers.Helpers;
 
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
+import com.geotask.myapplication.Controllers.ElasticsearchController;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
@@ -25,9 +26,13 @@ public class GetLowestBidFromServer implements AsyncCallBackManager {
         builder.put("taskID", task.getObjectID());
 
         //perform the search
+        MasterController.slowSearch(new AsyncArgumentWrapper(builder, Bid.class));
+
         MasterController.AsyncSearch asyncSearch =
                 new MasterController.AsyncSearch(this);
         asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
+
+
 
         List<Bid> result = null;
         ArrayList<Bid> bidList;
@@ -35,6 +40,7 @@ public class GetLowestBidFromServer implements AsyncCallBackManager {
         try {
             //get the result
             result = (List<Bid>) asyncSearch.get();
+            //result = (List<Bid>) MasterController.slowSearch(new AsyncArgumentWrapper(builder, Bid.class));
             bidList = new ArrayList<Bid>(result);
 
         /*
