@@ -68,7 +68,7 @@ public class TestStoryThreeUserProfileInteractions {
         onView(withId(R.id.newPhone)).perform(replaceText(newphone));
         onView(withId(R.id.newEmail)).perform(replaceText(newemail));
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -76,7 +76,7 @@ public class TestStoryThreeUserProfileInteractions {
 
         onView(withId(R.id.emailText)).perform(replaceText(newemail));
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -95,7 +95,7 @@ public class TestStoryThreeUserProfileInteractions {
 
         onView(withId(R.id.emailText)).perform(replaceText(newemail));
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -104,7 +104,7 @@ public class TestStoryThreeUserProfileInteractions {
                 .check(matches(isClosed(Gravity.LEFT)))
                 .perform(DrawerActions.open());
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -114,7 +114,7 @@ public class TestStoryThreeUserProfileInteractions {
         onView(withId(R.id.UserEmail)).perform(replaceText("email2"));
         onView(withId(R.id.UserPhone)).perform(replaceText("phone2"));
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -128,7 +128,7 @@ public class TestStoryThreeUserProfileInteractions {
         onView(withId(R.id.UserEmail)).check(matches(withText(startsWith("email2"))));
         onView(withId(R.id.UserPhone)).check(matches(withText(startsWith("phone2"))));
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
