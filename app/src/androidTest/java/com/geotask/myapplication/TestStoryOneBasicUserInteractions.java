@@ -149,16 +149,6 @@ public class TestStoryOneBasicUserInteractions {
         onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).perform(click());
         pressBack();
         //onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).check(doesNotExist());
-
-
-
-
-
-
-
-
-
-
     }
 
     //1.d
