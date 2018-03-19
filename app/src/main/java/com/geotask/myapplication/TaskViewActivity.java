@@ -110,7 +110,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
                 Intent intent = new Intent(TaskViewActivity.this, ViewBidsActivity.class);
                 intent.putExtra(getString(R.string.CURRENT_TASK_BEING_VIEWED), currentTask);
                 intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
-                startActivity(intent);
+                startActivityForResult(intent, 2);
                 updateStatus();  //for later ToDo ?????
             }
         });
@@ -162,6 +162,11 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
                 if ("1".equals(data.getStringExtra("del"))){
                     finish();
                 }
+                this.currentTask = (Task) data.getSerializableExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT));  //need to return that in implementation
+                updateDisplayedValues();
+            }
+        }else if (requestCode == 2){
+            if (resultCode == Activity.RESULT_OK) {
                 this.currentTask = (Task) data.getSerializableExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT));  //need to return that in implementation
                 updateDisplayedValues();
             }
@@ -228,7 +233,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
                 new MasterController.AsyncCreateNewDocument();
         asyncCreateNewDocument.execute(bid);
 
-        if (currentTask.getStatus() != getString(R.string.TASK_STATUS_BIDDED)) {
+        if (currentTask.getStatus().equals(getString(R.string.TASK_STATUS_BIDDED))) {
             taskBidded(); //need to uncomment when taskId is given
             updateDisplayedValues();
         }
