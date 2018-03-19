@@ -67,13 +67,20 @@ public class TestStoryThreeUserProfileInteractions {
         onView(withId(R.id.newName)).perform(replaceText(newname));
         onView(withId(R.id.newPhone)).perform(replaceText(newphone));
         onView(withId(R.id.newEmail)).perform(replaceText(newemail));
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         onView(withId(R.id.newSave)).perform(click());
+
         onView(withId(R.id.emailText)).perform(replaceText(newemail));
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         onView(withId(R.id.loginButton)).perform(click());
-
-
-
-
     }
 
     //3.b
@@ -87,22 +94,41 @@ public class TestStoryThreeUserProfileInteractions {
         LoginActivityTestRule.launchActivity(intent);
 
         onView(withId(R.id.emailText)).perform(replaceText(newemail));
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         onView(withId(R.id.loginButton)).perform(click());
         onView(withId(R.id.drawer_layout))
                 .check(matches(isClosed(Gravity.LEFT)))
                 .perform(DrawerActions.open());
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.nav_profile));
 
         onView(withId(R.id.UserName)).perform(replaceText("name2"));
         onView(withId(R.id.UserEmail)).perform(replaceText("email2"));
         onView(withId(R.id.UserPhone)).perform(replaceText("phone2"));
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         onView(withId(R.id.SaveEdit)).perform(click());
 
         onView(withId(R.id.drawer_layout))
                 .check(matches(isClosed(Gravity.LEFT)))
                 .perform(DrawerActions.open());
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.nav_profile));
-
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 
