@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,6 +55,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i("LifeCycle --->", "in viewtask");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_view);
 
@@ -240,10 +242,10 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         }
 
         if (currentTask.getStatus().equals("Requested")) {
-            //taskBidded(); //need to uncomment when taskId is given
-            //updateDisplayedValues();
+            taskBidded(); //need to uncomment when taskId is given
+            updateDisplayedValues();
         }
-        currentTask.incrementNumBids();
+        //currentTask.incrementNumBids();
         try {
             Thread.sleep(400);
         } catch (InterruptedException e) {

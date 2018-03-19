@@ -190,7 +190,7 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         back.putExtra(getString(R.string.CURRENT_USER), currentUser);
         back.putExtra("del", "1");
 
-        task.syncBidData();
+        //task.syncBidData();
         setResult(Activity.RESULT_OK, back);
         try {
             Thread.sleep(400);

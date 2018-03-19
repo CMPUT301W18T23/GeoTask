@@ -50,18 +50,20 @@ import java.util.concurrent.ExecutionException;
 
 public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCallBackManager {
 
-private Context context;
-private int layoutResourceId;
-private ArrayList<Task> tdata = null;
-private GTData data = null;
-private List<? extends GTData> searchResult = null;
+    private Context context;
+    private int layoutResourceId;
+    private ArrayList<Task> tdata = null;
+    private GTData data = null;
+    private List<? extends GTData> searchResult = null;
+    private Task updateTask;
 
 
-public FastTaskArrayAdapter(Context context, int resource, ArrayList<Task> objects){
+public FastTaskArrayAdapter(Context context, int resource, ArrayList<Task> objects, Task updateTask){
         super(context, resource, objects);
         this.layoutResourceId = resource;
         this.context = context;
         this.tdata = objects;
+        this.updateTask = updateTask;
         }
 
     @SuppressLint("CutPasteId")
@@ -101,13 +103,16 @@ public FastTaskArrayAdapter(Context context, int resource, ArrayList<Task> objec
             row.setTag(headerSub);
 
             } else {
-            headerSub = (HeaderSub) row.getTag();
+                headerSub = (HeaderSub) row.getTag();
             }
 
             /*
                 Setting the TextView values
              */
             Task item = tdata.get(position);
+
+
+
             headerSub.name.setText(item.getName());
             headerSub.hits.setText(String.format("Viewed %d times", item.getHitCounter()));
             headerSub.desc.setText(item.getDescription());
@@ -115,7 +120,71 @@ public FastTaskArrayAdapter(Context context, int resource, ArrayList<Task> objec
 
             Log.i("-------->", item.getObjectID());
 
-            /*
+            if((updateTask != null) && (updateTask.getObjectID().compareTo(item.getObjectID())) == 0){
+                 /*
+                    Finding the lowest bid, and number of bids
+                 */
+
+
+                //make the query
+                SuperBooleanBuilder builder = new SuperBooleanBuilder();
+                builder.put("taskID", item.getObjectID());
+
+                //perform the search
+                MasterController.AsyncSearch asyncSearch =
+                        new MasterController.AsyncSearch(this);
+                asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
+
+                List<Bid> result = null;
+                ArrayList<Bid> bidList;
+
+                try {
+                    //get the result
+                    result = (List<Bid>) asyncSearch.get();
+                    bidList = new ArrayList<Bid>(result);
+                    Double lowest = -1.0;
+                    /*
+                        set the lowestBid TextView
+                     */
+
+                    if(bidList.size() == 0){
+                        headerSub.lowestBid.setText("");                            //give no text
+                        item.setStatusRequested();                                  //change the status
+                    } else  if(bidList.size() == 1) {
+                        lowest = bidList.get(0).getValue();
+                        headerSub.lowestBid.setText(String.format("Lowest Bid: %.2f", lowest)); //set text
+                    } else {
+                        lowest = bidList.get(0).getValue();
+                        for(Bid bid : bidList){                                     //iterate to find lowest
+                            if(bid.getValue() < lowest){
+                                lowest = bid.getValue();
+                            }
+                        }
+                        headerSub.lowestBid.setText(String.format("Lowest Bid: %.2f", lowest)); //set text
+                    }
+                    headerSub.bids.setText(String.format("Bids: %d", bidList.size()));
+
+                    item.setLowestBid(lowest);
+                    item.setNumBids(bidList.size());
+                    MasterController.AsyncUpdateDocument asyncUpdateDocument =  //update the status
+                            new MasterController.AsyncUpdateDocument();
+                    asyncUpdateDocument.execute(item);
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                if((item.getLowestBid() != null) && (item.getLowestBid() >= 0)) {
+                    headerSub.lowestBid.setText(String.format("Lowest Bid: %.2f", item.getLowestBid()));
+                }
+
+                if((item.getNumBids() != null) && (item.getNumBids() >= 0)){
+                    headerSub.bids.setText(String.format("Bids: %d", item.getNumBids()));
+                }
+            }
+
+             /*
                 Setting the icon for the task
              */
             if (item.getStatus().compareTo("Accepted") == 0){
@@ -126,14 +195,6 @@ public FastTaskArrayAdapter(Context context, int resource, ArrayList<Task> objec
                 headerSub.icon.setImageResource(R.drawable.ic_cisco_webex_grey600_24dp);
             } else {
                 headerSub.icon.setImageResource(R.drawable.ic_circle_outline_grey600_24dp);
-            }
-
-            if((item.getLowestBid() != null) && (item.getLowestBid() >= 0)) {
-                headerSub.lowestBid.setText(String.format("Lowest Bid: %.2f", item.getLowestBid()));
-            }
-
-            if((item.getNumBids() != null) && (item.getNumBids() >= 0)){
-                headerSub.bids.setText(String.format("Bids: %d", item.getNumBids()));
             }
 
             if(item.getStatus().compareTo("Accepted") == 0){

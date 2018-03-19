@@ -24,6 +24,7 @@ import com.geotask.myapplication.Adapters.FastTaskArrayAdapter;
 import com.geotask.myapplication.Adapters.TaskArrayAdapter;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
+import com.geotask.myapplication.Controllers.Helpers.GetLowestBidFromServer;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
@@ -72,6 +73,7 @@ public class MenuActivity extends AppCompatActivity
     ImageView drawerImage;
     TextView drawerUsername;
     TextView drawerEmail;
+    Task lastClickedTask = null;
 
 
     @Override
@@ -85,7 +87,7 @@ public class MenuActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         oldTasks = findViewById(R.id.taskListView);
         taskList = new ArrayList<>();
-        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, taskList);
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, taskList, lastClickedTask);
         oldTasks.setAdapter(adapter);
 
         mode = getString(R.string.MODE_ALL);
@@ -136,10 +138,12 @@ public class MenuActivity extends AppCompatActivity
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 Task task = taskList.get(position);
+                lastClickedTask = task;
                 Intent intent = new Intent(MenuActivity.this, TaskViewActivity.class);
                 intent.putExtra(getString(R.string.TASK_BEING_VIEWED), task);
                 intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
                 startActivity(intent);
+                Log.i("LifeCycle --->", "after activity return");
             }
         });
 
@@ -167,7 +171,6 @@ public class MenuActivity extends AppCompatActivity
     protected void onResume(){
         super.onResume();
         populateTaskView();
-
         headerView = navigationView.getHeaderView(0);
         drawerImage = (ImageView) headerView.findViewById(R.id.drawer_image);
         drawerUsername = (TextView) headerView.findViewById(R.id.drawer_name);
@@ -177,7 +180,29 @@ public class MenuActivity extends AppCompatActivity
         drawerUsername.setText(currentUser.getName());
         drawerEmail.setText(currentUser.getEmail());
 
-        adapter.notifyDataSetChanged();
+        /*
+        if(lastClickedTask != null){
+            ArrayList<Double> temp = new GetLowestBidFromServer().searchAndReturnLowest(lastClickedTask);
+            Log.i("LifeCycle --->", "resetting a thing " + temp.get(1).toString() + " "  + temp.get(0).toString());
+            lastClickedTask.syncBidData();
+            try {
+                Thread.sleep(400);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                    new MasterController.AsyncUpdateDocument();
+            asyncUpdateDocument.execute(lastClickedTask);
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            populateTaskView();
+        }
+        */
+
 
     }
 
@@ -215,11 +240,12 @@ public class MenuActivity extends AppCompatActivity
         asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
 
         try {
+            taskList.clear();
             taskList = (ArrayList<Task>) asyncSearch.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, taskList);
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, taskList, lastClickedTask);
         oldTasks.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }

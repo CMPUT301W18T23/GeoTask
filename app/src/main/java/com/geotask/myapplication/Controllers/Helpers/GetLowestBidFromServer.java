@@ -21,10 +21,12 @@ public class GetLowestBidFromServer implements AsyncCallBackManager {
     private List<? extends GTData> searchResult = null;
 
     public ArrayList<Double> searchAndReturnLowest(Task task) {
+
+
         //make the query
         SuperBooleanBuilder builder = new SuperBooleanBuilder();
         builder.put("taskID", task.getObjectID());
-
+ /*
         //perform the search
         MasterController.slowSearch(new AsyncArgumentWrapper(builder, Bid.class));
 
@@ -32,21 +34,34 @@ public class GetLowestBidFromServer implements AsyncCallBackManager {
                 new MasterController.AsyncSearch(this);
         asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
 
-
+        */
 
         List<Bid> result = null;
         ArrayList<Bid> bidList;
         Double lowest = -1.0;
-        try {
+        //try {
             //get the result
-            result = (List<Bid>) asyncSearch.get();
-            //result = (List<Bid>) MasterController.slowSearch(new AsyncArgumentWrapper(builder, Bid.class));
+            //result = (List<Bid>) asyncSearch.get();
+            result = (List<Bid>) MasterController.slowSearch(new AsyncArgumentWrapper(builder, Bid.class));
             bidList = new ArrayList<Bid>(result);
+
+            ArrayList<Double> returnList = new ArrayList<Double>();
+
+            lowest = bidList.get(0).getValue();
+            for (Bid bid : bidList) {                                     //iterate to find lowest
+                if (bid.getValue() < lowest) {
+                    lowest = bid.getValue();
+                }
+            }
+
+            returnList.add(lowest);
+            returnList.add(0.0 + bidList.size());
+            return returnList;
 
         /*
             set the lowestBid TextView
          */
-
+        /*
             if (bidList.size() == 0) {
                 task.setStatusRequested();                                  //change the status
 
@@ -69,7 +84,7 @@ public class GetLowestBidFromServer implements AsyncCallBackManager {
                     new MasterController.AsyncUpdateDocument();
             asyncUpdateDocument.execute(task);
             */
-
+    /*
             return returnList;
         } catch (ExecutionException e) {
             e.printStackTrace();
@@ -78,6 +93,7 @@ public class GetLowestBidFromServer implements AsyncCallBackManager {
         }
 
         return null;
+        */
     }
 
 
