@@ -185,30 +185,6 @@ public class MenuActivity extends AppCompatActivity
         drawerUsername.setText(currentUser.getName());
         drawerEmail.setText(currentUser.getEmail());
 
-        /*
-        if(lastClickedTask != null){
-            ArrayList<Double> temp = new GetLowestBidFromServer().searchAndReturnLowest(lastClickedTask);
-            Log.i("LifeCycle --->", "resetting a thing " + temp.get(1).toString() + " "  + temp.get(0).toString());
-            lastClickedTask.syncBidData();
-            try {
-                Thread.sleep(400);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                    new MasterController.AsyncUpdateDocument();
-            asyncUpdateDocument.execute(lastClickedTask);
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            populateTaskView();
-        }
-        */
-
-
     }
 
     /**

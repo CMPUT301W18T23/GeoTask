@@ -20,8 +20,6 @@ import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 import com.geotask.myapplication.R;
 
-import org.apache.commons.lang3.ObjectUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -55,15 +53,15 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
     private ArrayList<Task> tdata = null;
     private GTData data = null;
     private List<? extends GTData> searchResult = null;
-    private Task updateTask;
+    private Task lastViewedTask;
 
 
-public FastTaskArrayAdapter(Context context, int resource, ArrayList<Task> objects, Task updateTask){
+public FastTaskArrayAdapter(Context context, int resource, ArrayList<Task> objects, Task lastViewedTask){
         super(context, resource, objects);
         this.layoutResourceId = resource;
         this.context = context;
         this.tdata = objects;
-        this.updateTask = updateTask;
+        this.lastViewedTask = lastViewedTask;
         }
 
     @SuppressLint("CutPasteId")
@@ -111,8 +109,6 @@ public FastTaskArrayAdapter(Context context, int resource, ArrayList<Task> objec
              */
             Task item = tdata.get(position);
 
-
-
             headerSub.name.setText(item.getName());
             headerSub.hits.setText(String.format("Viewed %d times", item.getHitCounter()));
             headerSub.desc.setText(item.getDescription());
@@ -120,11 +116,14 @@ public FastTaskArrayAdapter(Context context, int resource, ArrayList<Task> objec
 
             Log.i("-------->", item.getObjectID());
 
-            if((updateTask != null) && (updateTask.getObjectID().compareTo(item.getObjectID())) == 0){
+            /*
+                If the lastViewedTask is not null, we need to update its values
+             */
+            if((lastViewedTask != null) && (lastViewedTask.getObjectID().compareTo(item.getObjectID())) == 0){
+
                  /*
                     Finding the lowest bid, and number of bids
                  */
-
 
                 //make the query
                 SuperBooleanBuilder builder = new SuperBooleanBuilder();
@@ -143,10 +142,11 @@ public FastTaskArrayAdapter(Context context, int resource, ArrayList<Task> objec
                     result = (List<Bid>) asyncSearch.get();
                     bidList = new ArrayList<Bid>(result);
                     Double lowest = -1.0;
-                    /*
-                        set the lowestBid TextView
-                     */
 
+                    /*
+                        setting the lowestBid TextView by querying for lowest bid. Here we also set
+                        numBids while we are at it
+                     */
                     if(bidList.size() == 0){
                         headerSub.lowestBid.setText("");                            //give no text
                         item.setStatusRequested();                                  //change the status
@@ -180,7 +180,7 @@ public FastTaskArrayAdapter(Context context, int resource, ArrayList<Task> objec
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            } else {
+            } else { //Otherwise the item does not need to be updated and we can get the attributes
                 if((item.getLowestBid() != null) && (item.getLowestBid() >= 0)) {
                     headerSub.lowestBid.setText(String.format("Lowest Bid: %.2f", item.getLowestBid()));
                 }
