@@ -49,6 +49,7 @@ public class MenuActivity extends AppCompatActivity
     private ArrayList<Task> taskList;
     private ArrayAdapter<Task> adapter;
     private String mode;
+    private String filters;
     private FloatingActionButton fab;
     private User currentUser;
 
@@ -68,6 +69,13 @@ public class MenuActivity extends AppCompatActivity
         oldTasks.setAdapter(adapter);
 
         mode = getString(R.string.MODE_ALL);
+        filters = "";
+        try {
+            filters = getIntent().getStringExtra("searchFilters");
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            filters = "";
+        }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -144,6 +152,14 @@ public class MenuActivity extends AppCompatActivity
         if(mode.compareTo(getString(R.string.MODE_REQUESTER)) == 0){
             builder1.put("requesterID", currentUser.getObjectID());
         }
+        try {
+            if(!filters.equals("")) {
+                builder1.put("description", filters);
+            }
+        } catch (NullPointerException e) {
+
+        }
+
 
         MasterController.AsyncSearch asyncSearch =
                 new MasterController.AsyncSearch(this);

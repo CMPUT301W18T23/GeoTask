@@ -36,7 +36,9 @@ public class FilterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 setResult(RESULT_OK);
                 //make builder and put it into intent
+                String putFilters = keywordsText.getText().toString();
                 Intent intent = new Intent(getBaseContext(), MenuActivity.class);
+                intent.putExtra("searchFilters", putFilters);
                 intent.putExtra("currentUser", currentUser);
                 startActivity(intent);
             }
