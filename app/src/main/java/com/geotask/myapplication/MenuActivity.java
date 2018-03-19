@@ -16,7 +16,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.geotask.myapplication.Adapters.TaskArrayAdapter;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
@@ -34,14 +36,24 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 
-/*
-*
-* FOR WISHLIST BUTTON LATER https://stackoverflow.com/questions/8244252/star-button-in-android
-*
-* allows for user to use back button without closeing app:
-* https://stackoverflow.com/questions/2354336/android-pressing-back-button-should-exit-the-app
-*
-*/
+/** MenuActivity
+ *
+ * This is the main hub of the app. Here the user can filter through the database of tasks, view
+ * their own tasks, view other tasks, go to a map view, view their own profile or logout.
+ *
+ * Resources:
+ *
+ * https://stackoverflow.com/questions/8244252/star-button-in-android
+ *      FOR WISHLIST BUTTON LATER
+ *
+ * https://stackoverflow.com/questions/2354336/android-pressing-back-button-should-exit-the-app
+ *      allows for user to use back button without closing app
+ *
+ * https://stackoverflow.com/questions/36694263/how-to-change-navigation-header-widgets-value-dynamically
+ *      For editing the nav_header
+ *      Author Exaqt, April 18, 2016, no license stated
+ *
+ */
 public class MenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, AsyncCallBackManager {
 
@@ -52,6 +64,11 @@ public class MenuActivity extends AppCompatActivity
     private String filters;
     private FloatingActionButton fab;
     private User currentUser;
+    NavigationView navigationView;
+    View headerView;
+    ImageView drawerImage;
+    TextView drawerUsername;
+    TextView drawerEmail;
 
 
     @Override
@@ -88,6 +105,11 @@ public class MenuActivity extends AppCompatActivity
         toggle.syncState();
 
         fab = findViewById(R.id.fab);
+
+        /*
+            onClick Listener for the floating action button. Here we will start the AddTaskActivity
+            and pass the current user to it
+         */
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -98,15 +120,17 @@ public class MenuActivity extends AppCompatActivity
             }
         });
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
+        headerView = navigationView.getHeaderView(0);
         navigationView.setNavigationItemSelectedListener(this);
 
+        /*
+            onClick listener for the oldTasks list of Tasks
+         */
         oldTasks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                //TODO - this needs to work lol
-
                 Task task = taskList.get(position);
                 Intent intent = new Intent(MenuActivity.this, TaskViewActivity.class);
                 intent.putExtra(getString(R.string.TASK_BEING_VIEWED), task);
@@ -116,7 +140,9 @@ public class MenuActivity extends AppCompatActivity
         });
 
     }
-    /* This method loads the subList from savefile and sets the array adapter for the ListView
+
+    /**
+     *  This method hides the floating action button
      *
      */
     @Override
@@ -125,18 +151,33 @@ public class MenuActivity extends AppCompatActivity
         //Log.i("LifeCycle --->", "onStart is called");
         //populate the array on start
         fab.hide();
-        //TODO - need to get the mode of user, assuming all rn
-
+        //TODO - set the email and name
 
     }
 
+    /**
+     * This button populates the listView and sets the navigation header to be custom to the current user
+     *
+     */
     @Override
     protected void onResume(){
         super.onResume();
         populateTaskView();
 
+        headerView = navigationView.getHeaderView(0);
+        drawerImage = (ImageView) headerView.findViewById(R.id.drawer_image);
+        drawerUsername = (TextView) headerView.findViewById(R.id.drawer_name);
+        drawerEmail = (TextView) headerView.findViewById(R.id.drawer_email);
+
+        //TODO - set drawerImage to user profile pic
+        drawerUsername.setText(currentUser.getName());
+        drawerEmail.setText(currentUser.getEmail());
+
     }
 
+    /**
+     * This method is responsible for grabbing the new user object
+     */
     @Override
     protected void onRestart(){
         super.onRestart();
@@ -144,7 +185,7 @@ public class MenuActivity extends AppCompatActivity
     }
 
     /**
-     *
+     * This function populates the listView by querying the server based on the view mode
      *
      */
     private void populateTaskView(){
@@ -201,6 +242,12 @@ public class MenuActivity extends AppCompatActivity
     }
 
 
+    /**
+     * This function sets the navigation bar variables and their click listeners
+     *
+     * @param item
+     * @return
+     */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
