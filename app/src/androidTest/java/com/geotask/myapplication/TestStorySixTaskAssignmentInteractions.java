@@ -26,12 +26,14 @@ public class TestStorySixTaskAssignmentInteractions {
     }
 
     //6.a
+    //part 5
     @Test
     public void testViewMyAcceptedTasksAsProvider() {
 
     }
 
     //6.b
+    //part 5
     @Test
     public void testViewMyAssignedTasksAsRequesters() {
 
