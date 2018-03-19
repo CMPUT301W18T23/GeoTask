@@ -22,8 +22,11 @@ import java.io.IOException;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.replaceText;
+import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.contrib.DrawerMatchers.isClosed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -49,7 +52,7 @@ public class TestStoryFourSearchingInteractions {
     }
 
     private ActivityTestRule<LoginActivity> LoginActivityTestRule =
-            new ActivityTestRule<>(LoginActivity.class, false, false);
+            new ActivityTestRule<>(LoginActivity.class, false, true);
 
     //4.a
     @Test
@@ -78,7 +81,7 @@ public class TestStoryFourSearchingInteractions {
         Intent intent = new Intent(targetContext, LoginActivity.class);
         LoginActivityTestRule.launchActivity(intent);
 
-        onView(withId(R.id.emailText)).perform(replaceText(newemail));
+        onView(withId(R.id.emailText)).perform(clearText(),typeText(newemail),closeSoftKeyboard());
         onView(withId(R.id.loginButton)).perform(click());
 
         onView(withId(R.id.drawer_layout))

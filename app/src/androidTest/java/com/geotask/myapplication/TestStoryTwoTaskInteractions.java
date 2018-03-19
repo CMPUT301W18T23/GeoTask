@@ -21,8 +21,11 @@ import java.io.IOException;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.replaceText;
+import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.contrib.DrawerMatchers.isClosed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -67,20 +70,22 @@ public class TestStoryTwoTaskInteractions {
 
     //2.a
     @Test
-    public void testViewTaskDetail() {
+    public void testViewTaskDetail() throws InterruptedException {
 
         String newemail = "testEmail";
         String newname = "testUserName";
-        String title = "test title";
-        String desc = "test description";
+        String title = "testViewTask";
+        String desc = "testViewTaskDesc";
 
 
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(targetContext, LoginActivity.class);
         LoginActivityTestRule.launchActivity(intent);
-        onView(withId(R.id.emailText)).perform(replaceText(newemail));
+        onView(withId(R.id.emailText)).perform(clearText(),typeText(newemail),closeSoftKeyboard());
         onView(withId(R.id.loginButton)).perform(click());
+
+
 
 
         onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).perform(click());
@@ -97,12 +102,13 @@ public class TestStoryTwoTaskInteractions {
 
     //2.b
     @Test
-    public void testEditTaskDetail() {
+    public void testEditTaskDetail() throws InterruptedException {
 
 
-        String title = "test title";
-        String desc = "test description";
         String newemail = "testEmail";
+        String newname = "testUserName";
+        String title = "testViewTask";
+        String desc = "testViewTaskDesc";
 
 
 
@@ -113,14 +119,21 @@ public class TestStoryTwoTaskInteractions {
         LoginActivityTestRule.launchActivity(intent);
 
 
-        onView(withId(R.id.emailText)).perform(replaceText(newemail));
+        onView(withId(R.id.emailText)).perform(clearText(),typeText(newemail),closeSoftKeyboard());
         onView(withId(R.id.loginButton)).perform(click());
+
+
+
+
+
+
         onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).perform(click());
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
         onView(withId(R.id.editTaskButton)).perform(click());
 
         onView(withId(R.id.editTitle)).perform(replaceText(title));
