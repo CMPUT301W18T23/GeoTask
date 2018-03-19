@@ -157,7 +157,7 @@ public class MenuActivity extends AppCompatActivity
                 builder1.put("description", filters);
             }
         } catch (NullPointerException e) {
-
+            e.printStackTrace();
         }
 
 
