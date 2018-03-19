@@ -23,11 +23,10 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.anything;
-import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.startsWith;
 
 @RunWith(AndroidJUnit4.class)
 public class TestStorySevenTaskCompletionInteractions {
@@ -58,26 +57,29 @@ public class TestStorySevenTaskCompletionInteractions {
     //7.b
     @Test
     public void testChangeStatusWhenNotCompleted() throws InterruptedException {
-        String requesterID = "requester";
-        String providerID = "provider";
+        String requesterID = "testChangeStatusWhenNotCompleted_requester";
+        String providerID = "testChangeStatusWhenNotCompleted_provider";
 
-        User requester = new User("Michael", "mtang", "12838202");
-        requester.setObjectID("requester");
-        User provider = new User("Mike", "mtangg", "39484202");
+        User requester = new User("testChangeStatusWhenNotCompleted", "testChangeStatusWhenNotCompleted", "testChangeStatusWhenNotCompleted");
+        requester.setObjectID(requesterID);
+        User provider = new User("testChangeStatusWhenNotCompleted", "testChangeStatusWhenNotCompleted", "testChangeStatusWhenNotCompleted");
         provider.setObjectID(providerID);
 
         Task task = new Task(requesterID,
                 "testChangeStatusWhenNotCompleted",
                 "testChangeStatusWhenNotCompleted");
         task.setAcceptedProviderID(provider.getObjectID());
-
-        Bid bid = new Bid(provider.getObjectID(), 11.0, task.getObjectID());
-        task.setAcceptedBid(bid.getValue());
-        task.addBid(bid);
+        task.setRequesterID(requesterID);
+        Bid bid1 = new Bid(provider.getObjectID(), 11.0, task.getObjectID());
+        task.setStatus("Accepted");
+        task.setAcceptedBid(bid1.getValue());
+        task.addBid(bid1);
+        Bid bid2 = new Bid(provider.getObjectID(), 12.0, task.getObjectID());
+        task.addBid(bid2);
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
                 new MasterController.AsyncCreateNewDocument();
-        asyncCreateNewDocument.execute(task, requester, bid, provider);
+        asyncCreateNewDocument.execute(task, requester, bid1, bid2, provider);
 
         Thread.sleep(2000);
 
@@ -88,12 +90,19 @@ public class TestStorySevenTaskCompletionInteractions {
         intent.putExtra("task", task);
         taskViewActivityActivityTestRule.launchActivity(intent);
 
+        onView(withId(R.id.textViewStatus)).check(matches(withText(startsWith("Accepted"))));
+
         onView(withId(R.id.bidsButton)).perform(click());
         onData(anything()).inAdapterView(withId(R.id.bidListView)).atPosition(0).perform(click());
         onView(withId(R.id.btn_delete)).perform(click());
         pressBack();
 
+        onView(withId(R.id.textViewStatus)).check(matches(withText(startsWith("Bidded"))));
+
         onView(withId(R.id.bidsButton)).perform(click());
-        onView(withId(R.id.bidListView)).check(matches(not(hasDescendant(withText(" ")))));
-    }
+        onData(anything()).inAdapterView(withId(R.id.bidListView)).atPosition(0).perform(click());
+        onView(withId(R.id.btn_delete)).perform(click());
+        pressBack();
+
+        onView(withId(R.id.textViewStatus)).check(matches(withText(startsWith("Requested"))));}
 }
