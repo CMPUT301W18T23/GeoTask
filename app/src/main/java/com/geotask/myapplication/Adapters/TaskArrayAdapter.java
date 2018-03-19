@@ -104,8 +104,6 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCallBac
             headerSub.icon.setImageResource(R.drawable.ic_circle_outline_grey600_24dp);
         }
 
-        headerSub.lowestBid.setText("test");
-
         SuperBooleanBuilder builder = new SuperBooleanBuilder();
         builder.put("taskID", item.getObjectID());
 
@@ -146,6 +144,21 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCallBac
             e.printStackTrace();
         }
 
+        if(item.getStatus().compareTo("Accepted") == 0){
+            MasterController.AsyncGetDocument asyncGetDocument =
+                    new MasterController.AsyncGetDocument(this);
+            asyncGetDocument.execute(new AsyncArgumentWrapper(item.getAccpeptedBidID(), Bid.class));
+
+            Bid remote = null;
+            try {
+                remote = (Bid) asyncGetDocument.get();
+                headerSub.lowestBid.setText(String.format("Accepted for: %.2f", remote.getValue()));
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         /*
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
         builder1.put("taskID", item.getObjectID());
