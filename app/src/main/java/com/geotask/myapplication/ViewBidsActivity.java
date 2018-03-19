@@ -1,5 +1,6 @@
 package com.geotask.myapplication;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -184,6 +185,12 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         }else if (bidList.size() ==0){
             task.setStatus("Requested");
         }
+        Intent back = new Intent();
+        back.putExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT), task);
+        back.putExtra(getString(R.string.CURRENT_USER), currentUser);
+        back.putExtra("del", "1");
+
+        setResult(Activity.RESULT_OK, back);
 
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
                 new MasterController.AsyncUpdateDocument();
@@ -258,6 +265,13 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
                 POPUP_WINDOW_DELETION.dismiss();
                 deleteBid(bid, task);
                 adapter.notifyDataSetChanged();
+
+                Intent back = new Intent();
+                back.putExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT), task);
+                back.putExtra(getString(R.string.CURRENT_USER), currentUser);
+                back.putExtra("del", "1");
+
+                setResult(Activity.RESULT_OK, back);
                 finish();
             }
         });
