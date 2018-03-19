@@ -196,11 +196,13 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
             @Override
             public void onClick(View v)
             {
-                POPUP_WINDOW_DELETION.dismiss();
-//                String test = value.getText().toString();
-//                System.out.print(test);
-                Double number = Double.parseDouble(value.getText().toString());
-                addBid(number);
+
+                if (!value.getText().toString().isEmpty()) {
+                    POPUP_WINDOW_DELETION.dismiss();
+                    Double number = Double.parseDouble(value.getText().toString());
+                    addBid(number);
+
+                }
                 //TODO - go back to previous intent
             }
         });
