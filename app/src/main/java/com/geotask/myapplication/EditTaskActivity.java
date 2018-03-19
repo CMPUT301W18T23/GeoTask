@@ -22,6 +22,7 @@ import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * handles editing a task by the task requester
@@ -130,6 +131,12 @@ public class EditTaskActivity extends AppCompatActivity implements AsyncCallBack
         MasterController.AsyncDeleteDocument asyncDeleteDocument =
                 new MasterController.AsyncDeleteDocument();
         asyncDeleteDocument.execute(new AsyncArgumentWrapper(taskBeingEdited.getObjectID(), Task.class));
+
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
 
         Intent back = new Intent();
         back.putExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT), taskBeingEdited);
