@@ -225,6 +225,7 @@ public class MenuActivity extends AppCompatActivity
      *
      */
     private void populateTaskView(){
+        taskList.clear();
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
         if(mode.compareTo(getString(R.string.MODE_REQUESTER)) == 0){
             builder1.put("requesterID", currentUser.getObjectID());
@@ -245,7 +246,6 @@ public class MenuActivity extends AppCompatActivity
         asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
 
         try {
-            taskList.clear();
             taskList = (ArrayList<Task>) asyncSearch.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
