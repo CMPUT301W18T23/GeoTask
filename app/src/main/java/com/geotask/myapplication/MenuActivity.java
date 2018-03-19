@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.geotask.myapplication.Adapters.FastTaskArrayAdapter;
 import com.geotask.myapplication.Adapters.TaskArrayAdapter;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
@@ -82,7 +83,7 @@ public class MenuActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         oldTasks = findViewById(R.id.taskListView);
         taskList = new ArrayList<>();
-        adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, taskList);
         oldTasks.setAdapter(adapter);
 
         mode = getString(R.string.MODE_ALL);
@@ -211,7 +212,7 @@ public class MenuActivity extends AppCompatActivity
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-        adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, taskList);
         oldTasks.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }

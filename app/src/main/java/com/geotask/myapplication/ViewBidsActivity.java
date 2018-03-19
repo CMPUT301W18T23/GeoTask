@@ -170,6 +170,7 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         adapter = new BidArrayAdapter(this, R.layout.bid_list_item, bidList);
         oldBids.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+        task.decrementNumBids();
         updateTask(bid, task);
     }
     public void updateTask(Bid bid , Task task){

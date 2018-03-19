@@ -21,6 +21,7 @@ import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
+import java.sql.Time;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -237,13 +238,27 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
             taskBidded(); //need to uncomment when taskId is given
             updateDisplayedValues();
         }
+        currentTask.incrementNumBids();
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                new MasterController.AsyncUpdateDocument();
+        asyncUpdateDocument.execute(currentTask);
     }
     /**
      * updates tasks status to bided
      * @throws InterruptedException
      */
-    private void taskBidded(){  //this should hopefully work when get really data to get
+    private void taskBidded() {  //this should hopefully work when get really data to get
         currentTask.setStatus(getString(R.string.TASK_STATUS_BIDDED));
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
                 new MasterController.AsyncUpdateDocument();
         asyncUpdateDocument.execute(currentTask);
