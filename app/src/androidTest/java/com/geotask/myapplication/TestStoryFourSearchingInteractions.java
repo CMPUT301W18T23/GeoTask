@@ -34,6 +34,7 @@ public class TestStoryFourSearchingInteractions {
     }
 
     //4.b
+    //part 5
     @Test
     public void testSearchByDistance() {
 
