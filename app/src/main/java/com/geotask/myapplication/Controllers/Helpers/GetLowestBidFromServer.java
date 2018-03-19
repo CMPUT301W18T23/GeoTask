@@ -19,7 +19,7 @@ public class GetLowestBidFromServer implements AsyncCallBackManager {
     private GTData data = null;
     private List<? extends GTData> searchResult = null;
 
-    public Double searchAndReturnLowest(Task task) {
+    public ArrayList<Double> searchAndReturnLowest(Task task) {
         //make the query
         SuperBooleanBuilder builder = new SuperBooleanBuilder();
         builder.put("taskID", task.getObjectID());
@@ -57,12 +57,18 @@ public class GetLowestBidFromServer implements AsyncCallBackManager {
                     }
                 }
             }
+            ArrayList<Double> returnList = new ArrayList<Double>();
+            returnList.add(lowest);
+            returnList.add(0.0 + bidList.size());
+
+            return returnList;
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return lowest;
+
+        return null;
     }
 
     @Override

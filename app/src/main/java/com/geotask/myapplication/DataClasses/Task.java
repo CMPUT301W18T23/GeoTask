@@ -357,15 +357,20 @@ public class Task extends GTData{
 	}
 
 	public void incrementNumBids(){
+		this.syncBidData();
+		/*
 		if(this.getNumBids() == null){
 			this.setNumBids(0);
 		}
 		this.numBids++;
 		this.setStatusBidded();
 		this.lowestBid = new GetLowestBidFromServer().searchAndReturnLowest(this);
+		*/
 	}
 
 	public void decrementNumBids(){
+		this.syncBidData();
+		/*
 		this.numBids--;
 		assert(this.numBids >= 0);
 		if(this.getNumBids() == 0){
@@ -373,5 +378,13 @@ public class Task extends GTData{
 		} else {
 			this.lowestBid = new GetLowestBidFromServer().searchAndReturnLowest(this);
 		}
+		*/
+	}
+
+	public void syncBidData(){
+		ArrayList<Double> newVals = new GetLowestBidFromServer().searchAndReturnLowest(this);
+		assert(newVals.size() == 2);
+		this.setNumBids(newVals.get(1).intValue());
+		this.setLowestBid(newVals.get(0));
 	}
 }
