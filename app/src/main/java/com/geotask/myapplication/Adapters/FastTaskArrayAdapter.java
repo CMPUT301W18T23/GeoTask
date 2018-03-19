@@ -151,9 +151,15 @@ public FastTaskArrayAdapter(Context context, int resource, ArrayList<Task> objec
                         headerSub.lowestBid.setText("");                            //give no text
                         item.setStatusRequested();                                  //change the status
                     } else  if(bidList.size() == 1) {
+                        if(item.getStatus().toLowerCase().compareTo("requested") == 0){
+                            item.setStatusBidded();
+                        }
                         lowest = bidList.get(0).getValue();
                         headerSub.lowestBid.setText(String.format("Lowest Bid: %.2f", lowest)); //set text
                     } else {
+                        if(item.getStatus().toLowerCase().compareTo("requested") == 0){
+                            item.setStatusBidded();
+                        }
                         lowest = bidList.get(0).getValue();
                         for(Bid bid : bidList){                                     //iterate to find lowest
                             if(bid.getValue() < lowest){
