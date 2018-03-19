@@ -81,6 +81,12 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         } else {
             editTaskButton.setVisibility(View.INVISIBLE);
             addBidButton.setVisibility(View.VISIBLE);
+
+            //Increasing Hits
+            currentTask.addHit();
+            MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                    new MasterController.AsyncUpdateDocument();
+            asyncUpdateDocument.execute(currentTask);
         }
     }
 
