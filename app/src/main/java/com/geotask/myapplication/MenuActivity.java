@@ -31,6 +31,7 @@ import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import junit.framework.Assert;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -62,6 +63,7 @@ public class MenuActivity extends AppCompatActivity
     private ArrayAdapter<Task> adapter;
     private String mode;
     private String filters;
+    private String[] filterArray;
     private FloatingActionButton fab;
     private User currentUser;
     NavigationView navigationView;
@@ -89,6 +91,7 @@ public class MenuActivity extends AppCompatActivity
         filters = "";
         try {
             filters = getIntent().getStringExtra("searchFilters");
+            filterArray = filters.split(" ");
         } catch (NullPointerException e) {
             e.printStackTrace();
             filters = "";
@@ -195,7 +198,9 @@ public class MenuActivity extends AppCompatActivity
         }
         try {
             if(!filters.equals("")) {
-                builder1.put("description", filters);
+                for(int i = 0; i < filterArray.length; i++) {
+                    builder1.put("description", filterArray[i].toLowerCase());
+                }
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
