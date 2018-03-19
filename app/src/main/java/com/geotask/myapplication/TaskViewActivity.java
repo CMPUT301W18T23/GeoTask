@@ -233,7 +233,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
                 new MasterController.AsyncCreateNewDocument();
         asyncCreateNewDocument.execute(bid);
 
-        if (currentTask.getStatus().equals(getString(R.string.TASK_STATUS_BIDDED))) {
+        if (currentTask.getStatus().equals("Requested")) {
             taskBidded(); //need to uncomment when taskId is given
             updateDisplayedValues();
         }
