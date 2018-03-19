@@ -386,6 +386,11 @@ public class Task extends GTData{
 		assert(newVals.size() == 2);
 		this.numBids = newVals.get(1).intValue();
 		this.lowestBid = newVals.get(0);
+		try {
+			Thread.sleep(400);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		if(this.getNumBids() == 0){
 			this.setStatusRequested();
 		} else if (this.getNumBids() > 0){

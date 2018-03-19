@@ -85,7 +85,6 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
 
             //Increasing Hits
             currentTask.addHit();
-            //currentTask.syncBidData();
             MasterController.AsyncUpdateDocument asyncUpdateDocument =
                     new MasterController.AsyncUpdateDocument();
             asyncUpdateDocument.execute(currentTask);
@@ -242,7 +241,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
 
         if (currentTask.getStatus().equals("Requested")) {
             //taskBidded(); //need to uncomment when taskId is given
-            updateDisplayedValues();
+            //updateDisplayedValues();
         }
         currentTask.incrementNumBids();
         try {

@@ -177,6 +177,8 @@ public class MenuActivity extends AppCompatActivity
         drawerUsername.setText(currentUser.getName());
         drawerEmail.setText(currentUser.getEmail());
 
+        adapter.notifyDataSetChanged();
+
     }
 
     /**

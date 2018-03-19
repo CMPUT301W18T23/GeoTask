@@ -49,9 +49,6 @@ public class GetLowestBidFromServer implements AsyncCallBackManager {
 
             if (bidList.size() == 0) {
                 task.setStatusRequested();                                  //change the status
-                MasterController.AsyncUpdateDocument asyncUpdateDocument =  //update the status
-                        new MasterController.AsyncUpdateDocument();
-                asyncUpdateDocument.execute(task);
 
             } else if (bidList.size() == 1) {
                 lowest = bidList.get(0).getValue();
@@ -67,6 +64,12 @@ public class GetLowestBidFromServer implements AsyncCallBackManager {
             returnList.add(lowest);
             returnList.add(0.0 + bidList.size());
 
+            /*
+            MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                    new MasterController.AsyncUpdateDocument();
+            asyncUpdateDocument.execute(task);
+            */
+
             return returnList;
         } catch (ExecutionException e) {
             e.printStackTrace();
@@ -76,6 +79,7 @@ public class GetLowestBidFromServer implements AsyncCallBackManager {
 
         return null;
     }
+
 
     @Override
     public void onPostExecute(GTData data) {

@@ -153,6 +153,7 @@ public class EditTaskActivity extends AppCompatActivity implements AsyncCallBack
      * @throws InterruptedException
      */
     private void updateTask(){  //this should hopefully work when get really data to get
+        taskBeingEdited.syncBidData();
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
                 new MasterController.AsyncUpdateDocument();
         asyncUpdateDocument.execute(taskBeingEdited);

@@ -170,7 +170,6 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         adapter = new BidArrayAdapter(this, R.layout.bid_list_item, bidList);
         oldBids.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-        task.decrementNumBids();
         updateTask(bid, task);
     }
     public void updateTask(Bid bid , Task task){
@@ -191,6 +190,7 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         back.putExtra(getString(R.string.CURRENT_USER), currentUser);
         back.putExtra("del", "1");
 
+        task.syncBidData();
         setResult(Activity.RESULT_OK, back);
         try {
             Thread.sleep(400);
@@ -307,6 +307,7 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
 
     @Override
     public void onPostExecute(List<? extends GTData> dataList) {
+        //bidList.clear();
         //bidList.clear();
         //bidList.addAll((Collection<? extends Bid>) dataList);
         //adapter.notifyDataSetChanged();
