@@ -24,6 +24,7 @@ import com.geotask.myapplication.Adapters.TaskArrayAdapter;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.MasterController;
+import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
@@ -35,6 +36,9 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+
+import static com.geotask.myapplication.Controllers.Helpers.BidListConverter.JsonToList;
+import static java.sql.DriverManager.println;
 
 
 /** MenuActivity
@@ -66,6 +70,7 @@ public class MenuActivity extends AppCompatActivity
     private String[] filterArray;
     private FloatingActionButton fab;
     private User currentUser;
+    private ArrayList<Bid> bidFilterList;
     NavigationView navigationView;
     View headerView;
     ImageView drawerImage;
@@ -196,6 +201,7 @@ public class MenuActivity extends AppCompatActivity
         if(mode.compareTo(getString(R.string.MODE_REQUESTER)) == 0){
             builder1.put("requesterID", currentUser.getObjectID());
         }
+
         try {
             if(!filters.equals("")) {
                 for(int i = 0; i < filterArray.length; i++) {
@@ -206,7 +212,6 @@ public class MenuActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-
         MasterController.AsyncSearch asyncSearch =
                 new MasterController.AsyncSearch(this);
         asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
@@ -216,11 +221,48 @@ public class MenuActivity extends AppCompatActivity
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
+
+       if(mode.compareTo("Provider") == 0) {
+            //Only show tasks which have been bidded on by current user
+            //Need to do this after elastic search by removing results without bids by the user
+           for(int i = 0; i < taskList.size(); i++) {
+               SuperBooleanBuilder builder2 = new SuperBooleanBuilder();
+               builder2.put("taskID", taskList.get(i).getObjectID());
+
+               MasterController.AsyncSearch asyncSearch2 =
+                       new MasterController.AsyncSearch(this);
+               asyncSearch2.execute(new AsyncArgumentWrapper(builder2, Bid.class));
+
+               try {
+                   bidFilterList = (ArrayList<Bid>) asyncSearch2.get();
+               } catch (InterruptedException | ExecutionException e) {
+                   e.printStackTrace();
+               }
+               Boolean bidBool = false;
+               for(int j = 0; j < bidFilterList.size(); j++) {
+                   try {
+                       if (bidFilterList.get(j).getProviderID().compareTo(currentUser.getObjectID()) == 0) {
+                           bidBool = true;
+                       }
+                   } catch (IndexOutOfBoundsException e) {
+                       e.printStackTrace();
+                   }
+               }
+               if(!bidBool) {
+                   taskList.remove(i);
+                   i--;
+               }
+           }
+       }
+
         adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
         oldTasks.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }
 
+    /**
+     * Prevent the user from returning to login with the back button
+     */
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

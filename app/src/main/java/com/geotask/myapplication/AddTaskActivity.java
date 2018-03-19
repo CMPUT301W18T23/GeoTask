@@ -26,6 +26,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static android.Manifest.permission.ACCESS_CHECKIN_PROPERTIES;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
@@ -133,6 +134,12 @@ public class AddTaskActivity extends AppCompatActivity {
             MasterController.AsyncCreateNewDocument asyncCreateNewDocument
                     = new MasterController.AsyncCreateNewDocument();
             asyncCreateNewDocument.execute(newTask);
+
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e){
+                e.printStackTrace();
+            }
 
             Intent intent = new Intent(getBaseContext(), MenuActivity.class);
             intent.putExtra(getString(R.string.CURRENT_USER), currentUser);

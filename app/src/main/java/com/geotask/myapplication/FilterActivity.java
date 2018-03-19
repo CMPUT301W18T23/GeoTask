@@ -13,6 +13,11 @@ public class FilterActivity extends AppCompatActivity {
 
     private User currentUser;
 
+
+    /**
+     * Initiate variables and grab current user,
+     * as well as setting on click listeners
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

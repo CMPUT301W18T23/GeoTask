@@ -40,6 +40,10 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
     private GTData data = null;
     private List<? extends GTData> searchResult = null;
 
+    /**
+     * Initiate variables, and set an on click listener for
+     * the ListView of bids
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +72,10 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         });
     }
 
+    /**
+     * Query the elastic search server and fill the list view
+     * with all bids for the task
+     */
     private void populateBidView(){
         //TODO - build query that returns list of bids that all have task ID == this.taskID
         /// THIS SHOULD WORK BUT IS CURRENTLY COMMENTED OUT
@@ -87,6 +95,9 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         adapter.notifyDataSetChanged();
     }
 
+    /**
+     * Set up adapter for bid view and call populateBidView()
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -103,6 +114,9 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
     }
 
 
+    /**
+     * Set up adapter for bid view and call populateBidView()
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -115,6 +129,12 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         populateBidView();
     }
 
+
+    /**
+     * If the viewing user is the owner of the task, this option
+     * will be visible to accept a specific bid and update the task on the
+     * server.
+     */
     private void acceptBid(Bid bid, Task task){
         Log.i("LifeCycle --->", "Accepted bid");
         //TODO - update the database by notifying the provider
@@ -140,6 +160,10 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
     }
     //        bidList.remove(bid);
     //     adapter.notifyDataSetChanged();
+
+    /**
+     * Allows a user to delete their bid on a task
+     */
     public void deleteBid(Bid bid, Task task){
         MasterController.AsyncDeleteDocument asyncDeleteDocument =
                 new MasterController.AsyncDeleteDocument();
@@ -172,6 +196,11 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         adapter.notifyDataSetChanged();
         updateTask(bid, task);
     }
+
+
+    /**
+     * Method to push any changes to bids on a task to the server
+     */
     public void updateTask(Bid bid , Task task){
 
         if (bid.getObjectID().equals(task.getAccpeptedBidID())){
@@ -196,6 +225,10 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
                 new MasterController.AsyncUpdateDocument();
         asyncUpdateDocument.execute(task);
     }
+
+    /**
+     * Set up buttons in the view for the popup with various bid functionality
+     */
     public void triggerPopup(View view, final Bid bid, final Task task){
         LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layout = layoutInflater.inflate(R.layout.layout_bidlist_popout, null);
@@ -291,6 +324,9 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
 
     }
 
+    /**
+     * Set test address if needed
+     */
     public void setForTest(){
         MasterController.setTestSettings(TestServerAddress.getTestAddress());
     }

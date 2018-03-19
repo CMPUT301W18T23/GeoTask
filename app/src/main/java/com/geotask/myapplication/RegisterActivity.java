@@ -20,6 +20,10 @@ public class RegisterActivity extends AppCompatActivity{
     private EditText newPhone;
     private User newUser;
 
+
+    /**
+     * Iinitiate variables, set on click listeners
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +42,9 @@ public class RegisterActivity extends AppCompatActivity{
     }
 
     /**
-     *
+     * If entered registration information is valid, create
+     * a new user object and push it to the server, return
+     * to the login activity
      */
     protected void register_check() {
         if (isValid()) {
@@ -63,6 +69,10 @@ public class RegisterActivity extends AppCompatActivity{
         }
     }
 
+    /**
+     * This method is responsible for checking if entered
+     * registration information is valid
+     */
     private Boolean isValid() {
         if (newName.getText().toString().trim().equals("") ) {
             Toast.makeText(this,

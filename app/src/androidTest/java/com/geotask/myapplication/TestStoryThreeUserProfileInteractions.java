@@ -124,6 +124,9 @@ public class TestStoryThreeUserProfileInteractions {
                 .check(matches(isClosed(Gravity.LEFT)))
                 .perform(DrawerActions.open());
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.nav_profile));
+        onView(withId(R.id.UserName)).check(matches(withText(startsWith("name2"))));
+        onView(withId(R.id.UserEmail)).check(matches(withText(startsWith("email2"))));
+        onView(withId(R.id.UserPhone)).check(matches(withText(startsWith("phone2"))));
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
