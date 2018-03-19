@@ -39,6 +39,10 @@ public class Task extends GTData{
 	private int hitCounter;
 	@ColumnInfo
 	private String location;
+	@ColumnInfo
+	private Long lowestBid;
+	@ColumnInfo
+	private Integer numBids;
 
 	public String getLocation() {
 		return location;
@@ -316,5 +320,30 @@ public class Task extends GTData{
 	 */
 	public String toString(){
 		return this.name + " " + this.description + " " + bidList.toString();
+	}
+
+	public Long getLowestBid() {
+		return lowestBid;
+	}
+
+	public void setLowestBid(Long lowestBid) {
+		this.lowestBid = lowestBid;
+	}
+
+	public Integer getNumBids() {
+		return numBids;
+	}
+
+	public void setNumBids(Integer numBids) {
+		this.numBids = numBids;
+	}
+
+	public void incrementNumBids(){
+		this.numBids++;
+	}
+
+	public void decrementNumBids(){
+		this.numBids--;
+		assert(this.numBids >= 0);
 	}
 }
