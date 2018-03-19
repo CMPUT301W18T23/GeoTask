@@ -91,7 +91,6 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCallBac
         headerSub.name.setText(item.getName());
         headerSub.hits.setText(String.format("Viewed %d times", item.getHitCounter()));
         headerSub.desc.setText(item.getDescription());
-        headerSub.bids.setText(String.format("Bids: %d", item.getNumBidders()));
         headerSub.date.setText(item.getDateString());
         Log.i("-------->", item.getDateString());
 
@@ -99,7 +98,7 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCallBac
             headerSub.icon.setImageResource(R.drawable.ic_checkbox_blank_circle_grey600_24dp);
         } else if (item.getStatus().compareTo("Completed") == 0) {
             headerSub.icon.setImageResource(R.drawable.ic_check_circle_grey600_24dp);
-        } else if(item.getNumBidders() > 0) {
+        } else if(item.getStatus().compareTo("Bidded") == 0) {
             headerSub.icon.setImageResource(R.drawable.ic_cisco_webex_grey600_24dp);
         } else {
             headerSub.icon.setImageResource(R.drawable.ic_circle_outline_grey600_24dp);
@@ -123,6 +122,11 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCallBac
 
             if(bidList.size() == 0){
                 headerSub.lowestBid.setText("");
+                item.setStatusRequested();
+                MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                        new MasterController.AsyncUpdateDocument();
+                asyncUpdateDocument.execute(item);
+                
             } else  if(bidList.size() == 1) {
                 Double lowest = bidList.get(0).getValue();
                 headerSub.lowestBid.setText(String.format("Lowest Bid: %.2f", lowest));
@@ -135,7 +139,7 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCallBac
                 }
                 headerSub.lowestBid.setText(String.format("Lowest Bid: %.2f", lowest));
             }
-
+            headerSub.bids.setText(String.format("Bids: %d", bidList.size()));
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {

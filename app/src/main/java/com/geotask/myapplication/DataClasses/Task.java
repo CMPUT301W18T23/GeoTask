@@ -290,6 +290,13 @@ public class Task extends GTData{
 	}
 
 	/**
+	 *sets the status to Requested
+	 */
+	public void setStatusRequested(){
+		this.status = "Requested";
+	}
+
+	/**
 	 *sets the status to Accepted
 	 */
 	public void setStatusAccepted(){

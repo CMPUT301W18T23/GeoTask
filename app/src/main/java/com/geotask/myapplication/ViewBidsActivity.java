@@ -143,6 +143,28 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         MasterController.AsyncDeleteDocument asyncDeleteDocument =
                 new MasterController.AsyncDeleteDocument();
         asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
+
+        SuperBooleanBuilder builder = new SuperBooleanBuilder();
+        builder.put("taskID", task.getObjectID());
+
+
+        MasterController.AsyncSearch asyncSearch =
+                new MasterController.AsyncSearch(this);
+        asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
+
+        List<Bid> result = null;
+
+        try {
+            result = (List<Bid>) asyncSearch.get();
+            if(result.size() == 0){
+                task.setStatusRequested();
+            }
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         bidList.remove(bid);
         adapter = new BidArrayAdapter(this, R.layout.bid_list_item, bidList);
         oldBids.setAdapter(adapter);
@@ -159,7 +181,6 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         }else{
             task.setStatus("Bidded");
         }
-
 
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
                 new MasterController.AsyncUpdateDocument();
@@ -217,7 +238,7 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
     }
     public void triggerDeletePopup(View view, final Bid bid, final Task task){
         LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View layout = layoutInflater.inflate(R.layout.layout_bidlist_popout, null);
+        View layout = layoutInflater.inflate(R.layout.layout_delete_bid_popout, null);
 
         POPUP_WINDOW_DELETION = new PopupWindow(this);
         POPUP_WINDOW_DELETION.setContentView(layout);
@@ -225,7 +246,7 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         POPUP_WINDOW_DELETION.setBackgroundDrawable(null);
         POPUP_WINDOW_DELETION.showAtLocation(layout, Gravity.CENTER, 1, 1);
 
-        Button deleteBtn = (Button) layout.findViewById(R.id.btn_delete);
+        Button deleteBtn = (Button) layout.findViewById(R.id.btn_delete_my_bid);
         deleteBtn.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -238,10 +259,17 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
             }
         });
 
-        Button acceptBtn = (Button) layout.findViewById(R.id.btn_accept);
-        Button viewProfileBtn = (Button) layout.findViewById(R.id.btn_visit_profile);
-        acceptBtn.setVisibility(layout.INVISIBLE);
-        viewProfileBtn.setVisibility(layout.INVISIBLE);
+        Button dontDeleteBtn = (Button) layout.findViewById(R.id.btn_do_not_delete_my_bid);
+        dontDeleteBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                POPUP_WINDOW_DELETION.dismiss();
+                finish();
+            }
+        });
+
 
 
     }
