@@ -74,7 +74,7 @@ public class TestViewBidsActivity implements AsyncCallBackManager {
         asyncCreateNewDocument.execute(bid2);
 
         viewBidsActivity.getActivity().getSupportFragmentManager().beginTransaction();
-        viewBidsActivity.getActivity().setForTest();
+        //viewBidsActivity.getActivity().setForTest();
         TimeUnit.SECONDS.sleep(3);
 
     }
