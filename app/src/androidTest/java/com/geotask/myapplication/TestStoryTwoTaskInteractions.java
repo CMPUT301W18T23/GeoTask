@@ -3,11 +3,15 @@ package com.geotask.myapplication;
 import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.contrib.DrawerActions;
+import android.support.test.espresso.contrib.NavigationViewActions;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.view.Gravity;
 
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Task;
+import com.geotask.myapplication.DataClasses.User;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -19,7 +23,11 @@ import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.replaceText;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.contrib.DrawerMatchers.isClosed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.anything;
 
 @RunWith(AndroidJUnit4.class)
@@ -35,6 +43,23 @@ public class TestStoryTwoTaskInteractions {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        String newemail = "testEmail";
+        String newname = "testUserName";
+        String newphone = "123456789";
+
+
+        User user = new User(newname, newemail, newphone);
+        Task task = new Task(user.getObjectID(),
+                "testViewTask",
+                "testViewTaskDesc");
+
+
+        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new MasterController.AsyncCreateNewDocument();
+        asyncCreateNewDocument.execute(task, user);
+
+
     }
 
     private ActivityTestRule<LoginActivity> LoginActivityTestRule =
@@ -43,40 +68,27 @@ public class TestStoryTwoTaskInteractions {
     //2.a
     @Test
     public void testViewTaskDetail() {
-        String newname = "testUserName";
-        String newphone = "123456789";
+
         String newemail = "testEmail";
+        String newname = "testUserName";
+        String title = "test title";
+        String desc = "test description";
 
-        Task task = new Task(newemail,
-                "testViewTask",
-                "testViewTaskDesc");
-
-        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument();
-        asyncCreateNewDocument.execute(task);
 
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(targetContext, LoginActivity.class);
         LoginActivityTestRule.launchActivity(intent);
-
-        onView(withId(R.id.registerButton)).perform(click());
-        onView(withId(R.id.newName)).perform(replaceText(newname));
-        onView(withId(R.id.newPhone)).perform(replaceText(newphone));
-        onView(withId(R.id.newEmail)).perform(replaceText(newemail));
-        onView(withId(R.id.newSave)).perform(click());
         onView(withId(R.id.emailText)).perform(replaceText(newemail));
         onView(withId(R.id.loginButton)).perform(click());
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
 
         onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).perform(click());
+        onView(withId(R.id.textViewTitle)).check(matches(withText(startsWith(title))));
+        onView(withId(R.id.textViewName)).check(matches(withText(startsWith(newname))));
+        onView(withId(R.id.textViewDescription)).check(matches(withText(startsWith(desc))));
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -86,6 +98,45 @@ public class TestStoryTwoTaskInteractions {
     //2.b
     @Test
     public void testEditTaskDetail() {
+
+
+        String title = "test title";
+        String desc = "test description";
+        String newemail = "testEmail";
+
+
+
+
+        Context targetContext =
+                InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Intent intent = new Intent(targetContext, LoginActivity.class);
+        LoginActivityTestRule.launchActivity(intent);
+
+
+        onView(withId(R.id.emailText)).perform(replaceText(newemail));
+        onView(withId(R.id.loginButton)).perform(click());
+        onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).perform(click());
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        onView(withId(R.id.editTaskButton)).perform(click());
+
+        onView(withId(R.id.editTitle)).perform(replaceText(title));
+        onView(withId(R.id.editDescription)).perform(replaceText(desc));
+
+        onView(withId(R.id.editButton)).perform(click());
+
+        onView(withId(R.id.editTaskButton)).perform(click());
+
+        onView(withId(R.id.editTitle)).check(matches(withText(startsWith(title))));
+        onView(withId(R.id.editDescription)).check(matches(withText(startsWith(desc))));
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 }

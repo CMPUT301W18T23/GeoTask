@@ -24,6 +24,9 @@ public class LoginActivity extends AppCompatActivity implements AsyncCallBackMan
 
     private EditText emailText;
 
+    /**
+     * Initiate variables, set on click listeners for buttons
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +54,11 @@ public class LoginActivity extends AppCompatActivity implements AsyncCallBackMan
 
     }
 
+
+    /**
+     * Check if the entered email for login is valid,
+     * and log the user in with elastic search
+     */
     private void login_check() {
         String email = emailText.getText().toString().trim();
 
