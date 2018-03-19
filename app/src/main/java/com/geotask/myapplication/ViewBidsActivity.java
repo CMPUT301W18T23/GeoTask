@@ -324,12 +324,6 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
 
     }
 
-    /**
-     * Set test address if needed
-     */
-    public void setForTest(){
-        MasterController.setTestSettings(TestServerAddress.getTestAddress());
-    }
 
     @Override
     public void onPostExecute(GTData data) {
