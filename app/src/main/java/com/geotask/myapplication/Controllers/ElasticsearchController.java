@@ -2,7 +2,6 @@ package com.geotask.myapplication.Controllers;
 
 import android.os.StrictMode;
 
-import com.geotask.myapplication.Controllers.Helpers.EmailConverter;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
@@ -25,6 +24,7 @@ import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 import io.searchbox.indices.CreateIndex;
 import io.searchbox.indices.DeleteIndex;
+import io.searchbox.params.Parameters;
 
 /*
 API DOCUMENTATION
@@ -72,30 +72,11 @@ public class ElasticsearchController {
         String json = gson.toJson(data);
         Index request = new Index.Builder(json)
                 .index(INDEX_NAME)
-                .type(data.getType().toString())
+                .type(data.getClass().toString())
+                .id(data.getObjectID())
                 .build();
 
-        JestResult result = client.execute(request);
-        String ID = result.getJsonObject()
-                .get("_id").toString()
-                .replace("\"", "");
-        data.setObjectID(ID);
-    }
-
-    protected void createNewDocument(GTData data, String docID) throws IOException {
-        Gson gson = new Gson();
-        String json = gson.toJson(data);
-        Index request = new Index.Builder(json)
-                .index(INDEX_NAME)
-                .type(data.getType().toString())
-                .id(docID)
-                .build();
-
-        JestResult result = client.execute(request);
-        String ID = result.getJsonObject()
-                .get("_id").toString()
-                .replace("\"", "");
-        data.setObjectID(ID);
+        client.execute(request);
     }
 
     /**
@@ -123,7 +104,7 @@ public class ElasticsearchController {
     /**
      * deleteDocument - deletes a document with the provided id of provided type
      *
-     * @param ID - ID of document
+     * @param ID - ID of document to be deleted
      * @param type - type of document
      * @return - response code of deletion (200 on success, 400 on failure)
      */
@@ -135,9 +116,15 @@ public class ElasticsearchController {
                 .getResponseCode();
     }
 
+    /**
+     * scripting not turned on on server.
+     * not atomic, use responsibly
+     * @param data
+     * @throws IOException
+     */
     protected void updateDocument(GTData data) throws IOException {
-        deleteDocument(data.getObjectID(), data.getType());
-        createNewDocument(data, "dfasdf");
+        deleteDocument(data.getObjectID(), data.getClass());
+        createNewDocument(data);
     }
 
     /**
@@ -147,9 +134,13 @@ public class ElasticsearchController {
      * @return a list of Bid objects
      */
     protected List<? extends GTData> search(String query, Type type) throws IOException {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         Search search = new Search.Builder(query)
                 .addIndex(INDEX_NAME)
                 .addType(type.toString())
+                .setParameter(Parameters.SIZE, 10000)
                 .build();
 
         SearchResult result = client.execute(search);

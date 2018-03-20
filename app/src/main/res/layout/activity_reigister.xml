@@ -7,7 +7,7 @@
     tools:context="com.geotask.myapplication.RegisterActivity">
 
     <TextView
-        android:id="@+id/userName"
+        android:id="@+id/drawer_name"
         android:layout_width="357dp"
         android:layout_height="19dp"
         android:layout_marginEnd="8dp"
@@ -29,7 +29,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.521"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/userName" />
+        app:layout_constraintTop_toBottomOf="@+id/drawer_name" />
 
     <TextView
         android:id="@+id/textView4"
@@ -83,12 +83,10 @@
         android:id="@+id/newSave"
         android:layout_width="88dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="Save"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/newEmail" />

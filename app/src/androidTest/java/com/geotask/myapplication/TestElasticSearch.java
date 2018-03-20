@@ -1,10 +1,7 @@
 package com.geotask.myapplication;
 
-import android.util.Log;
-
-import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
-import com.geotask.myapplication.Controllers.Helpers.EmailConverter;
+import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
@@ -80,7 +77,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
 
     @Test
     public void testAsyncCreateAndGetTask() throws InterruptedException {
-        Task task = new Task("test Task", "test Description");
+        Task task = new Task("randomid","test Task", "test Description");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
                 new MasterController.AsyncCreateNewDocument();
@@ -213,7 +210,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
 
     @Test
     public void testUpdateTask() throws InterruptedException {
-        Task task = new Task("test update task", "test update description");
+        Task task = new Task("randomid","test update task", "test update description");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
                 new MasterController.AsyncCreateNewDocument();
@@ -337,10 +334,11 @@ public class TestElasticSearch implements AsyncCallBackManager {
 
     @Test
     public void testSearchTasks() throws InterruptedException {
-        String targetName = "task1";
-        Task task1 = new Task(targetName, "a");
+        Task task1 = new Task("random id","test search task", "test search task");
         task1.setAcceptedBid(1.1);
-        Task task2 = new Task("task2", "b");
+        String target = "targettargettarget";
+        String targetName = "task2";
+        Task task2 = new Task("random ID", targetName, target);
         task2.setAcceptedBid(1.2);
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
@@ -351,7 +349,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
 
 
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
-        builder1.put("description", "a");
+        builder1.put("description", target);
 
         MasterController.AsyncSearch asyncSearch =
                 new MasterController.AsyncSearch(this);
@@ -409,6 +407,50 @@ public class TestElasticSearch implements AsyncCallBackManager {
         assertEquals(2, result1.size());
         assertEquals(1, result2.size());
         assertEquals(targetUser, result2.get(0).getName());
+    }
+
+    @Test
+    public void testSearchReturnMoreThanTenItems() throws InterruptedException {
+        User user1 = new User("user", "1@gmail.com", "555");
+        User user2 = new User("user", "2@gmail.com", "666");
+        User user3 = new User("user", "1@gmail.com", "777");
+        User user4 = new User("user", "1@yahoo.com", "888");
+        User user5 = new User("user", "1@yahoo.ca", "888");
+        User user6 = new User("user", "1@gmail.com", "555");
+        User user7 = new User("user", "2@gmail.com", "666");
+        User user8 = new User("user", "1@gmail.com", "777");
+        User user9 = new User("user", "1@yahoo.com", "888");
+        User user10 = new User("user", "1@yahoo.ca", "888");
+        User user11 = new User("user", "1@gmail.com", "555");
+        User user12 = new User("user", "2@gmail.com", "666");
+        User user13 = new User("user", "1@gmail.com", "777");
+        User user14 = new User("user", "1@yahoo.com", "888");
+        User user15 = new User("user", "1@yahoo.ca", "888");
+
+        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new MasterController.AsyncCreateNewDocument();
+        asyncCreateNewDocument.execute(user1, user2, user3, user4, user5,
+                                        user6, user7, user8, user9, user10,
+                                        user11, user12, user13, user14, user15);
+
+        TimeUnit.SECONDS.sleep(10);
+
+        SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
+        builder1.put("name", "user");
+
+        MasterController.AsyncSearch asyncSearch1 =
+                new MasterController.AsyncSearch(this);
+        asyncSearch1.execute(new AsyncArgumentWrapper(builder1, User.class));
+
+        List<User> result1 = null;
+
+        try {
+            result1 = (List<User>) asyncSearch1.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(15, result1.size());
     }
 
     @Test

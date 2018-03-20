@@ -2,70 +2,147 @@ package com.geotask.myapplication.DataClasses;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
-import android.arch.persistence.room.util.TableInfo;
 
 import com.geotask.myapplication.Controllers.Helpers.EmailConverter;
 
-import java.lang.reflect.Type;
+import java.util.Date;
 
+/**
+ * data structure for A User
+ * keeps track of Id for login
+ * their login name and contact information
+ * email is unique
+ */
 @Entity(tableName = "users")
 public class User extends GTData{
     @ColumnInfo(name = "name", typeAffinity = ColumnInfo.TEXT)
     private String name;
     @ColumnInfo(name = "email", typeAffinity = ColumnInfo.TEXT)
     private String email;
-    @ColumnInfo(name = "phonenum", typeAffinity = ColumnInfo.TEXT)
+    @ColumnInfo(name = "phonenum", typeAffinity = ColumnInfo.TEXT) //ToDo validation
     private String phonenum;
     @ColumnInfo
     private Integer completedTasks; //metric of completed tasks
+    @ColumnInfo(name = "location", typeAffinity = ColumnInfo.TEXT)
+    private String location;                                        //format example: "47.55,-82.11"
 
+    /**
+     *constructor
+     * @param name
+     * @param email
+     * @param phonenum
+     */
     public User(String name, String email, String phonenum){
-        super.setType(User.class);
+        super.setType(User.class.toString());
         this.name = name;
         this.email = EmailConverter.convertEmailForElasticSearch(email);
         this.phonenum = phonenum;
         this.completedTasks = 0;
+        super.setDate(new Date().getTime());
     }
 
+    /**
+     *gets  the location of user
+     *@return location
+     */
+    public String getLocation() {
+        return location;
+    }
+
+    /**
+     *gets the name of the user
+     * @return name
+     */
     public String getName(){
         return name;
     }
-
+    /**
+     *gets email email is converted into a nice way for elasticseach to handle
+     * @return EmailConverter.revertEmailFromElasticSearch(email)
+     */
     public String getEmail(){
         return EmailConverter.revertEmailFromElasticSearch(email);
     }
 
+    /**
+     * sets email. converted into a good way for elasticsearch to handle
+     * @param email
+     */
     public void setEmail(String email){
         this.email = EmailConverter.convertEmailForElasticSearch(email);
     }
 
+    /**
+     * retunrs phonenumber
+     * @return
+     */
     public String getPhonenum(){
         return phonenum;
     }
 
+    /**
+     * retunrs x coord for location
+     * @return Float.parseFloat(location.split("[,]")[0])
+     */
+    public float getLocationX() { return Float.parseFloat(location.split("[,]")[0]); }
+
+    /**
+     * retunrs y coord for location
+     * @return Float.parseFloat(location.split("[,]")[0])
+     */
+    public float getLocationY() { return Float.parseFloat(location.split("[,]")[1]); }
+
+    /**
+     * sets the loaction
+     * @param location
+     */
+    public void setLocation(String location) { this.location = location; }
+
+    /**
+     * sets the phonenumber
+     * @param phonenum
+     */
     public void setPhonenum(String phonenum){
         this.phonenum = phonenum;
     }
 
-    public Type getType() { return super.getType(); }
-
+    /**
+     * sets the name
+     * @param name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     *gets a number of completed tasks
+     */
     public Integer getCompletedTasks() {
         return completedTasks;
     }
 
+    /**
+     *sets ammount of completed tasks
+     * @param completedTasks
+     */
     public void setCompletedTasks(Integer completedTasks) {
         this.completedTasks = completedTasks;
     }
 
+    /**
+     *increments the ammount of completed tasks
+     */
     public void incrementCompletedTasks() {
         this.completedTasks++;
     }
 
+    /**
+     *returns the name email and phonenumber in string format
+     * again email is converted back to normal form
+     * @return this.name + " " +
+    EmailConverter.revertEmailFromElasticSearch(email) + " " +
+    this.phonenum;
+     */
     public String toString()  {
         return this.name + " " +
                 EmailConverter.revertEmailFromElasticSearch(email) + " " +

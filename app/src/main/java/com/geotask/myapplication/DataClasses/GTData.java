@@ -1,50 +1,91 @@
 package com.geotask.myapplication.DataClasses;
 
 import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
-import android.content.Context;
+import android.support.annotation.NonNull;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import com.geotask.myapplication.Controllers.Helpers.UniqueIDGenerator;
+
 import java.io.Serializable;
-import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
+/**
+ * parent class of all data classes that are exchanded with the server
+ */
 public abstract class GTData implements Serializable{
 
-    public long getId() {
-        return id;
-    }
-
-    //ToDo put in some ID voodoo
     @PrimaryKey
-    @ColumnInfo(name = "local_id")
-    private long id;
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
+    @NonNull
     @ColumnInfo(name = "object_id")
-    private String objectID = "";
+    private String objectID = UniqueIDGenerator.generate();
+    @ColumnInfo
+    private String type;
+    @ColumnInfo
+    private long date;
+    //ToDo refactor date from children
 
-    @Ignore
-    private transient Type type;
-
-    public void setType(Type type) {
+    /**
+     *sets the type of the data class
+     * @param type
+     */
+    public void setType(String type) {
         this.type = type;
     }
 
-    public Type getType(){
+    /**
+     *gets the type of the data class
+     */
+    public String getType(){
         return type;
     }
 
+    /**
+     *sets the ID given by elasticsearch
+     * @param ID
+     */
     public void setObjectID(String ID) {
         this.objectID = ID;
     }
 
+    /**
+     *gets ID given by
+     * @return ObjectID
+     */
     public String getObjectID() {
         return objectID;
+    }
+
+    /**
+     *gets the data of the item
+     * @return data
+     */
+    public long getDate() {
+        return date;
+    }
+
+    /**
+     * sets the date
+     * @param date
+     */
+    public void setDate(long date) {
+        this.date = date;
+    }
+
+    /**
+     *gets a new date if no data is given
+     * @param newDate
+     */
+    public void setDate(Date newDate){
+        this.date = newDate.getTime();
+    }
+
+    /**
+     *converts the date to a string
+     * @return strDate
+     */
+    public String getDateString(){
+        String strDate = new SimpleDateFormat("EEEE MMMM d, yyyy").format(new java.util.Date((long)date));
+        return strDate;
     }
 }

@@ -14,21 +14,17 @@ import java.util.List;
 
 public class BidDatabaseController {
     private static LocalDataBase database;
+    private static Context context;
+
 
     /**
      * AsyncTask for inserting into table
      */
     public static class insertBid extends AsyncTask<Bid, Void, Void> {
 
-        private Context context;
-
-        public insertBid(Context context) {
-            this.context = context;
-        }
-
         @Override
         protected Void doInBackground(Bid... bids) {
-            database = LocalDataBase.getDatabase(context);
+            //database = LocalDataBase.getDatabase();
 
             for(Bid bid : bids) {
                 database.bidDAO().insert(bid);
@@ -37,13 +33,24 @@ public class BidDatabaseController {
         }
     }
 
-    public static class selectBidByProviderID extends AsyncTask<String, Void, List<Bid>> {
-        private AsyncCallBackManager callback = null;
-        private Context context;
+    public static class updateBid extends AsyncTask<Bid, Void, Void> {
 
-        public selectBidByProviderID(Context context, AsyncCallBackManager callback) {
-            this.context = context;
-            this.callback = callback;
+        @Override
+        protected Void doInBackground(Bid... bids) {
+            database = LocalDataBase.getDatabase(context);
+
+            for(Bid bid : bids) {
+                database.bidDAO().update(bid);
+            }
+            return null;
+        }
+    }
+
+    public static class selectBidByProviderID extends AsyncTask<String, Void, List<Bid>> {
+        private AsyncCallBackManager callBack = null;
+
+        public selectBidByProviderID(AsyncCallBackManager callback){
+            this.callBack = callback;
         }
 
         @Override
@@ -59,20 +66,14 @@ public class BidDatabaseController {
 
         @Override
         protected void onPostExecute(List<Bid> bid) {
-            if(callback != null) {
-                callback.onPostExecute(bid);
+            if(callBack != null) {
+                callBack.onPostExecute(bid);
             }
         }
     }
 
     public static class selectBidByTaskID extends AsyncTask<String, Void, List<Bid>> {
-        private AsyncCallBackManager callback;
-        private Context context;
-
-        public selectBidByTaskID(Context context, AsyncCallBackManager callback){
-            this.context = context;
-            this.callback = callback;
-        }
+        private AsyncCallBackManager callback = null;
 
         @Override
         protected List<Bid> doInBackground(String... taskIDList) {
@@ -93,4 +94,3 @@ public class BidDatabaseController {
         }
     }
 }
-

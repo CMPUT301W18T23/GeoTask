@@ -5,26 +5,19 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
-import com.geotask.myapplication.Controllers.LocalFilesOps.BidDatabaseController;
 import com.geotask.myapplication.Controllers.LocalFilesOps.LocalDataBase;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
-import junit.framework.Assert;
-
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertNotEquals;
 
 @RunWith(AndroidJUnit4.class)
 public class TestFileOps {
@@ -49,7 +42,6 @@ public class TestFileOps {
     public void testWriteAndReadBid() {
         String targetProvider = "database_bid_test";
         Bid bid = new Bid(targetProvider, 1.1, "database test");
-        bid.setObjectID("1");
         dataBase.bidDAO().insert(bid);
 
         Log.i("dat result2", bid.toString());
@@ -63,11 +55,9 @@ public class TestFileOps {
     @Test
     public void testWriteAndReadTask() {
         Bid bid = new Bid("testtest", 1.1, "database test");
-        bid.setObjectID("bid1");
 
         String targetName = "database_task_test";
-        Task task = new Task(targetName, "test description1");
-        task.setObjectID("2");
+        Task task = new Task("randomid", targetName, "test description1");
         task.addBid(bid);
         dataBase.taskDAO().insert(task);
 
@@ -83,7 +73,6 @@ public class TestFileOps {
     public void testWriteAndReadUser() {
         String targetName = "database_user_test";
         User user = new User(targetName, "eaa@gmail.com", "2342342");
-        user.setObjectID("2");
         dataBase.userDAO().insert(user);
 
         List<User> resultList = dataBase.userDAO().selectByName(targetName);
@@ -92,12 +81,11 @@ public class TestFileOps {
     }
 
     @Test
-    public void primaryKeyViolationTestAndViolationShouldReplaceOldRowWithNew() {
+    public void testPrimaryKeyViolationAndViolationShouldReplaceOldRowWithNew() {
         User user1 = new User("primary key test", "eaa@gmail.com", "2342342");
-        user1.setObjectID("2");
         String target = "violator";
         User user2 = new User(target, "adsga@gmail.com", "3498723");
-        user2.setObjectID("2");
+        user2.setObjectID(user1.getObjectID());
 
         dataBase.userDAO().insert(user1);
         try {
@@ -115,14 +103,17 @@ public class TestFileOps {
     @Test
     public void testUpdate() {
         User user1 = new User("update test", "update@gmail.com", "2342342");
-        user1.setObjectID("2");
 
         dataBase.userDAO().insert(user1);
 
-        String target = "update";
-        user1.setName(target);
+        User resultUser = dataBase.userDAO().selectAll().get(0);
 
-        dataBase.userDAO().update(user1);
+        assertEquals(user1.getName(), resultUser.getName());
+
+        String target = "update";
+        resultUser.setName(target);
+
+        dataBase.userDAO().update(resultUser);
 
         List<User> resultList = dataBase.userDAO().selectAll();
 
@@ -140,7 +131,7 @@ public class TestFileOps {
         assertEquals(1, resultList.size());
 
 
-        dataBase.bidDAO().delete(bid);
+        dataBase.bidDAO().delete(resultList.get(0));
         resultList = dataBase.bidDAO().selectAll();
 
         assertEquals(0, resultList.size());
@@ -149,11 +140,8 @@ public class TestFileOps {
     @Test
     public void testInsertMultiple() {
         Bid bid1 = new Bid("multi test", 6.1, "multi 1");
-        bid1.setId(1);
         Bid bid2 = new Bid("multi test", 6.2, "multi 2");
-        bid2.setId(2);
         Bid bid3 = new Bid("multi test", 6.3, "multi 3");
-        bid3.setId(3);
 
         dataBase.bidDAO().insertMultiple(bid1, bid2, bid3);
 
@@ -165,18 +153,18 @@ public class TestFileOps {
     @Test
     public void testInsertMultipleWithPrimaryKeyUniquenessViolation() {
         Bid bid1 = new Bid("multi test", 6.1, "multi 1");
-        bid1.setId(1);
         Bid bid2 = new Bid("multi test", 6.2, "multi 2");
-        bid2.setId(2);
         String target = "multi 3";
         Bid bid3 = new Bid("multi test", 6.3, target);
-        bid3.setId(2);
+        bid3.setObjectID(bid2.getObjectID());
 
         dataBase.bidDAO().insertMultiple(bid1, bid2, bid3);
 
-        List<Bid> resultList = dataBase.bidDAO().selectByProvider("multi test");
-
+        List<Bid> resultList = dataBase.bidDAO().selectAll();
         assertEquals(2, resultList.size());
-        assertEquals(target, resultList.get(1).getTaskID());
+
+        resultList = dataBase.bidDAO().selectByTask(target);
+        assertEquals(1, resultList.size());
+        assertEquals(target, resultList.get(0).getTaskID());
     }
 }
