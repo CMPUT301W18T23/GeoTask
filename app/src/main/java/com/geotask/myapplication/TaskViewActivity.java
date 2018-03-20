@@ -22,7 +22,10 @@ import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.sql.Time;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -38,6 +41,8 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
     private TextView name;
     private TextView description;
     private TextView status;
+    private TextView hitCount;
+    private TextView dateSincePost;
     private Task currentTask;
     private User currentUser;
     private Button editTaskButton;
@@ -68,7 +73,9 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         title = findViewById(R.id.textViewTitle);
         name = findViewById(R.id.textViewName);
         description = findViewById(R.id.textViewDescription);
-        status = findViewById(R.id.textViewStatus);
+        status = findViewById(R.id.status_header);
+        hitCount = findViewById(R.id.num_views);
+        dateSincePost = findViewById(R.id.textViewDate);
 
         editTaskButton = findViewById(R.id.editTaskButton);
         bidButton = findViewById(R.id.bidsButton);
@@ -147,7 +154,14 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
 //        this.name.setText(taskUserId); //need to change to get user from the id
 //        this.name.setText("placeolder");
         this.description.setText(currentTask.getDescription());
-        this.status.setText(currentTask.getStatus());
+        this.status.setText(String.format("Status: %s", StringUtils.capitalize(currentTask.getStatus())));
+        this.hitCount.setText(String.format("%d Views",currentTask.getHitCounter()));
+        int days = (int) (new Date().getTime() - currentTask.getDate()) / (1000*60*60*24);
+        if(days == 0){
+            this.dateSincePost.setText(String.format("Posted today"));
+        } else {
+            this.dateSincePost.setText(String.format("Posted %d days ago", days));
+        }
     }
 
     /**
@@ -300,7 +314,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         if(data instanceof User) {
             userBeingViewed = (User) data;
             profile();
-            this.name.setText(userBeingViewed.getName());
+            this.name.setText(String.format("Requested by %s", userBeingViewed.getName()));
         } else if (data instanceof Task){
             //ToDo ?????
         }

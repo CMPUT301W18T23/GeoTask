@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
@@ -56,13 +57,13 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
     private Task lastViewedTask;
 
 
-public FastTaskArrayAdapter(Context context, int resource, ArrayList<Task> objects, Task lastViewedTask){
+    public FastTaskArrayAdapter(Context context, int resource, ArrayList<Task> objects, Task lastViewedTask){
         super(context, resource, objects);
         this.layoutResourceId = resource;
         this.context = context;
         this.tdata = objects;
         this.lastViewedTask = lastViewedTask;
-        }
+    }
 
     @SuppressLint("CutPasteId")
     @Override
@@ -97,6 +98,7 @@ public FastTaskArrayAdapter(Context context, int resource, ArrayList<Task> objec
             headerSub.date = (TextView) row.findViewById(R.id.task_list_date);
             headerSub.lowestBid = (TextView) row.findViewById(R.id.task_list_lowest);
             headerSub.icon = (ImageView) row.findViewById(R.id.taskIcon);
+            //headerSub.viewsIcon = (ImageView) row.findViewById(R.id.imageViewView);
 
             row.setTag(headerSub);
 
@@ -110,6 +112,7 @@ public FastTaskArrayAdapter(Context context, int resource, ArrayList<Task> objec
             Task item = tdata.get(position);
 
             headerSub.name.setText(item.getName());
+            String viewString = String.format(" %d Views", item.getHitCounter());
             headerSub.hits.setText(String.format("Viewed %d times", item.getHitCounter()));
             headerSub.desc.setText(item.getDescription());
             headerSub.date.setText(item.getDateString());
@@ -232,6 +235,7 @@ public FastTaskArrayAdapter(Context context, int resource, ArrayList<Task> objec
         private TextView bids;
         private TextView date;
         private ImageView icon;
+        private ImageView viewsIcon;
         private TextView lowestBid;
     }
 
