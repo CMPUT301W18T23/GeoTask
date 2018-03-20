@@ -3,6 +3,7 @@ package com.geotask.myapplication.Controllers.LocalFilesOps;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
@@ -17,10 +18,13 @@ import java.util.List;
 @Dao
 public interface BidDAO {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Bid bid);
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertMultiple(Bid... bids);
+
+    @Query("SElECT * FROM bids")
+    List<Bid> selectAll();
 
     @Query("SELECT * FROM bids WHERE provider_id LIKE :providerID")
     List<Bid> selectByProvider(String providerID);

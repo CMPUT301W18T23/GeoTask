@@ -2,6 +2,7 @@ package com.geotask.myapplication.Controllers.Helpers;
 
 import android.arch.persistence.room.TypeConverter;
 import android.arch.persistence.room.TypeConverters;
+import android.util.Log;
 
 import com.geotask.myapplication.DataClasses.Bid;
 import com.google.gson.Gson;
@@ -20,16 +21,16 @@ import java.util.List;
 public class BidListConverter {
 
     @TypeConverter
-    public String ListToJson(ArrayList<String> bidList) {
+    public static String ListToJson(ArrayList<String> bidList) {
         Gson gson = new Gson();
         String json = gson.toJson(bidList);
         return json;
     }
 
     @TypeConverter
-    public ArrayList<String> JsonToList(String jsonString) {
+    public static ArrayList<String> JsonToList(String jsonString) {
         Gson gson = new Gson();
-        Type type = new TypeToken<List<Bid>>(){}.getType();
+        Type type = new TypeToken<List<String>>(){}.getType();
         ArrayList<String> bidList = gson.fromJson(jsonString, type);
         return bidList;
     }
