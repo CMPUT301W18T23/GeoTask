@@ -7,6 +7,7 @@ import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.os.Bundle;
 
+
 public class StubAuthenticator extends AbstractAccountAuthenticator {
     // Simple constructor
     public StubAuthenticator(Context context) {

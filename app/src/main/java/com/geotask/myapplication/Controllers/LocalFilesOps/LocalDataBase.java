@@ -9,6 +9,7 @@ import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
+
 /**
  * singleton RoomDataBase object used to instanstiate reference used to access database
  */

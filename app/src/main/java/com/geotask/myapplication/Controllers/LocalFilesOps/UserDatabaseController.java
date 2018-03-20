@@ -10,6 +10,7 @@ import com.geotask.myapplication.DataClasses.User;
 
 import java.util.List;
 
+
 public class UserDatabaseController {
     private static LocalDataBase database;
 

@@ -49,4 +49,5 @@
             <meta-data android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" /></service>
     </application>
+
 </manifest>

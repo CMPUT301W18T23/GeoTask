@@ -18,6 +18,7 @@ import java.util.List;
 @Dao
 public interface BidDAO {
 
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(Bid bid);
     @Insert(onConflict = OnConflictStrategy.REPLACE)

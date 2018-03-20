@@ -7,6 +7,7 @@ import android.net.Uri;
 
 //https://developer.android.com/training/sync-adapters/creating-stub-provider.html#DeclareProvider
 
+
 public class StubProvider extends ContentProvider {
     /*
      * Always return true, indicating that the

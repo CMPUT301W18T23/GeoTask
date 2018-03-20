@@ -9,6 +9,7 @@ import android.os.Bundle;
 
 //https://developer.android.com/training/sync-adapters/creating-sync-adapter.html
 
+
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
     public SyncAdapter(Context context, boolean autoInitiate) {

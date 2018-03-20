@@ -13,6 +13,7 @@ import com.geotask.myapplication.DataClasses.User;
 
 import java.util.List;
 
+
 /**
  * Data Access Object for User and local SQL database
  */

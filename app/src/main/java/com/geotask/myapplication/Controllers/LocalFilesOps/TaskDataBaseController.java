@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.DataClasses.Task;
 
+
 public class TaskDataBaseController {
     private static LocalDataBase database;
 

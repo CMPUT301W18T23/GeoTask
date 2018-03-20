@@ -12,6 +12,7 @@ import com.geotask.myapplication.DataClasses.Task;
 
 import java.util.List;
 
+
 /**
  * Data Access Object for Task and local SQL database
  */
