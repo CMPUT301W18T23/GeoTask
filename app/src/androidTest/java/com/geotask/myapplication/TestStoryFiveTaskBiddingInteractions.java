@@ -245,7 +245,7 @@ public class TestStoryFiveTaskBiddingInteractions {
         onData(anything()).inAdapterView(withId(R.id.bidListView)).atPosition(2).perform(click());
 
         onView(withId(R.id.btn_accept)).perform(click());
-        onView(withId(R.id.textViewStatus)).check(matches(withText(startsWith("Accepted"))));
+        onView(withId(R.id.status_header)).check(matches(withText(startsWith("Status: Accepted"))));
     }
 
     //5.g

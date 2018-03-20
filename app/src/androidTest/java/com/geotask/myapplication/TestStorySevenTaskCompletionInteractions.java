@@ -90,19 +90,19 @@ public class TestStorySevenTaskCompletionInteractions {
         intent.putExtra("task", task);
         taskViewActivityActivityTestRule.launchActivity(intent);
 
-        onView(withId(R.id.textViewStatus)).check(matches(withText(startsWith("Accepted"))));
+        onView(withId(R.id.status_header)).check(matches(withText(startsWith("Status: Accepted"))));
 
         onView(withId(R.id.bidsButton)).perform(click());
         onData(anything()).inAdapterView(withId(R.id.bidListView)).atPosition(0).perform(click());
         onView(withId(R.id.btn_delete)).perform(click());
         pressBack();
 
-        onView(withId(R.id.textViewStatus)).check(matches(withText(startsWith("Bidded"))));
+        onView(withId(R.id.status_header)).check(matches(withText(startsWith("Status: Bidded"))));
 
         onView(withId(R.id.bidsButton)).perform(click());
         onData(anything()).inAdapterView(withId(R.id.bidListView)).atPosition(0).perform(click());
         onView(withId(R.id.btn_delete)).perform(click());
         pressBack();
 
-        onView(withId(R.id.textViewStatus)).check(matches(withText(startsWith("Requested"))));}
+        onView(withId(R.id.status_header)).check(matches(withText(startsWith("Requested"))));}
 }
