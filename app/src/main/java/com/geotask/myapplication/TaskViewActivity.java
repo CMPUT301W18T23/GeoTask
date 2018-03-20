@@ -28,6 +28,7 @@ import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * handles veiwing a task
@@ -157,10 +158,17 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         this.status.setText(String.format("Status: %s", StringUtils.capitalize(currentTask.getStatus())));
         this.hitCount.setText(String.format("%d Views",currentTask.getHitCounter()));
         int days = (int) (new Date().getTime() - currentTask.getDate()) / (1000*60*60*24);
-        if(days == 0){
-            this.dateSincePost.setText(String.format("Posted today"));
-        } else {
+        int hours   = (int) ((new Date().getTime() - currentTask.getDate()) / (1000*60*60) % 24);
+        int mins = (int)((new Date().getTime() - currentTask.getDate()) / (1000*60) % 60);
+        int secs = (int) ((new Date().getTime() - currentTask.getDate()) / 1000) % 60 ;
+        if(days > 0){
             this.dateSincePost.setText(String.format("Posted %d days ago", days));
+        } else if(hours > 0){
+            this.dateSincePost.setText(String.format("Posted %d hours ago", hours));
+        } else if (mins > 0){
+            this.dateSincePost.setText(String.format("Posted %d minutes ago", mins));
+        } else {
+            this.dateSincePost.setText(String.format("Posted %d seconds ago", secs));
         }
     }
 
