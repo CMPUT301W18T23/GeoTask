@@ -17,22 +17,17 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
-import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
-import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
-import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by James on 2018-03-17.
@@ -69,8 +64,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         LatLng user_location = new LatLng( 53.523, -113.526);//currentUser.getLocationX(), currentUser.getLocationY()); //get user location, input as floats to the LatLng function
         googleMap.addMarker(new MarkerOptions().position(user_location)
                 .title("You are here."));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(user_location));
         googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(user_location));
 
         //
 
