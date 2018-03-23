@@ -86,6 +86,14 @@ public class MenuActivity extends AbstractGeoTaskActivity
         oldTasks.setAdapter(adapter);
 
 
+        if(getViewMode() ==  R.integer.MODE_INT_ALL) {
+            getSupportActionBar().setTitle("All Tasks Mode");
+        } else if(getViewMode() == R.integer.MODE_INT_REQUESTER) {
+            getSupportActionBar().setTitle("Requester Mode");
+        } else if(getViewMode() == R.integer.MODE_INT_PROVIDER) {
+            getSupportActionBar().setTitle("Provider Mode");
+        }
+
         try {
             filterArray = getSearchKeywords().split(" ");
         } catch (NullPointerException e) {
@@ -330,6 +338,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         }  else if (id == R.id.nav_requester) {
             fab.show();
             setViewMode(R.integer.MODE_INT_REQUESTER);
+            getSupportActionBar().setTitle("Requester Mode");
             Snackbar.make(snackView, "Changed view to \"Requester\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             populateTaskView();
@@ -337,6 +346,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         } else if (id == R.id.nav_provider) {
             fab.hide();
             setViewMode(R.integer.MODE_INT_PROVIDER);
+            getSupportActionBar().setTitle("Provider Mode");
             Snackbar.make(snackView, "Changed view to \"Provider\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             populateTaskView();
@@ -344,6 +354,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         } else if (id == R.id.nav_all) {
             fab.hide();
             setViewMode(R.integer.MODE_INT_ALL);
+            getSupportActionBar().setTitle("All Tasks Mode");
             Snackbar.make(snackView, "Changed view to \"All\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             populateTaskView();
