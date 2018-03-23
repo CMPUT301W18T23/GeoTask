@@ -151,6 +151,23 @@ public class MasterController {
         }
     }
 
+    public static class AsyncDeleteDocumentByQuery extends AsyncTask<AsyncArgumentWrapper, Void, Void> {
+
+        @Override
+        protected Void doInBackground(AsyncArgumentWrapper... argumentList) {
+            controller.verifySettings();
+
+            for(AsyncArgumentWrapper argument : argumentList) {
+                try {
+                    controller.deleteDocumentByValue(argument.getSearchQuery(), argument.getType());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+    }
+
     /**
      * update in the best way. delete then re-add. has no guards against concurrency issues
      * also returns nothing, assumes success

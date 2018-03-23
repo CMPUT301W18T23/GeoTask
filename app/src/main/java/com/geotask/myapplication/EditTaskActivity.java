@@ -17,9 +17,7 @@ import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * handles editing a task by the task requester
@@ -101,25 +99,13 @@ public class EditTaskActivity extends AbstractGeoTaskActivity implements AsyncCa
         SuperBooleanBuilder builder = new SuperBooleanBuilder();
         builder.put("taskID", getCurrentTask().getObjectID());
 
-        MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this);
-        asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
-        ArrayList<Bid> bidList = new ArrayList<>();
-        try {
-            bidList = (ArrayList<Bid>) asyncSearch.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        for (Bid bid : bidList) {
-            MasterController.AsyncDeleteDocument asyncDeleteDocument =
-                    new MasterController.AsyncDeleteDocument();
-            asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
-        }
-
-
-        MasterController.AsyncDeleteDocument asyncDeleteDocument =
+        MasterController.AsyncDeleteDocument asyncDeleteTask =
                 new MasterController.AsyncDeleteDocument();
-        asyncDeleteDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getObjectID(), Task.class));
+        asyncDeleteTask.execute(new AsyncArgumentWrapper(getCurrentTask().getObjectID(), Task.class));
+
+        MasterController.AsyncDeleteDocumentByQuery asyncDeleteDocumentByQuery =
+                new MasterController.AsyncDeleteDocumentByQuery();
+        asyncDeleteDocumentByQuery.execute(new AsyncArgumentWrapper(builder, Bid.class));
 
         Intent back = new Intent();
         back.putExtra("del", "1");

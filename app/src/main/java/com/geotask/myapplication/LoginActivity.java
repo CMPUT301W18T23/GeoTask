@@ -31,6 +31,8 @@ public class LoginActivity extends AbstractGeoTaskActivity implements AsyncCallB
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        MasterController.verifySettings();
+
         emailText = findViewById(R.id.emailText);
         Button loginButton = findViewById(R.id.loginButton);
         Button registerButton = findViewById(R.id.registerButton);

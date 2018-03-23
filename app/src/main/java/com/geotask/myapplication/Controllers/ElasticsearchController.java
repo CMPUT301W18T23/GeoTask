@@ -18,6 +18,7 @@ import java.util.List;
 
 import io.searchbox.client.JestResult;
 import io.searchbox.core.Delete;
+import io.searchbox.core.DeleteByQuery;
 import io.searchbox.core.Get;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;
@@ -114,6 +115,13 @@ public class ElasticsearchController {
                         .type(type.toString())
                         .build())
                 .getResponseCode();
+    }
+
+    protected void deleteDocumentByValue(String query, Type type) throws IOException {
+        client.execute(new DeleteByQuery.Builder(query)
+                .addIndex(INDEX_NAME)
+                .addType(type.toString())
+                .build());
     }
 
     /**
