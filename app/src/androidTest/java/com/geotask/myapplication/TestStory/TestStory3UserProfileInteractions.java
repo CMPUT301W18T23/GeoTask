@@ -1,17 +1,19 @@
-package com.geotask.myapplication;
+package com.geotask.myapplication.TestStory;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.espresso.contrib.NavigationViewActions;
+import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.view.Gravity;
 
 import com.geotask.myapplication.Controllers.MasterController;
-import com.geotask.myapplication.DataClasses.User;
+import com.geotask.myapplication.LoginActivity;
+import com.geotask.myapplication.R;
+import com.geotask.myapplication.TestServerAddress;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -20,8 +22,6 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 
-import static android.content.Intent.getIntent;
-import static android.support.test.InstrumentationRegistry.getTargetContext;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.replaceText;
@@ -29,11 +29,10 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.contrib.DrawerMatchers.isClosed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static android.support.v4.content.res.TypedArrayUtils.getString;
 import static org.hamcrest.CoreMatchers.startsWith;
 
 @RunWith(AndroidJUnit4.class)
-public class TestStoryThreeUserProfileInteractions {
+public class TestStory3UserProfileInteractions {
 
     @BeforeClass
     public static void oneTimeSetUp() {
@@ -63,23 +62,13 @@ public class TestStoryThreeUserProfileInteractions {
         Intent intent = new Intent(targetContext, LoginActivity.class);
         LoginActivityTestRule.launchActivity(intent);
 
-        onView(withId(R.id.registerButton)).perform(click());
+        onView(ViewMatchers.withId(R.id.registerButton)).perform(click());
         onView(withId(R.id.newName)).perform(replaceText(newname));
         onView(withId(R.id.newPhone)).perform(replaceText(newphone));
         onView(withId(R.id.newEmail)).perform(replaceText(newemail));
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         onView(withId(R.id.newSave)).perform(click());
 
         onView(withId(R.id.emailText)).perform(replaceText(newemail));
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         onView(withId(R.id.loginButton)).perform(click());
     }
 
@@ -94,30 +83,16 @@ public class TestStoryThreeUserProfileInteractions {
         LoginActivityTestRule.launchActivity(intent);
 
         onView(withId(R.id.emailText)).perform(replaceText(newemail));
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         onView(withId(R.id.loginButton)).perform(click());
         onView(withId(R.id.drawer_layout))
                 .check(matches(isClosed(Gravity.LEFT)))
                 .perform(DrawerActions.open());
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.nav_profile));
 
         onView(withId(R.id.UserName)).perform(replaceText("name2"));
         onView(withId(R.id.UserEmail)).perform(replaceText("email2"));
         onView(withId(R.id.UserPhone)).perform(replaceText("phone2"));
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
         onView(withId(R.id.SaveEdit)).perform(click());
 
         onView(withId(R.id.drawer_layout))
@@ -127,12 +102,6 @@ public class TestStoryThreeUserProfileInteractions {
         onView(withId(R.id.UserName)).check(matches(withText(startsWith("name2"))));
         onView(withId(R.id.UserEmail)).check(matches(withText(startsWith("email2"))));
         onView(withId(R.id.UserPhone)).check(matches(withText(startsWith("phone2"))));
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
     }
 
     //3.c

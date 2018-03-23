@@ -1,10 +1,11 @@
-package com.geotask.myapplication;
+package com.geotask.myapplication.TestStory;
 
 import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.espresso.contrib.NavigationViewActions;
+import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -13,6 +14,9 @@ import android.view.Gravity;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
+import com.geotask.myapplication.LoginActivity;
+import com.geotask.myapplication.R;
+import com.geotask.myapplication.TestServerAddress;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -36,7 +40,7 @@ import static org.hamcrest.Matchers.anything;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class TestStoryFourSearchingInteractions {
+public class TestStory4SearchingInteractions {
 
     @BeforeClass
     public static void oneTimeSetUp() {
@@ -70,8 +74,6 @@ public class TestStoryFourSearchingInteractions {
                 "testViewTask2",
                 "orange pineapple");
 
-
-
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
                 new MasterController.AsyncCreateNewDocument();
         asyncCreateNewDocument.execute(user, task, task2);
@@ -81,7 +83,7 @@ public class TestStoryFourSearchingInteractions {
         Intent intent = new Intent(targetContext, LoginActivity.class);
         LoginActivityTestRule.launchActivity(intent);
 
-        onView(withId(R.id.emailText)).perform(clearText(),typeText(newemail),closeSoftKeyboard());
+        onView(ViewMatchers.withId(R.id.emailText)).perform(clearText(),typeText(newemail),closeSoftKeyboard());
         onView(withId(R.id.loginButton)).perform(click());
 
         onView(withId(R.id.drawer_layout))
@@ -93,12 +95,6 @@ public class TestStoryFourSearchingInteractions {
         onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).
                 onChildView(withId(R.id.task_list_desc)).
                 check(matches(withText(startsWith("apple banana"))));
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
 
         onView(withId(R.id.drawer_layout))
                 .check(matches(isClosed(Gravity.LEFT)))
@@ -109,35 +105,14 @@ public class TestStoryFourSearchingInteractions {
         onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).
                 onChildView(withId(R.id.task_list_desc)).
                 check(matches(withText(startsWith("orange pineapple"))));
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
 
         onView(withId(R.id.drawer_layout))
                 .check(matches(isClosed(Gravity.LEFT)))
                 .perform(DrawerActions.open());
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.nav_filter));
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
         onView(withId(R.id.textKeywords)).perform(replaceText(""));
         onView(withId(R.id.buttonApply)).perform(click());
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
-
-
-
     }
 
     //4.b

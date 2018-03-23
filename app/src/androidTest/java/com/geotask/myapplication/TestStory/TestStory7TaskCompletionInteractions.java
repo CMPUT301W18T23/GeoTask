@@ -1,8 +1,9 @@
-package com.geotask.myapplication;
+package com.geotask.myapplication.TestStory;
 
 import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -10,6 +11,9 @@ import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
+import com.geotask.myapplication.R;
+import com.geotask.myapplication.TaskViewActivity;
+import com.geotask.myapplication.TestServerAddress;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -26,10 +30,10 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.anything;
-import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.CoreMatchers.containsString;
 
 @RunWith(AndroidJUnit4.class)
-public class TestStorySevenTaskCompletionInteractions {
+public class TestStory7TaskCompletionInteractions {
 
     @BeforeClass
     public static void oneTimeSetUp() {
@@ -81,7 +85,7 @@ public class TestStorySevenTaskCompletionInteractions {
                 new MasterController.AsyncCreateNewDocument();
         asyncCreateNewDocument.execute(task, requester, bid1, bid2, provider);
 
-        Thread.sleep(2000);
+        Thread.sleep(1000);
 
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
@@ -90,19 +94,22 @@ public class TestStorySevenTaskCompletionInteractions {
         intent.putExtra("task", task);
         taskViewActivityActivityTestRule.launchActivity(intent);
 
-        onView(withId(R.id.status_header)).check(matches(withText(startsWith("Status: Accepted"))));
+        onView(ViewMatchers.withId(R.id.status_header))
+                .check(matches(withText(containsString("Accepted"))));
+
+        onView(withId(R.id.bidsButton)).perform(click());
+        onData(anything()).inAdapterView(withId(R.id.bidListView)).atPosition(0).perform(click());
+        onView(withId(R.id.btn_delete)).perform(click());
+        Thread.sleep(2000);
+        pressBack();
+        onView(withId(R.id.status_header))
+                .check(matches(withText(containsString("Bidded"))));
 
         onView(withId(R.id.bidsButton)).perform(click());
         onData(anything()).inAdapterView(withId(R.id.bidListView)).atPosition(0).perform(click());
         onView(withId(R.id.btn_delete)).perform(click());
         pressBack();
 
-        onView(withId(R.id.status_header)).check(matches(withText(startsWith("Status: Bidded"))));
-
-        onView(withId(R.id.bidsButton)).perform(click());
-        onData(anything()).inAdapterView(withId(R.id.bidListView)).atPosition(0).perform(click());
-        onView(withId(R.id.btn_delete)).perform(click());
-        pressBack();
-
-        onView(withId(R.id.status_header)).check(matches(withText(startsWith("Requested"))));}
+        onView(withId(R.id.status_header))
+                .check(matches(withText(containsString("Requested"))));}
 }
