@@ -2,7 +2,6 @@ package com.geotask.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,13 +15,13 @@ import com.geotask.myapplication.DataClasses.User;
  * their profile data includes:
  * name, phone and Number
  */
-public class EditProfileActivity extends AppCompatActivity {
+public class EditProfileActivity extends AbstractGeoTaskActivity {
 
     private EditText userName;
     private EditText userPhone;
     private EditText userEmail;
     private Button saveEdit;
-    private User currentUser;
+    private User editedUser;
 
     /**
      *init buttons edit text etc
@@ -32,14 +31,12 @@ public class EditProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-        currentUser = (User) getIntent().getSerializableExtra(getString(R.string.CURRENT_USER));
-
         userName = findViewById(R.id.UserName);
-        userName.setText(currentUser.getName());
+        userName.setText(getCurrentUser().getName());
         userPhone = findViewById(R.id.UserPhone);
-        userPhone.setText(currentUser.getPhonenum());
+        userPhone.setText(getCurrentUser().getPhonenum());
         userEmail = findViewById(R.id.UserEmail);
-        userEmail.setText(currentUser.getEmail());
+        userEmail.setText(getCurrentUser().getEmail());
         saveEdit = findViewById(R.id.SaveEdit);
         saveEdit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,9 +44,6 @@ public class EditProfileActivity extends AppCompatActivity {
                 Edit_Check();
             }
         });
-
-
-
     }
 
     /**
@@ -63,16 +57,14 @@ public class EditProfileActivity extends AppCompatActivity {
             String userPhoneString = userPhone.getText().toString().trim();
             String userEmailString = userEmail.getText().toString().trim();
 
-
-            currentUser.setName(userNameString);
-            currentUser.setPhonenum(userPhoneString);
-            currentUser.setEmail(userEmailString);
+            editedUser = new User(userNameString, userEmailString, userPhoneString);
 
             MasterController.AsyncUpdateDocument asyncUpdateDocument
                     = new MasterController.AsyncUpdateDocument();
-            asyncUpdateDocument.execute(currentUser);
+            asyncUpdateDocument.execute(editedUser);
+
+            setCurrentUser(editedUser);
             Intent intent = new Intent(getBaseContext(), MenuActivity.class);
-            intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
             startActivity(intent);
 
         }

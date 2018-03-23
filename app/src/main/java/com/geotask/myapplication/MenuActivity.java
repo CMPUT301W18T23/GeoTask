@@ -26,7 +26,6 @@ import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
-import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import junit.framework.Assert;
@@ -61,7 +60,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
     private ArrayList<Task> taskList;
     private ArrayAdapter<Task> adapter;
     private String mode;
-    private String filters;
     private String[] filterArray;
     private FloatingActionButton fab;
     private ArrayList<Bid> bidFilterList;
@@ -72,18 +70,10 @@ public class MenuActivity extends AbstractGeoTaskActivity
     TextView drawerEmail;
     Task lastClickedTask = null;
 
-    User currentUser;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getCurrentUser() == null) {
-            currentUser = (User) getIntent().getSerializableExtra(getString(R.string.CURRENT_USER)); //ToDo switch to Parcelable
-        } else {
-            currentUser = getCurrentUser();
-        }
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -93,13 +83,11 @@ public class MenuActivity extends AbstractGeoTaskActivity
         oldTasks.setAdapter(adapter);
 
         mode = getString(R.string.MODE_ALL);
-        filters = "";
         try {
-            filters = getIntent().getStringExtra("searchFilters");
-            filterArray = filters.split(" ");
+            filterArray = getSearchKeywords().split(" ");
         } catch (NullPointerException e) {
             e.printStackTrace();
-            filters = "";
+            setSearchKeywords("");
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -123,7 +111,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
             public void onClick(View view) {
                 Log.v("myTag","FAB Clicked");
                 Intent intent = new Intent(MenuActivity.this, AddTaskActivity.class);
-                intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
                 startActivity(intent);
             }
         });
@@ -143,7 +130,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 lastClickedTask = task;
                 Intent intent = new Intent(MenuActivity.this, TaskViewActivity.class);
                 intent.putExtra(getString(R.string.TASK_BEING_VIEWED), task);
-                intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
                 startActivity(intent);
                 Log.i("LifeCycle --->", "after activity return");
             }
@@ -179,8 +165,8 @@ public class MenuActivity extends AbstractGeoTaskActivity
         drawerEmail = (TextView) headerView.findViewById(R.id.drawer_email);
 
         //TODO - set drawerImage to user profile pic
-        drawerUsername.setText(currentUser.getName());
-        drawerEmail.setText(currentUser.getEmail());
+        drawerUsername.setText(getCurrentUser().getName());
+        drawerEmail.setText(getCurrentUser().getEmail());
 
     }
 
@@ -190,7 +176,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
     @Override
     protected void onRestart(){
         super.onRestart();
-        currentUser = (User) getIntent().getSerializableExtra(getString(R.string.CURRENT_USER)); //ToDo switch to Parcelable
     }
 
     /**
@@ -201,11 +186,11 @@ public class MenuActivity extends AbstractGeoTaskActivity
         taskList.clear();
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
         if(mode.compareTo(getString(R.string.MODE_REQUESTER)) == 0){
-            builder1.put("requesterID", currentUser.getObjectID());
+            builder1.put("requesterID", getCurrentUser().getObjectID());
         }
 
         try {
-            if(!filters.equals("")) {
+            if(!getSearchKeywords().equals("")) {
                 for(int i = 0; i < filterArray.length; i++) {
                     builder1.put("description", filterArray[i].toLowerCase());
                 }
@@ -243,7 +228,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
                Boolean bidBool = false;
                for(int j = 0; j < bidFilterList.size(); j++) {
                    try {
-                       if (bidFilterList.get(j).getProviderID().compareTo(currentUser.getObjectID()) == 0) {
+                       if (bidFilterList.get(j).getProviderID().compareTo(getCurrentUser().getObjectID()) == 0) {
                            bidBool = true;
                        }
                    } catch (IndexOutOfBoundsException e) {
@@ -311,15 +296,12 @@ public class MenuActivity extends AbstractGeoTaskActivity
 
         } else if (id == R.id.nav_filter) {
             Intent intent = new Intent(getBaseContext(), FilterActivity.class);
-            intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
             startActivity(intent);
         } else if (id == R.id.nav_profile) {
             Intent intent = new Intent(MenuActivity.this, EditProfileActivity.class);
-            intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
             startActivity(intent);
         } else if (id == R.id.nav_map) {
             Intent intent = new Intent(getBaseContext(), MapActivity.class);
-            intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
             startActivity(intent);
         } else if (id == R.id.nav_logout) {
             Intent intent = new Intent(getBaseContext(), LoginActivity.class);

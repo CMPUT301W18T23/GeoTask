@@ -3,7 +3,6 @@ package com.geotask.myapplication;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,7 +15,6 @@ import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
-import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import java.util.ArrayList;
@@ -27,14 +25,12 @@ import java.util.concurrent.TimeUnit;
 /**
  * handles editing a task by the task requester
  */
-public class EditTaskActivity extends AppCompatActivity implements AsyncCallBackManager {
+public class EditTaskActivity extends AbstractGeoTaskActivity implements AsyncCallBackManager {
     private EditText editTitle;
     private EditText editDescription;
     private Task taskBeingEdited;
     private GTData data = null;
     private List<? extends GTData> searchResult = null;
-    private User currentUser;
-
 
     /**
      * inits vars and view items, and buttons
@@ -44,7 +40,6 @@ public class EditTaskActivity extends AppCompatActivity implements AsyncCallBack
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_task);
-        currentUser = (User) getIntent().getSerializableExtra("currentUser");
 
         taskBeingEdited = (Task)getIntent().getSerializableExtra(getString(R.string.CURRENT_TASK_BEING_VIEWED));
 
@@ -90,7 +85,6 @@ public class EditTaskActivity extends AppCompatActivity implements AsyncCallBack
 
             Intent back = new Intent();
             back.putExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT), taskBeingEdited);
-            back.putExtra(getString(R.string.CURRENT_USER), currentUser);
             setResult(Activity.RESULT_OK, back);
             finish();
         }else{
@@ -140,7 +134,6 @@ public class EditTaskActivity extends AppCompatActivity implements AsyncCallBack
 
         Intent back = new Intent();
         back.putExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT), taskBeingEdited);
-        back.putExtra(getString(R.string.CURRENT_USER), currentUser);
         back.putExtra("del", "1");
 
         setResult(Activity.RESULT_OK, back);

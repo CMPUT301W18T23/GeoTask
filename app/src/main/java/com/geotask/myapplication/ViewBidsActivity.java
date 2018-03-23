@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -22,19 +21,17 @@ import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
-import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBackManager {
+public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCallBackManager {
 
     private ListView oldBids; //named taskListView
     private ArrayList<Bid> bidList;
     private ArrayAdapter<Bid> adapter;
-    private User currentUser; //TODO - get current user
     private Task task;
     private PopupWindow POPUP_WINDOW_DELETION = null;   //popup for error message
     private GTData data = null;
@@ -49,8 +46,6 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_bids);
 
-        currentUser = (User) getIntent().getSerializableExtra(getString(R.string.CURRENT_USER)); //ToDo switch to Parcelable
-
         oldBids = findViewById(R.id.bidListView);
         bidList = new ArrayList<>();
 
@@ -60,11 +55,11 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
                                     int position, long id) {
                 //Log.i("ViewBids --->",task.getRequesterID() + " " + currentUser.getObjectID());
                 Bid bid = bidList.get(position);
-                if(task.getRequesterID().compareTo(currentUser.getObjectID()) == 0){
+                if(task.getRequesterID().compareTo(getCurrentUser().getObjectID()) == 0){
 //                    Bid bid = bidList.get(position);
                     triggerPopup(view, bid, task);
                     adapter.notifyDataSetChanged();
-                }else if (currentUser.getObjectID().equals(bid.getProviderID())){
+                }else if (getCurrentUser().getObjectID().equals(bid.getProviderID())){
                     triggerDeletePopup(view, bid, task);
                     adapter.notifyDataSetChanged();
                 }
@@ -152,8 +147,6 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
 
         //go back to TaskViewActivity
         Intent intent = new Intent(ViewBidsActivity.this, TaskViewActivity.class);
-        intent.putExtra("currentUser", currentUser);
-        intent.putExtra("Id", currentUser);
         intent.putExtra("task", task);
         startActivity(intent);
 
@@ -216,7 +209,6 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         }
         Intent back = new Intent();
         back.putExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT), task);
-        back.putExtra(getString(R.string.CURRENT_USER), currentUser);
         back.putExtra("del", "1");
 
         //task.syncBidData();
@@ -279,7 +271,7 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
 
                 Intent intent = new Intent(ViewBidsActivity.this, ViewProfileActivity.class);
 //                intent.putExtra("userID", bid.getProviderID());
-                intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
+                intent.putExtra(getString(R.string.CURRENT_USER), getCurrentUser()); //ToDo issue #31 here????
                 startActivity(intent);
             }
         });
@@ -306,7 +298,6 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
 
                 Intent back = new Intent();
                 back.putExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT), task);
-                back.putExtra(getString(R.string.CURRENT_USER), currentUser);
                 back.putExtra("del", "1");
 
                 setResult(Activity.RESULT_OK, back);

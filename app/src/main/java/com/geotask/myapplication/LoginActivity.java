@@ -77,7 +77,7 @@ public class LoginActivity extends AbstractGeoTaskActivity implements AsyncCallB
             List<User> result;
             try {
                 result = (List<User>) asyncSearch.get();
-                super.setCurrentUser(result.get(0));
+                setCurrentUser(result.get(0));
                 Intent intent = new Intent(getBaseContext(), MenuActivity.class);
                 startActivity(intent);
             } catch (ExecutionException | InterruptedException e) {

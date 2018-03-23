@@ -2,7 +2,6 @@ package com.geotask.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 import com.geotask.myapplication.DataClasses.User;
@@ -10,7 +9,7 @@ import com.geotask.myapplication.DataClasses.User;
 /**
  * simple class to view user data
  */
-public class ViewProfileActivity extends AppCompatActivity {
+public class ViewProfileActivity extends AbstractGeoTaskActivity {
 
     private TextView name;
     private TextView phone;

@@ -19,7 +19,6 @@ import android.support.v7.app.AppCompatActivity;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
-import com.geotask.myapplication.DataClasses.User;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -34,13 +33,11 @@ import java.util.List;
  */
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, AsyncCallBackManager {
-    private User currentUser;
     private List<Task> taskList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        currentUser = (User) getIntent().getSerializableExtra("currentUser");
 
         //get the tasks form the server
         /*SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
@@ -61,7 +58,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         // add a default marker at and move camera to user location
-        LatLng user_location = new LatLng( 53.523, -113.526);//currentUser.getLocationX(), currentUser.getLocationY()); //get user location, input as floats to the LatLng function
+        LatLng user_location = new LatLng( 53.523, -113.526);//getCurrentUser().getLocationX(), getCurrentUser().getLocationY()); //get user location, input as floats to the LatLng function
         googleMap.addMarker(new MarkerOptions().position(user_location)
                 .title("You are here."));
         googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));

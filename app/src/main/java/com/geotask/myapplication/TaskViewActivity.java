@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -24,11 +23,9 @@ import com.geotask.myapplication.DataClasses.User;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 /**
  * handles veiwing a task
@@ -37,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  * going to profile if username is clicked on
  */
 //https://stackoverflow.com/questions/4127725/how-can-i-remove-a-button-or-make-it-invisible-in-android
-public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBackManager {
+public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncCallBackManager {
     private TextView title;
     private TextView name;
     private TextView description;
@@ -45,7 +42,6 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
     private TextView hitCount;
     private TextView dateSincePost;
     private Task currentTask;
-    private User currentUser;
     private Button editTaskButton;
     private Button bidButton;
     private Button addBidButton;
@@ -65,11 +61,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_view);
 
-
         currentTask = (Task) getIntent().getSerializableExtra(getString(R.string.TASK_BEING_VIEWED));
-        currentUser = (User) getIntent().getSerializableExtra(getString(R.string.CURRENT_USER));
-
-        String currentUserId = currentUser.getObjectID();
 
         title = findViewById(R.id.textViewTitle);
         name = findViewById(R.id.textViewName);
@@ -86,7 +78,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         setupButtons();
         getTaskUser();
 
-        if (currentUserId.equals(currentTask.getRequesterID())){   //hide editbutton if not user
+        if (getCurrentUser().getObjectID().equals(currentTask.getRequesterID())){   //hide editbutton if not user
             editTaskButton.setVisibility(View.VISIBLE);
             addBidButton.setVisibility(View.INVISIBLE);
         } else {
@@ -110,7 +102,6 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
             public void onClick(View v){
                 Intent intent = new Intent(TaskViewActivity.this, EditTaskActivity.class);
                 intent.putExtra(getString(R.string.CURRENT_TASK_BEING_VIEWED), currentTask);
-                intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
                 startActivityForResult(intent,1);
 //                startActivity(intent);
             }
@@ -120,7 +111,6 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
             public void onClick(View v){
                 Intent intent = new Intent(TaskViewActivity.this, ViewBidsActivity.class);
                 intent.putExtra(getString(R.string.CURRENT_TASK_BEING_VIEWED), currentTask);
-                intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
                 startActivityForResult(intent, 2);
                 updateStatus();  //for later ToDo ?????
             }
@@ -251,7 +241,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
      * @param value
      */
     private void addBid(Double value){
-        Bid bid = new Bid(currentUser.getObjectID(), value, currentTask.getObjectID());
+        Bid bid = new Bid(getCurrentUser().getObjectID(), value, currentTask.getObjectID());
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
                 new MasterController.AsyncCreateNewDocument();
