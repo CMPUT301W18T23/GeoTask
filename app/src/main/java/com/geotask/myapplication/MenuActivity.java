@@ -57,7 +57,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
         implements NavigationView.OnNavigationItemSelectedListener, AsyncCallBackManager {
 
     private ListView oldTasks; //named taskListView
-    private ArrayList<Task> taskList;
     private ArrayAdapter<Task> adapter;
     private String mode;
     private String[] filterArray;
@@ -78,8 +77,8 @@ public class MenuActivity extends AbstractGeoTaskActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         oldTasks = findViewById(R.id.taskListView);
-        taskList = new ArrayList<>();
-        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, taskList, lastClickedTask);
+        super.setTaskList(new ArrayList<Task>());
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask);
         oldTasks.setAdapter(adapter);
 
         mode = getString(R.string.MODE_ALL);
@@ -126,7 +125,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Task task = taskList.get(position);
+                Task task = getTaskList().get(position);
                 lastClickedTask = task;
                 Intent intent = new Intent(MenuActivity.this, TaskViewActivity.class);
                 setCurrentTask(lastClickedTask);
@@ -183,7 +182,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
      *
      */
     private void populateTaskView(){
-        taskList.clear();
+        getTaskList().clear();
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
 
         if(mode.compareTo(getString(R.string.MODE_REQUESTER)) == 0){
@@ -205,7 +204,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
 
         try {
-            taskList = (ArrayList<Task>) asyncSearch.get();
+            setTaskList((ArrayList<Task>) asyncSearch.get());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
@@ -213,9 +212,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
        if(mode.compareTo(getString(R.string.MODE_PROVIDER)) == 0) {
             //Only show tasks which have been bidded on by current user
             //Need to do this after elastic search by removing results without bids by the user
-           for(int i = 0; i < taskList.size(); i++) {
+           for(int i = 0; i < getTaskList().size(); i++) {
                SuperBooleanBuilder builder2 = new SuperBooleanBuilder();
-               builder2.put("taskID", taskList.get(i).getObjectID());
+               builder2.put("taskID", getTaskList().get(i).getObjectID());
 
                MasterController.AsyncSearch asyncSearch2 =
                        new MasterController.AsyncSearch(this);
@@ -237,13 +236,13 @@ public class MenuActivity extends AbstractGeoTaskActivity
                    }
                }
                if(!bidBool) {
-                   taskList.remove(i);
+                   getTaskList().remove(i);
                    i--;
                }
            }
        }
 
-        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, taskList, lastClickedTask);
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask);
         oldTasks.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }

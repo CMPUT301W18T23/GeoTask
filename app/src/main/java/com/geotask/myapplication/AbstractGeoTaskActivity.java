@@ -7,6 +7,7 @@ import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
@@ -14,6 +15,7 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
     private static User currentUser;
     private static Task currentTask;
     private static List<Bid> bidList;
+    private static ArrayList<Task> taskList;
     private static Account account;
     private static int viewMode = 0;
     private static String searchKeywords;
@@ -32,6 +34,14 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
 
     public static void setCurrentTask(Task currentTask) {
         AbstractGeoTaskActivity.currentTask = currentTask;
+    }
+
+    public static ArrayList<Task> getTaskList() {
+        return taskList;
+    }
+
+    public static void setTaskList(ArrayList<Task> taskList) {
+        AbstractGeoTaskActivity.taskList = taskList;
     }
 
     public static List<Bid> getBidList() {
