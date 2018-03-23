@@ -14,8 +14,8 @@
         android:layout_marginStart="84dp"
         android:layout_marginTop="64dp"
         android:ems="10"
+        android:hint="Keywords"
         android:inputType="textPersonName"
-        android:text="Keywords"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

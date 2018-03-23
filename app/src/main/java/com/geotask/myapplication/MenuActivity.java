@@ -136,6 +136,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
                         .setAction("Action", null).show();
                 setSearchKeywords("");
                 populateTaskView();
+                clearFiltersButton.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -216,9 +217,12 @@ public class MenuActivity extends AbstractGeoTaskActivity
         //Add filter keywords to the builder if present
         try {
             if(!getSearchKeywords().equals("")) {
+                clearFiltersButton.setVisibility(View.VISIBLE);
                 for(int i = 0; i < filterArray.length; i++) {
                     builder1.put("description", filterArray[i].toLowerCase());
                 }
+            } else {
+                clearFiltersButton.setVisibility(View.INVISIBLE);
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
