@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -63,6 +64,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
     private String mode;
     private String[] filterArray;
     private FloatingActionButton fab;
+    private Button clearFiltersButton;
     private ArrayList<Bid> bidFilterList;
     NavigationView navigationView;
     View headerView;
@@ -102,7 +104,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
         toggle.syncState();
 
         fab = findViewById(R.id.fab);
-
         /*
             onClick Listener for the floating action button. Here we will start the AddTaskActivity
             and pass the current user to it
@@ -113,6 +114,20 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 Log.v("myTag","FAB Clicked");
                 Intent intent = new Intent(MenuActivity.this, AddTaskActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        clearFiltersButton = findViewById(R.id.clearFilterButton);
+        //onClick Listener for the clear filters button.
+        clearFiltersButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                View snackView = getCurrentFocus();
+                Log.v("myTag","Clear Filters Clicked");
+                Snackbar.make(snackView, "Search Filters Cleared", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                setSearchKeywords("");
+                populateTaskView();
             }
         });
 
@@ -146,10 +161,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
     protected void onStart() {
         super.onStart();
         //Log.i("LifeCycle --->", "onStart is called");
-        //populate the array on start
         fab.hide();
-        //TODO - set the email and name
-
     }
 
     /**
@@ -159,6 +171,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
     @Override
     protected void onResume(){
         super.onResume();
+        //populate the array on start
         populateTaskView();
         headerView = navigationView.getHeaderView(0);
         drawerImage = (ImageView) headerView.findViewById(R.id.drawer_image);
@@ -187,10 +200,12 @@ public class MenuActivity extends AbstractGeoTaskActivity
         getTaskList().clear();
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
 
+        //Only show tasks created by the user
         if(getViewMode() == R.integer.MODE_INT_REQUESTER){
             builder1.put("requesterID", getCurrentUser().getObjectID());
         }
 
+        //Add filter keywords to the builder if present
         try {
             if(!getSearchKeywords().equals("")) {
                 for(int i = 0; i < filterArray.length; i++) {
@@ -211,9 +226,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
             e.printStackTrace();
         }
 
+        //Only show tasks which have been bidded on by current user
+        //Need to do this after elastic search by removing results without bids by the user
        if(getViewMode() == R.integer.MODE_INT_PROVIDER) {
-            //Only show tasks which have been bidded on by current user
-            //Need to do this after elastic search by removing results without bids by the user
            SuperBooleanBuilder builder2 = new SuperBooleanBuilder();
            builder2.put("providerID", getCurrentUser().getObjectID());
 
