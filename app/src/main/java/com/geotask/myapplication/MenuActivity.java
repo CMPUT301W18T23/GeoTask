@@ -1,6 +1,12 @@
 package com.geotask.myapplication;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -9,10 +15,13 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.OrientationEventListener;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -55,6 +64,13 @@ import static java.sql.DriverManager.println;
  *      For editing the nav_header
  *      Author Exaqt, April 18, 2016, no license stated
  *
+ * https://stackoverflow.com/questions/37458500/android-screen-rotation-detection
+ *      For listening for screen rotation
+ *      Author gRRosiminet, May 26, 2016, no licence stated
+ *
+ * https://android--code.blogspot.ca/2015/09/android-how-to-get-screen-width-and.html
+ *      Author Saiful Alam, For getting Screen size, September 27, 2015, no licence stated
+ *
  */
 public class MenuActivity extends AbstractGeoTaskActivity
         implements NavigationView.OnNavigationItemSelectedListener, AsyncCallBackManager {
@@ -66,6 +82,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
     private FloatingActionButton fab;
     private Button clearFiltersButton;
     private ArrayList<Bid> bidFilterList;
+    private OrientationEventListener orientationEventListener = null;
+    public static int screenWidthInDPs;
+    public static int curOrientation;
     NavigationView navigationView;
     View headerView;
     ImageView drawerImage;
@@ -85,6 +104,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask);
         oldTasks.setAdapter(adapter);
 
+        screenWidthInDPs = this.getScreenWidthInDPs();
 
         if(getViewMode() ==  R.integer.MODE_INT_ALL) {
             getSupportActionBar().setTitle("All Tasks Mode");
@@ -160,6 +180,28 @@ public class MenuActivity extends AbstractGeoTaskActivity
             }
         });
 
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            curOrientation = 0;
+        }
+        else {
+            curOrientation = 1;
+        }
+
+        orientationEventListener = new OrientationEventListener(this) {
+            @Override
+            public void onOrientationChanged(int orientation) {
+                if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    curOrientation = 0;
+                }
+                else {
+                    curOrientation = 1;
+                }
+                Log.i("orient ------>", String.format("oriented: %d", orientation));
+                screenWidthInDPs = getScreenWidthInDPs();
+                adapter.notifyDataSetChanged();
+            }
+        };
+        orientationEventListener.enable();
     }
 
     /**
@@ -170,7 +212,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
     protected void onStart() {
         super.onStart();
         //Log.i("LifeCycle --->", "onStart is called");
-        fab.hide();
+        fab.show();
     }
 
     /**
@@ -191,6 +233,13 @@ public class MenuActivity extends AbstractGeoTaskActivity
         drawerUsername.setText(getCurrentUser().getName());
         drawerEmail.setText(getCurrentUser().getEmail());
 
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            curOrientation = 0;
+        }
+        else {
+            curOrientation = 1;
+        }
+
     }
 
     /**
@@ -199,6 +248,12 @@ public class MenuActivity extends AbstractGeoTaskActivity
     @Override
     protected void onRestart(){
         super.onRestart();
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            curOrientation = 0;
+        }
+        else {
+            curOrientation = 1;
+        }
     }
 
     /**
@@ -342,7 +397,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         }  else if (id == R.id.nav_requester) {
             fab.show();
             setViewMode(R.integer.MODE_INT_REQUESTER);
-            getSupportActionBar().setTitle("Requester Mode");
+            getSupportActionBar().setTitle("Requester");
             Snackbar.make(snackView, "Changed view to \"Requester\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             populateTaskView();
@@ -356,7 +411,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
             populateTaskView();
 
         } else if (id == R.id.nav_all) {
-            fab.hide();
+            fab.show();
             setViewMode(R.integer.MODE_INT_ALL);
             getSupportActionBar().setTitle("All Tasks Mode");
             Snackbar.make(snackView, "Changed view to \"All\"", Snackbar.LENGTH_LONG)
@@ -367,6 +422,15 @@ public class MenuActivity extends AbstractGeoTaskActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    //by Saiful Alam (see above references)
+    public int getScreenWidthInDPs(){
+        DisplayMetrics dm = new DisplayMetrics();
+        WindowManager windowManager = (WindowManager) this.getSystemService(WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(dm);
+        int widthInDP = Math.round(dm.widthPixels / dm.density);
+        return widthInDP;
     }
 
     @Override

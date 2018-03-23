@@ -28,6 +28,9 @@
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
             android:paddingTop="4dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:maxEms="10"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@android:color/black" />
 
@@ -35,10 +38,11 @@
             android:id="@+id/task_list_date"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
             android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
             android:gravity="right"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textSize="14sp" />
 
     </LinearLayout>
 
@@ -46,8 +50,10 @@
         android:id="@+id/task_list_desc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:layout_marginLeft="10dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="5dp"
         android:paddingBottom="2dp"
         android:paddingLeft="4dp"
         android:paddingRight="4dp"

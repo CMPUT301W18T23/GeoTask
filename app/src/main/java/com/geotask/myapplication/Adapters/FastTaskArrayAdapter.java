@@ -18,6 +18,7 @@ import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
+import com.geotask.myapplication.MenuActivity;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 import com.geotask.myapplication.R;
 
@@ -89,6 +90,8 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
             LayoutInflater inflater = ((Activity)context).getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);
 
+            //int dpWidth = MenuActivity.screenWidthInDPs;
+
             headerSub = new HeaderSub();
 
             headerSub.name = (TextView) row.findViewById(R.id.task_list_title);
@@ -112,6 +115,11 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
             Task item = tdata.get(position);
 
             headerSub.name.setText(item.getName());
+            if(MenuActivity.curOrientation == 0) {
+                headerSub.name.setMaxEms((MenuActivity.screenWidthInDPs / 22) - 8);
+            } else {
+                headerSub.name.setMaxEms((MenuActivity.screenWidthInDPs / 22) - 10);
+            }
             String viewString = String.format(" %d Views", item.getHitCounter());
             headerSub.hits.setText(String.format("Viewed %d times", item.getHitCounter()));
             headerSub.desc.setText(item.getDescription());
