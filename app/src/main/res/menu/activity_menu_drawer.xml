@@ -15,7 +15,7 @@
         <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_account_outline_grey600_48dp"
-            android:title="Profile" />
+            android:title="My Profile" />
         <item
             android:id="@+id/nav_map"
             android:icon="@drawable/ic_google_maps_grey600_48dp"
@@ -26,16 +26,24 @@
             android:title="Logout" />
     </group>
 
-    <item android:title="Mode">
+    <item android:title="View">
         <menu>
-            <item
-                android:id="@+id/nav_provider"
-                android:icon="@drawable/ic_google_circles_extended_grey600_48dp"
-                android:title="Provider" />
             <item
                 android:id="@+id/nav_requester"
                 android:icon="@drawable/ic_circle_outline_grey600_48dp"
-                android:title="Requester" />
+                android:title="My Tasks" />
+            <item
+                android:id="@+id/nav_assigned"
+                android:icon="@drawable/ic_checkbox_blank_circle_grey600_48dp"
+                android:title="My Assigned" />
+            <item
+                android:id="@+id/nav_provider"
+                android:icon="@drawable/ic_google_circles_extended_grey600_48dp"
+                android:title="My Bids" />
+            <item
+                android:id="@+id/nav_starred"
+                android:icon="@drawable/ic_star_outline_grey600_48dp"
+                android:title="Starred" />
             <item
                 android:id="@+id/nav_all"
                 android:icon="@drawable/ic_google_circles_communities_grey600_48dp"

@@ -106,12 +106,13 @@ public class MenuActivity extends AbstractGeoTaskActivity
 
         screenWidthInDPs = this.getScreenWidthInDPs();
 
+        //TODO - change these to match below
         if(getViewMode() ==  R.integer.MODE_INT_ALL) {
-            getSupportActionBar().setTitle("All Tasks Mode");
+            getSupportActionBar().setTitle("All Tasks");
         } else if(getViewMode() == R.integer.MODE_INT_REQUESTER) {
-            getSupportActionBar().setTitle("Requester Mode");
+            getSupportActionBar().setTitle("My Tasks");
         } else if(getViewMode() == R.integer.MODE_INT_PROVIDER) {
-            getSupportActionBar().setTitle("Provider Mode");
+            getSupportActionBar().setTitle("Tasks I Have Bid On");
         }
 
         try {
@@ -378,11 +379,16 @@ public class MenuActivity extends AbstractGeoTaskActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_browse) {
-            // Handle the camera action
+            getSupportActionBar().setTitle("All Tasks");
+            setViewMode(R.integer.MODE_INT_ALL);
+            setSearchKeywords("");
+            populateTaskView();
+            adapter.notifyDataSetChanged();
 
         } else if (id == R.id.nav_filter) {
             Intent intent = new Intent(getBaseContext(), FilterActivity.class);
             startActivity(intent);
+            //clearFiltersButton.setVisibility(View.VISIBLE);
         } else if (id == R.id.nav_profile) {
             Intent intent = new Intent(MenuActivity.this, EditProfileActivity.class);
             startActivity(intent);
@@ -394,10 +400,18 @@ public class MenuActivity extends AbstractGeoTaskActivity
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
 
+        }  else if (id == R.id.nav_assigned) {
+            fab.hide();
+            //setViewMode(R.integer.MODE_INT_ASSIGNED); //TODO - add the map
+            getSupportActionBar().setTitle("My Assigned Tasks");
+            Snackbar.make(snackView, "Changed view to \"My Assigned\"", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+            populateTaskView();
+
         }  else if (id == R.id.nav_requester) {
             fab.show();
             setViewMode(R.integer.MODE_INT_REQUESTER);
-            getSupportActionBar().setTitle("Requester");
+            getSupportActionBar().setTitle("My Tasks");
             Snackbar.make(snackView, "Changed view to \"Requester\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             populateTaskView();
@@ -405,7 +419,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         } else if (id == R.id.nav_provider) {
             fab.hide();
             setViewMode(R.integer.MODE_INT_PROVIDER);
-            getSupportActionBar().setTitle("Provider Mode");
+            getSupportActionBar().setTitle("Tasks I Have Bid On");
             Snackbar.make(snackView, "Changed view to \"Provider\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             populateTaskView();
@@ -413,7 +427,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         } else if (id == R.id.nav_all) {
             fab.show();
             setViewMode(R.integer.MODE_INT_ALL);
-            getSupportActionBar().setTitle("All Tasks Mode");
+            getSupportActionBar().setTitle("All Tasks");
             Snackbar.make(snackView, "Changed view to \"All\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             populateTaskView();
