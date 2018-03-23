@@ -129,7 +129,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 Task task = taskList.get(position);
                 lastClickedTask = task;
                 Intent intent = new Intent(MenuActivity.this, TaskViewActivity.class);
-                intent.putExtra(getString(R.string.TASK_BEING_VIEWED), task);
+                setCurrentTask(lastClickedTask);
                 startActivity(intent);
                 Log.i("LifeCycle --->", "after activity return");
             }
@@ -185,6 +185,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
     private void populateTaskView(){
         taskList.clear();
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
+
         if(mode.compareTo(getString(R.string.MODE_REQUESTER)) == 0){
             builder1.put("requesterID", getCurrentUser().getObjectID());
         }
@@ -209,7 +210,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
             e.printStackTrace();
         }
 
-       if(mode.compareTo("Provider") == 0) {
+       if(mode.compareTo(getString(R.string.MODE_PROVIDER)) == 0) {
             //Only show tasks which have been bidded on by current user
             //Need to do this after elastic search by removing results without bids by the user
            for(int i = 0; i < taskList.size(); i++) {

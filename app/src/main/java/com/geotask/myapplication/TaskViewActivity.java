@@ -41,7 +41,6 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
     private TextView status;
     private TextView hitCount;
     private TextView dateSincePost;
-    private Task currentTask;
     private Button editTaskButton;
     private Button bidButton;
     private Button addBidButton;
@@ -61,8 +60,6 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_view);
 
-        currentTask = (Task) getIntent().getSerializableExtra(getString(R.string.TASK_BEING_VIEWED));
-
         title = findViewById(R.id.textViewTitle);
         name = findViewById(R.id.textViewName);
         description = findViewById(R.id.textViewDescription);
@@ -78,7 +75,7 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
         setupButtons();
         getTaskUser();
 
-        if (getCurrentUser().getObjectID().equals(currentTask.getRequesterID())){   //hide editbutton if not user
+        if (getCurrentUser().getObjectID().equals(getCurrentTask().getRequesterID())){   //hide editbutton if not user
             editTaskButton.setVisibility(View.VISIBLE);
             addBidButton.setVisibility(View.INVISIBLE);
         } else {
@@ -86,10 +83,10 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
             addBidButton.setVisibility(View.VISIBLE);
 
             //Increasing Hits
-            currentTask.addHit();
+            getCurrentTask().addHit();
             MasterController.AsyncUpdateDocument asyncUpdateDocument =
                     new MasterController.AsyncUpdateDocument();
-            asyncUpdateDocument.execute(currentTask);
+            asyncUpdateDocument.execute(getCurrentTask());
         }
     }
 
@@ -101,7 +98,6 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
         this.editTaskButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 Intent intent = new Intent(TaskViewActivity.this, EditTaskActivity.class);
-                intent.putExtra(getString(R.string.CURRENT_TASK_BEING_VIEWED), currentTask);
                 startActivityForResult(intent,1);
 //                startActivity(intent);
             }
@@ -110,7 +106,6 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
         this.bidButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 Intent intent = new Intent(TaskViewActivity.this, ViewBidsActivity.class);
-                intent.putExtra(getString(R.string.CURRENT_TASK_BEING_VIEWED), currentTask);
                 startActivityForResult(intent, 2);
                 updateStatus();  //for later ToDo ?????
             }
@@ -133,7 +128,7 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
     private void getTaskUser(){  //this should work when get really data to get
         MasterController.AsyncGetDocument asyncGetDocument =
                 new MasterController.AsyncGetDocument(this);
-        asyncGetDocument.execute(new AsyncArgumentWrapper(currentTask.getRequesterID(), User.class));
+        asyncGetDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getRequesterID(), User.class));
     }
 
     /**
@@ -141,16 +136,16 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
      * these are local changes
      */
     private void updateDisplayedValues(){
-        this.title.setText(currentTask.getName());
+        this.title.setText(getCurrentTask().getName());
 //        this.name.setText(taskUserId); //need to change to get user from the id
 //        this.name.setText("placeolder");
-        this.description.setText(currentTask.getDescription());
-        this.status.setText(String.format("Status: %s", StringUtils.capitalize(currentTask.getStatus())));
-        this.hitCount.setText(String.format("%d Views",currentTask.getHitCounter()));
-        int days = (int) (new Date().getTime() - currentTask.getDate()) / (1000*60*60*24);
-        int hours   = (int) ((new Date().getTime() - currentTask.getDate()) / (1000*60*60) % 24);
-        int mins = (int)((new Date().getTime() - currentTask.getDate()) / (1000*60) % 60);
-        int secs = (int) ((new Date().getTime() - currentTask.getDate()) / 1000) % 60 ;
+        this.description.setText(getCurrentTask().getDescription());
+        this.status.setText(String.format("Status: %s", StringUtils.capitalize(getCurrentTask().getStatus())));
+        this.hitCount.setText(String.format("%d Views",getCurrentTask().getHitCounter()));
+        int days = (int) (new Date().getTime() - getCurrentTask().getDate()) / (1000*60*60*24);
+        int hours   = (int) ((new Date().getTime() - getCurrentTask().getDate()) / (1000*60*60) % 24);
+        int mins = (int)((new Date().getTime() - getCurrentTask().getDate()) / (1000*60) % 60);
+        int secs = (int) ((new Date().getTime() - getCurrentTask().getDate()) / 1000) % 60 ;
         if(days > 0){
             this.dateSincePost.setText(String.format("Posted %d days ago", days));
         } else if(hours > 0){
@@ -176,12 +171,10 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
                 if ("1".equals(data.getStringExtra("del"))){
                     finish();
                 }
-                this.currentTask = (Task) data.getSerializableExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT));  //need to return that in implementation
                 updateDisplayedValues();
             }
         }else if (requestCode == 2){
             if (resultCode == Activity.RESULT_OK) {
-                this.currentTask = (Task) data.getSerializableExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT));  //need to return that in implementation
                 updateDisplayedValues();
             }
         }
@@ -241,20 +234,20 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
      * @param value
      */
     private void addBid(Double value){
-        Bid bid = new Bid(getCurrentUser().getObjectID(), value, currentTask.getObjectID());
+        Bid bid = new Bid(getCurrentUser().getObjectID(), value, getCurrentTask().getObjectID());
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
                 new MasterController.AsyncCreateNewDocument();
         asyncCreateNewDocument.execute(bid);
 
-        if (currentTask.getStatus().toLowerCase().equals("requested")) {
+        if (getCurrentTask().getStatus().toLowerCase().equals("requested")) {
             taskBidded(); //need to uncomment when taskId is given
             updateDisplayedValues();
         }
 
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
                 new MasterController.AsyncUpdateDocument();
-        asyncUpdateDocument.execute(currentTask);
+        asyncUpdateDocument.execute(getCurrentTask());
         try {
             Thread.sleep(400);
         } catch (InterruptedException e) {
@@ -267,7 +260,7 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
      * @throws InterruptedException
      */
     private void taskBidded() {  //this should hopefully work when get really data to get
-        currentTask.setStatus(getString(R.string.TASK_STATUS_BIDDED));
+        getCurrentTask().setStatus(getString(R.string.TASK_STATUS_BIDDED));
     }
 
 
@@ -295,10 +288,10 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
     private void updateStatus(){
         MasterController.AsyncGetDocument asyncGetDocumentWhenDocumentExist =
                 new MasterController.AsyncGetDocument(this);
-        asyncGetDocumentWhenDocumentExist.execute(new AsyncArgumentWrapper(currentTask.getObjectID(), Task.class));
+        asyncGetDocumentWhenDocumentExist.execute(new AsyncArgumentWrapper(getCurrentTask().getObjectID(), Task.class));
 
         try {
-            currentTask = (Task) asyncGetDocumentWhenDocumentExist.get();
+            setCurrentTask((Task) asyncGetDocumentWhenDocumentExist.get());
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {

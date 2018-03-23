@@ -32,7 +32,6 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
     private ListView oldBids; //named taskListView
     private ArrayList<Bid> bidList;
     private ArrayAdapter<Bid> adapter;
-    private Task task;
     private PopupWindow POPUP_WINDOW_DELETION = null;   //popup for error message
     private GTData data = null;
     private List<? extends GTData> searchResult = null;
@@ -55,12 +54,12 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
                                     int position, long id) {
                 //Log.i("ViewBids --->",task.getRequesterID() + " " + currentUser.getObjectID());
                 Bid bid = bidList.get(position);
-                if(task.getRequesterID().compareTo(getCurrentUser().getObjectID()) == 0){
+                if(getCurrentTask().getRequesterID().compareTo(getCurrentUser().getObjectID()) == 0){
 //                    Bid bid = bidList.get(position);
-                    triggerPopup(view, bid, task);
+                    triggerPopup(view, bid, getCurrentTask());
                     adapter.notifyDataSetChanged();
                 }else if (getCurrentUser().getObjectID().equals(bid.getProviderID())){
-                    triggerDeletePopup(view, bid, task);
+                    triggerDeletePopup(view, bid, getCurrentTask());
                     adapter.notifyDataSetChanged();
                 }
             }
@@ -75,7 +74,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         //TODO - build query that returns list of bids that all have task ID == this.taskID
         /// THIS SHOULD WORK BUT IS CURRENTLY COMMENTED OUT
         SuperBooleanBuilder builder = new SuperBooleanBuilder();
-        builder.put("taskID", task.getObjectID());
+        builder.put("taskID", getCurrentTask().getObjectID());
 
         MasterController.AsyncSearch asyncSearch =
                 new MasterController.AsyncSearch(this);
@@ -97,7 +96,6 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
     protected void onStart() {
         super.onStart();
         //Log.i("LifeCycle --->", "onStart is called");
-        this.task = (Task) getIntent().getSerializableExtra(getString(R.string.CURRENT_TASK_BEING_VIEWED));
         adapter = new BidArrayAdapter(this, R.layout.bid_list_item, bidList);
         oldBids.setAdapter(adapter);
         adapter.notifyDataSetChanged();
