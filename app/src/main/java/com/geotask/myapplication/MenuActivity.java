@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static java.sql.DriverManager.println;
+
 
 /** MenuActivity
  *
@@ -81,7 +83,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask);
         oldTasks.setAdapter(adapter);
 
-        mode = getString(R.string.MODE_ALL);
+
         try {
             filterArray = getSearchKeywords().split(" ");
         } catch (NullPointerException e) {
@@ -185,7 +187,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         getTaskList().clear();
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
 
-        if(mode.compareTo(getString(R.string.MODE_REQUESTER)) == 0){
+        if(getViewMode() == R.integer.MODE_INT_REQUESTER){
             builder1.put("requesterID", getCurrentUser().getObjectID());
         }
 
@@ -209,36 +211,38 @@ public class MenuActivity extends AbstractGeoTaskActivity
             e.printStackTrace();
         }
 
-       if(mode.compareTo(getString(R.string.MODE_PROVIDER)) == 0) {
+       if(getViewMode() == R.integer.MODE_INT_PROVIDER) {
             //Only show tasks which have been bidded on by current user
             //Need to do this after elastic search by removing results without bids by the user
-           for(int i = 0; i < getTaskList().size(); i++) {
-               SuperBooleanBuilder builder2 = new SuperBooleanBuilder();
-               builder2.put("taskID", getTaskList().get(i).getObjectID());
+           SuperBooleanBuilder builder2 = new SuperBooleanBuilder();
+           builder2.put("providerID", getCurrentUser().getObjectID());
 
-               MasterController.AsyncSearch asyncSearch2 =
-                       new MasterController.AsyncSearch(this);
-               asyncSearch2.execute(new AsyncArgumentWrapper(builder2, Bid.class));
+           MasterController.AsyncSearch asyncSearch2 =
+                   new MasterController.AsyncSearch(this);
+           asyncSearch2.execute(new AsyncArgumentWrapper(builder2, Bid.class));
 
-               try {
-                   bidFilterList = (ArrayList<Bid>) asyncSearch2.get();
-               } catch (InterruptedException | ExecutionException e) {
-                   e.printStackTrace();
-               }
-               Boolean bidBool = false;
-               for(int j = 0; j < bidFilterList.size(); j++) {
-                   try {
-                       if (bidFilterList.get(j).getProviderID().compareTo(getCurrentUser().getObjectID()) == 0) {
-                           bidBool = true;
+           try {
+               bidFilterList = (ArrayList<Bid>) asyncSearch2.get();
+           } catch (InterruptedException | ExecutionException e) {
+               e.printStackTrace();
+           }
+
+           try {
+               for (int i = 0; i < getTaskList().size(); i++) {
+                   Boolean bidbool = false;
+                   String tempTaskID = getTaskList().get(i).getObjectID();
+                   for(int j = 0; j < bidFilterList.size(); j++) {
+                       if(tempTaskID.compareTo(bidFilterList.get(j).getTaskID()) == 0) {
+                           bidbool = true;
                        }
-                   } catch (IndexOutOfBoundsException e) {
-                       e.printStackTrace();
+                   }
+                   if (!bidbool) {
+                       getTaskList().remove(i);
+                       i--;
                    }
                }
-               if(!bidBool) {
-                   getTaskList().remove(i);
-                   i--;
-               }
+           } catch (IndexOutOfBoundsException e) {
+               e.printStackTrace();
            }
        }
 
@@ -310,21 +314,21 @@ public class MenuActivity extends AbstractGeoTaskActivity
 
         }  else if (id == R.id.nav_requester) {
             fab.show();
-            mode = getString(R.string.MODE_REQUESTER);
+            setViewMode(R.integer.MODE_INT_REQUESTER);
             Snackbar.make(snackView, "Changed view to \"Requester\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             populateTaskView();
 
         } else if (id == R.id.nav_provider) {
             fab.hide();
-            mode = getString(R.string.MODE_PROVIDER);
+            setViewMode(R.integer.MODE_INT_PROVIDER);
             Snackbar.make(snackView, "Changed view to \"Provider\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             populateTaskView();
 
         } else if (id == R.id.nav_all) {
             fab.hide();
-            mode = getString(R.string.MODE_ALL);
+            setViewMode(R.integer.MODE_INT_ALL);
             Snackbar.make(snackView, "Changed view to \"All\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             populateTaskView();

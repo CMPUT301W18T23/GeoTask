@@ -17,8 +17,9 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
     private static List<Bid> bidList;
     private static ArrayList<Task> taskList;
     private static Account account;
-    private static int viewMode = 0;
+    private static int viewMode = R.integer.MODE_INT_ALL;
     private static String searchKeywords;
+    private static double searchRange;
 
     public static User getCurrentUser() {
         return currentUser;
@@ -74,5 +75,13 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
 
     public static void setSearchKeywords(String searchKeywords) {
         AbstractGeoTaskActivity.searchKeywords = searchKeywords;
+    }
+
+    public static double getSearchRange() {
+        return searchRange;
+    }
+
+    public static void setSearchRange(double searchRange) {
+        AbstractGeoTaskActivity.searchRange = searchRange;
     }
 }
