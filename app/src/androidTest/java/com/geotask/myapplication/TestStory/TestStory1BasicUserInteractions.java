@@ -93,8 +93,8 @@ public class TestStory1BasicUserInteractions {
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent result = new Intent(targetContext, AddTaskActivity.class);
-        result.putExtra("currentUser", user);
         testaddTask.launchActivity(result);
+        testaddTask.getActivity().setCurrentUser(user);
 
         onView(withId(R.id.TaskTitle))
                 .perform(clearText(),typeText("cmput301 project."),closeSoftKeyboard());
@@ -129,9 +129,9 @@ public class TestStory1BasicUserInteractions {
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent result = new Intent(targetContext, MenuActivity.class);
-        result.putExtra("currentUser", user);
-        result.putExtra("task", task);
         testMenu.launchActivity(result);
+        testMenu.getActivity().setCurrentTask(task);
+        testMenu.getActivity().setCurrentUser(user);
 
         onView(withId(R.id.drawer_layout))
                 .check(matches(isClosed(Gravity.LEFT)))
@@ -157,9 +157,9 @@ public class TestStory1BasicUserInteractions {
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent result = new Intent(targetContext, MenuActivity.class);
-        result.putExtra("currentUser", user);
-        result.putExtra("task", task);
         testMenu.launchActivity(result);
+        testMenu.getActivity().setCurrentUser(user);
+        testMenu.getActivity().setCurrentTask(task);
 
 
         onView(withId(R.id.drawer_layout))
@@ -182,8 +182,8 @@ public class TestStory1BasicUserInteractions {
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent result = new Intent(targetContext, MenuActivity.class);
-        result.putExtra("currentUser", user);
         testMenu.launchActivity(result);
+        testMenu.getActivity().setCurrentUser(user);
 
         onView(withId(R.id.drawer_layout))
                 .check(matches(isClosed(Gravity.LEFT)))
@@ -208,10 +208,9 @@ public class TestStory1BasicUserInteractions {
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent result = new Intent(targetContext, MenuActivity.class);
-        result.putExtra("currentUser", user);
-        result.putExtra("task", task);
-        result.putExtra("task",task2);
         testMenu.launchActivity(result);
+        testMenu.getActivity().setCurrentUser(user);
+        testMenu.getActivity().setCurrentTask(task2);
 
 
         onView(withId(R.id.drawer_layout))

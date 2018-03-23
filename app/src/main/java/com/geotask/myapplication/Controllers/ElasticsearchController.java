@@ -117,6 +117,13 @@ public class ElasticsearchController {
                 .getResponseCode();
     }
 
+    /**
+     * delete documents that matches a search query
+     *
+     * @param query used to match documents
+     * @param type type of document
+     * @throws IOException
+     */
     protected void deleteDocumentByValue(String query, Type type) throws IOException {
         client.execute(new DeleteByQuery.Builder(query)
                 .addIndex(INDEX_NAME)

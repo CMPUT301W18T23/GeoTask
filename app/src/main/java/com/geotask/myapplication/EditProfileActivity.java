@@ -8,7 +8,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.geotask.myapplication.Controllers.MasterController;
-import com.geotask.myapplication.DataClasses.User;
 
 /**
  * allows user to edit their profile
@@ -21,7 +20,6 @@ public class EditProfileActivity extends AbstractGeoTaskActivity {
     private EditText userPhone;
     private EditText userEmail;
     private Button saveEdit;
-    private User editedUser;
 
     /**
      *init buttons edit text etc
@@ -57,13 +55,14 @@ public class EditProfileActivity extends AbstractGeoTaskActivity {
             String userPhoneString = userPhone.getText().toString().trim();
             String userEmailString = userEmail.getText().toString().trim();
 
-            editedUser = new User(userNameString, userEmailString, userPhoneString);
+            getCurrentUser().setName(userNameString);
+            getCurrentUser().setEmail(userEmailString);
+            getCurrentUser().setPhonenum(userPhoneString);
 
             MasterController.AsyncUpdateDocument asyncUpdateDocument
                     = new MasterController.AsyncUpdateDocument();
-            asyncUpdateDocument.execute(editedUser);
+            asyncUpdateDocument.execute(getCurrentUser());
 
-            setCurrentUser(editedUser);
             Intent intent = new Intent(getBaseContext(), MenuActivity.class);
             startActivity(intent);
 
