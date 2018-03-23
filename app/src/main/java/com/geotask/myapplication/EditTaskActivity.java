@@ -77,6 +77,12 @@ public class EditTaskActivity extends AbstractGeoTaskActivity implements AsyncCa
 
             updateTask();
 
+            try {
+                Thread.sleep(400);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             Intent back = new Intent();
             setResult(Activity.RESULT_OK, back);
             finish();
@@ -106,6 +112,12 @@ public class EditTaskActivity extends AbstractGeoTaskActivity implements AsyncCa
         MasterController.AsyncDeleteDocumentByQuery asyncDeleteDocumentByQuery =
                 new MasterController.AsyncDeleteDocumentByQuery();
         asyncDeleteDocumentByQuery.execute(new AsyncArgumentWrapper(builder, Bid.class));
+
+        try {
+            Thread.sleep(400);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         Intent back = new Intent();
         back.putExtra("del", "1");

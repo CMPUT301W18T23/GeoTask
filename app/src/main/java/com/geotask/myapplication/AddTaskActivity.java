@@ -117,6 +117,12 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
                     = new MasterController.AsyncCreateNewDocument();
             asyncCreateNewDocument.execute(newTask);
 
+            try {
+                Thread.sleep(400);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             Intent intent = new Intent(getBaseContext(), MenuActivity.class);
             startActivity(intent);
         } else {
