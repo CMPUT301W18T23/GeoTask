@@ -8,7 +8,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -21,10 +20,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.geotask.myapplication.Adapters.FastTaskArrayAdapter;
-import com.geotask.myapplication.Adapters.TaskArrayAdapter;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
-import com.geotask.myapplication.Controllers.Helpers.GetLowestBidFromServer;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
@@ -34,13 +31,9 @@ import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import junit.framework.Assert;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
-import static com.geotask.myapplication.Controllers.Helpers.BidListConverter.JsonToList;
-import static java.sql.DriverManager.println;
 
 
 /** MenuActivity
@@ -61,7 +54,7 @@ import static java.sql.DriverManager.println;
  *      Author Exaqt, April 18, 2016, no license stated
  *
  */
-public class MenuActivity extends AppCompatActivity
+public class MenuActivity extends AbstractGeoTaskActivity
         implements NavigationView.OnNavigationItemSelectedListener, AsyncCallBackManager {
 
     private ListView oldTasks; //named taskListView
@@ -71,7 +64,6 @@ public class MenuActivity extends AppCompatActivity
     private String filters;
     private String[] filterArray;
     private FloatingActionButton fab;
-    private User currentUser;
     private ArrayList<Bid> bidFilterList;
     NavigationView navigationView;
     View headerView;
@@ -80,13 +72,18 @@ public class MenuActivity extends AppCompatActivity
     TextView drawerEmail;
     Task lastClickedTask = null;
 
+    User currentUser;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        currentUser = (User) getIntent().getSerializableExtra(getString(R.string.CURRENT_USER)); //ToDo switch to Parcelable
-
+        if (getCurrentUser() == null) {
+            currentUser = (User) getIntent().getSerializableExtra(getString(R.string.CURRENT_USER)); //ToDo switch to Parcelable
+        } else {
+            currentUser = getCurrentUser();
+        }
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
