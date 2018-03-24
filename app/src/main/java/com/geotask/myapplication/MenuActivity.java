@@ -484,9 +484,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
 
     public void setStarredMode(){
         ArrayList<Task> starredTaskList = new ArrayList<Task>();
-        MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this);
         for(String taskID : getCurrentUser().getStarredList()){
+            MasterController.AsyncGetDocument asyncGetDocument =
+                    new MasterController.AsyncGetDocument(this);
             asyncGetDocument.execute(new AsyncArgumentWrapper(taskID, Task.class));
             Task task = null;
             try {
