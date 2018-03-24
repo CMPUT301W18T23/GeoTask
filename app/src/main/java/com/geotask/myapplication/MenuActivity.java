@@ -415,7 +415,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
         } else if (id == R.id.nav_filter) {
             Intent intent = new Intent(getBaseContext(), FilterActivity.class);
             startActivity(intent);
-            //clearFiltersButton.setVisibility(View.VISIBLE);
         } else if (id == R.id.nav_profile) {
             Intent intent = new Intent(MenuActivity.this, EditProfileActivity.class);
             startActivity(intent);
@@ -426,7 +425,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
             Intent intent = new Intent(getBaseContext(), LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-
         }  else if (id == R.id.nav_assigned) {
             fab.hide();
             setViewMode(R.integer.MODE_INT_ASSIGNED); //TODO - add the map
@@ -434,7 +432,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
             Snackbar.make(snackView, "Changed view to \"My Assigned\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             populateTaskView();
-
         }  else if (id == R.id.nav_starred) {
             fab.hide();
             setViewMode(R.integer.MODE_INT_STARRED); //TODO - add the map
@@ -449,7 +446,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
             Snackbar.make(snackView, "Changed view to \"My Accepted\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             populateTaskView();
-
         } else if (id == R.id.nav_requester) {
             fab.show();
             setViewMode(R.integer.MODE_INT_REQUESTER);
@@ -457,7 +453,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
             Snackbar.make(snackView, "Changed view to \"Requester\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             populateTaskView();
-
         } else if (id == R.id.nav_provider) {
             fab.hide();
             setViewMode(R.integer.MODE_INT_PROVIDER);
@@ -465,7 +460,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
             Snackbar.make(snackView, "Changed view to \"Provider\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             populateTaskView();
-
         } else if (id == R.id.nav_all) {
             fab.show();
             setViewMode(R.integer.MODE_INT_ALL);

@@ -10,7 +10,7 @@
         android:id="@+id/textKeywords"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="85dp"
+        android:layout_marginEnd="84dp"
         android:layout_marginStart="84dp"
         android:layout_marginTop="64dp"
         android:ems="10"
@@ -27,12 +27,12 @@
         android:layout_marginBottom="270dp"
         android:layout_marginEnd="64dp"
         android:layout_marginStart="37dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="24dp"
         android:text="Apply"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/buttonClear"
-        app:layout_constraintTop_toBottomOf="@+id/textKeywords" />
+        app:layout_constraintTop_toBottomOf="@+id/textRange" />
 
     <Button
         android:id="@+id/buttonClear"
@@ -41,10 +41,44 @@
         android:layout_marginBottom="270dp"
         android:layout_marginEnd="37dp"
         android:layout_marginStart="64dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="24dp"
         android:text="Clear"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/buttonApply"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textRange" />
+
+    <EditText
+        android:id="@+id/textRange"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="84dp"
+        android:layout_marginStart="84dp"
+        android:layout_marginTop="24dp"
+        android:ems="10"
+        android:hint="Range (km)"
+        android:inputType="textPersonName|numberDecimal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textKeywords" />
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="84dp"
+        android:layout_marginTop="8dp"
+        android:text="Range, E.g.: 3.4"
+        app:layout_constraintBottom_toTopOf="@+id/textRange"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textKeywords" />
+
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="84dp"
+        android:text="Description"
+        app:layout_constraintBottom_toTopOf="@+id/textKeywords"
+        app:layout_constraintStart_toStartOf="parent" />
 </android.support.constraint.ConstraintLayout>
