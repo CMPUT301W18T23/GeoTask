@@ -90,6 +90,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
     ImageView drawerImage;
     TextView drawerUsername;
     TextView drawerEmail;
+    TextView emptyText;
     Task lastClickedTask = null;
 
     @Override
@@ -100,6 +101,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         oldTasks = findViewById(R.id.taskListView);
+        emptyText = findViewById(R.id.empty_task_string);
         super.setTaskList(new ArrayList<Task>());
         adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
         oldTasks.setAdapter(adapter);
@@ -324,6 +326,20 @@ public class MenuActivity extends AbstractGeoTaskActivity
         adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
         oldTasks.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+        setEmptyString();
+    }
+
+    public void setEmptyString(){
+        Log.i("TaskList ----->", String.format("%d", getTaskList().size()));
+        if(getTaskList().size() == 0){
+            emptyText.setText("No Tasks");
+            emptyText.setVisibility(View.VISIBLE);
+            oldTasks.setVisibility(View.INVISIBLE);
+        } else {
+            emptyText.setText("");
+            emptyText.setVisibility(View.INVISIBLE);
+            oldTasks.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -459,6 +475,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
     }
 
     public void setStarredMode(){
+        View snackView = getCurrentFocus();
         ArrayList<Task> starredTaskList = new ArrayList<Task>();
         for(String taskID : getCurrentUser().getStarredList()){
             MasterController.AsyncGetDocument asyncGetDocument =
@@ -473,11 +490,18 @@ public class MenuActivity extends AbstractGeoTaskActivity
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
+            if(task != null) {
+                starredTaskList.add(task);
+            } else {
+                Snackbar.make(snackView, "Some tasks no longer exist and were removed", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
         }
         setTaskList(starredTaskList);
         adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
         oldTasks.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+        setEmptyString();
     }
 
     @Override

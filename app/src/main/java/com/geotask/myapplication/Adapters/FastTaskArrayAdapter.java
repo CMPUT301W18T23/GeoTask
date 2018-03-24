@@ -153,9 +153,14 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
         }
         String viewString = String.format(" %d Views", item.getHitCounter());
         headerSub.hits.setText(String.format("Viewed %d times", item.getHitCounter()));
-        headerSub.desc.setText(item.getDescription());
         headerSub.date.setText(item.getDateString());
 
+        headerSub.desc.setText(item.getDescription());
+        if(MenuActivity.curOrientation == 0) {
+            headerSub.desc.setMaxEms((MenuActivity.screenWidthInDPs / 17) - 5);
+        } else {
+            headerSub.desc.setMaxEms((MenuActivity.screenWidthInDPs / 17) - 7);
+        }
         Log.i("-------->", item.getObjectID());
 
         /*

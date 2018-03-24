@@ -11,8 +11,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import com.geotask.myapplication.Adapters.BidArrayAdapter;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
@@ -35,6 +37,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
     private PopupWindow POPUP_WINDOW_DELETION = null;   //popup for error message
     private GTData data = null;
     private List<? extends GTData> searchResult = null;
+    private TextView emptyText;
 
     /**
      * Initiate variables, and set an on click listener for
@@ -47,6 +50,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
 
         oldBids = findViewById(R.id.bidListView);
         bidList = new ArrayList<>();
+        emptyText = (TextView) findViewById(R.id.empty_bid_string);
 
         oldBids.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -87,6 +91,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         }
 
         adapter.notifyDataSetChanged();
+        setEmptyString();
     }
 
     /**
@@ -101,9 +106,6 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         adapter.notifyDataSetChanged();
 
         populateBidView();
-        //Log.i("LifeCycle --->", "extracted task with name:" + this.task.getName());
-        //Log.i("LifeCycle --->", "extracted user with name:" + this.currentUser.getName());
-        //populate the array on start
     }
 
 
@@ -144,13 +146,11 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         asyncUpdateDocument.execute(task);
 
         //go back to TaskViewActivity
-        Intent intent = new Intent(ViewBidsActivity.this, TaskViewActivity.class);
+        Intent intent = new Intent(ViewBidsActivity.this, MenuActivity.class);
         intent.putExtra("task", task);
         startActivity(intent);
 
     }
-    //        bidList.remove(bid);
-    //     adapter.notifyDataSetChanged();
 
     /**
      * Allows a user to delete their bid on a task
@@ -313,11 +313,21 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
                 finish();
             }
         });
-
-
-
     }
 
+    public void setEmptyString(){
+        Log.i("BidList ----->", String.format("%d", bidList.size()));
+
+        if(bidList.size() == 0){
+            emptyText.setText("No Bids");
+            emptyText.setVisibility(View.VISIBLE);
+            oldBids.setVisibility(View.INVISIBLE);
+        } else {
+            emptyText.setText("");
+            emptyText.setVisibility(View.INVISIBLE);
+            oldBids.setVisibility(View.VISIBLE);
+        }
+    }
 
     @Override
     public void onPostExecute(GTData data) {
