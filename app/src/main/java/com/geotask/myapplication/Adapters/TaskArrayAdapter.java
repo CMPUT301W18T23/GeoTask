@@ -138,7 +138,7 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCallBac
 
         //perform the search
         MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this);
+                new MasterController.AsyncSearch(this, getContext());
         asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
 
         List<Bid> result = null;
@@ -157,7 +157,7 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCallBac
                 headerSub.lowestBid.setText("");                            //give no text
                 item.setStatusRequested();                                  //change the status
                 MasterController.AsyncUpdateDocument asyncUpdateDocument =  //update the status
-                        new MasterController.AsyncUpdateDocument();
+                        new MasterController.AsyncUpdateDocument(getContext());
                 asyncUpdateDocument.execute(item);
             } else  if(bidList.size() == 1) {
                 Double lowest = bidList.get(0).getValue();
@@ -185,7 +185,7 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCallBac
 
         if(item.getStatus().compareTo("Accepted") == 0){
             MasterController.AsyncGetDocument asyncGetDocument =
-                    new MasterController.AsyncGetDocument(this);
+                    new MasterController.AsyncGetDocument(this, getContext());
             asyncGetDocument.execute(new AsyncArgumentWrapper(item.getAccpeptedBidID(), Bid.class));
 
             Bid remote = null;

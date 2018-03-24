@@ -114,7 +114,7 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
             newTask = new Task(getCurrentUser().getObjectID(), titleString, descriptionString);
 
             MasterController.AsyncCreateNewDocument asyncCreateNewDocument
-                    = new MasterController.AsyncCreateNewDocument();
+                    = new MasterController.AsyncCreateNewDocument(this);
             asyncCreateNewDocument.execute(newTask);
 
             Intent intent = new Intent(getBaseContext(), MenuActivity.class);

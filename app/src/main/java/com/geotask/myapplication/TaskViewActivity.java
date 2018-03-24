@@ -85,7 +85,7 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
             //Increasing Hits
             getCurrentTask().addHit();
             MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                    new MasterController.AsyncUpdateDocument();
+                    new MasterController.AsyncUpdateDocument(this);
             asyncUpdateDocument.execute(getCurrentTask());
         }
     }
@@ -127,7 +127,7 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
      */
     private void getTaskUser(){  //this should work when get really data to get
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this);
+                new MasterController.AsyncGetDocument(this, this);
         asyncGetDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getRequesterID(), User.class));
     }
 
@@ -237,7 +237,7 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
         Bid bid = new Bid(getCurrentUser().getObjectID(), value, getCurrentTask().getObjectID());
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument();
+                new MasterController.AsyncCreateNewDocument(this);
         asyncCreateNewDocument.execute(bid);
 
         if (getCurrentTask().getStatus().toLowerCase().equals("requested")) {
@@ -246,7 +246,7 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
         }
 
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument();
+                new MasterController.AsyncUpdateDocument(this);
         asyncUpdateDocument.execute(getCurrentTask());
         try {
             Thread.sleep(400);
@@ -287,7 +287,7 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
      */
     private void updateStatus(){
         MasterController.AsyncGetDocument asyncGetDocumentWhenDocumentExist =
-                new MasterController.AsyncGetDocument(this);
+                new MasterController.AsyncGetDocument(this, this);
         asyncGetDocumentWhenDocumentExist.execute(new AsyncArgumentWrapper(getCurrentTask().getObjectID(), Task.class));
 
         try {

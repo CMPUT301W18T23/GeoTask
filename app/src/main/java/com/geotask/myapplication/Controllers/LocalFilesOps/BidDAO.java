@@ -47,4 +47,16 @@ public interface BidDAO {
      */
     @Query("DELETE FROM bids")
     void delete();
+
+    @Query("SELECT * FROM bids WHERE object_id LIKE :id")
+    Bid selectByID(String id);
+
+    @Query("DELETE FROM bids WHERE object_id LIKE :id")
+    void deleteByID(String id);
+
+    @Query("DELETE FROM bids WHERE task_id LIKE :id")
+    void deleteByTaskID(String id);
+
+    @Query("SElECT * FROM bids")
+    List<Bid> searchBids();
 }

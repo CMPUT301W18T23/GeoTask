@@ -20,6 +20,7 @@ public class SuperBooleanBuilder {
                                         "}";
     private String terms = "";
 
+
     /**
      * put (single pair) - adds a single term to the list of terms
      *

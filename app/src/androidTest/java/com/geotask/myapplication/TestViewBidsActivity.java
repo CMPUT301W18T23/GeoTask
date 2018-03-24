@@ -52,7 +52,7 @@ public class TestViewBidsActivity implements AsyncCallBackManager {
 
     @Before
     public void setUp() throws InterruptedException {
-        MasterController.verifySettings();
+        MasterController.verifySettings(InstrumentationRegistry.getContext());
         MasterController.setTestSettings(TestServerAddress.getTestAddress());
         try {
             MasterController.deleteIndex();
@@ -61,7 +61,7 @@ public class TestViewBidsActivity implements AsyncCallBackManager {
             e.printStackTrace();
         }
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument();
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
         asyncCreateNewDocument.execute(user);
         asyncCreateNewDocument.execute(provider1);
         asyncCreateNewDocument.execute(provider2);
@@ -82,7 +82,7 @@ public class TestViewBidsActivity implements AsyncCallBackManager {
     @Test
     public void BasicTestConnection() throws InterruptedException {
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this);
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
         asyncGetDocument.execute(new AsyncArgumentWrapper(task.getObjectID(), Task.class));
         Thread.sleep(2000);
         Task remote = null;

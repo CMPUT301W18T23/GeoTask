@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
@@ -134,7 +133,7 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
 
                 //perform the search
                 MasterController.AsyncSearch asyncSearch =
-                        new MasterController.AsyncSearch(this);
+                        new MasterController.AsyncSearch(this, getContext());
                 asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
 
                 List<Bid> result = null;
@@ -176,7 +175,7 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
                     item.setLowestBid(lowest);
                     item.setNumBids(bidList.size());
                     MasterController.AsyncUpdateDocument asyncUpdateDocument =  //update the status
-                            new MasterController.AsyncUpdateDocument();
+                            new MasterController.AsyncUpdateDocument(getContext());
                     asyncUpdateDocument.execute(item);
                 } catch (ExecutionException e) {
                     e.printStackTrace();
@@ -208,7 +207,7 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
 
             if(item.getStatus().compareTo("Accepted") == 0){
                 MasterController.AsyncGetDocument asyncGetDocument =
-                    new MasterController.AsyncGetDocument(this);
+                    new MasterController.AsyncGetDocument(this, getContext());
                 asyncGetDocument.execute(new AsyncArgumentWrapper(item.getAccpeptedBidID(), Bid.class));
 
                 Bid remote = null;

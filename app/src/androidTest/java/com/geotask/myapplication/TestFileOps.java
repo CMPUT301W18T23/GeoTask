@@ -5,8 +5,12 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
+import com.geotask.myapplication.Controllers.AsyncCallBackManager;
+import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.LocalFilesOps.LocalDataBase;
+import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
+import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
@@ -16,11 +20,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static junit.framework.Assert.assertEquals;
 
 @RunWith(AndroidJUnit4.class)
-public class TestFileOps {
+public class TestFileOps implements AsyncCallBackManager{
 
     private LocalDataBase dataBase;
 
@@ -40,16 +45,26 @@ public class TestFileOps {
 
     @Test
     public void testWriteAndReadBid() {
-        String targetProvider = "database_bid_test";
-        Bid bid = new Bid(targetProvider, 1.1, "database test");
-        dataBase.bidDAO().insert(bid);
+        Bid bid = new Bid("testWriteAndReadBid", 1.1, "testWriteAndReadBid");
 
-        Log.i("dat result2", bid.toString());
+        MasterController.AsyncCreateNewDocument asyncCreateNewDocument
+                = new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+        asyncCreateNewDocument.execute(bid);
 
-        List<Bid> resultList = dataBase.bidDAO().selectByProvider(targetProvider);
+        MasterController.AsyncGetDocument asyncGetDocument =
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+        asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
 
-        Log.i("dat result22", resultList.toString());
-        assertEquals(bid.getProviderID(), resultList.get(0).getProviderID());
+        Bid result = null;
+        try {
+            result = (Bid) asyncGetDocument.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(bid.getObjectID(), result.getObjectID());
     }
 
     @Test
@@ -166,5 +181,15 @@ public class TestFileOps {
         resultList = dataBase.bidDAO().selectByTask(target);
         assertEquals(1, resultList.size());
         assertEquals(target, resultList.get(0).getTaskID());
+    }
+
+    @Override
+    public void onPostExecute(GTData data) {
+
+    }
+
+    @Override
+    public void onPostExecute(List<? extends GTData> searchResult) {
+
     }
 }

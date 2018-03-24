@@ -1,5 +1,6 @@
 package com.geotask.myapplication;
 
+import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
@@ -39,7 +40,7 @@ public class TestKyle implements AsyncCallBackManager {
             e.printStackTrace();
         }
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument();
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
         asyncCreateNewDocument.execute(user);
         asyncCreateNewDocument.execute(provider1);
         asyncCreateNewDocument.execute(provider2);

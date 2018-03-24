@@ -77,7 +77,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         builder.put("taskID", getCurrentTask().getObjectID());
 
         MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this);
+                new MasterController.AsyncSearch(this, this);
         asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
 
         try {
@@ -140,7 +140,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         //master controller
 
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument();
+                new MasterController.AsyncUpdateDocument(this);
         asyncUpdateDocument.execute(task);
 
         //go back to TaskViewActivity
@@ -157,7 +157,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
      */
     public void deleteBid(Bid bid, Task task){
         MasterController.AsyncDeleteDocument asyncDeleteDocument =
-                new MasterController.AsyncDeleteDocument();
+                new MasterController.AsyncDeleteDocument(this);
         asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
 
         SuperBooleanBuilder builder = new SuperBooleanBuilder();
@@ -165,7 +165,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
 
 
         MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this);
+                new MasterController.AsyncSearch(this, this);
         asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
 
         List<Bid> result = null;
@@ -217,7 +217,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
             e.printStackTrace();
         }
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument();
+                new MasterController.AsyncUpdateDocument(this);
         asyncUpdateDocument.execute(task);
     }
 

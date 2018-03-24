@@ -35,8 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import static java.sql.DriverManager.println;
-
 
 /** MenuActivity
  *
@@ -225,7 +223,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         }
 
         MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this);
+                new MasterController.AsyncSearch(this, this);
         asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
 
         try {
@@ -241,7 +239,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
            builder2.put("providerID", getCurrentUser().getObjectID());
 
            MasterController.AsyncSearch asyncSearch2 =
-                   new MasterController.AsyncSearch(this);
+                   new MasterController.AsyncSearch(this, this);
            asyncSearch2.execute(new AsyncArgumentWrapper(builder2, Bid.class));
 
            try {

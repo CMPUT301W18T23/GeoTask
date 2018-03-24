@@ -36,7 +36,7 @@ public class TestStory3UserProfileInteractions {
 
     @BeforeClass
     public static void oneTimeSetUp() {
-        MasterController.verifySettings();
+        MasterController.verifySettings(InstrumentationRegistry.getContext());
         MasterController.setTestSettings(TestServerAddress.getTestAddress());
         try {
             MasterController.deleteIndex();

@@ -59,7 +59,7 @@ public class RegisterActivity extends AbstractGeoTaskActivity{
                 newUser = new User(userName, userEmail, userPhone);
 
                 MasterController.AsyncCreateNewDocument asyncCreateNewDocument
-                        = new MasterController.AsyncCreateNewDocument();
+                        = new MasterController.AsyncCreateNewDocument(this);
                 asyncCreateNewDocument.execute(newUser);
 
                 Intent intent = new Intent(getBaseContext(), LoginActivity.class);

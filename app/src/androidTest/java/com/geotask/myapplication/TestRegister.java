@@ -1,8 +1,8 @@
 package com.geotask.myapplication;
 
+import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.LargeTest;
 
 import com.geotask.myapplication.Controllers.MasterController;
 
@@ -11,7 +11,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import java.io.IOException;
 
@@ -34,7 +33,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 public class TestRegister {
     @Before
     public void setUp() {
-        MasterController.verifySettings();
+        MasterController.verifySettings(InstrumentationRegistry.getContext());
         MasterController.setTestSettings(TestServerAddress.getTestAddress());
         try {
             MasterController.deleteIndex();

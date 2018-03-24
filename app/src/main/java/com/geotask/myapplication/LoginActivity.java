@@ -31,7 +31,7 @@ public class LoginActivity extends AbstractGeoTaskActivity implements AsyncCallB
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        MasterController.verifySettings();
+        MasterController.verifySettings(this);
 
         emailText = findViewById(R.id.emailText);
         Button loginButton = findViewById(R.id.loginButton);
@@ -73,7 +73,7 @@ public class LoginActivity extends AbstractGeoTaskActivity implements AsyncCallB
             builder.put("email", email);
 
             MasterController.AsyncSearch asyncSearch =
-                    new MasterController.AsyncSearch(this);
+                    new MasterController.AsyncSearch(this, this);
             asyncSearch.execute(new AsyncArgumentWrapper(builder, User.class));
 
             List<User> result;

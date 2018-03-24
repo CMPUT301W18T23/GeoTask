@@ -37,7 +37,7 @@ public class TestStory7TaskCompletionInteractions {
 
     @BeforeClass
     public static void oneTimeSetUp() {
-        MasterController.verifySettings();
+        MasterController.verifySettings(InstrumentationRegistry.getContext());
         MasterController.setTestSettings(TestServerAddress.getTestAddress());
         try {
             MasterController.deleteIndex();
@@ -82,7 +82,7 @@ public class TestStory7TaskCompletionInteractions {
         task.addBid(bid2);
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument();
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
         asyncCreateNewDocument.execute(task, requester, bid1, bid2, provider);
 
         Thread.sleep(1000);

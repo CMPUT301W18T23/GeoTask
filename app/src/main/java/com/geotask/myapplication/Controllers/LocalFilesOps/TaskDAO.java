@@ -6,7 +6,6 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
-import android.database.sqlite.SQLiteConstraintException;
 
 import com.geotask.myapplication.DataClasses.Task;
 
@@ -46,9 +45,15 @@ public interface TaskDAO {
     /**
      * wipes task table, use responsibly
      */
-    @Query("DELETE FROM bids")
+    @Query("DELETE FROM tasks")
     int delete();
 
     @Query("SELECT * FROM tasks WHERE object_id LIKE :taskID")
     Task selectByID(String taskID);
+
+    @Query("Delete FROM tasks WHERE object_id LIKE :id")
+    int deleteByID(String id);
+
+    @Query("SELECT * FROM tasks")
+    List<Task> searchTasks();
 }

@@ -1,5 +1,6 @@
 package com.geotask.myapplication;
 
+import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.espresso.contrib.NavigationViewActions;
 import android.support.test.rule.ActivityTestRule;
@@ -32,7 +33,7 @@ public class TestStartFromMenuActivity {
 
     @BeforeClass
     public static void oneTimeSetUp() {
-        MasterController.verifySettings();
+        MasterController.verifySettings(InstrumentationRegistry.getContext());
         MasterController.setTestSettings(TestServerAddress.getTestAddress());
         try {
             MasterController.deleteIndex();
