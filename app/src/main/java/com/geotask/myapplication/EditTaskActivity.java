@@ -70,8 +70,27 @@ public class EditTaskActivity extends AbstractGeoTaskActivity implements AsyncCa
         String name =   editTitle.getText().toString();
         String description = editDescription.getText().toString();
 
-        UserEntryStringValidator check = new UserEntryStringValidator();
-        if (check.checkText(name, description)){
+        if(name.length() > 30) {
+            Toast.makeText(this,
+                    getString(R.string.TASK_TITLE_TOO_LONG),
+                    Toast.LENGTH_LONG)
+                    .show();
+        } else if(name.length() <= 0) {
+            Toast.makeText(this,
+                    getString(R.string.TASK_TITLE_EMPTY),
+                    Toast.LENGTH_SHORT)
+                    .show();
+        } else if(description.length() > 300) {
+            Toast.makeText(this,
+                    getString(R.string.TASK_DESCRIPTION_TOO_LONG),
+                    Toast.LENGTH_LONG)
+                    .show();
+        } else if(description.length() <= 0) {
+            Toast.makeText(this,
+                    getString(R.string.TASK_DESCRIPTION_EMPTY),
+                    Toast.LENGTH_SHORT)
+                    .show();
+        } else {
             getCurrentTask().setName(name);
             getCurrentTask().setDescription(description);
 
@@ -86,8 +105,6 @@ public class EditTaskActivity extends AbstractGeoTaskActivity implements AsyncCa
             Intent back = new Intent();
             setResult(Activity.RESULT_OK, back);
             finish();
-        }else{
-            Toast.makeText(this, getString(R.string.INVALID_TASK_DATA_WHEN_CREATING_NEW_TASK), Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -28,6 +28,10 @@
     <string name="MODE_REQUESTER">Requester</string>
     <string name="MODE_PROVIDER">Provider</string>
     <string name="INVALID_TASK_DATA_WHEN_CREATING_NEW_TASK">Please enter valid task data.</string>
+    <string name="TASK_TITLE_TOO_LONG">Task title should not exceed 30 characters.</string>
+    <string name="TASK_TITLE_EMPTY">Task title is empty.</string>
+    <string name="TASK_DESCRIPTION_TOO_LONG">Task description should not exceed 300 characters.</string>
+    <string name="TASK_DESCRIPTION_EMPTY">Task description is empty.</string>
     <string name="TASK_BEING_VIEWED">task</string>
     <string name="UPDATED_TASK_AFTER_EDIT">updatedTask</string>
     <string name="TASK_STATUS_BIDDED">Bidded</string>
