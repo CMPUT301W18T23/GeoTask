@@ -83,10 +83,17 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
             addBidButton.setVisibility(View.VISIBLE);
 
             //Increasing Hits
-            getCurrentTask().addHit();
+            Log.i("cur ------>", getCurrentTask().getObjectID());
+            Log.i("cur ------>", getCurrentUser().getName());
+            if(!getCurrentUser().visited(getCurrentTask().getObjectID())) {
+                getCurrentTask().addHit();
+                MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                        new MasterController.AsyncUpdateDocument();
+                asyncUpdateDocument.execute(getCurrentTask());
+            }
             MasterController.AsyncUpdateDocument asyncUpdateDocument =
                     new MasterController.AsyncUpdateDocument();
-            asyncUpdateDocument.execute(getCurrentTask());
+            asyncUpdateDocument.execute(getCurrentUser());
         }
     }
 

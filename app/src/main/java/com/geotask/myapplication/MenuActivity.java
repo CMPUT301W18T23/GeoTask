@@ -191,12 +191,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         orientationEventListener = new OrientationEventListener(this) {
             @Override
             public void onOrientationChanged(int orientation) {
-                if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                    curOrientation = 0;
-                }
-                else {
-                    curOrientation = 1;
-                }
+                setOrientation();
                 Log.i("orient ------>", String.format("oriented: %d", orientation));
                 screenWidthInDPs = getScreenWidthInDPs();
                 adapter.notifyDataSetChanged();
@@ -233,14 +228,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
         //TODO - set drawerImage to user profile pic
         drawerUsername.setText(getCurrentUser().getName());
         drawerEmail.setText(getCurrentUser().getEmail());
-
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            curOrientation = 0;
-        }
-        else {
-            curOrientation = 1;
-        }
-
     }
 
     /**
@@ -249,12 +236,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
     @Override
     protected void onRestart(){
         super.onRestart();
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            curOrientation = 0;
-        }
-        else {
-            curOrientation = 1;
-        }
+        setOrientation();
     }
 
     /**
@@ -263,6 +245,11 @@ public class MenuActivity extends AbstractGeoTaskActivity
      */
     private void populateTaskView(){
         getTaskList().clear();
+
+        if(getViewMode() == R.integer.MODE_INT_STARRED){
+            setStarredMode();
+            return;
+        }
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
 
         //Only show tasks created by the user
@@ -402,13 +389,21 @@ public class MenuActivity extends AbstractGeoTaskActivity
 
         }  else if (id == R.id.nav_assigned) {
             fab.hide();
-            //setViewMode(R.integer.MODE_INT_ASSIGNED); //TODO - add the map
+            setViewMode(R.integer.MODE_INT_ASSIGNED); //TODO - add the map
             getSupportActionBar().setTitle("My Assigned Tasks");
             Snackbar.make(snackView, "Changed view to \"My Assigned\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             populateTaskView();
 
-        }  else if (id == R.id.nav_requester) {
+        }  else if (id == R.id.nav_starred) {
+        fab.hide();
+        setViewMode(R.integer.MODE_INT_STARRED); //TODO - add the map
+        getSupportActionBar().setTitle("My Starred Tasks");
+        Snackbar.make(snackView, "Changed view to \"My Starred\"", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
+        populateTaskView();
+
+        } else if (id == R.id.nav_requester) {
             fab.show();
             setViewMode(R.integer.MODE_INT_REQUESTER);
             getSupportActionBar().setTitle("My Tasks");
@@ -445,6 +440,37 @@ public class MenuActivity extends AbstractGeoTaskActivity
         windowManager.getDefaultDisplay().getMetrics(dm);
         int widthInDP = Math.round(dm.widthPixels / dm.density);
         return widthInDP;
+    }
+
+    private void setOrientation(){
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            curOrientation = 0;
+        }
+        else {
+            curOrientation = 1;
+        }
+    }
+
+    public void setStarredMode(){
+        ArrayList<Task> starredTaskList = new ArrayList<Task>();
+        MasterController.AsyncGetDocument asyncGetDocument =
+                new MasterController.AsyncGetDocument(this);
+        for(String taskID : getCurrentUser().getStarredList()){
+            asyncGetDocument.execute(new AsyncArgumentWrapper(taskID, Task.class));
+            Task task = null;
+            try {
+                task = (Task) asyncGetDocument.get();
+                starredTaskList.add(task);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        setTaskList(starredTaskList);
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask);
+        oldTasks.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
     @Override
