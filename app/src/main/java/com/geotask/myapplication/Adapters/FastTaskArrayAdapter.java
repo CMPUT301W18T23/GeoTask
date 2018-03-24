@@ -112,26 +112,29 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
             headerSub.lowestBid = (TextView) row.findViewById(R.id.task_list_lowest);
             headerSub.icon = (ImageView) row.findViewById(R.id.taskIcon);
             headerSub.starIcon = (ImageView) row.findViewById(R.id.btn_star);
-
-            /*
-            *   onCLick listener for the star button
-            */
+            final View finalRow = row;
             headerSub.starIcon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Task clickedTask = tdata.get(position);
+                    ImageView starIcon = (ImageView) finalRow.findViewById(R.id.btn_star);
                     Log.i("click ----->", String.format("Clicked at pos: %d", position));
-                    if(user.starred(item.getObjectID())){
-                        user.removeTaskFromStarredList(item.getObjectID());
-                        headerSub.starIcon.setImageResource(R.drawable.ic_star_outline_grey600_24dp);
+                    Log.i("click ----->", clickedTask.getName());
+                    if(user.starred(clickedTask.getObjectID())){
+                        user.removeTaskFromStarredList(clickedTask.getObjectID());
+                        starIcon.setImageResource(R.drawable.ic_star_outline_grey600_24dp);
                     } else {
-                        user.addTaskToStarredList(item.getObjectID());
-                        headerSub.starIcon.setImageResource(R.drawable.ic_star_grey600_24dp);
+                        user.addTaskToStarredList(clickedTask.getObjectID());
+                        starIcon.setImageResource(R.drawable.ic_star_grey600_24dp);
                     }
                     MasterController.AsyncUpdateDocument asyncUpdateDocument =
                             new MasterController.AsyncUpdateDocument();
                     asyncUpdateDocument.execute(user);
                 }
             });
+            /*
+            *   onCLick listener for the star button
+            */
 
             row.setTag(headerSub);
 
