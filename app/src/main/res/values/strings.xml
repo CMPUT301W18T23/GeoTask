@@ -16,8 +16,12 @@
     <string name="action_settings">Settings</string>
     <string name="EMAIL_ALREADY_IN_USE_WHEN_REGISTERING_AND_EDITING">This email has been used.</string>
     <string name="NAME_IS_EMPTY_WHEN_REGISTER_OR_EDITING_USER">Empty name.</string>
-    <string name="NAME_EXCEEDS_30_CHARACTER_WHEN_REGISTER_AND_EDIT_USER">Name cannot exceed 30 characters</string>
+    <string name="NAME_EXCEEDS_8_CHARACTER_WHEN_REGISTER_AND_EDIT_USER">Username cannot exceed 8 characters.</string>
     <string name="EMAIL_IS_EMPTY_WHEN_REGISTER_OR_EDITING_USER">Empty email.</string>
+    <string name="INVALID_EMAIL">Email format is invalid.</string>
+    <string name="INVALID_PHONE">Phone number should only contain numbers.</string>
+    <string name="PHONE_TOO_SHORT">Phone number should be at least 7 characters.</string>
+    <string name="PHONE_TOO_LONG">Phone number should be at most 10 characters</string>
     <string name="FAILED_LOGIN_EMAIL_NOT_REGISTERED">This email has not been registered.</string>
     <string name="CURRENT_USER">currentUser</string>
     <string name="MODE_ALL">all</string>
