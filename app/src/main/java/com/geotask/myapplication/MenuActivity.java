@@ -474,7 +474,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
     }
 
     public void toggleStar(View view){
-        
+        Log.i("toggle -------->", "toggle was hit");
+        //ImageView star = findViewById(R.id.btn_star);
+        //star.setImageResource(R.drawable.ic_star_grey600_24dp);
     }
 
     @Override

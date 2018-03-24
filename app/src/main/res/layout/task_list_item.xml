@@ -57,7 +57,7 @@
         android:paddingBottom="2dp"
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
-        android:paddingTop="2dp"
+        android:paddingTop="4dp"
         android:textSize="17sp" />
 
     <LinearLayout
@@ -79,18 +79,18 @@
                 android:paddingTop="6dp"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
-            <ImageButton
-                android:id="@+id/btnStar"
+            <ImageView
+                android:id="@+id/btn_star"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="toggleStar"
-                android:paddingTop="3dp"
-                android:paddingEnd="5dp"
-                android:background="#00ffffff"
+                android:layout_alignParentRight="true"
                 android:layout_gravity="right"
                 android:layout_weight="1"
-                android:layout_alignParentRight="true"
-                android:src="@drawable/star" />
+                android:background="#00ffffff"
+                android:onClick="toggleStar"
+                android:paddingEnd="5dp"
+                android:paddingTop="3dp"
+                app:srcCompat="@drawable/ic_star_outline_grey600_24dp" />
 
         </RelativeLayout>
     </LinearLayout>
