@@ -61,6 +61,9 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
     private GTData data = null;
     private List<? extends GTData> searchResult = null;
     private Task lastViewedTask;
+    private User user;
+    private Task item;
+    private HeaderSub headerSub;
 
 
     public FastTaskArrayAdapter(Context context, int resource, ArrayList<Task> objects, Task lastViewedTask, User currentUser){
@@ -69,6 +72,8 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
         this.context = context;
         this.tdata = objects;
         this.lastViewedTask = lastViewedTask;
+        this.user = currentUser;
+
     }
 
     @SuppressLint("CutPasteId")
@@ -88,161 +93,178 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
      * The XML for the item is in the file task_list_item.xml
      */
     public View getView(final int position, View convertView, ViewGroup parent){
-            View row = convertView;
-            HeaderSub headerSub = null;
+        View row = convertView;
+        headerSub = null;
+        item = tdata.get(position);
+        if (row == null){
+            LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+            row = inflater.inflate(layoutResourceId, parent, false);
 
-            if (row == null){
-                LayoutInflater inflater = ((Activity)context).getLayoutInflater();
-                row = inflater.inflate(layoutResourceId, parent, false);
+            //int dpWidth = MenuActivity.screenWidthInDPs;
 
-                //int dpWidth = MenuActivity.screenWidthInDPs;
+            headerSub = new HeaderSub();
 
-                headerSub = new HeaderSub();
-
-                headerSub.name = (TextView) row.findViewById(R.id.task_list_title);
-                headerSub.hits = (TextView) row.findViewById(R.id.task_list_hits);
-                headerSub.desc = (TextView) row.findViewById(R.id.task_list_desc);
-                headerSub.bids = (TextView) row.findViewById(R.id.task_list_bids);
-                headerSub.date = (TextView) row.findViewById(R.id.task_list_date);
-                headerSub.lowestBid = (TextView) row.findViewById(R.id.task_list_lowest);
-                headerSub.icon = (ImageView) row.findViewById(R.id.taskIcon);
-                headerSub.starIcon = (ImageView) row.findViewById(R.id.btn_star);
-                headerSub.starIcon.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Log.i("click ----->", String.format("Clicked at pos: %d", position));
-                    }
-                });
-
-                row.setTag(headerSub);
-
-            } else {
-                headerSub = (HeaderSub) row.getTag();
-            }
+            headerSub.name = (TextView) row.findViewById(R.id.task_list_title);
+            headerSub.hits = (TextView) row.findViewById(R.id.task_list_hits);
+            headerSub.desc = (TextView) row.findViewById(R.id.task_list_desc);
+            headerSub.bids = (TextView) row.findViewById(R.id.task_list_bids);
+            headerSub.date = (TextView) row.findViewById(R.id.task_list_date);
+            headerSub.lowestBid = (TextView) row.findViewById(R.id.task_list_lowest);
+            headerSub.icon = (ImageView) row.findViewById(R.id.taskIcon);
+            headerSub.starIcon = (ImageView) row.findViewById(R.id.btn_star);
 
             /*
-                Setting the TextView values
-             */
-            Task item = tdata.get(position);
-
-            headerSub.name.setText(item.getName());
-            if(MenuActivity.curOrientation == 0) {
-                headerSub.name.setMaxEms((MenuActivity.screenWidthInDPs / 22) - 8);
-            } else {
-                headerSub.name.setMaxEms((MenuActivity.screenWidthInDPs / 22) - 10);
-            }
-            String viewString = String.format(" %d Views", item.getHitCounter());
-            headerSub.hits.setText(String.format("Viewed %d times", item.getHitCounter()));
-            headerSub.desc.setText(item.getDescription());
-            headerSub.date.setText(item.getDateString());
-
-            Log.i("-------->", item.getObjectID());
-
-            /*
-                If the lastViewedTask is not null, we need to update its values
-             */
-            if((lastViewedTask != null) && (lastViewedTask.getObjectID().compareTo(item.getObjectID())) == 0){
-
-                 /*
-                    Finding the lowest bid, and number of bids
-                 */
-
-                //make the query
-                SuperBooleanBuilder builder = new SuperBooleanBuilder();
-                builder.put("taskID", item.getObjectID());
-
-                //perform the search
-                MasterController.AsyncSearch asyncSearch =
-                        new MasterController.AsyncSearch(this);
-                asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
-
-                List<Bid> result = null;
-                ArrayList<Bid> bidList;
-
-                try {
-                    //get the result
-                    result = (List<Bid>) asyncSearch.get();
-                    bidList = new ArrayList<Bid>(result);
-                    Double lowest = -1.0;
-
-                    /*
-                        setting the lowestBid TextView by querying for lowest bid. Here we also set
-                        numBids while we are at it
-                     */
-                    if(bidList.size() == 0){
-                        headerSub.lowestBid.setText("");                            //give no text
-                        item.setStatusRequested();                                  //change the status
-                    } else  if(bidList.size() == 1) {
-                        if(item.getStatus().toLowerCase().compareTo("requested") == 0){
-                            item.setStatusBidded();
-                        }
-                        lowest = bidList.get(0).getValue();
-                        headerSub.lowestBid.setText(String.format("Lowest Bid: %.2f", lowest)); //set text
+            *   onCLick listener for the star button
+            */
+            headerSub.starIcon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.i("click ----->", String.format("Clicked at pos: %d", position));
+                    if(user.starred(item.getObjectID())){
+                        user.removeTaskFromStarredList(item.getObjectID());
+                        headerSub.starIcon.setImageResource(R.drawable.ic_star_outline_grey600_24dp);
                     } else {
-                        if(item.getStatus().toLowerCase().compareTo("requested") == 0){
-                            item.setStatusBidded();
-                        }
-                        lowest = bidList.get(0).getValue();
-                        for(Bid bid : bidList){                                     //iterate to find lowest
-                            if(bid.getValue() < lowest){
-                                lowest = bid.getValue();
-                            }
-                        }
-                        headerSub.lowestBid.setText(String.format("Lowest Bid: %.2f", lowest)); //set text
+                        user.addTaskToStarredList(item.getObjectID());
+                        headerSub.starIcon.setImageResource(R.drawable.ic_star_grey600_24dp);
                     }
-                    headerSub.bids.setText(String.format("Bids: %d", bidList.size()));
-
-                    item.setLowestBid(lowest);
-                    item.setNumBids(bidList.size());
-                    MasterController.AsyncUpdateDocument asyncUpdateDocument =  //update the status
+                    MasterController.AsyncUpdateDocument asyncUpdateDocument =
                             new MasterController.AsyncUpdateDocument();
-                    asyncUpdateDocument.execute(item);
-
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    asyncUpdateDocument.execute(user);
                 }
-            } else { //Otherwise the item does not need to be updated and we can get the attributes
-                if((item.getLowestBid() != null) && (item.getLowestBid() >= 0)) {
-                    headerSub.lowestBid.setText(String.format("Lowest Bid: %.2f", item.getLowestBid()));
-                }
+            });
 
-                if((item.getNumBids() != null) && (item.getNumBids() >= 0)){
-                    headerSub.bids.setText(String.format("Bids: %d", item.getNumBids()));
-                }
-            }
+            row.setTag(headerSub);
 
+        } else {
+            headerSub = (HeaderSub) row.getTag();
+        }
+
+        /*
+            Setting the TextView values
+         */
+        headerSub.name.setText(item.getName());
+        if(MenuActivity.curOrientation == 0) {
+            headerSub.name.setMaxEms((MenuActivity.screenWidthInDPs / 22) - 8);
+        } else {
+            headerSub.name.setMaxEms((MenuActivity.screenWidthInDPs / 22) - 10);
+        }
+        String viewString = String.format(" %d Views", item.getHitCounter());
+        headerSub.hits.setText(String.format("Viewed %d times", item.getHitCounter()));
+        headerSub.desc.setText(item.getDescription());
+        headerSub.date.setText(item.getDateString());
+
+        Log.i("-------->", item.getObjectID());
+
+        /*
+            If the lastViewedTask is not null, we need to update its values
+         */
+        if((lastViewedTask != null) && (lastViewedTask.getObjectID().compareTo(item.getObjectID())) == 0){
              /*
-                Setting the icon for the task
+                Finding the lowest bid, and number of bids
              */
-            if (item.getStatus().compareTo("Accepted") == 0){
-                headerSub.icon.setImageResource(R.drawable.ic_checkbox_blank_circle_grey600_24dp);
-            } else if (item.getStatus().compareTo("Completed") == 0) {
-                headerSub.icon.setImageResource(R.drawable.ic_check_circle_grey600_24dp);
-            } else if(item.getStatus().compareTo("Bidded") == 0) {
-                headerSub.icon.setImageResource(R.drawable.ic_cisco_webex_grey600_24dp);
-            } else {
-                headerSub.icon.setImageResource(R.drawable.ic_circle_outline_grey600_24dp);
-            }
 
-            if(item.getStatus().compareTo("Accepted") == 0){
-                MasterController.AsyncGetDocument asyncGetDocument =
-                    new MasterController.AsyncGetDocument(this);
-                asyncGetDocument.execute(new AsyncArgumentWrapper(item.getAccpeptedBidID(), Bid.class));
+            //make the query
+            SuperBooleanBuilder builder = new SuperBooleanBuilder();
+            builder.put("taskID", item.getObjectID());
 
-                Bid remote = null;
-                try {
-                    remote = (Bid) asyncGetDocument.get();
-                    headerSub.lowestBid.setText(String.format("Accepted for: %.2f", remote.getValue()));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
+            //perform the search
+            MasterController.AsyncSearch asyncSearch =
+                    new MasterController.AsyncSearch(this);
+            asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
+
+            List<Bid> result = null;
+            ArrayList<Bid> bidList;
+
+            try {
+                //get the result
+                result = (List<Bid>) asyncSearch.get();
+                bidList = new ArrayList<Bid>(result);
+                Double lowest = -1.0;
+
+                /*
+                    setting the lowestBid TextView by querying for lowest bid. Here we also set
+                    numBids while we are at it
+                 */
+                if(bidList.size() == 0){
+                    headerSub.lowestBid.setText("");                            //give no text
+                    item.setStatusRequested();                                  //change the status
+                } else  if(bidList.size() == 1) {
+                    if(item.getStatus().toLowerCase().compareTo("requested") == 0){
+                        item.setStatusBidded();
+                    }
+                    lowest = bidList.get(0).getValue();
+                    headerSub.lowestBid.setText(String.format("Lowest Bid: %.2f", lowest)); //set text
+                } else {
+                    if(item.getStatus().toLowerCase().compareTo("requested") == 0){
+                        item.setStatusBidded();
+                    }
+                    lowest = bidList.get(0).getValue();
+                    for(Bid bid : bidList){                                     //iterate to find lowest
+                        if(bid.getValue() < lowest){
+                            lowest = bid.getValue();
+                        }
+                    }
+                    headerSub.lowestBid.setText(String.format("Lowest Bid: %.2f", lowest)); //set text
                 }
+                headerSub.bids.setText(String.format("Bids: %d", bidList.size()));
+
+                item.setLowestBid(lowest);
+                item.setNumBids(bidList.size());
+                MasterController.AsyncUpdateDocument asyncUpdateDocument =  //update the status
+                        new MasterController.AsyncUpdateDocument();
+                asyncUpdateDocument.execute(item);
+
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else { //Otherwise the item does not need to be updated and we can get the attributes
+            if((item.getLowestBid() != null) && (item.getLowestBid() >= 0)) {
+                headerSub.lowestBid.setText(String.format("Lowest Bid: %.2f", item.getLowestBid()));
             }
 
-            return row;
+            if((item.getNumBids() != null) && (item.getNumBids() >= 0)){
+                headerSub.bids.setText(String.format("Bids: %d", item.getNumBids()));
+            }
+        }
+
+         /*
+            Setting the icon for the task
+         */
+        if (item.getStatus().compareTo("Accepted") == 0){
+            headerSub.icon.setImageResource(R.drawable.ic_checkbox_blank_circle_grey600_24dp);
+        } else if (item.getStatus().compareTo("Completed") == 0) {
+            headerSub.icon.setImageResource(R.drawable.ic_check_circle_grey600_24dp);
+        } else if(item.getStatus().compareTo("Bidded") == 0) {
+            headerSub.icon.setImageResource(R.drawable.ic_cisco_webex_grey600_24dp);
+        } else {
+            headerSub.icon.setImageResource(R.drawable.ic_circle_outline_grey600_24dp);
+        }
+
+        if(item.getStatus().compareTo("Accepted") == 0){
+            MasterController.AsyncGetDocument asyncGetDocument =
+                new MasterController.AsyncGetDocument(this);
+            asyncGetDocument.execute(new AsyncArgumentWrapper(item.getAccpeptedBidID(), Bid.class));
+
+            Bid remote = null;
+            try {
+                remote = (Bid) asyncGetDocument.get();
+                headerSub.lowestBid.setText(String.format("Accepted for: %.2f", remote.getValue()));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if(user.starred(item.getObjectID())){
+            headerSub.starIcon.setImageResource(R.drawable.ic_star_grey600_24dp);
+        } else {
+            headerSub.starIcon.setImageResource(R.drawable.ic_star_outline_grey600_24dp);
+        }
+
+        return row;
     }
 
     /**

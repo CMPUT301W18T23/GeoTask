@@ -176,6 +176,21 @@ public class User extends GTData{
         this.historyList = historyList;
     }
 
+    public Boolean starred(String taskID){
+        if(starredList.contains(taskID)){
+            return true;
+        }
+        return false;
+    }
+
+    public void removeTaskFromStarredList(String taskID){
+        starredList.remove(taskID);
+    }
+
+    public void addTaskToStarredList(String taskID){
+        starredList.add(taskID);
+    }
+
     public Boolean visited(String taskID){
         if(historyList.contains(taskID)){
             return true;

@@ -34,8 +34,12 @@
                 android:title="My Tasks" />
             <item
                 android:id="@+id/nav_assigned"
-                android:icon="@drawable/ic_checkbox_blank_circle_grey600_48dp"
+                android:icon="?android:attr/listChoiceIndicatorMultiple"
                 android:title="My Assigned" />
+            <item
+                android:id="@+id/nav_accepted"
+                android:icon="@drawable/ic_checkbox_blank_circle_grey600_48dp"
+                android:title="My Accepted" />
             <item
                 android:id="@+id/nav_provider"
                 android:icon="@drawable/ic_google_circles_extended_grey600_48dp"

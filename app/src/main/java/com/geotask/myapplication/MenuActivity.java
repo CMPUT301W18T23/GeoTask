@@ -401,12 +401,14 @@ public class MenuActivity extends AbstractGeoTaskActivity
             populateTaskView();
 
         }  else if (id == R.id.nav_starred) {
-        fab.hide();
-        setViewMode(R.integer.MODE_INT_STARRED); //TODO - add the map
-        getSupportActionBar().setTitle("My Starred Tasks");
-        Snackbar.make(snackView, "Changed view to \"My Starred\"", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
-        populateTaskView();
+            fab.hide();
+            setViewMode(R.integer.MODE_INT_STARRED); //TODO - add the map
+            getSupportActionBar().setTitle("My Starred Tasks");
+            Snackbar.make(snackView, "Changed view to \"My Starred\"", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+            populateTaskView();
+        } else if (id == R.id.nav_accepted) {
+                //TODO
 
         } else if (id == R.id.nav_requester) {
             fab.show();

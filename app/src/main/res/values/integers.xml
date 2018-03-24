@@ -5,4 +5,5 @@
     <integer name="MODE_INT_PROVIDER">2</integer>
 	<integer name="MODE_INT_ASSIGNED">3</integer>
 	<integer name="MODE_INT_STARRED">4</integer>
+	<integer name="MODE_INT_ACCEPTED">5</integer>
 </resources>
