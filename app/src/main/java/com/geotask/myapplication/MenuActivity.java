@@ -473,6 +473,10 @@ public class MenuActivity extends AbstractGeoTaskActivity
         adapter.notifyDataSetChanged();
     }
 
+    public void toggleStar(View view){
+        
+    }
+
     @Override
     public void onPostExecute(GTData data) {
     }
