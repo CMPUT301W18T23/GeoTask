@@ -1,5 +1,8 @@
 package com.geotask.myapplication.Controllers.Helpers;
 
+import android.arch.persistence.db.SimpleSQLiteQuery;
+
+import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import java.lang.reflect.Type;
@@ -9,6 +12,7 @@ import java.lang.reflect.Type;
  */
 public class AsyncArgumentWrapper {
 
+    private SimpleSQLiteQuery SQLQuery;
     private String ID;
     private Type type;
     private String searchQuery;
@@ -33,6 +37,11 @@ public class AsyncArgumentWrapper {
         this.type = type;
     }
 
+    public AsyncArgumentWrapper(SQLQueryBuilder builder, Type type) {
+        this.SQLQuery = builder.build();
+        this.type = type;
+    }
+
     public String getID() {
         return ID;
     }
@@ -43,5 +52,9 @@ public class AsyncArgumentWrapper {
 
     public String getSearchQuery() {
         return searchQuery;
+    }
+
+    public SimpleSQLiteQuery getSQLQuery() {
+        return SQLQuery;
     }
 }

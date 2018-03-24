@@ -287,9 +287,11 @@ public class MasterController {
             verifySettings(context);
 
             for(AsyncArgumentWrapper argument : argumentWrappers) {
-
-                //ToDo
-
+                if (argument.getType().equals(Task.class)){
+                    resultList = database.taskDAO().selectAll();
+                } else if (argument.getType().equals(Bid.class)) {
+                    resultList = database.bidDAO().searchBidsByQuery(argument.getSQLQuery());
+                }
             }
             return resultList;
         }

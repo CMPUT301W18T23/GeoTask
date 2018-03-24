@@ -54,6 +54,4 @@ public interface TaskDAO {
     @Query("Delete FROM tasks WHERE object_id LIKE :id")
     int deleteByID(String id);
 
-    @Query("SELECT * FROM tasks")
-    List<Task> searchTasks();
 }

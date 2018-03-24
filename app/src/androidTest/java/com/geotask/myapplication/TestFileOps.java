@@ -1,9 +1,7 @@
 package com.geotask.myapplication;
 
-import android.database.sqlite.SQLiteConstraintException;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.util.Log;
 
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
@@ -13,6 +11,7 @@ import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
+import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
 
 import org.junit.After;
 import org.junit.Before;
@@ -33,8 +32,7 @@ public class TestFileOps implements AsyncCallBackManager{
     public void setUp() {
         dataBase = LocalDataBase.getDatabase(InstrumentationRegistry.getTargetContext());
         dataBase.bidDAO().delete();
-        Log.i("rows deleted from tasks", Integer.toString(dataBase.taskDAO().delete()));
-
+        dataBase.taskDAO().delete();
         dataBase.userDAO().delete();
     }
 
@@ -68,46 +66,67 @@ public class TestFileOps implements AsyncCallBackManager{
     }
 
     @Test
-    public void testWriteAndReadTask() {
-        Bid bid = new Bid("testtest", 1.1, "database test");
+    public void testWriteAndReadTask() throws InterruptedException {
+        Bid bid = new Bid("testWriteAndReadTask", 1.1, "testWriteAndReadTask");
 
-        String targetName = "database_task_test";
-        Task task = new Task("randomid", targetName, "test description1");
+        Task task = new Task("testWriteAndReadTask",
+                "testWriteAndReadTask",
+                "testWriteAndReadTask");
         task.addBid(bid);
-        dataBase.taskDAO().insert(task);
 
-        Log.i("dat result212", task.toString());
+        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+        asyncCreateNewDocument.execute(task);
 
-        List<Task> resultList = dataBase.taskDAO().selectByName(targetName);
+        MasterController.AsyncGetDocument asyncGetDocument =
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+        asyncGetDocument.execute(new AsyncArgumentWrapper(task.getObjectID(), Task.class));
 
-        Log.i("dat result2212", resultList.toString());
-        assertEquals(task.getName(), resultList.get(0).getName());
+        Task result = null;
+        try {
+            result = (Task) asyncGetDocument.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(task.getObjectID(), result.getObjectID());
     }
 
     @Test
     public void testWriteAndReadUser() {
-        String targetName = "database_user_test";
-        User user = new User(targetName, "eaa@gmail.com", "2342342");
-        dataBase.userDAO().insert(user);
+        User user = new User("testWriteAndReadUser", "eaa@gmail.com", "2342342");
+        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+        asyncCreateNewDocument.execute(user);
 
-        List<User> resultList = dataBase.userDAO().selectByName(targetName);
+        MasterController.AsyncGetDocument asyncGetDocument =
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+        asyncGetDocument.execute(new AsyncArgumentWrapper(user.getObjectID(), User.class));
 
-        assertEquals(user.getName(), resultList.get(0).getName());
+        User result = null;
+        try {
+            result = (User) asyncGetDocument.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(user.getObjectID(), result.getObjectID());
     }
 
     @Test
-    public void testPrimaryKeyViolationAndViolationShouldReplaceOldRowWithNew() {
+    public void testPrimaryKeyViolationAndViolationShouldReplaceOldRowWithNew() throws InterruptedException {
         User user1 = new User("primary key test", "eaa@gmail.com", "2342342");
         String target = "violator";
         User user2 = new User(target, "adsga@gmail.com", "3498723");
         user2.setObjectID(user1.getObjectID());
 
-        dataBase.userDAO().insert(user1);
-        try {
-            dataBase.userDAO().insert(user2);
-        } catch(SQLiteConstraintException constraint) {
-            Log.i("SQLiteConstraintException", constraint.toString());
-        }
+        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+        asyncCreateNewDocument.execute(user1, user2);
+
+        Thread.sleep(1000);
 
         List<User> resultList = dataBase.userDAO().selectAll();
 
@@ -119,37 +138,88 @@ public class TestFileOps implements AsyncCallBackManager{
     public void testUpdate() {
         User user1 = new User("update test", "update@gmail.com", "2342342");
 
-        dataBase.userDAO().insert(user1);
+        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+        asyncCreateNewDocument.execute(user1);
 
-        User resultUser = dataBase.userDAO().selectAll().get(0);
+        MasterController.AsyncGetDocument asyncGetDocument =
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+        asyncGetDocument.execute(new AsyncArgumentWrapper(user1.getObjectID(), User.class));
 
-        assertEquals(user1.getName(), resultUser.getName());
+        User result = null;
+        try {
+            result = (User) asyncGetDocument.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(user1.getName(), result.getName());
 
         String target = "update";
-        resultUser.setName(target);
+        result.setName(target);
+        user1.setName(target);
 
-        dataBase.userDAO().update(resultUser);
+        MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                new MasterController.AsyncUpdateDocument(InstrumentationRegistry.getContext());
+        asyncUpdateDocument.execute(result);
 
-        List<User> resultList = dataBase.userDAO().selectAll();
+        MasterController.AsyncGetDocument asyncGetDocument2 =
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+        asyncGetDocument2.execute(new AsyncArgumentWrapper(user1.getObjectID(), User.class));
 
-        assertEquals(1, resultList.size());
-        assertEquals(target, resultList.get(0).getName());
+        User result2 =null;
+        try {
+            result2 = (User) asyncGetDocument.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(user1.getObjectID(), result2.getObjectID());
+        assertEquals(target, result2.getName());
     }
 
     @Test
     public void testDeleteSingleRow() {
         Bid bid = new Bid("delete single test", 1.1, "delete single");
 
-        dataBase.bidDAO().insert(bid);
-        List<Bid> resultList = dataBase.bidDAO().selectAll();
+        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+        asyncCreateNewDocument.execute(bid);
 
-        assertEquals(1, resultList.size());
+        MasterController.AsyncGetDocument asyncGetDocument =
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+        asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
 
+        Bid result = null;
+        try {
+            result = (Bid) asyncGetDocument.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
 
-        dataBase.bidDAO().delete(resultList.get(0));
-        resultList = dataBase.bidDAO().selectAll();
+        assertEquals(bid.getObjectID(), result.getObjectID());
 
-        assertEquals(0, resultList.size());
+        MasterController.AsyncDeleteDocument asyncDeleteDocument =
+                new MasterController.AsyncDeleteDocument(InstrumentationRegistry.getContext());
+        asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
+
+        MasterController.AsyncCreateNewDocument asyncCreateNewDocument2 =
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+        asyncCreateNewDocument2.execute(bid);
+
+        try {
+            assertEquals(null, asyncCreateNewDocument2.get());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -181,6 +251,52 @@ public class TestFileOps implements AsyncCallBackManager{
         resultList = dataBase.bidDAO().selectByTask(target);
         assertEquals(1, resultList.size());
         assertEquals(target, resultList.get(0).getTaskID());
+    }
+
+    @Test
+    public void testSearchQuery() {
+        Bid bid = new Bid("testSearchQuery", 3.2, "testSearchQuery");
+
+        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+        asyncCreateNewDocument.execute(bid);
+
+        MasterController.AsyncGetDocument asyncGetDocument =
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+        asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
+
+        Bid result = null;
+        try {
+            result = (Bid) asyncGetDocument.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(bid.getObjectID(), result.getObjectID());
+
+        SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
+        builder.addColumns(new String[]{"object_id"});
+
+        String[] object = new String[]{bid.getObjectID()};
+        builder.addParameters(object);
+
+        MasterController.AsyncSearch asyncSearch =
+                new MasterController.AsyncSearch(this, InstrumentationRegistry.getContext());
+        asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
+
+        List<Bid> resultList = null;
+        try {
+            resultList = (List<Bid>) asyncSearch.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(1, resultList.size());
+        assertEquals(bid.getObjectID(), resultList.get(0).getObjectID());
     }
 
     @Override
