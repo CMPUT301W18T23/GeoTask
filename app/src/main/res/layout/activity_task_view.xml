@@ -26,7 +26,10 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="10dp"
         android:text="Requested by"
+        android:textAllCaps="false"
+        android:textColor="@android:color/holo_blue_light"
         android:textSize="14sp"
+        android:textStyle="italic"
         app:layout_constraintEnd_toStartOf="@+id/textViewDate"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewTitle" />

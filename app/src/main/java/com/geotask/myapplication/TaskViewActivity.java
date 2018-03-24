@@ -3,6 +3,7 @@ package com.geotask.myapplication;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -95,6 +96,7 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
                     new MasterController.AsyncUpdateDocument();
             asyncUpdateDocument.execute(getCurrentUser());
         }
+        name.setPaintFlags(name.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
     }
 
 
