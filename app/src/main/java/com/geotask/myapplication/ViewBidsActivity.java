@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -22,20 +21,17 @@ import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
-import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBackManager {
+public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCallBackManager {
 
     private ListView oldBids; //named taskListView
     private ArrayList<Bid> bidList;
     private ArrayAdapter<Bid> adapter;
-    private User currentUser; //TODO - get current user
-    private Task task;
     private PopupWindow POPUP_WINDOW_DELETION = null;   //popup for error message
     private GTData data = null;
     private List<? extends GTData> searchResult = null;
@@ -49,8 +45,6 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_bids);
 
-        currentUser = (User) getIntent().getSerializableExtra(getString(R.string.CURRENT_USER)); //ToDo switch to Parcelable
-
         oldBids = findViewById(R.id.bidListView);
         bidList = new ArrayList<>();
 
@@ -60,12 +54,12 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
                                     int position, long id) {
                 //Log.i("ViewBids --->",task.getRequesterID() + " " + currentUser.getObjectID());
                 Bid bid = bidList.get(position);
-                if(task.getRequesterID().compareTo(currentUser.getObjectID()) == 0){
+                if(getCurrentTask().getRequesterID().compareTo(getCurrentUser().getObjectID()) == 0){
 //                    Bid bid = bidList.get(position);
-                    triggerPopup(view, bid, task);
+                    triggerPopup(view, bid, getCurrentTask());
                     adapter.notifyDataSetChanged();
-                }else if (currentUser.getObjectID().equals(bid.getProviderID())){
-                    triggerDeletePopup(view, bid, task);
+                }else if (getCurrentUser().getObjectID().equals(bid.getProviderID())){
+                    triggerDeletePopup(view, bid, getCurrentTask());
                     adapter.notifyDataSetChanged();
                 }
             }
@@ -80,7 +74,7 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         //TODO - build query that returns list of bids that all have task ID == this.taskID
         /// THIS SHOULD WORK BUT IS CURRENTLY COMMENTED OUT
         SuperBooleanBuilder builder = new SuperBooleanBuilder();
-        builder.put("taskID", task.getObjectID());
+        builder.put("taskID", getCurrentTask().getObjectID());
 
         MasterController.AsyncSearch asyncSearch =
                 new MasterController.AsyncSearch(this);
@@ -102,7 +96,6 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
     protected void onStart() {
         super.onStart();
         //Log.i("LifeCycle --->", "onStart is called");
-        this.task = (Task) getIntent().getSerializableExtra(getString(R.string.CURRENT_TASK_BEING_VIEWED));
         adapter = new BidArrayAdapter(this, R.layout.bid_list_item, bidList);
         oldBids.setAdapter(adapter);
         adapter.notifyDataSetChanged();
@@ -152,8 +145,6 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
 
         //go back to TaskViewActivity
         Intent intent = new Intent(ViewBidsActivity.this, TaskViewActivity.class);
-        intent.putExtra("currentUser", currentUser);
-        intent.putExtra("Id", currentUser);
         intent.putExtra("task", task);
         startActivity(intent);
 
@@ -206,21 +197,25 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
         if (bid.getObjectID().equals(task.getAccpeptedBidID())){
             task.setAcceptedProviderID(null);
             task.setAccpeptedBidID(null);
-            if (bidList.size() ==0 ){
-                task.setStatus("Requested");
-            }else{
-                task.setStatus("Bidded");
-            }
-        }else if (bidList.size() ==0){
+        if (bidList.size() ==0 ){
+            task.setStatus("Requested");
+        } else {
+            task.setStatus("Bidded");
+        }
+        } else if (bidList.size() ==0){
             task.setStatus("Requested");
         }
         Intent back = new Intent();
         back.putExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT), task);
-        back.putExtra(getString(R.string.CURRENT_USER), currentUser);
         back.putExtra("del", "1");
 
+        //task.syncBidData();
         setResult(Activity.RESULT_OK, back);
-
+        try {
+            Thread.sleep(400);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
                 new MasterController.AsyncUpdateDocument();
         asyncUpdateDocument.execute(task);
@@ -274,7 +269,7 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
 
                 Intent intent = new Intent(ViewBidsActivity.this, ViewProfileActivity.class);
 //                intent.putExtra("userID", bid.getProviderID());
-                intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
+                intent.putExtra(getString(R.string.CURRENT_USER), getCurrentUser()); //ToDo issue #31 here????
                 startActivity(intent);
             }
         });
@@ -301,7 +296,6 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
 
                 Intent back = new Intent();
                 back.putExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT), task);
-                back.putExtra(getString(R.string.CURRENT_USER), currentUser);
                 back.putExtra("del", "1");
 
                 setResult(Activity.RESULT_OK, back);
@@ -332,6 +326,7 @@ public class ViewBidsActivity extends AppCompatActivity implements AsyncCallBack
 
     @Override
     public void onPostExecute(List<? extends GTData> dataList) {
+        //bidList.clear();
         //bidList.clear();
         //bidList.addAll((Collection<? extends Bid>) dataList);
         //adapter.notifyDataSetChanged();

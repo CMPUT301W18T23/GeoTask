@@ -2,7 +2,6 @@ package com.geotask.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,7 +19,7 @@ import java.util.concurrent.ExecutionException;
 
 
 //https://stackoverflow.com/questions/2736389/how-to-pass-an-object-from-one-activity-to-another-on-android
-public class LoginActivity extends AppCompatActivity implements AsyncCallBackManager {
+public class LoginActivity extends AbstractGeoTaskActivity implements AsyncCallBackManager {
 
     private EditText emailText;
 
@@ -31,6 +30,8 @@ public class LoginActivity extends AppCompatActivity implements AsyncCallBackMan
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        MasterController.verifySettings();
 
         emailText = findViewById(R.id.emailText);
         Button loginButton = findViewById(R.id.loginButton);
@@ -78,9 +79,8 @@ public class LoginActivity extends AppCompatActivity implements AsyncCallBackMan
             List<User> result;
             try {
                 result = (List<User>) asyncSearch.get();
-                User user = result.get(0);
+                setCurrentUser(result.get(0));
                 Intent intent = new Intent(getBaseContext(), MenuActivity.class);
-                intent.putExtra(getString(R.string.CURRENT_USER), user);
                 startActivity(intent);
             } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();

@@ -3,16 +3,8 @@
 
 package com.geotask.myapplication;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.os.Build;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,23 +12,15 @@ import android.widget.Toast;
 
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Task;
-import com.geotask.myapplication.DataClasses.User;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
-
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import static android.Manifest.permission.ACCESS_CHECKIN_PROPERTIES;
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 /**
  * handles adding a task by the task requester
  * the user must be in requester mode for the button to show to go to this activity
  * @see MenuActivity
  */
 
-public class AddTaskActivity extends AppCompatActivity {
+public class AddTaskActivity extends AbstractGeoTaskActivity {
 
 
     private EditText Title;
@@ -44,7 +28,6 @@ public class AddTaskActivity extends AppCompatActivity {
     private Button Picture;
     private Button Map;
     private Button Save;
-    private User currentUser;
     private Task newTask;
 
     private FusedLocationProviderClient mFusedLocationClient; //for location grabbing
@@ -62,8 +45,6 @@ public class AddTaskActivity extends AppCompatActivity {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this); //set location client
 
         setContentView(R.layout.activity_new_add_task);
-
-        currentUser = (User) getIntent().getSerializableExtra(getString(R.string.CURRENT_USER));
 
         Title = findViewById(R.id.TaskTitle);
         Description = findViewById(R.id.TaskDescription);
@@ -130,22 +111,15 @@ public class AddTaskActivity extends AppCompatActivity {
 
         UserEntryStringValidator check = new UserEntryStringValidator();
         if(check.checkText(titleString, descriptionString)){
-            newTask = new Task(currentUser.getObjectID(), titleString, descriptionString);
+            newTask = new Task(getCurrentUser().getObjectID(), titleString, descriptionString);
+
             MasterController.AsyncCreateNewDocument asyncCreateNewDocument
                     = new MasterController.AsyncCreateNewDocument();
             asyncCreateNewDocument.execute(newTask);
 
-            try {
-                TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException e){
-                e.printStackTrace();
-            }
-
             Intent intent = new Intent(getBaseContext(), MenuActivity.class);
-            intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
             startActivity(intent);
-
-        }else{
+        } else {
             Toast.makeText(this,
                     getString(R.string.INVALID_TASK_DATA_WHEN_CREATING_NEW_TASK),
                     Toast.LENGTH_SHORT)

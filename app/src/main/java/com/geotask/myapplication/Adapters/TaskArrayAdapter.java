@@ -126,9 +126,11 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCallBac
             headerSub.icon.setImageResource(R.drawable.ic_circle_outline_grey600_24dp);
         }
 
+        headerSub.lowestBid.setText(String.format("Lowest Bid: %.2f", 69.69));
         /*
             Finding the lowest bid, and number of bids
          */
+
 
         //make the query
         SuperBooleanBuilder builder = new SuperBooleanBuilder();
@@ -150,6 +152,7 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCallBac
             /*
                 set the lowestBid TextView
              */
+
             if(bidList.size() == 0){
                 headerSub.lowestBid.setText("");                            //give no text
                 item.setStatusRequested();                                  //change the status
@@ -175,9 +178,11 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCallBac
             e.printStackTrace();
         }
 
+
         /*
             Set the lowestBid field to be special for accepted bids
          */
+
         if(item.getStatus().compareTo("Accepted") == 0){
             MasterController.AsyncGetDocument asyncGetDocument =
                     new MasterController.AsyncGetDocument(this);

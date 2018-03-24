@@ -8,7 +8,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -16,28 +15,26 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.geotask.myapplication.Adapters.TaskArrayAdapter;
+import com.geotask.myapplication.Adapters.FastTaskArrayAdapter;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
-import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import junit.framework.Assert;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import static com.geotask.myapplication.Controllers.Helpers.BidListConverter.JsonToList;
 import static java.sql.DriverManager.println;
 
 
@@ -59,47 +56,49 @@ import static java.sql.DriverManager.println;
  *      Author Exaqt, April 18, 2016, no license stated
  *
  */
-public class MenuActivity extends AppCompatActivity
+public class MenuActivity extends AbstractGeoTaskActivity
         implements NavigationView.OnNavigationItemSelectedListener, AsyncCallBackManager {
 
     private ListView oldTasks; //named taskListView
-    private ArrayList<Task> taskList;
     private ArrayAdapter<Task> adapter;
     private String mode;
-    private String filters;
     private String[] filterArray;
     private FloatingActionButton fab;
-    private User currentUser;
+    private Button clearFiltersButton;
     private ArrayList<Bid> bidFilterList;
     NavigationView navigationView;
     View headerView;
     ImageView drawerImage;
     TextView drawerUsername;
     TextView drawerEmail;
-
+    Task lastClickedTask = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        currentUser = (User) getIntent().getSerializableExtra(getString(R.string.CURRENT_USER)); //ToDo switch to Parcelable
-
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         oldTasks = findViewById(R.id.taskListView);
-        taskList = new ArrayList<>();
-        adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
+        super.setTaskList(new ArrayList<Task>());
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask);
         oldTasks.setAdapter(adapter);
 
-        mode = getString(R.string.MODE_ALL);
-        filters = "";
+
+        if(getViewMode() ==  R.integer.MODE_INT_ALL) {
+            getSupportActionBar().setTitle("All Tasks Mode");
+        } else if(getViewMode() == R.integer.MODE_INT_REQUESTER) {
+            getSupportActionBar().setTitle("Requester Mode");
+        } else if(getViewMode() == R.integer.MODE_INT_PROVIDER) {
+            getSupportActionBar().setTitle("Provider Mode");
+        }
+
         try {
-            filters = getIntent().getStringExtra("searchFilters");
-            filterArray = filters.split(" ");
+            filterArray = getSearchKeywords().split(" ");
         } catch (NullPointerException e) {
             e.printStackTrace();
-            filters = "";
+            setSearchKeywords("");
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -113,7 +112,6 @@ public class MenuActivity extends AppCompatActivity
         toggle.syncState();
 
         fab = findViewById(R.id.fab);
-
         /*
             onClick Listener for the floating action button. Here we will start the AddTaskActivity
             and pass the current user to it
@@ -123,8 +121,21 @@ public class MenuActivity extends AppCompatActivity
             public void onClick(View view) {
                 Log.v("myTag","FAB Clicked");
                 Intent intent = new Intent(MenuActivity.this, AddTaskActivity.class);
-                intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
                 startActivity(intent);
+            }
+        });
+
+        clearFiltersButton = findViewById(R.id.clearFilterButton);
+        //onClick Listener for the clear filters button.
+        clearFiltersButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                View snackView = getCurrentFocus();
+                Log.v("myTag","Clear Filters Clicked");
+                Snackbar.make(snackView, "Search Filters Cleared", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                setSearchKeywords("");
+                populateTaskView();
             }
         });
 
@@ -139,11 +150,12 @@ public class MenuActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Task task = taskList.get(position);
+                Task task = getTaskList().get(position);
+                lastClickedTask = task;
                 Intent intent = new Intent(MenuActivity.this, TaskViewActivity.class);
-                intent.putExtra(getString(R.string.TASK_BEING_VIEWED), task);
-                intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
+                setCurrentTask(lastClickedTask);
                 startActivity(intent);
+                Log.i("LifeCycle --->", "after activity return");
             }
         });
 
@@ -157,10 +169,7 @@ public class MenuActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         //Log.i("LifeCycle --->", "onStart is called");
-        //populate the array on start
         fab.hide();
-        //TODO - set the email and name
-
     }
 
     /**
@@ -170,16 +179,16 @@ public class MenuActivity extends AppCompatActivity
     @Override
     protected void onResume(){
         super.onResume();
+        //populate the array on start
         populateTaskView();
-
         headerView = navigationView.getHeaderView(0);
         drawerImage = (ImageView) headerView.findViewById(R.id.drawer_image);
         drawerUsername = (TextView) headerView.findViewById(R.id.drawer_name);
         drawerEmail = (TextView) headerView.findViewById(R.id.drawer_email);
 
         //TODO - set drawerImage to user profile pic
-        drawerUsername.setText(currentUser.getName());
-        drawerEmail.setText(currentUser.getEmail());
+        drawerUsername.setText(getCurrentUser().getName());
+        drawerEmail.setText(getCurrentUser().getEmail());
 
     }
 
@@ -189,7 +198,6 @@ public class MenuActivity extends AppCompatActivity
     @Override
     protected void onRestart(){
         super.onRestart();
-        currentUser = (User) getIntent().getSerializableExtra(getString(R.string.CURRENT_USER)); //ToDo switch to Parcelable
     }
 
     /**
@@ -197,13 +205,17 @@ public class MenuActivity extends AppCompatActivity
      *
      */
     private void populateTaskView(){
+        getTaskList().clear();
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
-        if(mode.compareTo(getString(R.string.MODE_REQUESTER)) == 0){
-            builder1.put("requesterID", currentUser.getObjectID());
+
+        //Only show tasks created by the user
+        if(getViewMode() == R.integer.MODE_INT_REQUESTER){
+            builder1.put("requesterID", getCurrentUser().getObjectID());
         }
 
+        //Add filter keywords to the builder if present
         try {
-            if(!filters.equals("")) {
+            if(!getSearchKeywords().equals("")) {
                 for(int i = 0; i < filterArray.length; i++) {
                     builder1.put("description", filterArray[i].toLowerCase());
                 }
@@ -217,45 +229,47 @@ public class MenuActivity extends AppCompatActivity
         asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
 
         try {
-            taskList = (ArrayList<Task>) asyncSearch.get();
+            setTaskList((ArrayList<Task>) asyncSearch.get());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
 
-       if(mode.compareTo("Provider") == 0) {
-            //Only show tasks which have been bidded on by current user
-            //Need to do this after elastic search by removing results without bids by the user
-           for(int i = 0; i < taskList.size(); i++) {
-               SuperBooleanBuilder builder2 = new SuperBooleanBuilder();
-               builder2.put("taskID", taskList.get(i).getObjectID());
+        //Only show tasks which have been bidded on by current user
+        //Need to do this after elastic search by removing results without bids by the user
+       if(getViewMode() == R.integer.MODE_INT_PROVIDER) {
+           SuperBooleanBuilder builder2 = new SuperBooleanBuilder();
+           builder2.put("providerID", getCurrentUser().getObjectID());
 
-               MasterController.AsyncSearch asyncSearch2 =
-                       new MasterController.AsyncSearch(this);
-               asyncSearch2.execute(new AsyncArgumentWrapper(builder2, Bid.class));
+           MasterController.AsyncSearch asyncSearch2 =
+                   new MasterController.AsyncSearch(this);
+           asyncSearch2.execute(new AsyncArgumentWrapper(builder2, Bid.class));
 
-               try {
-                   bidFilterList = (ArrayList<Bid>) asyncSearch2.get();
-               } catch (InterruptedException | ExecutionException e) {
-                   e.printStackTrace();
-               }
-               Boolean bidBool = false;
-               for(int j = 0; j < bidFilterList.size(); j++) {
-                   try {
-                       if (bidFilterList.get(j).getProviderID().compareTo(currentUser.getObjectID()) == 0) {
-                           bidBool = true;
+           try {
+               bidFilterList = (ArrayList<Bid>) asyncSearch2.get();
+           } catch (InterruptedException | ExecutionException e) {
+               e.printStackTrace();
+           }
+
+           try {
+               for (int i = 0; i < getTaskList().size(); i++) {
+                   Boolean bidbool = false;
+                   String tempTaskID = getTaskList().get(i).getObjectID();
+                   for(int j = 0; j < bidFilterList.size(); j++) {
+                       if(tempTaskID.compareTo(bidFilterList.get(j).getTaskID()) == 0) {
+                           bidbool = true;
                        }
-                   } catch (IndexOutOfBoundsException e) {
-                       e.printStackTrace();
+                   }
+                   if (!bidbool) {
+                       getTaskList().remove(i);
+                       i--;
                    }
                }
-               if(!bidBool) {
-                   taskList.remove(i);
-                   i--;
-               }
+           } catch (IndexOutOfBoundsException e) {
+               e.printStackTrace();
            }
        }
 
-        adapter = new TaskArrayAdapter(this, R.layout.task_list_item, taskList);
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask);
         oldTasks.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }
@@ -309,15 +323,12 @@ public class MenuActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_filter) {
             Intent intent = new Intent(getBaseContext(), FilterActivity.class);
-            intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
             startActivity(intent);
         } else if (id == R.id.nav_profile) {
             Intent intent = new Intent(MenuActivity.this, EditProfileActivity.class);
-            intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
             startActivity(intent);
         } else if (id == R.id.nav_map) {
             Intent intent = new Intent(getBaseContext(), MapActivity.class);
-            intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
             startActivity(intent);
         } else if (id == R.id.nav_logout) {
             Intent intent = new Intent(getBaseContext(), LoginActivity.class);
@@ -326,21 +337,24 @@ public class MenuActivity extends AppCompatActivity
 
         }  else if (id == R.id.nav_requester) {
             fab.show();
-            mode = getString(R.string.MODE_REQUESTER);
+            setViewMode(R.integer.MODE_INT_REQUESTER);
+            getSupportActionBar().setTitle("Requester Mode");
             Snackbar.make(snackView, "Changed view to \"Requester\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             populateTaskView();
 
         } else if (id == R.id.nav_provider) {
             fab.hide();
-            mode = getString(R.string.MODE_PROVIDER);
+            setViewMode(R.integer.MODE_INT_PROVIDER);
+            getSupportActionBar().setTitle("Provider Mode");
             Snackbar.make(snackView, "Changed view to \"Provider\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             populateTaskView();
 
         } else if (id == R.id.nav_all) {
             fab.hide();
-            mode = getString(R.string.MODE_ALL);
+            setViewMode(R.integer.MODE_INT_ALL);
+            getSupportActionBar().setTitle("All Tasks Mode");
             Snackbar.make(snackView, "Changed view to \"All\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             populateTaskView();

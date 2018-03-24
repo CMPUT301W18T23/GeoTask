@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 7,
-    "identityHash": "2f4ac1cc00c700e251a4e0c680dc5384",
+    "identityHash": "4bcd47a64c53a12947ad3196ba3ed5a6",
     "entities": [
       {
         "tableName": "users",
@@ -118,7 +118,7 @@
       },
       {
         "tableName": "tasks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`task_name` TEXT, `description` TEXT, `status` TEXT, `bidList` TEXT, `accpetedBid` REAL, `accpeptedBidID` TEXT, `requester_id` TEXT, `acceptedProviderID` TEXT, `hitCounter` INTEGER NOT NULL, `location` TEXT, `object_id` TEXT NOT NULL, `type` TEXT, `date` INTEGER NOT NULL, PRIMARY KEY(`object_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`task_name` TEXT, `description` TEXT, `status` TEXT, `bidList` TEXT, `accpetedBid` REAL, `accpeptedBidID` TEXT, `requester_id` TEXT, `acceptedProviderID` TEXT, `hitCounter` INTEGER NOT NULL, `location` TEXT, `lowestBid` REAL, `numBids` INTEGER, `object_id` TEXT NOT NULL, `type` TEXT, `date` INTEGER NOT NULL, PRIMARY KEY(`object_id`))",
         "fields": [
           {
             "fieldPath": "name",
@@ -181,6 +181,18 @@
             "notNull": false
           },
           {
+            "fieldPath": "lowestBid",
+            "columnName": "lowestBid",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "numBids",
+            "columnName": "numBids",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
             "fieldPath": "objectID",
             "columnName": "object_id",
             "affinity": "TEXT",
@@ -211,7 +223,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"2f4ac1cc00c700e251a4e0c680dc5384\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"4bcd47a64c53a12947ad3196ba3ed5a6\")"
     ]
   }
 }

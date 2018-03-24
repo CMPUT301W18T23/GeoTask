@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +21,9 @@ import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -31,13 +34,13 @@ import java.util.concurrent.ExecutionException;
  * going to profile if username is clicked on
  */
 //https://stackoverflow.com/questions/4127725/how-can-i-remove-a-button-or-make-it-invisible-in-android
-public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBackManager {
+public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncCallBackManager {
     private TextView title;
     private TextView name;
     private TextView description;
     private TextView status;
-    private Task currentTask;
-    private User currentUser;
+    private TextView hitCount;
+    private TextView dateSincePost;
     private Button editTaskButton;
     private Button bidButton;
     private Button addBidButton;
@@ -53,19 +56,16 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i("LifeCycle --->", "in viewtask");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_view);
-
-
-        currentTask = (Task) getIntent().getSerializableExtra(getString(R.string.TASK_BEING_VIEWED));
-        currentUser = (User) getIntent().getSerializableExtra(getString(R.string.CURRENT_USER));
-
-        String currentUserId = currentUser.getObjectID();
 
         title = findViewById(R.id.textViewTitle);
         name = findViewById(R.id.textViewName);
         description = findViewById(R.id.textViewDescription);
-        status = findViewById(R.id.textViewStatus);
+        status = findViewById(R.id.status_header);
+        hitCount = findViewById(R.id.num_views);
+        dateSincePost = findViewById(R.id.textViewDate);
 
         editTaskButton = findViewById(R.id.editTaskButton);
         bidButton = findViewById(R.id.bidsButton);
@@ -75,7 +75,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         setupButtons();
         getTaskUser();
 
-        if (currentUserId.equals(currentTask.getRequesterID())){   //hide editbutton if not user
+        if (getCurrentUser().getObjectID().equals(getCurrentTask().getRequesterID())){   //hide editbutton if not user
             editTaskButton.setVisibility(View.VISIBLE);
             addBidButton.setVisibility(View.INVISIBLE);
         } else {
@@ -83,10 +83,10 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
             addBidButton.setVisibility(View.VISIBLE);
 
             //Increasing Hits
-            currentTask.addHit();
+            getCurrentTask().addHit();
             MasterController.AsyncUpdateDocument asyncUpdateDocument =
                     new MasterController.AsyncUpdateDocument();
-            asyncUpdateDocument.execute(currentTask);
+            asyncUpdateDocument.execute(getCurrentTask());
         }
     }
 
@@ -98,8 +98,6 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         this.editTaskButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 Intent intent = new Intent(TaskViewActivity.this, EditTaskActivity.class);
-                intent.putExtra(getString(R.string.CURRENT_TASK_BEING_VIEWED), currentTask);
-                intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
                 startActivityForResult(intent,1);
 //                startActivity(intent);
             }
@@ -108,8 +106,6 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         this.bidButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 Intent intent = new Intent(TaskViewActivity.this, ViewBidsActivity.class);
-                intent.putExtra(getString(R.string.CURRENT_TASK_BEING_VIEWED), currentTask);
-                intent.putExtra(getString(R.string.CURRENT_USER), currentUser);
                 startActivityForResult(intent, 2);
                 updateStatus();  //for later ToDo ?????
             }
@@ -132,7 +128,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
     private void getTaskUser(){  //this should work when get really data to get
         MasterController.AsyncGetDocument asyncGetDocument =
                 new MasterController.AsyncGetDocument(this);
-        asyncGetDocument.execute(new AsyncArgumentWrapper(currentTask.getRequesterID(), User.class));
+        asyncGetDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getRequesterID(), User.class));
     }
 
     /**
@@ -140,13 +136,26 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
      * these are local changes
      */
     private void updateDisplayedValues(){
-        this.title.setText(currentTask.getName());
+        this.title.setText(getCurrentTask().getName());
 //        this.name.setText(taskUserId); //need to change to get user from the id
 //        this.name.setText("placeolder");
-        this.description.setText(currentTask.getDescription());
-        this.status.setText(currentTask.getStatus());
+        this.description.setText(getCurrentTask().getDescription());
+        this.status.setText(String.format("Status: %s", StringUtils.capitalize(getCurrentTask().getStatus())));
+        this.hitCount.setText(String.format("%d Views",getCurrentTask().getHitCounter()));
+        int days = (int) (new Date().getTime() - getCurrentTask().getDate()) / (1000*60*60*24);
+        int hours   = (int) ((new Date().getTime() - getCurrentTask().getDate()) / (1000*60*60) % 24);
+        int mins = (int)((new Date().getTime() - getCurrentTask().getDate()) / (1000*60) % 60);
+        int secs = (int) ((new Date().getTime() - getCurrentTask().getDate()) / 1000) % 60 ;
+        if(days > 0){
+            this.dateSincePost.setText(String.format("Posted %d days ago", days));
+        } else if(hours > 0){
+            this.dateSincePost.setText(String.format("Posted %d hours ago", hours));
+        } else if (mins > 0){
+            this.dateSincePost.setText(String.format("Posted %d minutes ago", mins));
+        } else {
+            this.dateSincePost.setText(String.format("Posted %d seconds ago", secs));
+        }
     }
-
 
     /**
      * handles return from editTaskACtivity
@@ -162,12 +171,10 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
                 if ("1".equals(data.getStringExtra("del"))){
                     finish();
                 }
-                this.currentTask = (Task) data.getSerializableExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT));  //need to return that in implementation
                 updateDisplayedValues();
             }
         }else if (requestCode == 2){
             if (resultCode == Activity.RESULT_OK) {
-                this.currentTask = (Task) data.getSerializableExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT));  //need to return that in implementation
                 updateDisplayedValues();
             }
         }
@@ -227,26 +234,33 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
      * @param value
      */
     private void addBid(Double value){
-        Bid bid = new Bid(currentUser.getObjectID(), value, currentTask.getObjectID());
+        Bid bid = new Bid(getCurrentUser().getObjectID(), value, getCurrentTask().getObjectID());
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
                 new MasterController.AsyncCreateNewDocument();
         asyncCreateNewDocument.execute(bid);
 
-        if (currentTask.getStatus().equals("Requested")) {
+        if (getCurrentTask().getStatus().toLowerCase().equals("requested")) {
             taskBidded(); //need to uncomment when taskId is given
             updateDisplayedValues();
         }
+
+        MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                new MasterController.AsyncUpdateDocument();
+        asyncUpdateDocument.execute(getCurrentTask());
+        try {
+            Thread.sleep(400);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
     /**
      * updates tasks status to bided
      * @throws InterruptedException
      */
-    private void taskBidded(){  //this should hopefully work when get really data to get
-        currentTask.setStatus(getString(R.string.TASK_STATUS_BIDDED));
-        MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument();
-        asyncUpdateDocument.execute(currentTask);
+    private void taskBidded() {  //this should hopefully work when get really data to get
+        getCurrentTask().setStatus(getString(R.string.TASK_STATUS_BIDDED));
     }
 
 
@@ -274,10 +288,10 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
     private void updateStatus(){
         MasterController.AsyncGetDocument asyncGetDocumentWhenDocumentExist =
                 new MasterController.AsyncGetDocument(this);
-        asyncGetDocumentWhenDocumentExist.execute(new AsyncArgumentWrapper(currentTask.getObjectID(), Task.class));
+        asyncGetDocumentWhenDocumentExist.execute(new AsyncArgumentWrapper(getCurrentTask().getObjectID(), Task.class));
 
         try {
-            currentTask = (Task) asyncGetDocumentWhenDocumentExist.get();
+            setCurrentTask((Task) asyncGetDocumentWhenDocumentExist.get());
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -291,7 +305,7 @@ public class TaskViewActivity extends AppCompatActivity  implements AsyncCallBac
         if(data instanceof User) {
             userBeingViewed = (User) data;
             profile();
-            this.name.setText(userBeingViewed.getName());
+            this.name.setText(String.format("Requested by %s", userBeingViewed.getName()));
         } else if (data instanceof Task){
             //ToDo ?????
         }

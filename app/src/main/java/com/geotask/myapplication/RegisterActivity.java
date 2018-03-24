@@ -2,7 +2,6 @@ package com.geotask.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,7 +12,7 @@ import com.geotask.myapplication.DataClasses.User;
 
 
 //https://stackoverflow.com/questions/2736389/how-to-pass-an-object-from-one-activity-to-another-on-android
-public class RegisterActivity extends AppCompatActivity{
+public class RegisterActivity extends AbstractGeoTaskActivity{
 
     private EditText newName;
     private EditText newEmail;
