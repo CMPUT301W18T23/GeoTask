@@ -101,7 +101,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         setSupportActionBar(toolbar);
         oldTasks = findViewById(R.id.taskListView);
         super.setTaskList(new ArrayList<Task>());
-        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask);
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
         oldTasks.setAdapter(adapter);
 
         screenWidthInDPs = this.getScreenWidthInDPs();
@@ -172,6 +172,11 @@ public class MenuActivity extends AbstractGeoTaskActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
+                if(view.equals(R.id.btn_star)) {
+                    Log.i("click --->", "clicked");
+                } else {
+                    Log.i("click --->", "not-clicked");
+                }
                 Task task = getTaskList().get(position);
                 lastClickedTask = task;
                 Intent intent = new Intent(MenuActivity.this, TaskViewActivity.class);
@@ -316,7 +321,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
            }
        }
 
-        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask);
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
         oldTasks.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }
@@ -468,15 +473,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
             }
         }
         setTaskList(starredTaskList);
-        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask);
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
         oldTasks.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-    }
-
-    public void toggleStar(View view){
-        Log.i("toggle -------->", "toggle was hit");
-        //ImageView star = findViewById(R.id.btn_star);
-        //star.setImageResource(R.drawable.ic_star_grey600_24dp);
     }
 
     @Override

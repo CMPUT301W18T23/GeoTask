@@ -87,7 +87,6 @@
                 android:layout_gravity="right"
                 android:layout_weight="1"
                 android:background="#00ffffff"
-                android:onClick="toggleStar"
                 android:paddingEnd="5dp"
                 android:paddingTop="3dp"
                 app:srcCompat="@drawable/ic_star_outline_grey600_24dp" />

@@ -18,6 +18,7 @@ import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
+import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.MenuActivity;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 import com.geotask.myapplication.R;
@@ -46,6 +47,10 @@ import java.util.concurrent.ExecutionException;
  * https://stackoverflow.com/questions/8642823/using-setimagedrawable-dynamically-to-set-image-in-an-imageview
  *      For setting a drawable.
  *      Author jlopez, Mar 9, 2015, no licence stated
+ *
+ * https://stackoverflow.com/questions/18858299/clickable-imageview-on-listview
+ *      For on click listener of imageview
+ *      Authors Manishika, Sep 17 '13, no licence stated
  */
 
 public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCallBackManager {
@@ -58,7 +63,7 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
     private Task lastViewedTask;
 
 
-    public FastTaskArrayAdapter(Context context, int resource, ArrayList<Task> objects, Task lastViewedTask){
+    public FastTaskArrayAdapter(Context context, int resource, ArrayList<Task> objects, Task lastViewedTask, User currentUser){
         super(context, resource, objects);
         this.layoutResourceId = resource;
         this.context = context;
@@ -82,28 +87,34 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
      *
      * The XML for the item is in the file task_list_item.xml
      */
-    public View getView(int position, View convertView, ViewGroup parent){
+    public View getView(final int position, View convertView, ViewGroup parent){
             View row = convertView;
             HeaderSub headerSub = null;
 
             if (row == null){
-            LayoutInflater inflater = ((Activity)context).getLayoutInflater();
-            row = inflater.inflate(layoutResourceId, parent, false);
+                LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+                row = inflater.inflate(layoutResourceId, parent, false);
 
-            //int dpWidth = MenuActivity.screenWidthInDPs;
+                //int dpWidth = MenuActivity.screenWidthInDPs;
 
-            headerSub = new HeaderSub();
+                headerSub = new HeaderSub();
 
-            headerSub.name = (TextView) row.findViewById(R.id.task_list_title);
-            headerSub.hits = (TextView) row.findViewById(R.id.task_list_hits);
-            headerSub.desc = (TextView) row.findViewById(R.id.task_list_desc);
-            headerSub.bids = (TextView) row.findViewById(R.id.task_list_bids);
-            headerSub.date = (TextView) row.findViewById(R.id.task_list_date);
-            headerSub.lowestBid = (TextView) row.findViewById(R.id.task_list_lowest);
-            headerSub.icon = (ImageView) row.findViewById(R.id.taskIcon);
-            //headerSub.viewsIcon = (ImageView) row.findViewById(R.id.imageViewView);
+                headerSub.name = (TextView) row.findViewById(R.id.task_list_title);
+                headerSub.hits = (TextView) row.findViewById(R.id.task_list_hits);
+                headerSub.desc = (TextView) row.findViewById(R.id.task_list_desc);
+                headerSub.bids = (TextView) row.findViewById(R.id.task_list_bids);
+                headerSub.date = (TextView) row.findViewById(R.id.task_list_date);
+                headerSub.lowestBid = (TextView) row.findViewById(R.id.task_list_lowest);
+                headerSub.icon = (ImageView) row.findViewById(R.id.taskIcon);
+                headerSub.starIcon = (ImageView) row.findViewById(R.id.btn_star);
+                headerSub.starIcon.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Log.i("click ----->", String.format("Clicked at pos: %d", position));
+                    }
+                });
 
-            row.setTag(headerSub);
+                row.setTag(headerSub);
 
             } else {
                 headerSub = (HeaderSub) row.getTag();
@@ -186,6 +197,7 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
                     MasterController.AsyncUpdateDocument asyncUpdateDocument =  //update the status
                             new MasterController.AsyncUpdateDocument();
                     asyncUpdateDocument.execute(item);
+
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
@@ -223,9 +235,9 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
                 try {
                     remote = (Bid) asyncGetDocument.get();
                     headerSub.lowestBid.setText(String.format("Accepted for: %.2f", remote.getValue()));
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
                 } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
                     e.printStackTrace();
                 }
             }
@@ -245,6 +257,7 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
         private ImageView icon;
         private ImageView viewsIcon;
         private TextView lowestBid;
+        private ImageView starIcon;
     }
 
     @Override
