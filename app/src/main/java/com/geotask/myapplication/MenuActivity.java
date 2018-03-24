@@ -258,8 +258,13 @@ public class MenuActivity extends AbstractGeoTaskActivity
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
 
         //Only show tasks created by the user
-        if(getViewMode() == R.integer.MODE_INT_REQUESTER){
+        if(getViewMode() == R.integer.MODE_INT_REQUESTER) {
             builder1.put("requesterID", getCurrentUser().getObjectID());
+        } else if(getViewMode() == R.integer.MODE_INT_ACCEPTED) {
+            builder1.put("requesterID", getCurrentUser().getObjectID());
+            builder1.put("status", "accepted");
+        } else if(getViewMode() == R.integer.MODE_INT_ASSIGNED) {
+            builder1.put("status", "accepted");
         }
 
         //Add filter keywords to the builder if present
@@ -320,6 +325,20 @@ public class MenuActivity extends AbstractGeoTaskActivity
                e.printStackTrace();
            }
        }
+
+        if(getViewMode() == R.integer.MODE_INT_ASSIGNED) {
+            try {
+                for (int i = 0; i < getTaskList().size(); i++) {
+                    Task tempTask = getTaskList().get(i);
+                    if (tempTask.getAcceptedProviderID().compareTo(getCurrentUser().getObjectID()) != 0) {
+                        getTaskList().remove(i);
+                        i--;
+                    }
+                }
+            } catch (IndexOutOfBoundsException e) {
+                e.printStackTrace();
+            }
+        }
 
         adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
         oldTasks.setAdapter(adapter);
@@ -408,7 +427,12 @@ public class MenuActivity extends AbstractGeoTaskActivity
                     .setAction("Action", null).show();
             populateTaskView();
         } else if (id == R.id.nav_accepted) {
-                //TODO
+            fab.hide();
+            setViewMode(R.integer.MODE_INT_ACCEPTED); //TODO - add the map
+            getSupportActionBar().setTitle("My Accepted Tasks");
+            Snackbar.make(snackView, "Changed view to \"My Accepted\"", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+            populateTaskView();
 
         } else if (id == R.id.nav_requester) {
             fab.show();
