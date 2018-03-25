@@ -21,6 +21,7 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
     private static String searchKeywords;
     private static double searchRange;
 
+
     public static User getCurrentUser() {
         return currentUser;
     }

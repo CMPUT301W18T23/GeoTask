@@ -43,17 +43,16 @@ public class TestElasticSearch implements AsyncCallBackManager {
 
     @Before
     public void setUp() {
-        MasterController.verifySettings(InstrumentationRegistry.getContext());
-//        //MasterController.setTestSettings(TestServerAddress.getTestAddress());
-//        try {
-//            MasterController.deleteIndex();
-//            MasterController.createIndex();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        MasterController.verifySettings(InstrumentationRegistry.getTargetContext());
+        MasterController.setTestSettings(TestServerAddress.getTestAddress());
+        try {
+            MasterController.deleteIndex();
+            MasterController.createIndex();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
    }
 
-    @Test
     public void utility() {
         MasterController.AsyncGetDocument asyncGetDocument =
                 new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
@@ -496,7 +495,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
 
     @Test
     public void testExistsProfile() throws InterruptedException {
-        assertFalse(MasterController.existsProfile("kyleg@email.com"));
+        assertFalse(MasterController.existsProfile("kyleg@email.com") == null);
 
         User user1 = new User("Kyle1", "kyleg@email.com", "555");
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
@@ -505,7 +504,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
 
         TimeUnit.SECONDS.sleep(2);
 
-        assertTrue(MasterController.existsProfile("kyleg@email.com"));
+        assertTrue(MasterController.existsProfile("kyleg@email.com") == null);
     }
 
     @After

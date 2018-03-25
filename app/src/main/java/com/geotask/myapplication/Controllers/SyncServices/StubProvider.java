@@ -54,6 +54,7 @@ public class StubProvider extends ContentProvider {
     /*
      * update() always returns "no rows affected" (0)
      */
+    @Override
     public int update(
             Uri uri,
             ContentValues values,

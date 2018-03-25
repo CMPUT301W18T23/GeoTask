@@ -8,14 +8,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
-import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.User;
-import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 
 //https://stackoverflow.com/questions/2736389/how-to-pass-an-object-from-one-activity-to-another-on-android
@@ -63,29 +60,16 @@ public class LoginActivity extends AbstractGeoTaskActivity implements AsyncCallB
     private void login_check() {
         String email = emailText.getText().toString().trim();
 
-        if(!MasterController.existsProfile(email)){
+        User user = MasterController.existsProfile(email);
+        if(user == null){
             Toast.makeText(this,
                     R.string.FAILED_LOGIN_EMAIL_NOT_REGISTERED,
                     Toast.LENGTH_SHORT)
                     .show();
         } else {
-            SuperBooleanBuilder builder = new SuperBooleanBuilder();
-            builder.put("email", email);
-
-            MasterController.AsyncSearch asyncSearch =
-                    new MasterController.AsyncSearch(this, this);
-            asyncSearch.execute(new AsyncArgumentWrapper(builder, User.class));
-
-            List<User> result;
-            try {
-                result = (List<User>) asyncSearch.get();
-                setCurrentUser(result.get(0));
-                Intent intent = new Intent(getBaseContext(), MenuActivity.class);
-                startActivity(intent);
-            } catch (ExecutionException | InterruptedException e) {
-                e.printStackTrace();
-            }
-
+            setCurrentUser(user);
+            Intent intent = new Intent(getBaseContext(), MenuActivity.class);
+            startActivity(intent);
         }
     }
 

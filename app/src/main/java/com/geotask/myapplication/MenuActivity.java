@@ -1,5 +1,8 @@
 package com.geotask.myapplication;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -70,10 +73,26 @@ public class MenuActivity extends AbstractGeoTaskActivity
     TextView drawerUsername;
     TextView drawerEmail;
     Task lastClickedTask = null;
+    private Account account;
+    private ContentResolver syncResolver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        account = CreateAccount();
+
+        syncResolver = this.getContentResolver();
+        ContentResolver.addPeriodicSync(
+                account,
+                "com.geotask",
+                Bundle.EMPTY,
+                R.integer.SYNC_INTERVAL_SECONDS);
+
+        Bundle settings = new Bundle();
+        settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        settings.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        ContentResolver.requestSync(account, "com.geotask", settings);
 
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -196,6 +215,15 @@ public class MenuActivity extends AbstractGeoTaskActivity
     @Override
     protected void onRestart(){
         super.onRestart();
+    }
+
+
+    /**
+     * https://www.concretepage.com/android/android-local-bound-service-example-with-binder-and-serviceconnection
+     */
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     /**
@@ -372,5 +400,16 @@ public class MenuActivity extends AbstractGeoTaskActivity
         //taskList.clear();
         //taskList.addAll((Collection<? extends Task>) dataList);
         //adapter.notifyDataSetChanged();
+    }
+
+    public Account CreateAccount() {
+        Account newAccount = new Account("com.geotask", "com.geotask");
+        AccountManager accountManager = (AccountManager) this.getSystemService(ACCOUNT_SERVICE);
+        if(accountManager.addAccountExplicitly(newAccount, null, null)) {
+
+        } else {
+            Log.i("GEOTASK_DEBUGG", "failed");
+        }
+        return newAccount;
     }
 }

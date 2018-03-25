@@ -59,7 +59,7 @@ public class MasterController {
         controller.shutDown();
     }
 
-    public static boolean existsProfile(String s) {
+    public static User existsProfile(String s) {
         controller.verifySettings();
         return controller.existsProfile(s);
     }

@@ -6,15 +6,32 @@ import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.SyncResult;
 import android.os.Bundle;
+import android.util.Log;
+
+import com.geotask.myapplication.Controllers.ElasticsearchController;
+import com.geotask.myapplication.Controllers.LocalFilesOps.LocalDataBase;
+import com.geotask.myapplication.DataClasses.Bid;
+import com.geotask.myapplication.DataClasses.Task;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 //https://developer.android.com/training/sync-adapters/creating-sync-adapter.html
 
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
+    private static ElasticsearchController controller;
+    private LocalDataBase database;
+    private ArrayList<Task> taskList;
+    private ArrayList<Bid> bidList;
 
     public SyncAdapter(Context context, boolean autoInitiate) {
         super(context, autoInitiate);
-
+        controller = new ElasticsearchController();
+        controller.verifySettings();
+        if(database == null) {
+            database = LocalDataBase.getDatabase(context);
+        }
     }
 
     /**
@@ -25,6 +42,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
      */
     public SyncAdapter(Context context, boolean autoInitiate, boolean allowParallelSyncs) {
         super(context, autoInitiate, allowParallelSyncs);
+        controller = new ElasticsearchController();
+        controller.verifySettings();
+        if(database == null) {
+            database = LocalDataBase.getDatabase(context);
+        }
     }
 
 
@@ -38,9 +60,21 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
      */
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-        //ToDo connect to server
-        //ToDo downloading and uploading data
-        //ToDo resolve conflicts and concurrency
-        //ToDo clean up
+        try {
+            taskList = (ArrayList<Task>) controller.search("", Task.class);
+            bidList = (ArrayList<Bid>) controller.search("", Bid.class);
+            Log.wtf("POTATO_POTATO", "RUNNING");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for(Task task : taskList) {
+            database.taskDAO().insert(task);
+        }
+        for(Bid bid : bidList) {
+            database.bidDAO().insert(bid);
+        }
+        //database.taskDAO().insertMultiple(taskList.toArray(new Task[taskList.size()]));
+        //database.bidDAO().insertMultiple(bidList.toArray(new Bid[bidList.size()]));
     }
 }
