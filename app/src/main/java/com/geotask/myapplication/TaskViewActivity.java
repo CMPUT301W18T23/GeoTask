@@ -90,7 +90,8 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
 
         if (getCurrentUser().getObjectID().equals(getCurrentTask().getRequesterID())){   //hide editbutton if not user
             addBidButton.setVisibility(View.INVISIBLE);
-            if (!"Accepted".equals(getCurrentTask().getStatus())||!"Completed".equals(getCurrentTask().getStatus())){
+            System.out.print("ye");
+            if ("Bidded".equals(getCurrentTask().getStatus())||"Requested".equals(getCurrentTask().getStatus())){
                 doneButton.setVisibility(View.INVISIBLE);   //if status is not accepted  hide button
 
             }
