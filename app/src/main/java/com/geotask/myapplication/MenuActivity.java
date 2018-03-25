@@ -416,7 +416,8 @@ public class MenuActivity extends AbstractGeoTaskActivity
             Intent intent = new Intent(getBaseContext(), FilterActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_profile) {
-            Intent intent = new Intent(MenuActivity.this, EditProfileActivity.class);
+            Intent intent = new Intent(MenuActivity.this, ViewProfileActivity.class);
+            intent.putExtra("user_being_viewed", getCurrentUser());
             startActivity(intent);
         } else if (id == R.id.nav_map) {
             Intent intent = new Intent(getBaseContext(), MapActivity.class);

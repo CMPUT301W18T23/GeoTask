@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -45,9 +46,9 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
     private Button editTaskButton;
     private Button bidButton;
     private Button addBidButton;
+    private ImageView starIcon;
     private PopupWindow POPUP_WINDOW_DELETION = null;   //popup for error message
     private User userBeingViewed;
-
 
     /**
      * inits vars and view items, and button
@@ -76,12 +77,33 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
         setupButtons();
         getTaskUser();
 
+        starIcon = (ImageView) findViewById(R.id.btn_star_task_view);
+
+        starIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("--------->", "clicked it");
+                if (getCurrentUser().starred(getCurrentTask().getObjectID())) {
+                    getCurrentUser().removeTaskFromStarredList(getCurrentTask().getObjectID());
+                    starIcon.setImageResource(R.drawable.ic_star_outline_grey600_24dp);
+                } else {
+                    getCurrentUser().addTaskToStarredList(getCurrentTask().getObjectID());
+                    starIcon.setImageResource(R.drawable.ic_star_grey600_24dp);
+                }
+                MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                        new MasterController.AsyncUpdateDocument();
+                asyncUpdateDocument.execute(getCurrentUser());
+            }
+        });
+
         if (getCurrentUser().getObjectID().equals(getCurrentTask().getRequesterID())){   //hide editbutton if not user
             editTaskButton.setVisibility(View.VISIBLE);
             addBidButton.setVisibility(View.INVISIBLE);
+            starIcon.setVisibility(View.INVISIBLE);
         } else {
             editTaskButton.setVisibility(View.INVISIBLE);
             addBidButton.setVisibility(View.VISIBLE);
+            starIcon.setVisibility(View.VISIBLE);
 
             //Increasing Hits
             Log.i("cur ------>", getCurrentTask().getObjectID());
