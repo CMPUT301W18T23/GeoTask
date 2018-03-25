@@ -24,6 +24,7 @@ import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
+import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import java.util.ArrayList;
@@ -37,9 +38,11 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
     private ArrayList<Bid> bidList;
     private ArrayAdapter<Bid> adapter;
     private PopupWindow POPUP_WINDOW_DELETION = null;   //popup for error message
+    private PopupWindow POPUP_WINDOW_PROFILE = null;   //popup for error message
     private GTData data = null;
     private List<? extends GTData> searchResult = null;
     private TextView emptyText;
+    private User profile;
 
     /**
      * Initiate variables, and set an on click listener for
@@ -62,11 +65,17 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
                 Bid bid = bidList.get(position);
                 if(getCurrentTask().getRequesterID().compareTo(getCurrentUser().getObjectID()) == 0){
 //                    Bid bid = bidList.get(position);
-                    triggerPopup(view, bid, getCurrentTask());
-                    adapter.notifyDataSetChanged();
+                    if ("Completed".equals(getCurrentTask().getStatus())){
+                        triggerViewProfile(view, bid, getCurrentTask());
+                    }else{
+                        triggerPopup(view, bid, getCurrentTask());
+                        adapter.notifyDataSetChanged();
+                    }
                 }else if (getCurrentUser().getObjectID().equals(bid.getProviderID())){
                     triggerDeletePopup(view, bid, getCurrentTask());
                     adapter.notifyDataSetChanged();
+                }else{
+                    triggerViewProfile(view, bid, getCurrentTask());
                 }
             }
         });
@@ -271,6 +280,19 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
      * Set up buttons in the view for the popup with various bid functionality
      */
     public void triggerPopup(View view, final Bid bid, final Task task){
+
+        MasterController.AsyncGetDocument asyncGetDocument =
+                new MasterController.AsyncGetDocument(this);
+        asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getProviderID(), User.class));
+
+        try {
+            profile = (User) asyncGetDocument.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layout = layoutInflater.inflate(R.layout.layout_bidlist_popout, null);
 
@@ -315,7 +337,8 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
 
                 Intent intent = new Intent(ViewBidsActivity.this, ViewProfileActivity.class);
 //                intent.putExtra("userID", bid.getProviderID());
-                intent.putExtra(getString(R.string.CURRENT_USER), getCurrentUser()); //ToDo issue #31 here????
+
+                intent.putExtra(getString(R.string.VIEW_USER), profile); //ToDo issue #31 here????
                 startActivity(intent);
             }
         });
@@ -360,6 +383,54 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
             }
         });
     }
+    public void triggerViewProfile(View view, final Bid bid, final Task task){
+        MasterController.AsyncGetDocument asyncGetDocument =
+                new MasterController.AsyncGetDocument(this);
+        asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getProviderID(), User.class));
+
+        try {
+            profile = (User) asyncGetDocument.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = layoutInflater.inflate(R.layout.view_profile_bid_popout, null);
+
+        POPUP_WINDOW_PROFILE = new PopupWindow(this);
+        POPUP_WINDOW_PROFILE.setContentView(layout);
+        POPUP_WINDOW_PROFILE.setFocusable(true);
+        POPUP_WINDOW_PROFILE.setBackgroundDrawable(null);
+        POPUP_WINDOW_PROFILE.showAtLocation(layout, Gravity.CENTER, 1, 1);
+
+        Button profileBtn = (Button) layout.findViewById(R.id.btn_delete_my_bid);  // this goes to profile. for some reason if i change the name, the layout messes up
+        profileBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                POPUP_WINDOW_PROFILE.dismiss();
+                Intent intent = new Intent(ViewBidsActivity.this, ViewProfileActivity.class);
+//                intent.putExtra("userID", bid.getProviderID());
+
+                intent.putExtra(getString(R.string.VIEW_USER), profile); //ToDo issue #31 here????
+                startActivity(intent);
+            }
+        });
+
+        Button backBtn = (Button) layout.findViewById(R.id.btn_back);
+        backBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                POPUP_WINDOW_PROFILE.dismiss();
+            }
+        });
+    }
+
 
     public void setEmptyString(){
         Log.i("BidList ----->", String.format("%d", bidList.size()));
