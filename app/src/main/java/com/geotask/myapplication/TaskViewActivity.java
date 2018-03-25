@@ -91,7 +91,7 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
         if (getCurrentUser().getObjectID().equals(getCurrentTask().getRequesterID())){   //hide editbutton if not user
             addBidButton.setVisibility(View.INVISIBLE);
             System.out.print("ye");
-            if ("Bidded".equals(getCurrentTask().getStatus())||"Requested".equals(getCurrentTask().getStatus())){
+            if ("Bidded".equals(getCurrentTask().getStatus())||"Requested".equals(getCurrentTask().getStatus())||"Completed".equals(getCurrentTask().getStatus())){
                 doneButton.setVisibility(View.INVISIBLE);   //if status is not accepted  hide button
 
             }
@@ -112,6 +112,10 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
             MasterController.AsyncUpdateDocument asyncUpdateDocument =
                     new MasterController.AsyncUpdateDocument();
             asyncUpdateDocument.execute(getCurrentUser());
+        }
+        if ("Completed".equals(getCurrentTask().getStatus())){
+            addBidButton.setVisibility(View.INVISIBLE);
+
         }
         name.setPaintFlags(name.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
     }
