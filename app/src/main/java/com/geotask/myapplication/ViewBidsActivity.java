@@ -67,6 +67,8 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
 //                    Bid bid = bidList.get(position);
                     if ("Completed".equals(getCurrentTask().getStatus())){
                         triggerViewProfile(view, bid, getCurrentTask());
+                    }else if ("Accepted".equals(getCurrentTask().getStatus())){
+                        triggerDeletePopup(view, bid, getCurrentTask());
                     }else{
                         triggerPopup(view, bid, getCurrentTask());
                         adapter.notifyDataSetChanged();
