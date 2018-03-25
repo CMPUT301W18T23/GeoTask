@@ -1,5 +1,8 @@
 package com.geotask.myapplication;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -70,10 +73,26 @@ public class MenuActivity extends AbstractGeoTaskActivity
     TextView drawerUsername;
     TextView drawerEmail;
     Task lastClickedTask = null;
+    private Account account;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        account = new Account("Dummy", getString(R.string.SYNC_AUTHORITY));
+        AccountManager accountManager = (AccountManager) getSystemService(ACCOUNT_SERVICE);
+        accountManager.addAccountExplicitly(account, null, null);
+        ContentResolver.addPeriodicSync(
+                account,
+                getString(R.string.SYNC_AUTHORITY),
+                Bundle.EMPTY,
+                R.integer.SYNC_INTERVAL_SECONDS);
+
+        Bundle settings = new Bundle();
+        settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        settings.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        ContentResolver.requestSync(account, getString(R.string.SYNC_AUTHORITY), settings);
 
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -196,6 +215,15 @@ public class MenuActivity extends AbstractGeoTaskActivity
     @Override
     protected void onRestart(){
         super.onRestart();
+    }
+
+
+    /**
+     * https://www.concretepage.com/android/android-local-bound-service-example-with-binder-and-serviceconnection
+     */
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     /**

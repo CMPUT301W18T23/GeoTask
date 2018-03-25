@@ -44,13 +44,13 @@ public class TestElasticSearch implements AsyncCallBackManager {
     @Before
     public void setUp() {
         MasterController.verifySettings(InstrumentationRegistry.getContext());
-//        //MasterController.setTestSettings(TestServerAddress.getTestAddress());
-//        try {
-//            MasterController.deleteIndex();
-//            MasterController.createIndex();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        MasterController.setTestSettings(TestServerAddress.getTestAddress());
+        try {
+            MasterController.deleteIndex();
+            MasterController.createIndex();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
    }
 
     @Test

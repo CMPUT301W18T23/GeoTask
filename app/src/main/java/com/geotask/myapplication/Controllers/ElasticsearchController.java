@@ -46,7 +46,7 @@ public class ElasticsearchController {
      * Creates the index
      * @throws IOException
      */
-    protected void createIndex() throws IOException {
+    public void createIndex() throws IOException {
         client.execute(new CreateIndex.Builder(INDEX_NAME).build());
     }
 
@@ -54,7 +54,7 @@ public class ElasticsearchController {
      * Delete the index
      * @throws IOException
      */
-    protected int deleteIndex() throws IOException {
+    public int deleteIndex() throws IOException {
         JestResult result = client.execute(new DeleteIndex.Builder(INDEX_NAME).build());
         return result.getResponseCode();
     }
@@ -68,7 +68,7 @@ public class ElasticsearchController {
      * @param data - GTData that should be added to the database
      * @return - ID of the document
      */
-    protected void createNewDocument(GTData data) throws IOException {
+    public void createNewDocument(GTData data) throws IOException {
         Gson gson = new Gson();
         String json = gson.toJson(data);
         Index request = new Index.Builder(json)
@@ -86,7 +86,7 @@ public class ElasticsearchController {
      * @param ID - ID of the document
      * @return GTData object
      */
-    protected GTData getDocument(String ID, Type type) throws Exception {
+    public GTData getDocument(String ID, Type type) throws Exception {
         Get request = new Get.Builder(INDEX_NAME, ID).build();
 
         JestResult result = client.execute(request);
@@ -109,7 +109,7 @@ public class ElasticsearchController {
      * @param type - type of document
      * @return - response code of deletion (200 on success, 400 on failure)
      */
-    protected int deleteDocument(String ID, Type type) throws IOException {
+    public int deleteDocument(String ID, Type type) throws IOException {
         return client.execute(new Delete.Builder(ID)
                         .index(INDEX_NAME)
                         .type(type.toString())
@@ -124,7 +124,7 @@ public class ElasticsearchController {
      * @param type type of document
      * @throws IOException
      */
-    protected void deleteDocumentByValue(String query, Type type) throws IOException {
+    public void deleteDocumentByValue(String query, Type type) throws IOException {
         client.execute(new DeleteByQuery.Builder(query)
                 .addIndex(INDEX_NAME)
                 .addType(type.toString())
@@ -137,7 +137,7 @@ public class ElasticsearchController {
      * @param data
      * @throws IOException
      */
-    protected void updateDocument(GTData data) throws IOException {
+    public void updateDocument(GTData data) throws IOException {
         deleteDocument(data.getObjectID(), data.getClass());
         createNewDocument(data);
     }
@@ -148,7 +148,7 @@ public class ElasticsearchController {
      * @param query - query of terms that has been already formatted
      * @return a list of Bid objects
      */
-    protected List<? extends GTData> search(String query, Type type) throws IOException {
+    public List<? extends GTData> search(String query, Type type) throws IOException {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
@@ -200,7 +200,7 @@ public class ElasticsearchController {
     /**
      * verifySettings - Initializes client if not previously initialized
      */
-    protected void verifySettings() {
+    public void verifySettings() {
         if(client == null) {
             DroidClientConfig.Builder builder = new DroidClientConfig.Builder(SERVER_ADDRESS);
             DroidClientConfig config = builder.build();
@@ -215,7 +215,7 @@ public class ElasticsearchController {
     /**
      * Turn off the light when you are done, this app is environmentally friendly
      */
-    protected void shutDown() {
+    public void shutDown() {
         if(client != null) {
             client.shutdownClient();
         }
@@ -225,7 +225,7 @@ public class ElasticsearchController {
      * point server address to test index
      * @param testServerAddress
      */
-    protected void setTestSettings(String testServerAddress) {
+    public void setTestSettings(String testServerAddress) {
         INDEX_NAME = testServerAddress;
     }
 
