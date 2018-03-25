@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.geotask.myapplication">
-    <!--http://www.gmarwaha.com/blog/2012/01/18/android-remove-activity-from-history-stack/ - gets rid of history on apps that we dont need it on-->
+
+    <!-- http://www.gmarwaha.com/blog/2012/01/18/android-remove-activity-from-history-stack/ - gets rid of history on apps that we dont need it on -->
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -15,24 +16,30 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light">
         //map related things START here
-        <activity android:name=".RegisterActivity"
-            android:noHistory="true"/>
+        <activity
+            android:name=".RegisterActivity"
+            android:noHistory="true" />
         <activity
             android:name=".MenuActivity"
             android:label="@string/title_activity_menu"
-            android:theme="@style/AppTheme.NoActionBar"
-            />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".EditProfileActivity"
             android:label="Edit Profile"
-            android:noHistory="true"/>
-        <activity android:name=".AddTaskActivity"
-            android:noHistory="true"/>
-        <activity android:name=".ViewBidsActivity" android:noHistory="true"/>
-        <activity android:name=".EditTaskActivity"
-            android:exported= "true"/>
+            android:noHistory="true" />
+        <activity
+            android:name=".AddTaskActivity"
+            android:noHistory="true" />
+        <activity
+            android:name=".ViewBidsActivity"
+            android:noHistory="true" />
+        <activity
+            android:name=".EditTaskActivity"
+            android:exported="true" />
         <activity android:name=".TaskViewActivity" />
-        <activity android:name=".LoginActivity" android:noHistory="true" >
+        <activity
+            android:name=".LoginActivity"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,15 +47,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".FilterActivity" />
-
-        <!---
-        <activity android:name=".ViewProfileActivity"
-        android:label="ViewProfileActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
-            /-->
-        <activity android:name=".ViewProfileActivity"
-            android:label="ViewProfileActivity" />
-
+        <activity
+            android:name=".ViewProfileActivity"
+            android:label="ViewProfileActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+        />
+        <!--/ -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

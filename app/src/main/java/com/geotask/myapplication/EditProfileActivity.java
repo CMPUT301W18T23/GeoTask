@@ -65,7 +65,8 @@ public class EditProfileActivity extends AbstractGeoTaskActivity {
                     = new MasterController.AsyncUpdateDocument();
             asyncUpdateDocument.execute(getCurrentUser());
 
-            Intent intent = new Intent(getBaseContext(), MenuActivity.class);
+            Intent intent = new Intent(getBaseContext(), ViewProfileActivity.class);
+            intent.putExtra("user_being_viewed", getCurrentUser());
             startActivity(intent);
 
         }
