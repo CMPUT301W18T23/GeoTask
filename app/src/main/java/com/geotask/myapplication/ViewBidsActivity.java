@@ -78,20 +78,41 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
      */
     private void populateBidView(){
         //TODO - build query that returns list of bids that all have task ID == this.taskID
+
         /// THIS SHOULD WORK BUT IS CURRENTLY COMMENTED OUT
-        SuperBooleanBuilder builder = new SuperBooleanBuilder();
-        builder.put("taskID", getCurrentTask().getObjectID());
+//        if ("Accepted".equals(getCurrentTask().getStatus())) {
+//
+//            MasterController.AsyncGetDocument asyncGetDocument =
+//                    new MasterController.AsyncGetDocument(this);
+//            asyncGetDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getAccpeptedBidID(), Bid.class));
+//
+//            Bid accepted = null;
+//            try {
+//                accepted = (Bid) asyncGetDocument.get();
+//                if(bidList.isEmpty()){
+//                    bidList.add(accepted);
+//                }
+//            } catch (ExecutionException e) {
+//                e.printStackTrace();
+//            }catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }else{
+            SuperBooleanBuilder builder = new SuperBooleanBuilder();
+            builder.put("taskID", getCurrentTask().getObjectID());
 
-        MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this);
-        asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
+            MasterController.AsyncSearch asyncSearch =
+                    new MasterController.AsyncSearch(this);
+            asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
 
-        try {
-            bidList = (ArrayList<Bid>) asyncSearch.get();
-            Collections.sort(bidList);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+            try {
+                bidList = (ArrayList<Bid>) asyncSearch.get();
+                Collections.sort(bidList);
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+//        }
+
 
         adapter.notifyDataSetChanged();
         setEmptyString();
@@ -143,7 +164,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
 
         //The following should wok, but needs to be tested after the array is truly populated by the
         //master controller
-
+        deleteAllBut(task);
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
                 new MasterController.AsyncUpdateDocument();
         asyncUpdateDocument.execute(task);
@@ -155,6 +176,29 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
 
     }
 
+    public void deleteAllBut(Task task){
+        SuperBooleanBuilder builder = new SuperBooleanBuilder();
+        builder.put("taskID", task.getObjectID());
+
+        MasterController.AsyncSearch asyncSearch =
+                new MasterController.AsyncSearch(this);
+        asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
+        ArrayList<Bid> bidList = new ArrayList<Bid>();
+        try {
+            bidList = (ArrayList<Bid>) asyncSearch.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        for (Bid bid : bidList) {
+            if (!task.getAccpeptedBidID().equals(bid.getObjectID())){
+                MasterController.AsyncDeleteDocument asyncDeleteDocument =
+                        new MasterController.AsyncDeleteDocument();
+                asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
+            }
+
+        }
+
+    }
     /**
      * Allows a user to delete their bid on a task
      */
@@ -183,7 +227,6 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
         bidList.remove(bid);
         adapter = new BidArrayAdapter(this, R.layout.bid_list_item, bidList);
         oldBids.setAdapter(adapter);

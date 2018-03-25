@@ -49,7 +49,10 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
     private TextView dateSincePost;
     private Button bidButton;
     private Button addBidButton;
+    private Button doneButton;
+    private ImageView starIcon;
     private PopupWindow POPUP_WINDOW_DELETION = null;   //popup for error message
+    private PopupWindow POPUP_WINDOW_DONE = null;   //popup for error message
     private User userBeingViewed;
     private Toolbar toolbar;
     private MenuItem editBtn;
@@ -79,6 +82,7 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
 
         bidButton = findViewById(R.id.bidsButton);
         addBidButton = findViewById(R.id.addBidButton);
+        doneButton = findViewById(R.id.doneButton);
 
         updateDisplayedValues();
         setupButtons();
@@ -86,8 +90,15 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
 
         if (getCurrentUser().getObjectID().equals(getCurrentTask().getRequesterID())){   //hide editbutton if not user
             addBidButton.setVisibility(View.INVISIBLE);
+            System.out.print("ye");
+            if ("Bidded".equals(getCurrentTask().getStatus())||"Requested".equals(getCurrentTask().getStatus())){
+                doneButton.setVisibility(View.INVISIBLE);   //if status is not accepted  hide button
+
+            }
         } else {
             addBidButton.setVisibility(View.VISIBLE);
+            doneButton.setVisibility(View.INVISIBLE);   // if not user hide done button
+
 
             //Increasing Hits
             Log.i("cur ------>", getCurrentTask().getObjectID());
@@ -219,6 +230,12 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
             }
         });
 
+        this.doneButton.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                triggerDone(v);
+            }
+        });
+
     }
 
     /**
@@ -324,6 +341,51 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
 
                 }
                 //TODO - go back to previous intent
+            }
+        });
+
+    }
+
+    public void triggerDone(View view){
+
+        LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = layoutInflater.inflate(R.layout.task_completed_popup, null);
+
+        POPUP_WINDOW_DONE = new PopupWindow(this);
+        POPUP_WINDOW_DONE.setContentView(layout);
+        POPUP_WINDOW_DONE.setFocusable(true);
+        POPUP_WINDOW_DONE.setBackgroundDrawable(null);
+        POPUP_WINDOW_DONE.showAtLocation(layout, Gravity.CENTER, 1, 1);
+
+        Button cancelBtn = (Button) layout.findViewById(R.id.btn_cancel);
+        cancelBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                POPUP_WINDOW_DONE.dismiss();
+            }
+        });
+
+        Button acceptBtn = (Button) layout.findViewById(R.id.btn_accept_done);
+        acceptBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                POPUP_WINDOW_DONE.dismiss();
+                Task newTask = getCurrentTask();
+                newTask.setStatusCompleted();
+                setCurrentTask(newTask);
+                MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                        new MasterController.AsyncUpdateDocument();
+                asyncUpdateDocument.execute(getCurrentTask());
+                try {
+                    Thread.sleep(400);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                updateDisplayedValues();
             }
         });
 
