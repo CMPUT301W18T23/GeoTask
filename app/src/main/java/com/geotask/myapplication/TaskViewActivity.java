@@ -113,15 +113,19 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
         deleteBtn = toolbar.getMenu().findItem(R.id.action_delete);
 
         if((getCurrentUser().getObjectID().compareTo(getCurrentTask().getRequesterID()) == 0)
-                && (getCurrentTask().getStatus().toLowerCase().compareTo("requested")) == 0){
+                && (getCurrentTask().getStatus().toLowerCase().compareTo("requested") == 0)) {
             editBtn.setVisible(true);
+            deleteBtn.setVisible(true);
         } else if (getCurrentUser().getObjectID().compareTo(getCurrentTask().getRequesterID()) == 0){
             deleteBtn.setVisible(true);
+            editBtn.setVisible(false);
         } else {
             editBtn.setVisible(false);
             deleteBtn.setVisible(false);
         }
-        if(getCurrentUser().getObjectID().compareTo(getCurrentTask().getRequesterID()) != 0) {
+        if((getCurrentUser().getObjectID().compareTo(getCurrentTask().getRequesterID()) != 0)
+                && (getCurrentTask().getStatus().toLowerCase().compareTo("accepted") != 0)
+                && (getCurrentTask().getStatus().toLowerCase().compareTo("completed") != 0)){
             if (getCurrentUser().starred(getCurrentTask().getObjectID())) {
                 starBtn.setIcon(R.drawable.ic_star_white_24dp);
             } else {
@@ -165,7 +169,6 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
             Intent intent = new Intent(TaskViewActivity.this, MenuActivity.class);
             startActivity(intent);
         }
-
         return super.onOptionsItemSelected(item);
     }
 

@@ -102,7 +102,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
         setSupportActionBar(toolbar);
         oldTasks = findViewById(R.id.taskListView);
         emptyText = findViewById(R.id.empty_task_string);
-        super.setTaskList(new ArrayList<Task>());
+        if((getTaskList() == null) || (getTaskList().size() == 0)) {
+            setTaskList(new ArrayList<Task>());
+        }
         adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
         oldTasks.setAdapter(adapter);
 
@@ -158,6 +160,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 Snackbar.make(snackView, "Search Filters Cleared", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                 setSearchKeywords("");
+                setViewMode(R.integer.MODE_INT_ALL);
                 populateTaskView();
                 clearFiltersButton.setVisibility(View.INVISIBLE);
             }
@@ -251,12 +254,29 @@ public class MenuActivity extends AbstractGeoTaskActivity
      *
      */
     private void populateTaskView(){
-        getTaskList().clear();
-
+        Log.i("start with2------->", String.format("%d", getTaskList().size()));
         if(getViewMode() == R.integer.MODE_INT_STARRED){
+            getTaskList().clear();
             setStarredMode();
             return;
+        } else if (getViewMode() == R.integer.MODE_INT_HISTORY) {
+            clearFiltersButton.setVisibility(View.VISIBLE);
+            adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
+            oldTasks.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+            setEmptyString();
+            return;
+        } else if (getViewMode() == R.integer.MODE_INT_OTHERS_TASKS) {
+            Log.i("other------>", String.format("%d", getViewMode()));
+            clearFiltersButton.setVisibility(View.VISIBLE);
+            adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
+            oldTasks.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+            setEmptyString();
+            return;
         }
+        Log.i("none------>", String.format("%d", getViewMode()));
+        getTaskList().clear();
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
 
         //Only show tasks created by the user

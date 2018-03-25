@@ -188,7 +188,9 @@ public class User extends GTData{
     }
 
     public void addTaskToStarredList(String taskID){
-        starredList.add(taskID);
+        if(!starredList.contains(taskID)) {
+            starredList.add(taskID);
+        }
     }
 
     public Boolean visited(String taskID){
@@ -198,7 +200,9 @@ public class User extends GTData{
         if(historyList.size() > 100){
             historyList.remove(0);
         }
-        historyList.add(taskID);
+        if(!historyList.contains(taskID)) {
+            historyList.add(taskID);
+        }
         return false;
     }
 }

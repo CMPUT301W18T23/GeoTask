@@ -3,6 +3,7 @@ package com.geotask.myapplication;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,8 +18,10 @@ import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
+import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -115,24 +118,54 @@ public class ViewProfileActivity extends AbstractGeoTaskActivity implements Asyn
             Task task = null;
             try {
                 task = (Task) asyncGetDocument.get();
-                viewedTaskList.add(task);
+                if((task != null) && (task.getStatus().toLowerCase().compareTo("accepted") != 0)
+                        && (task.getStatus().toLowerCase().compareTo("completed") != 0)){
+                    viewedTaskList.add(task);
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
         }
+        Collections.sort(viewedTaskList);
         return viewedTaskList;
+    }
+
+    public ArrayList<Task> getUsersTasks(){
+        ArrayList<Task> taskList = new ArrayList<Task>();
+        SuperBooleanBuilder builder2 = new SuperBooleanBuilder();
+        builder2.put("requesterID", viewUser.getObjectID());
+
+        MasterController.AsyncSearch asyncSearch2 =
+                new MasterController.AsyncSearch(this);
+        asyncSearch2.execute(new AsyncArgumentWrapper(builder2, Task.class));
+
+        try {
+            taskList = (ArrayList<Task>) asyncSearch2.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        Log.i("size1----->", String.format("%d",taskList.size()));
+        return taskList;
     }
 
     public void viewHistory(View view){ //TODO
         Intent intent = new Intent(ViewProfileActivity.this, MenuActivity.class);
         setTaskList(getViewedTasks()); //this is getting overwritten by something in onstart
+        setViewMode(R.integer.MODE_INT_HISTORY);
         startActivity(intent);
     }
 
     public void viewTasks(View view){ //TODO
         Intent intent = new Intent(ViewProfileActivity.this, MenuActivity.class);
+        if(getCurrentUser().getObjectID().compareTo(viewUser.getObjectID()) ==0){
+            setViewMode(R.integer.MODE_INT_REQUESTER);
+        } else {
+            setTaskList(getUsersTasks());
+            Log.i("size2----->", String.format("%d",getTaskList().size()));
+            setViewMode(R.integer.MODE_INT_OTHERS_TASKS);
+        }
         startActivity(intent);
     }
 
