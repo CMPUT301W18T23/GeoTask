@@ -38,6 +38,8 @@ public class ViewProfileActivity extends AbstractGeoTaskActivity implements Asyn
     private TextView completed;
     private ImageView profilePic;
     private Button historyBtn;
+    private MenuItem editBtn;
+    private Toolbar toolbar;
 
     /**
      * sets up vars from intent to view user data
@@ -52,7 +54,7 @@ public class ViewProfileActivity extends AbstractGeoTaskActivity implements Asyn
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_view_profile);
         setContentView(R.layout.app_bar_menu_profile);
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
@@ -79,6 +81,10 @@ public class ViewProfileActivity extends AbstractGeoTaskActivity implements Asyn
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_profile, menu);
+        editBtn = toolbar.getMenu().findItem(R.id.action_edit);
+        if(getCurrentUser().getObjectID().compareTo(viewUser.getObjectID())!=0){
+            editBtn.setVisible(false);
+        }
         return true;
     }
 
