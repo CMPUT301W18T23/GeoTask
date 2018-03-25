@@ -46,8 +46,10 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
     private Button editTaskButton;
     private Button bidButton;
     private Button addBidButton;
+    private Button doneButton;
     private ImageView starIcon;
     private PopupWindow POPUP_WINDOW_DELETION = null;   //popup for error message
+    private PopupWindow POPUP_WINDOW_DONE = null;   //popup for error message
     private User userBeingViewed;
 
     /**
@@ -72,6 +74,7 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
         editTaskButton = findViewById(R.id.editTaskButton);
         bidButton = findViewById(R.id.bidsButton);
         addBidButton = findViewById(R.id.addBidButton);
+        doneButton = findViewById(R.id.doneButton);
 
         updateDisplayedValues();
         setupButtons();
@@ -100,12 +103,18 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
             editTaskButton.setVisibility(View.VISIBLE);
             addBidButton.setVisibility(View.INVISIBLE);
             starIcon.setVisibility(View.INVISIBLE);
+            if (!"Accepted".equals(getCurrentTask().getStatus())||!"Completed".equals(getCurrentTask().getStatus())){
+                doneButton.setVisibility(View.INVISIBLE);   //if status is not accepted  hide button
+
+            }
         } else {
             editTaskButton.setVisibility(View.INVISIBLE);
             addBidButton.setVisibility(View.VISIBLE);
             starIcon.setVisibility(View.VISIBLE);
+            doneButton.setVisibility(View.INVISIBLE);   // if not user hide done button
 
-            //Increasing Hits
+
+                //Increasing Hits
             Log.i("cur ------>", getCurrentTask().getObjectID());
             Log.i("cur ------>", getCurrentUser().getName());
             if(!getCurrentUser().visited(getCurrentTask().getObjectID())) {
@@ -148,6 +157,12 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
             }
         });
 
+        this.doneButton.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                triggerDone(v);
+            }
+        });
+
     }
 
     /**
@@ -170,6 +185,8 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
         this.title.setText(getCurrentTask().getName());
 //        this.name.setText(taskUserId); //need to change to get user from the id
 //        this.name.setText("placeolder");
+        String e = getCurrentTask().getStatus();
+        System.out.print(e);
         this.description.setText(getCurrentTask().getDescription());
         this.status.setText(String.format("Status: %s", StringUtils.capitalize(getCurrentTask().getStatus())));
         this.hitCount.setText(String.format("%d Views",getCurrentTask().getHitCounter()));
@@ -253,6 +270,51 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
 
                 }
                 //TODO - go back to previous intent
+            }
+        });
+
+    }
+
+    public void triggerDone(View view){
+
+        LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = layoutInflater.inflate(R.layout.task_completed_popup, null);
+
+        POPUP_WINDOW_DONE = new PopupWindow(this);
+        POPUP_WINDOW_DONE.setContentView(layout);
+        POPUP_WINDOW_DONE.setFocusable(true);
+        POPUP_WINDOW_DONE.setBackgroundDrawable(null);
+        POPUP_WINDOW_DONE.showAtLocation(layout, Gravity.CENTER, 1, 1);
+
+        Button cancelBtn = (Button) layout.findViewById(R.id.btn_cancel);
+        cancelBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                POPUP_WINDOW_DONE.dismiss();
+            }
+        });
+
+        Button acceptBtn = (Button) layout.findViewById(R.id.btn_accept_done);
+        acceptBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                POPUP_WINDOW_DONE.dismiss();
+                Task newTask = getCurrentTask();
+                newTask.setStatusCompleted();
+                setCurrentTask(newTask);
+                MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                        new MasterController.AsyncUpdateDocument();
+                asyncUpdateDocument.execute(getCurrentTask());
+                try {
+                    Thread.sleep(400);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                updateDisplayedValues();
             }
         });
 
