@@ -36,7 +36,8 @@
         <activity
             android:name=".EditTaskActivity"
             android:exported="true" />
-        <activity android:name=".TaskViewActivity" />
+        <activity android:name=".TaskViewActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".LoginActivity"
             android:noHistory="true">

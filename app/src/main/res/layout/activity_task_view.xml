@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.geotask.myapplication.TaskViewActivity">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.geotask.myapplication.TaskViewActivity"
+    tools:showIn="@layout/app_bar_menu_view_task">
 
     <View
         android:id="@+id/view"
@@ -28,22 +30,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
-    <ImageView
-        android:id="@+id/btn_star_task_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_gravity="right"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="12dp"
-        android:layout_weight="1"
-        android:background="#00ffffff"
-        android:paddingEnd="5dp"
-        android:paddingTop="5dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_star_outline_grey600_24dp" />
-
     <TextView
         android:id="@+id/textViewName"
         android:layout_width="0dp"
@@ -65,12 +51,12 @@
         android:id="@+id/textViewTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="12dp"
         android:textColor="@color/common_google_signin_btn_text_dark_focused"
         android:textSize="24sp"
-        app:layout_constraintEnd_toStartOf="@+id/btn_star_task_view"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -92,19 +78,6 @@
     <!--
             android:text="Bids: "
             -->
-
-    <Button
-        android:id="@+id/editTaskButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:layout_marginStart="9dp"
-        android:layout_marginTop="5dp"
-        android:text="Edit Task"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bidsButton" />
 
     <Button
         android:id="@+id/bidsButton"

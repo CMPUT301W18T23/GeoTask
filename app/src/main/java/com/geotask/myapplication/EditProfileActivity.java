@@ -70,8 +70,6 @@ public class EditProfileActivity extends AbstractGeoTaskActivity {
             startActivity(intent);
 
         }
-
-
     }
 
     /**
