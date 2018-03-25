@@ -3,6 +3,7 @@ package com.geotask.myapplication.DataClasses;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
+import android.support.annotation.NonNull;
 
 import java.util.Date;
 
@@ -11,7 +12,7 @@ import java.util.Date;
  * bid class for holding infomration about a bid
  */
 @Entity(tableName = "bids")
-public class Bid extends GTData {
+public class Bid extends GTData implements Comparable{
 
 	@ColumnInfo(name = "provider_id")
 	private String providerID;
@@ -91,4 +92,10 @@ public class Bid extends GTData {
 	}
 
 
+	@Override
+	public int compareTo(@NonNull Object o) {
+		Bid compare = (Bid) o;
+		int ret = (int) (this.getValue() - compare.getValue());
+		return ret;
+	}
 }

@@ -113,25 +113,27 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
             headerSub.icon = (ImageView) row.findViewById(R.id.taskIcon);
             headerSub.starIcon = (ImageView) row.findViewById(R.id.btn_star);
             final View finalRow = row;
-            headerSub.starIcon.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Task clickedTask = tdata.get(position);
-                    ImageView starIcon = (ImageView) finalRow.findViewById(R.id.btn_star);
-                    Log.i("click ----->", String.format("Clicked at pos: %d", position));
-                    Log.i("click ----->", clickedTask.getName());
-                    if(user.starred(clickedTask.getObjectID())){
-                        user.removeTaskFromStarredList(clickedTask.getObjectID());
-                        starIcon.setImageResource(R.drawable.ic_star_outline_grey600_24dp);
-                    } else {
-                        user.addTaskToStarredList(clickedTask.getObjectID());
-                        starIcon.setImageResource(R.drawable.ic_star_grey600_24dp);
+            if(user.getObjectID().compareTo(item.getRequesterID()) != 0) {
+                headerSub.starIcon.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Task clickedTask = tdata.get(position);
+                        ImageView starIcon = (ImageView) finalRow.findViewById(R.id.btn_star);
+                        Log.i("click ----->", String.format("Clicked at pos: %d", position));
+                        Log.i("click ----->", clickedTask.getName());
+                        if (user.starred(clickedTask.getObjectID())) {
+                            user.removeTaskFromStarredList(clickedTask.getObjectID());
+                            starIcon.setImageResource(R.drawable.ic_star_outline_grey600_24dp);
+                        } else {
+                            user.addTaskToStarredList(clickedTask.getObjectID());
+                            starIcon.setImageResource(R.drawable.ic_star_grey600_24dp);
+                        }
+                        MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                                new MasterController.AsyncUpdateDocument();
+                        asyncUpdateDocument.execute(user);
                     }
-                    MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                            new MasterController.AsyncUpdateDocument();
-                    asyncUpdateDocument.execute(user);
-                }
-            });
+                });
+            }
             /*
             *   onCLick listener for the star button
             */
@@ -151,7 +153,7 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
         } else {
             headerSub.name.setMaxEms((MenuActivity.screenWidthInDPs / 22) - 10);
         }
-        String viewString = String.format(" %d Views", item.getHitCounter());
+        //String viewString = String.format(" %d Views", item.getHitCounter());
         headerSub.hits.setText(String.format("Viewed %d times", item.getHitCounter()));
         headerSub.date.setText(item.getDateString());
 
@@ -266,10 +268,17 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
             }
         }
 
-        if(user.starred(item.getObjectID())){
-            headerSub.starIcon.setImageResource(R.drawable.ic_star_grey600_24dp);
+        /*
+        *   Only show if you are not the owner of the task
+        */
+        if(user.getObjectID().compareTo(item.getRequesterID()) != 0) {
+            if (user.starred(item.getObjectID())) {
+                headerSub.starIcon.setImageResource(R.drawable.ic_star_grey600_24dp);
+            } else {
+                headerSub.starIcon.setImageResource(R.drawable.ic_star_outline_grey600_24dp);
+            }
         } else {
-            headerSub.starIcon.setImageResource(R.drawable.ic_star_outline_grey600_24dp);
+            headerSub.starIcon.setVisibility(View.INVISIBLE);
         }
 
         return row;
