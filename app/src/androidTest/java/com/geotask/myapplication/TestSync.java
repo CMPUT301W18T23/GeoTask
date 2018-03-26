@@ -3,8 +3,10 @@ package com.geotask.myapplication;
 import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.util.Log;
 
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.ElasticsearchController;
@@ -29,6 +31,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 
 @RunWith(AndroidJUnit4.class)
+@LargeTest
 public class TestSync implements AsyncCallBackManager {
 
     private LocalDataBase database;
@@ -66,13 +69,18 @@ public class TestSync implements AsyncCallBackManager {
         controller.createNewDocument(user);
         controller.createNewDocument(task);
 
+
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(targetContext, MenuActivity.class);
         menuActivityRule.getActivity().setCurrentUser(user);
         menuActivityRule.launchActivity(intent);
 
-        TimeUnit.SECONDS.sleep(5);
+        TimeUnit.SECONDS.sleep(10);
+
+        Task local = database.taskDAO().selectByID(task.getObjectID());
+        Log.d("syncadapter", "selection");
+        assertNotNull(local);
 
         MasterController.AsyncGetDocument asyncGetDocument =
                 new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());

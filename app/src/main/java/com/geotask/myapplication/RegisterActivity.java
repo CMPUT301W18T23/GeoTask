@@ -52,7 +52,7 @@ public class RegisterActivity extends AbstractGeoTaskActivity{
             String userEmail = newEmail.getText().toString().trim();
 
             User user = MasterController.existsProfile(userEmail);
-            if(user == null){
+            if(user != null){
                 Toast.makeText(this,
                         R.string.EMAIL_ALREADY_IN_USE_WHEN_REGISTERING_AND_EDITING,
                         Toast.LENGTH_SHORT)

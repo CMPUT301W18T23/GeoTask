@@ -30,6 +30,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         controller = new ElasticsearchController();
         controller.verifySettings();
         if(database == null) {
+            Log.d("syncadapter", "open database");
             database = LocalDataBase.getDatabase(context);
         }
     }
@@ -45,6 +46,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         controller = new ElasticsearchController();
         controller.verifySettings();
         if(database == null) {
+            Log.d("syncadapter", "open database");
             database = LocalDataBase.getDatabase(context);
         }
     }
@@ -63,14 +65,19 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         try {
             taskList = (ArrayList<Task>) controller.search("", Task.class);
             bidList = (ArrayList<Bid>) controller.search("", Bid.class);
-            Log.wtf("POTATO_POTATO", "RUNNING");
+            Log.d("syncadapter", "RUNNING");
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        Log.d("syncadapter", taskList.toString());
+        Log.d("syncadapter", bidList.toString());
+
         for(Task task : taskList) {
             database.taskDAO().insert(task);
+            Log.d("syncadapter", "write task");
         }
+        Log.d("syncadapter", String.valueOf(database.taskDAO().selectAll().size()));
         for(Bid bid : bidList) {
             database.bidDAO().insert(bid);
         }

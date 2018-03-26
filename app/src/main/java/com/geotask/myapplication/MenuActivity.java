@@ -1,7 +1,6 @@
 package com.geotask.myapplication;
 
 import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,6 +26,7 @@ import com.geotask.myapplication.Adapters.FastTaskArrayAdapter;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.MasterController;
+import com.geotask.myapplication.Controllers.SyncServices.CreateAccount;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
@@ -60,6 +60,7 @@ import java.util.concurrent.ExecutionException;
 public class MenuActivity extends AbstractGeoTaskActivity
         implements NavigationView.OnNavigationItemSelectedListener, AsyncCallBackManager {
 
+    private final CreateAccount createAccount = new CreateAccount();
     private ListView oldTasks; //named taskListView
     private ArrayAdapter<Task> adapter;
     private String mode;
@@ -80,19 +81,17 @@ public class MenuActivity extends AbstractGeoTaskActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        account = CreateAccount();
-
+        account = createAccount.CreateAccount(this);
         syncResolver = this.getContentResolver();
         ContentResolver.addPeriodicSync(
                 account,
-                "com.geotask",
-                Bundle.EMPTY,
-                R.integer.SYNC_INTERVAL_SECONDS);
+                "com.geotask.myapplication.provider",
+                Bundle.EMPTY, 10);
 
         Bundle settings = new Bundle();
         settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         settings.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        ContentResolver.requestSync(account, "com.geotask", settings);
+        ContentResolver.requestSync(account, "com.geotask.myapplication.provider", settings);
 
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -400,16 +399,5 @@ public class MenuActivity extends AbstractGeoTaskActivity
         //taskList.clear();
         //taskList.addAll((Collection<? extends Task>) dataList);
         //adapter.notifyDataSetChanged();
-    }
-
-    public Account CreateAccount() {
-        Account newAccount = new Account("com.geotask", "com.geotask");
-        AccountManager accountManager = (AccountManager) this.getSystemService(ACCOUNT_SERVICE);
-        if(accountManager.addAccountExplicitly(newAccount, null, null)) {
-
-        } else {
-            Log.i("GEOTASK_DEBUGG", "failed");
-        }
-        return newAccount;
     }
 }
