@@ -81,6 +81,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         for(Bid bid : bidList) {
             database.bidDAO().insert(bid);
         }
+
+        taskList.clear();
+        bidList.clear();
         //database.taskDAO().insertMultiple(taskList.toArray(new Task[taskList.size()]));
         //database.bidDAO().insertMultiple(bidList.toArray(new Bid[bidList.size()]));
     }

@@ -85,13 +85,13 @@ public class MenuActivity extends AbstractGeoTaskActivity
         syncResolver = this.getContentResolver();
         ContentResolver.addPeriodicSync(
                 account,
-                "com.geotask.myapplication.provider",
-                Bundle.EMPTY, 10);
+                getString(R.string.SYNC_AUTHORITY),
+                Bundle.EMPTY, 900);
 
         Bundle settings = new Bundle();
         settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         settings.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-        ContentResolver.requestSync(account, "com.geotask.myapplication.provider", settings);
+        ContentResolver.requestSync(account, getString(R.string.SYNC_AUTHORITY), settings);
 
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
