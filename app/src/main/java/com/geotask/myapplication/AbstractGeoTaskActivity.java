@@ -1,6 +1,9 @@
 package com.geotask.myapplication;
 
 import android.accounts.Account;
+import android.content.ContentResolver;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import com.geotask.myapplication.DataClasses.Bid;
@@ -20,6 +23,8 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
     private static int viewMode = R.integer.MODE_INT_ALL;
     private static String searchKeywords;
     private static double searchRange;
+    private static ContentResolver syncResolver;
+
 
 
     public static User getCurrentUser() {
@@ -84,5 +89,18 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
 
     public static void setSearchRange(double searchRange) {
         AbstractGeoTaskActivity.searchRange = searchRange;
+    }
+
+    public static ContentResolver getSyncResolver() {
+        return syncResolver;
+    }
+
+    public static void setSyncResolver(ContentResolver syncResolver) {
+        AbstractGeoTaskActivity.syncResolver = syncResolver;
+    }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 }
