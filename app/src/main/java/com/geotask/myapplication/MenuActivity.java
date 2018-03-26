@@ -2,6 +2,7 @@ package com.geotask.myapplication;
 
 import android.accounts.Account;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -41,6 +42,8 @@ import junit.framework.Assert;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+
+import static java.sql.DriverManager.println;
 
 
 /** MenuActivity
