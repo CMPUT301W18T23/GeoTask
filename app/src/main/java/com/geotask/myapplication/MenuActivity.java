@@ -3,6 +3,7 @@ package com.geotask.myapplication;
 import android.accounts.Account;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -11,10 +12,13 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.OrientationEventListener;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -56,6 +60,13 @@ import java.util.concurrent.ExecutionException;
  *      For editing the nav_header
  *      Author Exaqt, April 18, 2016, no license stated
  *
+ * https://stackoverflow.com/questions/37458500/android-screen-rotation-detection
+ *      For listening for screen rotation
+ *      Author gRRosiminet, May 26, 2016, no licence stated
+ *
+ * https://android--code.blogspot.ca/2015/09/android-how-to-get-screen-width-and.html
+ *      Author Saiful Alam, For getting Screen size, September 27, 2015, no licence stated
+ *
  */
 public class MenuActivity extends AbstractGeoTaskActivity
         implements NavigationView.OnNavigationItemSelectedListener, AsyncCallBackManager {
@@ -68,11 +79,15 @@ public class MenuActivity extends AbstractGeoTaskActivity
     private FloatingActionButton fab;
     private Button clearFiltersButton;
     private ArrayList<Bid> bidFilterList;
+    private OrientationEventListener orientationEventListener = null;
+    public static int screenWidthInDPs;
+    public static int curOrientation;
     NavigationView navigationView;
     View headerView;
     ImageView drawerImage;
     TextView drawerUsername;
     TextView drawerEmail;
+    TextView emptyText;
     Task lastClickedTask = null;
     private Account account;
     private ContentResolver syncResolver;
@@ -97,17 +112,22 @@ public class MenuActivity extends AbstractGeoTaskActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         oldTasks = findViewById(R.id.taskListView);
-        super.setTaskList(new ArrayList<Task>());
-        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask);
+        emptyText = findViewById(R.id.empty_task_string);
+        if((getTaskList() == null) || (getTaskList().size() == 0)) {
+            setTaskList(new ArrayList<Task>());
+        }
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
         oldTasks.setAdapter(adapter);
 
+        screenWidthInDPs = this.getScreenWidthInDPs();
 
+        //TODO - change these to match below
         if(getViewMode() ==  R.integer.MODE_INT_ALL) {
-            getSupportActionBar().setTitle("All Tasks Mode");
+            getSupportActionBar().setTitle("All Tasks");
         } else if(getViewMode() == R.integer.MODE_INT_REQUESTER) {
-            getSupportActionBar().setTitle("Requester Mode");
+            getSupportActionBar().setTitle("My Tasks");
         } else if(getViewMode() == R.integer.MODE_INT_PROVIDER) {
-            getSupportActionBar().setTitle("Provider Mode");
+            getSupportActionBar().setTitle("Tasks I Have Bid On");
         }
 
         try {
@@ -151,7 +171,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 Snackbar.make(snackView, "Search Filters Cleared", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                 setSearchKeywords("");
+                setViewMode(R.integer.MODE_INT_ALL);
                 populateTaskView();
+                clearFiltersButton.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -166,6 +188,11 @@ public class MenuActivity extends AbstractGeoTaskActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
+                if(view.equals(R.id.btn_star)) {
+                    Log.i("click --->", "clicked");
+                } else {
+                    Log.i("click --->", "not-clicked");
+                }
                 Task task = getTaskList().get(position);
                 lastClickedTask = task;
                 Intent intent = new Intent(MenuActivity.this, TaskViewActivity.class);
@@ -175,6 +202,23 @@ public class MenuActivity extends AbstractGeoTaskActivity
             }
         });
 
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            curOrientation = 0;
+        }
+        else {
+            curOrientation = 1;
+        }
+
+        orientationEventListener = new OrientationEventListener(this) {
+            @Override
+            public void onOrientationChanged(int orientation) {
+                setOrientation();
+                Log.i("orient ------>", String.format("oriented: %d", orientation));
+                screenWidthInDPs = getScreenWidthInDPs();
+                adapter.notifyDataSetChanged();
+            }
+        };
+        orientationEventListener.enable();
     }
 
     /**
@@ -185,7 +229,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
     protected void onStart() {
         super.onStart();
         //Log.i("LifeCycle --->", "onStart is called");
-        fab.hide();
+        fab.show();
     }
 
     /**
@@ -205,7 +249,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
         //TODO - set drawerImage to user profile pic
         drawerUsername.setText(getCurrentUser().getName());
         drawerEmail.setText(getCurrentUser().getEmail());
-
     }
 
     /**
@@ -214,6 +257,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
     @Override
     protected void onRestart(){
         super.onRestart();
+        setOrientation();
     }
 
 
@@ -230,20 +274,50 @@ public class MenuActivity extends AbstractGeoTaskActivity
      *
      */
     private void populateTaskView(){
+        Log.i("start with2------->", String.format("%d", getTaskList().size()));
+        if(getViewMode() == R.integer.MODE_INT_STARRED){
+            getTaskList().clear();
+            setStarredMode();
+            return;
+        } else if (getViewMode() == R.integer.MODE_INT_HISTORY) {
+            clearFiltersButton.setVisibility(View.VISIBLE);
+            adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
+            oldTasks.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+            setEmptyString();
+            return;
+        } else if (getViewMode() == R.integer.MODE_INT_OTHERS_TASKS) {
+            Log.i("other------>", String.format("%d", getViewMode()));
+            clearFiltersButton.setVisibility(View.VISIBLE);
+            adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
+            oldTasks.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+            setEmptyString();
+            return;
+        }
+        Log.i("none------>", String.format("%d", getViewMode()));
         getTaskList().clear();
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
 
         //Only show tasks created by the user
-        if(getViewMode() == R.integer.MODE_INT_REQUESTER){
+        if(getViewMode() == R.integer.MODE_INT_REQUESTER) {
             builder1.put("requesterID", getCurrentUser().getObjectID());
+        } else if(getViewMode() == R.integer.MODE_INT_ACCEPTED) {
+            builder1.put("requesterID", getCurrentUser().getObjectID());
+            builder1.put("status", "accepted");
+        } else if(getViewMode() == R.integer.MODE_INT_ASSIGNED) {
+            builder1.put("status", "accepted");
         }
 
         //Add filter keywords to the builder if present
         try {
             if(!getSearchKeywords().equals("")) {
+                clearFiltersButton.setVisibility(View.VISIBLE);
                 for(int i = 0; i < filterArray.length; i++) {
                     builder1.put("description", filterArray[i].toLowerCase());
                 }
+            } else {
+                clearFiltersButton.setVisibility(View.INVISIBLE);
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
@@ -294,9 +368,37 @@ public class MenuActivity extends AbstractGeoTaskActivity
            }
        }
 
-        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask);
+        if(getViewMode() == R.integer.MODE_INT_ASSIGNED) {
+            try {
+                for (int i = 0; i < getTaskList().size(); i++) {
+                    Task tempTask = getTaskList().get(i);
+                    if (tempTask.getAcceptedProviderID().compareTo(getCurrentUser().getObjectID()) != 0) {
+                        getTaskList().remove(i);
+                        i--;
+                    }
+                }
+            } catch (IndexOutOfBoundsException e) {
+                e.printStackTrace();
+            }
+        }
+
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
         oldTasks.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+        setEmptyString();
+    }
+
+    public void setEmptyString(){
+        Log.i("TaskList ----->", String.format("%d", getTaskList().size()));
+        if(getTaskList().size() == 0){
+            emptyText.setText("No Tasks");
+            emptyText.setVisibility(View.VISIBLE);
+            oldTasks.setVisibility(View.INVISIBLE);
+        } else {
+            emptyText.setText("");
+            emptyText.setVisibility(View.INVISIBLE);
+            oldTasks.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -344,13 +446,18 @@ public class MenuActivity extends AbstractGeoTaskActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_browse) {
-            // Handle the camera action
+            getSupportActionBar().setTitle("All Tasks");
+            setViewMode(R.integer.MODE_INT_ALL);
+            setSearchKeywords("");
+            populateTaskView();
+            adapter.notifyDataSetChanged();
 
         } else if (id == R.id.nav_filter) {
             Intent intent = new Intent(getBaseContext(), FilterActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_profile) {
-            Intent intent = new Intent(MenuActivity.this, EditProfileActivity.class);
+            Intent intent = new Intent(MenuActivity.this, ViewProfileActivity.class);
+            intent.putExtra("user_being_viewed", getCurrentUser());
             startActivity(intent);
         } else if (id == R.id.nav_map) {
             Intent intent = new Intent(getBaseContext(), MapActivity.class);
@@ -359,27 +466,45 @@ public class MenuActivity extends AbstractGeoTaskActivity
             Intent intent = new Intent(getBaseContext(), LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-
-        }  else if (id == R.id.nav_requester) {
+        }  else if (id == R.id.nav_assigned) {
+            fab.hide();
+            setViewMode(R.integer.MODE_INT_ASSIGNED); //TODO - add the map
+            getSupportActionBar().setTitle("My Assigned Tasks");
+            Snackbar.make(snackView, "Changed view to \"My Assigned\"", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+            populateTaskView();
+        }  else if (id == R.id.nav_starred) {
+            fab.hide();
+            setViewMode(R.integer.MODE_INT_STARRED); //TODO - add the map
+            getSupportActionBar().setTitle("My Starred Tasks");
+            Snackbar.make(snackView, "Changed view to \"My Starred\"", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+            populateTaskView();
+        } else if (id == R.id.nav_accepted) {
+            fab.hide();
+            setViewMode(R.integer.MODE_INT_ACCEPTED); //TODO - add the map
+            getSupportActionBar().setTitle("My Accepted Tasks");
+            Snackbar.make(snackView, "Changed view to \"My Accepted\"", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+            populateTaskView();
+        } else if (id == R.id.nav_requester) {
             fab.show();
             setViewMode(R.integer.MODE_INT_REQUESTER);
-            getSupportActionBar().setTitle("Requester Mode");
+            getSupportActionBar().setTitle("My Tasks");
             Snackbar.make(snackView, "Changed view to \"Requester\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             populateTaskView();
-
         } else if (id == R.id.nav_provider) {
             fab.hide();
             setViewMode(R.integer.MODE_INT_PROVIDER);
-            getSupportActionBar().setTitle("Provider Mode");
+            getSupportActionBar().setTitle("Tasks I Have Bid On");
             Snackbar.make(snackView, "Changed view to \"Provider\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             populateTaskView();
-
         } else if (id == R.id.nav_all) {
-            fab.hide();
+            fab.show();
             setViewMode(R.integer.MODE_INT_ALL);
-            getSupportActionBar().setTitle("All Tasks Mode");
+            getSupportActionBar().setTitle("All Tasks");
             Snackbar.make(snackView, "Changed view to \"All\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             populateTaskView();
@@ -388,6 +513,54 @@ public class MenuActivity extends AbstractGeoTaskActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    //by Saiful Alam (see above references)
+    public int getScreenWidthInDPs(){
+        DisplayMetrics dm = new DisplayMetrics();
+        WindowManager windowManager = (WindowManager) this.getSystemService(WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(dm);
+        int widthInDP = Math.round(dm.widthPixels / dm.density);
+        return widthInDP;
+    }
+
+    private void setOrientation(){
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            curOrientation = 0;
+        }
+        else {
+            curOrientation = 1;
+        }
+    }
+
+    public void setStarredMode(){
+        View snackView = getCurrentFocus();
+        ArrayList<Task> starredTaskList = new ArrayList<Task>();
+        for(String taskID : getCurrentUser().getStarredList()){
+            MasterController.AsyncGetDocument asyncGetDocument =
+                    new MasterController.AsyncGetDocument(this, this);
+            asyncGetDocument.execute(new AsyncArgumentWrapper(taskID, Task.class));
+            Task task = null;
+            try {
+                task = (Task) asyncGetDocument.get();
+                starredTaskList.add(task);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            if(task != null) {
+                starredTaskList.add(task);
+            } else {
+                Snackbar.make(snackView, "Some tasks no longer exist and were removed", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        }
+        setTaskList(starredTaskList);
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
+        oldTasks.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+        setEmptyString();
     }
 
     @Override

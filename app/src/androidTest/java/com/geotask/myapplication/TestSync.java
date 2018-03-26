@@ -61,6 +61,9 @@ public class TestSync implements AsyncCallBackManager {
 
     @Test
     public void testSync() throws InterruptedException, IOException {
+        assertEquals(0, database.taskDAO().selectAll().size());
+        assertEquals(0, database.bidDAO().selectAll().size());
+
         String userId = "testSync";
         User user = new User("testSync", "testSync", "testSync");
         user.setObjectID(userId);

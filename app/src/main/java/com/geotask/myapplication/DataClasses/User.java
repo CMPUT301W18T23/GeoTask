@@ -2,9 +2,12 @@ package com.geotask.myapplication.DataClasses;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.TypeConverters;
 
+import com.geotask.myapplication.Controllers.Helpers.BidListConverter;
 import com.geotask.myapplication.Controllers.Helpers.EmailConverter;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -25,6 +28,10 @@ public class User extends GTData{
     private Integer completedTasks; //metric of completed tasks
     @ColumnInfo(name = "location", typeAffinity = ColumnInfo.TEXT)
     private String location;                                        //format example: "47.55,-82.11"
+    @TypeConverters(BidListConverter.class)
+    private ArrayList<String> historyList;
+    @TypeConverters(BidListConverter.class)
+    private ArrayList<String> starredList;
 
     /**
      *constructor
@@ -39,6 +46,8 @@ public class User extends GTData{
         this.phonenum = phonenum;
         this.completedTasks = 0;
         super.setDate(new Date().getTime());
+        this.starredList = new ArrayList<String>();
+        this.historyList = new ArrayList<String>();
     }
 
     /**
@@ -147,5 +156,51 @@ public class User extends GTData{
         return this.name + " " +
                 EmailConverter.revertEmailFromElasticSearch(email) + " " +
                 this.phonenum;
+    }
+
+    public ArrayList<String> getStarredList() {
+        return starredList;
+    }
+
+    public void setStarredList(ArrayList<String> starredList) {
+        this.starredList = starredList;
+    }
+
+    public ArrayList<String> getHistoryList() {
+        return historyList;
+    }
+
+    public void setHistoryList(ArrayList<String> historyList) {
+        this.historyList = historyList;
+    }
+
+    public Boolean starred(String taskID){
+        if(starredList.contains(taskID)){
+            return true;
+        }
+        return false;
+    }
+
+    public void removeTaskFromStarredList(String taskID){
+        starredList.remove(taskID);
+    }
+
+    public void addTaskToStarredList(String taskID){
+        if(!starredList.contains(taskID)) {
+            starredList.add(taskID);
+        }
+    }
+
+    public Boolean visited(String taskID){
+        if(historyList.contains(taskID)){
+            return true;
+        }
+        if(historyList.size() > 100){
+            historyList.remove(0);
+        }
+        if(!historyList.contains(taskID)) {
+            historyList.add(taskID);
+        }
+        return false;
     }
 }

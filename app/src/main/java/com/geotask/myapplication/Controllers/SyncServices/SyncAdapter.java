@@ -12,6 +12,7 @@ import com.geotask.myapplication.Controllers.ElasticsearchController;
 import com.geotask.myapplication.Controllers.LocalFilesOps.LocalDataBase;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
+import com.geotask.myapplication.DataClasses.User;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         super(context, autoInitiate);
         controller = new ElasticsearchController();
         controller.verifySettings();
+        //controller.setTestSettings("cmput301w18t23test");
         if(database == null) {
             Log.d("syncadapter", "open database");
             database = LocalDataBase.getDatabase(context);
@@ -62,22 +64,26 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
      */
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
+        ArrayList<User> userList = null;
         try {
             taskList = (ArrayList<Task>) controller.search("", Task.class);
             bidList = (ArrayList<Bid>) controller.search("", Bid.class);
+            userList = (ArrayList<User>) controller.search("", User.class);
             Log.d("syncadapter", "RUNNING");
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        Log.d("syncadapter", taskList.toString());
-        Log.d("syncadapter", bidList.toString());
+        Log.d("syncadapter", String.valueOf(taskList.size()));
+        Log.d("syncadapter", String.valueOf(bidList.size()));
+        Log.d("syncadapter", String.valueOf(userList.size()));
 
         for(Task task : taskList) {
             database.taskDAO().insert(task);
             Log.d("syncadapter", "write task");
         }
         Log.d("syncadapter", String.valueOf(database.taskDAO().selectAll().size()));
+        Log.d("syncadapter", String.valueOf(database.bidDAO().selectAll().size()));
         for(Bid bid : bidList) {
             database.bidDAO().insert(bid);
         }

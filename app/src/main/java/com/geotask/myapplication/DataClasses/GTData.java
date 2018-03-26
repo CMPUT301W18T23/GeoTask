@@ -85,7 +85,8 @@ public abstract class GTData implements Serializable{
      * @return strDate
      */
     public String getDateString(){
-        String strDate = new SimpleDateFormat("EEEE MMMM d, yyyy").format(new java.util.Date((long)date));
+        String strDate = new SimpleDateFormat("MMM d, yyyy").format(new java.util.Date((long)date));
+        //String strDate = new SimpleDateFormat("EEEE MMMM d, yyyy").format(new java.util.Date((long)date));
         return strDate;
     }
 }

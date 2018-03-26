@@ -4,26 +4,26 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.TypeConverters;
+import android.support.annotation.NonNull;
 
-import com.geotask.myapplication.Controllers.AsyncCallBackManager;
-import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.Helpers.BidListConverter;
 import com.geotask.myapplication.Controllers.Helpers.GetLowestBidFromServer;
-import com.geotask.myapplication.Controllers.MasterController;
-import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
 
 /**
- *data stucture for a task
+ *	data stucture for a task
  * stores general needed information and the Ids of people related to the task
+ *
+ * Resources:
+ *
+ * 		https://stackoverflow.com/questions/12960265/retrieve-all-values-from-hashmap-keys-in-an-arraylist-java
+ * 			for basic arraylist operations
+ * 			Author Rohit Jain, Oct 18, 2012, no licence stated
  */
 @Entity(tableName = "tasks")
-public class Task extends GTData{
+public class Task extends GTData implements Comparable{
 	@ColumnInfo(name = "task_name")
 	private String name;
 	@ColumnInfo
@@ -371,5 +371,12 @@ public class Task extends GTData{
 		} else if (this.getNumBids() > 0){
 			this.setStatusBidded();
 		}
+	}
+
+	@Override
+	public int compareTo(@NonNull Object o) {
+		Task other = (Task) o;
+		int ret = (int) ((int) this.getDate() - other.getDate());
+		return ret;
 	}
 }
