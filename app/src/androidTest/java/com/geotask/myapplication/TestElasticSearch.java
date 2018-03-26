@@ -55,7 +55,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
 
     public void utility() {
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
         asyncGetDocument.execute(new AsyncArgumentWrapper("x8mc929sb1ni5si1", Task.class));
 
         Task task = null;
@@ -69,14 +69,14 @@ public class TestElasticSearch implements AsyncCallBackManager {
 
         task.setStatusCompleted();
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncUpdateDocument(InstrumentationRegistry.getTargetContext());
         asyncUpdateDocument.execute(task);
     }
 
     @Test
     //@Ignore
     public void kyleSetUp() {
-        MasterController.verifySettings(InstrumentationRegistry.getContext());
+        MasterController.verifySettings(InstrumentationRegistry.getTargetContext());
         //MasterController.setTestSettings(TestServerAddress.getTestAddress());
         //try {
             //MasterController.deleteIndex();
@@ -96,13 +96,13 @@ public class TestElasticSearch implements AsyncCallBackManager {
         Bid bid = new Bid("test async ProviderID", 1.2, "test async taskID");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(bid);
 
         TimeUnit.SECONDS.sleep(3);
 
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
         asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
 
         Bid remote = null;
@@ -120,13 +120,13 @@ public class TestElasticSearch implements AsyncCallBackManager {
         Task task = new Task("randomid","test Task", "test Description");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(task);
 
         TimeUnit.SECONDS.sleep(3);
 
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
         asyncGetDocument.execute(new AsyncArgumentWrapper(task.getObjectID(), Task.class));
 
         Task remote = null;
@@ -144,13 +144,13 @@ public class TestElasticSearch implements AsyncCallBackManager {
         User user = new User("test user 1", "test_email@gmail.com", "555-555-5555");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(user);
 
         TimeUnit.SECONDS.sleep(3);
 
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
         asyncGetDocument.execute(new AsyncArgumentWrapper(user.getObjectID(), User.class));
 
         User remote = null;
@@ -168,13 +168,13 @@ public class TestElasticSearch implements AsyncCallBackManager {
         Bid bid = new Bid("test delete document", 2.1, "test delete document");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(bid);
 
         TimeUnit.SECONDS.sleep(3);
 
         MasterController.AsyncGetDocument asyncGetDocumentWhenDocumentExist =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
         asyncGetDocumentWhenDocumentExist.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
 
         Bid remote = null;
@@ -187,13 +187,13 @@ public class TestElasticSearch implements AsyncCallBackManager {
 
 
         MasterController.AsyncDeleteDocument asyncDeleteDocument =
-                new MasterController.AsyncDeleteDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncDeleteDocument(InstrumentationRegistry.getTargetContext());
         asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
 
         TimeUnit.SECONDS.sleep(3);
 
         MasterController.AsyncGetDocument asyncGetDocumentWhenDocumentShouldNotExist =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
         asyncGetDocumentWhenDocumentShouldNotExist.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
 
         try {
@@ -210,13 +210,13 @@ public class TestElasticSearch implements AsyncCallBackManager {
         Bid bid = new Bid("test update document", 8.1, "test update document");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(bid);
 
         TimeUnit.SECONDS.sleep(3);
 
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this,InstrumentationRegistry.getContext());
+                new MasterController.AsyncGetDocument(this,InstrumentationRegistry.getTargetContext());
         asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
 
         Bid remote = null;
@@ -230,13 +230,13 @@ public class TestElasticSearch implements AsyncCallBackManager {
         String updateString = "updated";
         bid.setProviderID(updateString);
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncUpdateDocument(InstrumentationRegistry.getTargetContext());
         asyncUpdateDocument.execute(bid);
 
         TimeUnit.SECONDS.sleep(3);
 
         MasterController.AsyncGetDocument asyncGetDocumentAfterUpdate =
-                new MasterController.AsyncGetDocument(this,InstrumentationRegistry.getContext());
+                new MasterController.AsyncGetDocument(this,InstrumentationRegistry.getTargetContext());
         asyncGetDocumentAfterUpdate.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
 
         try {
@@ -253,13 +253,13 @@ public class TestElasticSearch implements AsyncCallBackManager {
         Task task = new Task("randomid","test update task", "test update description");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(task);
 
         TimeUnit.SECONDS.sleep(3);
 
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
         asyncGetDocument.execute(new AsyncArgumentWrapper(task.getObjectID(), Task.class));
 
         Task remote = null;
@@ -273,13 +273,13 @@ public class TestElasticSearch implements AsyncCallBackManager {
         String updateString = "updated";
         task.setName(updateString);
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncUpdateDocument(InstrumentationRegistry.getTargetContext());
         asyncUpdateDocument.execute(task);
 
         TimeUnit.SECONDS.sleep(3);
 
         MasterController.AsyncGetDocument asyncGetDocumentAfterUpdate =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
         asyncGetDocumentAfterUpdate.execute(new AsyncArgumentWrapper(task.getObjectID(), Task.class));
 
         try {
@@ -296,13 +296,13 @@ public class TestElasticSearch implements AsyncCallBackManager {
         User user = new User("test update user 1", "test_email@gmail.com", "555-555-5555");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(user);
 
         TimeUnit.SECONDS.sleep(3);
 
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
         asyncGetDocument.execute(new AsyncArgumentWrapper(user.getObjectID(), User.class));
 
         User remote = null;
@@ -316,13 +316,13 @@ public class TestElasticSearch implements AsyncCallBackManager {
         String updateString = "updated";
         user.setName(updateString);
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncUpdateDocument(InstrumentationRegistry.getTargetContext());
         asyncUpdateDocument.execute(user);
 
         TimeUnit.SECONDS.sleep(3);
 
         MasterController.AsyncGetDocument asyncGetDocumentAfterUpdate =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
         asyncGetDocumentAfterUpdate.execute(new AsyncArgumentWrapper(user.getObjectID(), User.class));
 
         try {
@@ -341,7 +341,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
         Bid bid3 = new Bid("cprovider", 3.3, "atask");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(bid1, bid2, bid3);
 
         TimeUnit.SECONDS.sleep(5);
@@ -352,10 +352,10 @@ public class TestElasticSearch implements AsyncCallBackManager {
         builder2.put("providerID", "aprovider");
 
         MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncSearch(this, InstrumentationRegistry.getTargetContext());
         asyncSearch.execute(new AsyncArgumentWrapper(builder1, Bid.class));
         MasterController.AsyncSearch asyncSearch1 =
-                new MasterController.AsyncSearch(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncSearch(this, InstrumentationRegistry.getTargetContext());
         asyncSearch1.execute(new AsyncArgumentWrapper(builder2, Bid.class));
 
         List<Bid> result1 = null;
@@ -382,7 +382,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
         task2.setAcceptedBid(1.2);
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(task1, task2);
 
         TimeUnit.SECONDS.sleep(5);
@@ -392,7 +392,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
         builder1.put("description", target);
 
         MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncSearch(this, InstrumentationRegistry.getTargetContext());
         asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
 
         List<Task> result = null;
@@ -417,7 +417,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
         User user5 = new User(targetUser, "1@yahoo.ca", "888");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(user1, user2, user3, user4, user5);
 
         TimeUnit.SECONDS.sleep(5);
@@ -428,10 +428,10 @@ public class TestElasticSearch implements AsyncCallBackManager {
         builder2.put("email", "1@yahoo.ca");
 
         MasterController.AsyncSearch asyncSearch1 =
-                new MasterController.AsyncSearch(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncSearch(this, InstrumentationRegistry.getTargetContext());
         asyncSearch1.execute(new AsyncArgumentWrapper(builder1, User.class));
         MasterController.AsyncSearch asyncSearch2 =
-                new MasterController.AsyncSearch(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncSearch(this, InstrumentationRegistry.getTargetContext());
         asyncSearch2.execute(new AsyncArgumentWrapper(builder2, User.class));
 
         List<User> result1 = null;
@@ -468,7 +468,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
         User user15 = new User("user", "1@yahoo.ca", "888");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(user1, user2, user3, user4, user5,
                                         user6, user7, user8, user9, user10,
                                         user11, user12, user13, user14, user15);
@@ -479,7 +479,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
         builder1.put("name", "user");
 
         MasterController.AsyncSearch asyncSearch1 =
-                new MasterController.AsyncSearch(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncSearch(this, InstrumentationRegistry.getTargetContext());
         asyncSearch1.execute(new AsyncArgumentWrapper(builder1, User.class));
 
         List<User> result1 = null;
@@ -504,7 +504,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
 
         User user1 = new User("Kyle1", "kyleg@email.com", "555");
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(user1);
 
         TimeUnit.SECONDS.sleep(2);

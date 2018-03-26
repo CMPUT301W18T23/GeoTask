@@ -44,7 +44,7 @@ public class TestStory4SearchingInteractions {
 
     @BeforeClass
     public static void oneTimeSetUp() {
-        MasterController.verifySettings(InstrumentationRegistry.getContext());
+        MasterController.verifySettings(InstrumentationRegistry.getTargetContext());
         MasterController.setTestSettings(TestServerAddress.getTestAddress());
         try {
             MasterController.deleteIndex();
@@ -75,7 +75,7 @@ public class TestStory4SearchingInteractions {
                 "orange pineapple");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(user, task, task2);
 
         Context targetContext =

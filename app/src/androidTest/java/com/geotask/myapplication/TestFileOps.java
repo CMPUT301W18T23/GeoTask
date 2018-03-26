@@ -46,11 +46,11 @@ public class TestFileOps implements AsyncCallBackManager{
         Bid bid = new Bid("testWriteAndReadBid", 1.1, "testWriteAndReadBid");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument
-                = new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                = new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(bid);
 
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
         asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
 
         Bid result = null;
@@ -75,11 +75,11 @@ public class TestFileOps implements AsyncCallBackManager{
         task.addBid(bid);
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(task);
 
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
         asyncGetDocument.execute(new AsyncArgumentWrapper(task.getObjectID(), Task.class));
 
         Task result = null;
@@ -96,11 +96,11 @@ public class TestFileOps implements AsyncCallBackManager{
     public void testWriteAndReadUser() {
         User user = new User("testWriteAndReadUser", "eaa@gmail.com", "2342342");
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(user);
 
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
         asyncGetDocument.execute(new AsyncArgumentWrapper(user.getObjectID(), User.class));
 
         User result = null;
@@ -123,7 +123,7 @@ public class TestFileOps implements AsyncCallBackManager{
         user2.setObjectID(user1.getObjectID());
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(user1, user2);
 
         Thread.sleep(1000);
@@ -139,11 +139,11 @@ public class TestFileOps implements AsyncCallBackManager{
         User user1 = new User("update test", "update@gmail.com", "2342342");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(user1);
 
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
         asyncGetDocument.execute(new AsyncArgumentWrapper(user1.getObjectID(), User.class));
 
         User result = null;
@@ -162,11 +162,11 @@ public class TestFileOps implements AsyncCallBackManager{
         user1.setName(target);
 
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncUpdateDocument(InstrumentationRegistry.getTargetContext());
         asyncUpdateDocument.execute(result);
 
         MasterController.AsyncGetDocument asyncGetDocument2 =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
         asyncGetDocument2.execute(new AsyncArgumentWrapper(user1.getObjectID(), User.class));
 
         User result2 =null;
@@ -187,11 +187,11 @@ public class TestFileOps implements AsyncCallBackManager{
         Bid bid = new Bid("delete single test", 1.1, "delete single");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(bid);
 
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
         asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
 
         Bid result = null;
@@ -206,11 +206,11 @@ public class TestFileOps implements AsyncCallBackManager{
         assertEquals(bid.getObjectID(), result.getObjectID());
 
         MasterController.AsyncDeleteDocument asyncDeleteDocument =
-                new MasterController.AsyncDeleteDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncDeleteDocument(InstrumentationRegistry.getTargetContext());
         asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument2 =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument2.execute(bid);
 
         try {
@@ -258,11 +258,11 @@ public class TestFileOps implements AsyncCallBackManager{
         Bid bid = new Bid("testSearchQuery", 3.2, "testSearchQuery");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(bid);
 
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
         asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
 
         Bid result = null;
@@ -283,7 +283,7 @@ public class TestFileOps implements AsyncCallBackManager{
         builder.addParameters(object);
 
         MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncSearch(this, InstrumentationRegistry.getTargetContext());
         asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
 
         List<Bid> resultList = null;

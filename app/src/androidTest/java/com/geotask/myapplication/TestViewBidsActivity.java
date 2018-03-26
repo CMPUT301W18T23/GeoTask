@@ -42,7 +42,7 @@ public class TestViewBidsActivity implements AsyncCallBackManager {
     public ActivityTestRule<ViewBidsActivity> viewBidsActivity = new ActivityTestRule<ViewBidsActivity>(ViewBidsActivity.class){
         @Override
         protected Intent getActivityIntent() {
-            Intent intent = new Intent(InstrumentationRegistry.getContext(), ViewBidsActivity.class);
+            Intent intent = new Intent(InstrumentationRegistry.getTargetContext(), ViewBidsActivity.class);
             intent.putExtra("currentUser", user);
             intent.putExtra("task", task);
             return intent;
@@ -52,7 +52,7 @@ public class TestViewBidsActivity implements AsyncCallBackManager {
 
     @Before
     public void setUp() throws InterruptedException {
-        MasterController.verifySettings(InstrumentationRegistry.getContext());
+        MasterController.verifySettings(InstrumentationRegistry.getTargetContext());
         MasterController.setTestSettings(TestServerAddress.getTestAddress());
         try {
             MasterController.deleteIndex();
@@ -61,7 +61,7 @@ public class TestViewBidsActivity implements AsyncCallBackManager {
             e.printStackTrace();
         }
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(user);
         asyncCreateNewDocument.execute(provider1);
         asyncCreateNewDocument.execute(provider2);
@@ -82,7 +82,7 @@ public class TestViewBidsActivity implements AsyncCallBackManager {
     @Test
     public void BasicTestConnection() throws InterruptedException {
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getContext());
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
         asyncGetDocument.execute(new AsyncArgumentWrapper(task.getObjectID(), Task.class));
         Thread.sleep(2000);
         Task remote = null;

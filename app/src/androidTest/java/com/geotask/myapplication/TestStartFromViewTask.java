@@ -34,7 +34,7 @@ public class TestStartFromViewTask {
 
     @BeforeClass
     public static void oneTimeSetUp() {
-        MasterController.verifySettings(InstrumentationRegistry.getContext());
+        MasterController.verifySettings(InstrumentationRegistry.getTargetContext());
         MasterController.setTestSettings(TestServerAddress.getTestAddress());
         try {
             MasterController.deleteIndex();

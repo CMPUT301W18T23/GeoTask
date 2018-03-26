@@ -40,7 +40,7 @@ public class TestKyle implements AsyncCallBackManager {
             e.printStackTrace();
         }
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(user);
         asyncCreateNewDocument.execute(provider1);
         asyncCreateNewDocument.execute(provider2);

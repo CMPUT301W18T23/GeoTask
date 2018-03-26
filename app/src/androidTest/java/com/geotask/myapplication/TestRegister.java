@@ -33,7 +33,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 public class TestRegister {
     @Before
     public void setUp() {
-        MasterController.verifySettings(InstrumentationRegistry.getContext());
+        MasterController.verifySettings(InstrumentationRegistry.getTargetContext());
         MasterController.setTestSettings(TestServerAddress.getTestAddress());
         try {
             MasterController.deleteIndex();

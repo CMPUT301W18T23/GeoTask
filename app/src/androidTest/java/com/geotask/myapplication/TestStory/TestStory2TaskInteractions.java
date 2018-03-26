@@ -39,7 +39,7 @@ public class TestStory2TaskInteractions {
 
     @BeforeClass
     public static void oneTimeSetUp() {
-        MasterController.verifySettings(InstrumentationRegistry.getContext());
+        MasterController.verifySettings(InstrumentationRegistry.getTargetContext());
         MasterController.setTestSettings(TestServerAddress.getTestAddress());
         try {
             MasterController.deleteIndex();
@@ -60,7 +60,7 @@ public class TestStory2TaskInteractions {
 
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getContext());
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(task, user);
 
 
@@ -119,7 +119,7 @@ public class TestStory2TaskInteractions {
 
         onView(withId(R.id.editButton)).perform(click());
 
-        //onView(withId(R.id.editTaskButton)).perform(click());
+        //fonView(withId(R.id.editTaskButton)).perform(click());
 
         onView(withId(R.id.editTitle)).check(matches(withText(startsWith(title))));
         onView(withId(R.id.editDescription)).check(matches(withText(startsWith(desc))));
