@@ -107,23 +107,41 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
             coordString = "";
         }*/
 
-        //ValidateTask check = new ValidateTask();
-
-        UserEntryStringValidator check = new UserEntryStringValidator();
-        if(check.checkText(titleString, descriptionString)){
+        if(titleString.length() > 30) {
+            Toast.makeText(this,
+                    getString(R.string.TASK_TITLE_TOO_LONG),
+                    Toast.LENGTH_LONG)
+                    .show();
+        } else if(titleString.length() <= 0) {
+            Toast.makeText(this,
+                    getString(R.string.TASK_TITLE_EMPTY),
+                    Toast.LENGTH_SHORT)
+                    .show();
+        } else if(descriptionString.length() > 300) {
+            Toast.makeText(this,
+                    getString(R.string.TASK_DESCRIPTION_TOO_LONG),
+                    Toast.LENGTH_LONG)
+                    .show();
+        } else if(descriptionString.length() <= 0) {
+            Toast.makeText(this,
+                    getString(R.string.TASK_DESCRIPTION_EMPTY),
+                    Toast.LENGTH_SHORT)
+                    .show();
+        } else {
             newTask = new Task(getCurrentUser().getObjectID(), titleString, descriptionString);
 
             MasterController.AsyncCreateNewDocument asyncCreateNewDocument
                     = new MasterController.AsyncCreateNewDocument();
             asyncCreateNewDocument.execute(newTask);
 
+            try {
+                Thread.sleep(400);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             Intent intent = new Intent(getBaseContext(), MenuActivity.class);
             startActivity(intent);
-        } else {
-            Toast.makeText(this,
-                    getString(R.string.INVALID_TASK_DATA_WHEN_CREATING_NEW_TASK),
-                    Toast.LENGTH_SHORT)
-                    .show();
         }
     }
 }

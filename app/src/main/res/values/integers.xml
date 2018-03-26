@@ -3,4 +3,9 @@
     <integer name="MODE_INT_ALL">0</integer>
     <integer name="MODE_INT_REQUESTER">1</integer>
     <integer name="MODE_INT_PROVIDER">2</integer>
+	<integer name="MODE_INT_ASSIGNED">3</integer>
+	<integer name="MODE_INT_STARRED">4</integer>
+	<integer name="MODE_INT_ACCEPTED">5</integer>
+	<integer name="MODE_INT_HISTORY">6</integer>
+	<integer name="MODE_INT_OTHERS_TASKS">7</integer>
 </resources>

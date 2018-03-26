@@ -3,13 +3,18 @@ package com.geotask.myapplication;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -20,6 +25,7 @@ import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
+import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -41,13 +47,17 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
     private TextView status;
     private TextView hitCount;
     private TextView dateSincePost;
-    private Button editTaskButton;
     private Button bidButton;
     private Button addBidButton;
+    private Button doneButton;
+    private ImageView starIcon;
     private PopupWindow POPUP_WINDOW_DELETION = null;   //popup for error message
+    private PopupWindow POPUP_WINDOW_DONE = null;   //popup for error message
     private User userBeingViewed;
-
-
+    private Toolbar toolbar;
+    private MenuItem editBtn;
+    private MenuItem starBtn;
+    private MenuItem deleteBtn;
     /**
      * inits vars and view items, and button
      * also gets current Task, Current User, and the USer of the Task currently viewed
@@ -58,7 +68,10 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
     protected void onCreate(Bundle savedInstanceState) {
         Log.i("LifeCycle --->", "in viewtask");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_task_view);
+        //setContentView(R.layout.activity_task_view);
+        setContentView(R.layout.app_bar_menu_view_task);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         title = findViewById(R.id.textViewTitle);
         name = findViewById(R.id.textViewName);
@@ -67,41 +80,145 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
         hitCount = findViewById(R.id.num_views);
         dateSincePost = findViewById(R.id.textViewDate);
 
-        editTaskButton = findViewById(R.id.editTaskButton);
         bidButton = findViewById(R.id.bidsButton);
         addBidButton = findViewById(R.id.addBidButton);
+        doneButton = findViewById(R.id.doneButton);
 
         updateDisplayedValues();
         setupButtons();
         getTaskUser();
 
         if (getCurrentUser().getObjectID().equals(getCurrentTask().getRequesterID())){   //hide editbutton if not user
-            editTaskButton.setVisibility(View.VISIBLE);
             addBidButton.setVisibility(View.INVISIBLE);
+            System.out.print("ye");
+            if ("Bidded".equals(getCurrentTask().getStatus())||"Requested".equals(getCurrentTask().getStatus())||"Completed".equals(getCurrentTask().getStatus())){
+                doneButton.setVisibility(View.INVISIBLE);   //if status is not accepted  hide button
+
+            }
         } else {
-            editTaskButton.setVisibility(View.INVISIBLE);
             addBidButton.setVisibility(View.VISIBLE);
+            doneButton.setVisibility(View.INVISIBLE);   // if not user hide done button
+
 
             //Increasing Hits
-            getCurrentTask().addHit();
+            Log.i("cur ------>", getCurrentTask().getObjectID());
+            Log.i("cur ------>", getCurrentUser().getName());
+            if(!getCurrentUser().visited(getCurrentTask().getObjectID())) {
+                getCurrentTask().addHit();
+                MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                        new MasterController.AsyncUpdateDocument();
+                asyncUpdateDocument.execute(getCurrentTask());
+            }
             MasterController.AsyncUpdateDocument asyncUpdateDocument =
                     new MasterController.AsyncUpdateDocument();
-            asyncUpdateDocument.execute(getCurrentTask());
+            asyncUpdateDocument.execute(getCurrentUser());
         }
+        if ("Completed".equals(getCurrentTask().getStatus())){
+            addBidButton.setVisibility(View.INVISIBLE);
+
+        }
+        name.setPaintFlags(name.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_view_task, menu);
+        editBtn = toolbar.getMenu().findItem(R.id.action_edit);
+        starBtn = toolbar.getMenu().findItem(R.id.action_star);
+        deleteBtn = toolbar.getMenu().findItem(R.id.action_delete);
+
+        if((getCurrentUser().getObjectID().compareTo(getCurrentTask().getRequesterID()) == 0)
+                && (getCurrentTask().getStatus().toLowerCase().compareTo("requested") == 0)) {
+            editBtn.setVisible(true);
+            deleteBtn.setVisible(true);
+        } else if (getCurrentUser().getObjectID().compareTo(getCurrentTask().getRequesterID()) == 0){
+            deleteBtn.setVisible(true);
+            editBtn.setVisible(false);
+        } else {
+            editBtn.setVisible(false);
+            deleteBtn.setVisible(false);
+        }
+        if((getCurrentUser().getObjectID().compareTo(getCurrentTask().getRequesterID()) != 0)
+                && (getCurrentTask().getStatus().toLowerCase().compareTo("accepted") != 0)
+                && (getCurrentTask().getStatus().toLowerCase().compareTo("completed") != 0)){
+            if (getCurrentUser().starred(getCurrentTask().getObjectID())) {
+                starBtn.setIcon(R.drawable.ic_star_white_24dp);
+            } else {
+                starBtn.setIcon(R.drawable.ic_star_outline_white_24dp);
+            }
+            starBtn.setVisible(true);
+        } else {
+            starBtn.setVisible(false);
+        }
+        return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_edit) {
+            Intent intent = new Intent(TaskViewActivity.this, EditTaskActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (id == R.id.action_star) {
+            if (getCurrentUser().starred(getCurrentTask().getObjectID())) {
+                getCurrentUser().removeTaskFromStarredList(getCurrentTask().getObjectID());
+                starBtn.setIcon(R.drawable.ic_star_outline_white_24dp);
+            } else {
+                getCurrentUser().addTaskToStarredList(getCurrentTask().getObjectID());
+                starBtn.setIcon(R.drawable.ic_star_white_24dp);
+            }
+            MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                    new MasterController.AsyncUpdateDocument();
+            asyncUpdateDocument.execute(getCurrentUser());
+            return true;
+        } else if (id == R.id.action_delete){
+            deleteData();
+
+            Intent intent = new Intent(TaskViewActivity.this, MenuActivity.class);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     *handles data deleting - called from deleteButton press
+     * nothing returned and no result code returned
+     * gets all bids for the task
+     * deletes them 1 by 1
+     * then deletes task
+     * @see TaskViewActivity
+     */
+    private void deleteData() {
+
+        SuperBooleanBuilder builder = new SuperBooleanBuilder();
+        builder.put("taskID", getCurrentTask().getObjectID());
+
+        MasterController.AsyncDeleteDocument asyncDeleteTask =
+                new MasterController.AsyncDeleteDocument();
+        asyncDeleteTask.execute(new AsyncArgumentWrapper(getCurrentTask().getObjectID(), Task.class));
+
+        MasterController.AsyncDeleteDocumentByQuery asyncDeleteDocumentByQuery =
+                new MasterController.AsyncDeleteDocumentByQuery();
+        asyncDeleteDocumentByQuery.execute(new AsyncArgumentWrapper(builder, Bid.class));
+
+        try {
+            Thread.sleep(400);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * sets up buttons (cleaner than in the one methood
      */
     private void setupButtons(){
-        this.editTaskButton.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                Intent intent = new Intent(TaskViewActivity.this, EditTaskActivity.class);
-                startActivityForResult(intent,1);
-//                startActivity(intent);
-            }
-        });
 
         this.bidButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
@@ -114,6 +231,12 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
         this.addBidButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 triggerPopup(v);
+            }
+        });
+
+        this.doneButton.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                triggerDone(v);
             }
         });
 
@@ -222,6 +345,51 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
 
                 }
                 //TODO - go back to previous intent
+            }
+        });
+
+    }
+
+    public void triggerDone(View view){
+
+        LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = layoutInflater.inflate(R.layout.task_completed_popup, null);
+
+        POPUP_WINDOW_DONE = new PopupWindow(this);
+        POPUP_WINDOW_DONE.setContentView(layout);
+        POPUP_WINDOW_DONE.setFocusable(true);
+        POPUP_WINDOW_DONE.setBackgroundDrawable(null);
+        POPUP_WINDOW_DONE.showAtLocation(layout, Gravity.CENTER, 1, 1);
+
+        Button cancelBtn = (Button) layout.findViewById(R.id.btn_cancel);
+        cancelBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                POPUP_WINDOW_DONE.dismiss();
+            }
+        });
+
+        Button acceptBtn = (Button) layout.findViewById(R.id.btn_accept_done);
+        acceptBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                POPUP_WINDOW_DONE.dismiss();
+                Task newTask = getCurrentTask();
+                newTask.setStatusCompleted();
+                setCurrentTask(newTask);
+                MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                        new MasterController.AsyncUpdateDocument();
+                asyncUpdateDocument.execute(getCurrentTask());
+                try {
+                    Thread.sleep(400);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                updateDisplayedValues();
             }
         });
 

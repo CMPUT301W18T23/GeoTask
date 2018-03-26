@@ -61,7 +61,7 @@ public class LoginActivity extends AbstractGeoTaskActivity implements AsyncCallB
      * and log the user in with elastic search
      */
     private void login_check() {
-        String email = emailText.getText().toString().trim();
+        String email = emailText.getText().toString().trim().toLowerCase();
 
         if(!MasterController.existsProfile(email)){
             Toast.makeText(this,
