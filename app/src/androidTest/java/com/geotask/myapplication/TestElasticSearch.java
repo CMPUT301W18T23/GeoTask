@@ -78,12 +78,17 @@ public class TestElasticSearch implements AsyncCallBackManager {
     public void kyleSetUp() {
         MasterController.verifySettings(InstrumentationRegistry.getContext());
         //MasterController.setTestSettings(TestServerAddress.getTestAddress());
-        try {
-            MasterController.deleteIndex();
-            MasterController.createIndex();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        //try {
+            //MasterController.deleteIndex();
+            //MasterController.createIndex();
+        /*
+            MasterController.AsyncDeleteDocument asyncDeleteDocument =
+                    new MasterController.AsyncDeleteDocument();
+            asyncDeleteDocument.execute(new AsyncArgumentWrapper("l23srvrcy9xbafnf", User.class));
+            */
+        //} catch (IOException e) {
+            //e.printStackTrace();
+        //}
     }
 
     @Test

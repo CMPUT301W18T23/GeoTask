@@ -4,7 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.geotask.myapplication.TaskViewActivity">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.geotask.myapplication.TaskViewActivity"
+    tools:showIn="@layout/app_bar_menu_view_task">
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:background="?android:attr/colorButtonNormal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTitle" />
 
     <TextView
         android:id="@+id/textViewDescription"
@@ -12,7 +24,6 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="2dp"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -25,11 +36,16 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="10dp"
+        android:layout_marginTop="8dp"
         android:text="Requested by"
+        android:textAllCaps="false"
+        android:textColor="@android:color/holo_blue_light"
         android:textSize="14sp"
+        android:textStyle="italic"
         app:layout_constraintEnd_toStartOf="@+id/textViewDate"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/view" />
 
     <TextView
         android:id="@+id/textViewTitle"
@@ -37,11 +53,10 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:textColor="@color/common_google_signin_btn_text_dark_focused"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -52,10 +67,11 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="6dp"
         android:text="Status:"
         android:textSize="14sp"
         app:layout_constraintEnd_toStartOf="@+id/imageView2"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewDescription" />
 
@@ -64,26 +80,15 @@
             -->
 
     <Button
-        android:id="@+id/editTaskButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:layout_marginStart="9dp"
-        android:layout_marginTop="8dp"
-        android:text="Edit Task"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bidsButton" />
-
-    <Button
         android:id="@+id/bidsButton"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:layout_marginEnd="9dp"
         android:layout_marginStart="9dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:text="VIEW BIDS"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/status_header" />
 
@@ -93,9 +98,10 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="9dp"
         android:layout_marginStart="9dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="5dp"
         android:text="ADD BID"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bidsButton" />
 
@@ -103,13 +109,14 @@
         android:id="@+id/textView9"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="8dp"
         android:text="Description:"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.055"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewName" />
 
@@ -117,8 +124,8 @@
         android:id="@+id/num_views"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="6dp"
         android:text="TextView"
         android:textAlignment="viewEnd"
         android:textSize="14sp"
@@ -129,7 +136,7 @@
         android:id="@+id/imageView2"
         android:layout_width="16dp"
         android:layout_height="16dp"
-        android:layout_marginEnd="3dp"
+        android:layout_marginEnd="4dp"
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toStartOf="@+id/num_views"
         app:layout_constraintTop_toBottomOf="@+id/textViewDescription"
@@ -139,10 +146,23 @@
         android:id="@+id/textViewDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
+        app:layout_constraintTop_toBottomOf="@+id/view"
         tools:ignore="MissingConstraints" />
+
+    <Button
+        android:id="@+id/doneButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="DONE"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bidsButton" />
 
 </android.support.constraint.ConstraintLayout>

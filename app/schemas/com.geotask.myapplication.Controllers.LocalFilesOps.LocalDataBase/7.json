@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 7,
-    "identityHash": "4bcd47a64c53a12947ad3196ba3ed5a6",
+    "identityHash": "ab1fa70a3da4fba918636c93da21a91e",
     "entities": [
       {
         "tableName": "users",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `email` TEXT, `phonenum` TEXT, `completedTasks` INTEGER, `location` TEXT, `object_id` TEXT NOT NULL, `type` TEXT, `date` INTEGER NOT NULL, PRIMARY KEY(`object_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `email` TEXT, `phonenum` TEXT, `completedTasks` INTEGER, `location` TEXT, `historyList` TEXT, `starredList` TEXT, `object_id` TEXT NOT NULL, `type` TEXT, `date` INTEGER NOT NULL, PRIMARY KEY(`object_id`))",
         "fields": [
           {
             "fieldPath": "name",
@@ -35,6 +35,18 @@
           {
             "fieldPath": "location",
             "columnName": "location",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "historyList",
+            "columnName": "historyList",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "starredList",
+            "columnName": "starredList",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -223,7 +235,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"4bcd47a64c53a12947ad3196ba3ed5a6\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"ab1fa70a3da4fba918636c93da21a91e\")"
     ]
   }
 }
