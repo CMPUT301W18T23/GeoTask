@@ -86,7 +86,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         ContentResolver.addPeriodicSync(
                 account,
                 "com.geotask.myapplication.provider",
-                Bundle.EMPTY, 10);
+                Bundle.EMPTY, 60);
 
         Bundle settings = new Bundle();
         settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
