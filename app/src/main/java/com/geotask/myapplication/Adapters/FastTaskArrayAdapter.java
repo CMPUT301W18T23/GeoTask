@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -24,6 +25,7 @@ import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 import com.geotask.myapplication.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -100,8 +102,6 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
             LayoutInflater inflater = ((Activity)context).getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);
 
-            //int dpWidth = MenuActivity.screenWidthInDPs;
-
             headerSub = new HeaderSub();
 
             headerSub.name = (TextView) row.findViewById(R.id.task_list_title);
@@ -121,16 +121,14 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
                         ImageView starIcon = (ImageView) finalRow.findViewById(R.id.btn_star);
                         Log.i("click ----->", String.format("Clicked at pos: %d", position));
                         Log.i("click ----->", clickedTask.getName());
-                        if (user.starred(clickedTask.getObjectID())) {
-                            user.removeTaskFromStarredList(clickedTask.getObjectID());
+                        if(MenuActivity.userStarred(clickedTask.getObjectID())){
+                            MenuActivity.toggleStar(clickedTask.getObjectID());
                             starIcon.setImageResource(R.drawable.ic_star_outline_grey600_24dp);
                         } else {
-                            user.addTaskToStarredList(clickedTask.getObjectID());
+                            MenuActivity.toggleStar(clickedTask.getObjectID());
                             starIcon.setImageResource(R.drawable.ic_star_grey600_24dp);
                         }
-                        MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                                new MasterController.AsyncUpdateDocument();
-                        asyncUpdateDocument.execute(user);
+                        MenuActivity.saveStarHashToServer();
                     }
                 });
             }
@@ -153,7 +151,6 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
         } else {
             headerSub.name.setMaxEms((MenuActivity.screenWidthInDPs / 22) - 10);
         }
-        //String viewString = String.format(" %d Views", item.getHitCounter());
         headerSub.hits.setText(String.format("Viewed %d times", item.getHitCounter()));
         headerSub.date.setText(item.getDateString());
 
@@ -272,7 +269,7 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
         *   Only show if you are not the owner of the task
         */
         if(user.getObjectID().compareTo(item.getRequesterID()) != 0) {
-            if (user.starred(item.getObjectID())) {
+            if (MenuActivity.userStarred(item.getObjectID())) {
                 headerSub.starIcon.setImageResource(R.drawable.ic_star_grey600_24dp);
             } else {
                 headerSub.starIcon.setImageResource(R.drawable.ic_star_outline_grey600_24dp);

@@ -116,7 +116,8 @@ public class ViewProfileActivity extends AbstractGeoTaskActivity implements Asyn
 
     public ArrayList<Task> getViewedTasks(){
         ArrayList<Task> viewedTaskList = new ArrayList<Task>();
-        for(String taskID : getCurrentUser().getHistoryList()){
+        //for(String taskID : getCurrentUser().getHistoryList()){
+        for(String taskID : getHistoryHash().keySet()){
             MasterController.AsyncGetDocument asyncGetDocument =
                     new MasterController.AsyncGetDocument(this);
             asyncGetDocument.execute(new AsyncArgumentWrapper(taskID, Task.class));
@@ -127,6 +128,8 @@ public class ViewProfileActivity extends AbstractGeoTaskActivity implements Asyn
                 if((task != null) && (task.getStatus().toLowerCase().compareTo("accepted") != 0)
                         && (task.getStatus().toLowerCase().compareTo("completed") != 0)){
                     viewedTaskList.add(task);
+                } else {
+                    removeFromHistoryHash(taskID);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -135,6 +138,7 @@ public class ViewProfileActivity extends AbstractGeoTaskActivity implements Asyn
             }
         }
         Collections.sort(viewedTaskList);
+        saveHistoryHashToServer();
         return viewedTaskList;
     }
 

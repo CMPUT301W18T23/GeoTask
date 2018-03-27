@@ -50,7 +50,6 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
     private Button bidButton;
     private Button addBidButton;
     private Button doneButton;
-    private ImageView starIcon;
     private PopupWindow POPUP_WINDOW_DELETION = null;   //popup for error message
     private PopupWindow POPUP_WINDOW_DONE = null;   //popup for error message
     private User userBeingViewed;
@@ -103,15 +102,15 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
             //Increasing Hits
             Log.i("cur ------>", getCurrentTask().getObjectID());
             Log.i("cur ------>", getCurrentUser().getName());
-            if(!getCurrentUser().visited(getCurrentTask().getObjectID())) {
+
+            if(!userViewed(getCurrentTask().getObjectID())){
                 getCurrentTask().addHit();
                 MasterController.AsyncUpdateDocument asyncUpdateDocument =
                         new MasterController.AsyncUpdateDocument();
                 asyncUpdateDocument.execute(getCurrentTask());
+
+                saveHistoryHashToServer();
             }
-            MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                    new MasterController.AsyncUpdateDocument();
-            asyncUpdateDocument.execute(getCurrentUser());
         }
         if ("Completed".equals(getCurrentTask().getStatus())){
             addBidButton.setVisibility(View.INVISIBLE);
@@ -141,7 +140,8 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
         if((getCurrentUser().getObjectID().compareTo(getCurrentTask().getRequesterID()) != 0)
                 && (getCurrentTask().getStatus().toLowerCase().compareTo("accepted") != 0)
                 && (getCurrentTask().getStatus().toLowerCase().compareTo("completed") != 0)){
-            if (getCurrentUser().starred(getCurrentTask().getObjectID())) {
+            //if (getCurrentUser().starred(getCurrentTask().getObjectID())) {
+            if(userStarred(getCurrentTask().getObjectID())){
                 starBtn.setIcon(R.drawable.ic_star_white_24dp);
             } else {
                 starBtn.setIcon(R.drawable.ic_star_outline_white_24dp);
@@ -167,16 +167,14 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
             startActivity(intent);
             return true;
         } else if (id == R.id.action_star) {
-            if (getCurrentUser().starred(getCurrentTask().getObjectID())) {
-                getCurrentUser().removeTaskFromStarredList(getCurrentTask().getObjectID());
+            if(userStarred(getCurrentTask().getObjectID())){
                 starBtn.setIcon(R.drawable.ic_star_outline_white_24dp);
+                toggleStar(getCurrentTask().getObjectID());
             } else {
-                getCurrentUser().addTaskToStarredList(getCurrentTask().getObjectID());
                 starBtn.setIcon(R.drawable.ic_star_white_24dp);
+                toggleStar(getCurrentTask().getObjectID());
             }
-            MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                    new MasterController.AsyncUpdateDocument();
-            asyncUpdateDocument.execute(getCurrentUser());
+            saveStarHashToServer();
             return true;
         } else if (id == R.id.action_delete){
             deleteData();
@@ -351,9 +349,24 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
     }
 
     public void triggerDone(View view){
-
         LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layout = layoutInflater.inflate(R.layout.task_completed_popup, null);
+
+        /*
+            Grabbing the accepted user in case we need to increment their completed tasks
+         */
+        User acceptedUser = null;
+        MasterController.AsyncGetDocument asyncGetDocument =
+                new MasterController.AsyncGetDocument(this);
+        asyncGetDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getAcceptedProviderID(), User.class));
+
+        try {
+            acceptedUser = (User) asyncGetDocument.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
 
         POPUP_WINDOW_DONE = new PopupWindow(this);
         POPUP_WINDOW_DONE.setContentView(layout);
@@ -372,27 +385,35 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
         });
 
         Button acceptBtn = (Button) layout.findViewById(R.id.btn_accept_done);
+        final User finalAcceptedUser = acceptedUser;
         acceptBtn.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                POPUP_WINDOW_DONE.dismiss();
-                Task newTask = getCurrentTask();
-                newTask.setStatusCompleted();
-                setCurrentTask(newTask);
-                MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                        new MasterController.AsyncUpdateDocument();
-                asyncUpdateDocument.execute(getCurrentTask());
-                try {
-                    Thread.sleep(400);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                updateDisplayedValues();
+            /*
+                increment the user's completed tasks
+             */
+            finalAcceptedUser.incrementCompletedTasks();
+            MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                    new MasterController.AsyncUpdateDocument();
+            asyncUpdateDocument.execute(finalAcceptedUser);
+
+            POPUP_WINDOW_DONE.dismiss();
+            Task newTask = getCurrentTask();
+            newTask.setStatusCompleted();
+            setCurrentTask(newTask);
+            MasterController.AsyncUpdateDocument asyncUpdateDocument2 =
+                    new MasterController.AsyncUpdateDocument();
+            asyncUpdateDocument2.execute(getCurrentTask());
+            try {
+                Thread.sleep(400);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            updateDisplayedValues();
             }
         });
-
     }
 
     /**

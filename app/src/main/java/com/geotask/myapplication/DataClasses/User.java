@@ -160,49 +160,40 @@ public class User extends GTData{
                 this.phonenum;
     }
 
+    /**
+     * Method to return the list of starred tasks
+     *
+     * @return - the list of starred tasks
+     */
     public ArrayList<String> getStarredList() {
         return starredList;
     }
 
+    /**
+     * Method to set the starred list
+     *
+     * @param starredList the list of new starred tasks
+     */
     public void setStarredList(ArrayList<String> starredList) {
         this.starredList = starredList;
     }
 
+    /**
+     * Method to get the history list
+     *
+     * @return - the list of history list
+     */
     public ArrayList<String> getHistoryList() {
         return historyList;
     }
 
+    /**
+     * Method to set the history list
+     *
+     * @param historyList the list of new history tasks
+     */
     public void setHistoryList(ArrayList<String> historyList) {
         this.historyList = historyList;
     }
 
-    public Boolean starred(String taskID){
-        if(starredList.contains(taskID)){
-            return true;
-        }
-        return false;
-    }
-
-    public void removeTaskFromStarredList(String taskID){
-        starredList.remove(taskID);
-    }
-
-    public void addTaskToStarredList(String taskID){
-        if(!starredList.contains(taskID)) {
-            starredList.add(taskID);
-        }
-    }
-
-    public Boolean visited(String taskID){
-        if(historyList.contains(taskID)){
-            return true;
-        }
-        if(historyList.size() > 100){
-            historyList.remove(0);
-        }
-        if(!historyList.contains(taskID)) {
-            historyList.add(taskID);
-        }
-        return false;
-    }
 }

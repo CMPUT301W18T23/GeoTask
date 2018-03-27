@@ -516,14 +516,15 @@ public class MenuActivity extends AbstractGeoTaskActivity
     public void setStarredMode(){
         View snackView = getCurrentFocus();
         ArrayList<Task> starredTaskList = new ArrayList<Task>();
-        for(String taskID : getCurrentUser().getStarredList()){
+        //for(String taskID : getCurrentUser().getStarredList()){
+        for(String taskID : getStarHash().keySet()){
             MasterController.AsyncGetDocument asyncGetDocument =
                     new MasterController.AsyncGetDocument(this);
             asyncGetDocument.execute(new AsyncArgumentWrapper(taskID, Task.class));
             Task task = null;
             try {
                 task = (Task) asyncGetDocument.get();
-                starredTaskList.add(task);
+                //starredTaskList.add(task);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
@@ -534,12 +535,14 @@ public class MenuActivity extends AbstractGeoTaskActivity
             } else {
                 Snackbar.make(snackView, "Some tasks no longer exist and were removed", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                removeFromStarHash(taskID);
             }
         }
         setTaskList(starredTaskList);
         adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
         oldTasks.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+        saveStarHashToServer();
         setEmptyString();
     }
 
