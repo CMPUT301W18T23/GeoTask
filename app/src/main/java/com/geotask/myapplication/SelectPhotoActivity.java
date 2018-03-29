@@ -1,12 +1,14 @@
 package com.geotask.myapplication;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.Toast;
 
@@ -24,6 +26,8 @@ public class SelectPhotoActivity extends AppCompatActivity {
     private PhotoAdapter adapter;
     private List<String> list;
     ImagePicker imagePicker ;
+    private Button saveButton;
+
 
     String path;
     @Override
@@ -32,6 +36,15 @@ public class SelectPhotoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_select_photo);
         gridView = (GridView) findViewById(R.id.grid_view);
         initView();
+
+        saveButton = (Button) findViewById(R.id.SavePhoto);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
     }
     private void initView() {
         imagePicker = new ImagePicker();
