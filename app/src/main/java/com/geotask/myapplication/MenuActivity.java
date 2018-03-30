@@ -84,7 +84,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
     TextView drawerUsername;
     TextView drawerEmail;
     TextView emptyText;
-    Task lastClickedTask = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +97,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         if((getTaskList() == null) || (getTaskList().size() == 0)) {
             setTaskList(new ArrayList<Task>());
         }
-        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), getLastClicked(), getCurrentUser());
         oldTasks.setAdapter(adapter);
 
         screenWidthInDPs = this.getScreenWidthInDPs();
@@ -176,9 +175,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
                     Log.i("click --->", "not-clicked");
                 }
                 Task task = getTaskList().get(position);
-                lastClickedTask = task;
+                MenuActivity.setLastClicked(task);
                 Intent intent = new Intent(MenuActivity.this, ViewTaskActivity.class);
-                setCurrentTask(lastClickedTask);
+                setCurrentTask(task);
                 startActivity(intent);
                 Log.i("LifeCycle --->", "after activity return");
             }
@@ -254,7 +253,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
             return;
         } else if (getViewMode() == R.integer.MODE_INT_HISTORY) {
             clearFiltersButton.setVisibility(View.VISIBLE);
-            adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
+            adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), getLastClicked(), getCurrentUser());
             oldTasks.setAdapter(adapter);
             adapter.notifyDataSetChanged();
             setEmptyString();
@@ -262,7 +261,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         } else if (getViewMode() == R.integer.MODE_INT_OTHERS_TASKS) {
             Log.i("other------>", String.format("%d", getViewMode()));
             clearFiltersButton.setVisibility(View.VISIBLE);
-            adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
+            adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), getLastClicked(), getCurrentUser());
             oldTasks.setAdapter(adapter);
             adapter.notifyDataSetChanged();
             setEmptyString();
@@ -355,7 +354,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
             }
         }
 
-        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), getLastClicked(), getCurrentUser());
         oldTasks.setAdapter(adapter);
         adapter.notifyDataSetChanged();
         setEmptyString();
@@ -532,7 +531,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
             }
         }
         setTaskList(starredTaskList);
-        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), getLastClicked(), getCurrentUser());
         oldTasks.setAdapter(adapter);
         adapter.notifyDataSetChanged();
         saveStarHashToServer();

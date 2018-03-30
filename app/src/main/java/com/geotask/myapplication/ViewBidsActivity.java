@@ -171,16 +171,17 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         task.setAccpeptedBidID(bid.getObjectID());
         task.setStatusAccepted();
 
-        //The following should wok, but needs to be tested after the array is truly populated by the
-        //master controller
-        deleteAllBut(task);
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
                 new MasterController.AsyncUpdateDocument();
         asyncUpdateDocument.execute(task);
+        //The following should wok, but needs to be tested after the array is truly populated by the
+        //master controller
+        deleteAllBut(task);
 
         //go back to ViewTaskActivity
         Intent intent = new Intent(ViewBidsActivity.this, MenuActivity.class);
         intent.putExtra("task", task);
+        MenuActivity.setLastClicked(getCurrentTask());
         startActivity(intent);
 
     }

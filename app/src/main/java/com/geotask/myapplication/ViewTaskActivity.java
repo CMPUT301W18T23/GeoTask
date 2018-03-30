@@ -94,7 +94,11 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
 
             }
         } else {
-            addBidButton.setVisibility(View.VISIBLE);
+            if ("Bidded".equals(getCurrentTask().getStatus())||"Requested".equals(getCurrentTask().getStatus())) {
+                addBidButton.setVisibility(View.VISIBLE);
+            } else {
+                addBidButton.setVisibility(View.INVISIBLE);
+            }
             doneButton.setVisibility(View.INVISIBLE);   // if not user hide done button
 
 
@@ -141,7 +145,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
                 && (getCurrentTask().getStatus().toLowerCase().compareTo("completed") != 0)){
             //if (getCurrentUser().starred(getCurrentTask().getObjectID())) {
             if(userStarred(getCurrentTask().getObjectID())){
-                starBtn.setIcon(R.drawable.ic_star_white_24dp);
+                starBtn.setIcon(R.drawable.ic_star_yellow_24dp);
             } else {
                 starBtn.setIcon(R.drawable.ic_star_outline_white_24dp);
             }
@@ -170,7 +174,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
                 starBtn.setIcon(R.drawable.ic_star_outline_white_24dp);
                 toggleStar(getCurrentTask().getObjectID());
             } else {
-                starBtn.setIcon(R.drawable.ic_star_white_24dp);
+                starBtn.setIcon(R.drawable.ic_star_yellow_24dp);
                 toggleStar(getCurrentTask().getObjectID());
             }
             saveStarHashToServer();
@@ -503,9 +507,9 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
     public void onPostExecute(List<? extends GTData> dataList) {
     }
 
-
     @Override
     public void onBackPressed() {
+        MenuActivity.setLastClicked(getCurrentTask());
         Intent intent = new Intent(getBaseContext(), MenuActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

@@ -30,6 +30,7 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
     private static double searchRange;
     private static HashMap<String, Boolean> starHash;
     private static HashMap<String, Boolean> historyHash;
+    private static Task lastClickedTask = null;
 
     /**
      * Method to retrieve the User object that the current user is using the app
@@ -325,5 +326,12 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
                 new MasterController.AsyncUpdateDocument();
         asyncUpdateDocument.execute(getCurrentUser());
+    }
+
+    public static void setLastClicked(Task task){
+        lastClickedTask = task;
+    }
+    public static Task getLastClicked(){
+        return lastClickedTask;
     }
 }
