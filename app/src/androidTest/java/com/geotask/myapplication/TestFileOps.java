@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 
 @RunWith(AndroidJUnit4.class)
 public class TestFileOps implements AsyncCallBackManager{
@@ -297,6 +298,11 @@ public class TestFileOps implements AsyncCallBackManager{
 
         assertEquals(1, resultList.size());
         assertEquals(bid.getObjectID(), resultList.get(0).getObjectID());
+    }
+
+    @Test
+    public void testSelectingRowThatDoesNotExistShouldReturnNull() {
+        assertNull(dataBase.taskDAO().selectByID("adsgasdg"));
     }
 
     @Override

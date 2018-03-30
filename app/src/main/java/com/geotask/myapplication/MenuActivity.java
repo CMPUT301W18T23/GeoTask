@@ -131,7 +131,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
         }
 
         try {
-            filterArray = getSearchKeywords().split(" ");
+            if(filterArray != null) {
+                filterArray = getSearchKeywords().split(" ");
+            }
         } catch (NullPointerException e) {
             e.printStackTrace();
             setSearchKeywords("");

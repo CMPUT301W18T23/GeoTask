@@ -6,7 +6,6 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.util.Log;
 
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.ElasticsearchController;
@@ -60,7 +59,7 @@ public class TestSync implements AsyncCallBackManager {
     }
 
     @Test
-    public void testSync() throws InterruptedException, IOException {
+    public void testSyncDown() throws InterruptedException, IOException {
         assertEquals(0, database.taskDAO().selectAll().size());
         assertEquals(0, database.bidDAO().selectAll().size());
 
@@ -72,7 +71,6 @@ public class TestSync implements AsyncCallBackManager {
         controller.createNewDocument(user);
         controller.createNewDocument(task);
 
-
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(targetContext, MenuActivity.class);
@@ -82,7 +80,6 @@ public class TestSync implements AsyncCallBackManager {
         TimeUnit.SECONDS.sleep(10);
 
         Task local = database.taskDAO().selectByID(task.getObjectID());
-        Log.d("syncadapter", "selection");
         assertNotNull(local);
 
         MasterController.AsyncGetDocument asyncGetDocument =
@@ -98,6 +95,61 @@ public class TestSync implements AsyncCallBackManager {
 
         assertNotNull(result);
         assertEquals(task.getObjectID(), result.getObjectID());
+    }
+
+    @Test
+    public void testSyncUp() throws InterruptedException {
+        assertEquals(0, database.taskDAO().selectAll().size());
+        assertEquals(0, database.bidDAO().selectAll().size());
+
+        Task task = new Task("testSyncUp", "testSyncUp", "testSyncUp");
+
+        database.taskDAO().insert(task);
+
+        assertEquals(1, database.taskDAO().selectAll().size());
+
+        String userId = "testSync";
+        User user = new User("testSync", "testSync", "testSync");
+        user.setObjectID(userId);
+        Context targetContext =
+                InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Intent intent = new Intent(targetContext, MenuActivity.class);
+        menuActivityRule.getActivity().setCurrentUser(user);
+        menuActivityRule.launchActivity(intent);
+
+        TimeUnit.SECONDS.sleep(10);
+
+        Task local = database.taskDAO().selectByID(task.getObjectID());
+        assertNotNull(local);
+
+        MasterController.AsyncGetDocument asyncGetDocument =
+                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
+        asyncGetDocument.execute(new AsyncArgumentWrapper(task.getObjectID(), Task.class));
+
+        Task result = null;
+        try {
+            result = (Task) asyncGetDocument.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        assertNotNull(result);
+        assertEquals(task.getObjectID(), result.getObjectID());
+    }
+
+    @Test
+    public void testConflictTaskEditedByFirstUserThenBiddedOnBySecondUser() {
+
+    }
+
+    @Test
+    public void testConflictAcceptingBidThatWasAlreadyDeletedFromServer() {
+
+    }
+
+    @Test
+    public void testConflictTaskWasBiddedOnBySecondUserDuringEditingTaskByFirstUser() {
+
     }
 
     @Override

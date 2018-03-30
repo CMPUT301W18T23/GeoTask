@@ -12,10 +12,13 @@ import com.geotask.myapplication.Controllers.ElasticsearchController;
 import com.geotask.myapplication.Controllers.LocalFilesOps.LocalDataBase;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
-import com.geotask.myapplication.DataClasses.User;
+import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
+import io.searchbox.client.JestResult;
+import io.searchbox.params.Parameters;
 
 //https://developer.android.com/training/sync-adapters/creating-sync-adapter.html
 
@@ -23,8 +26,10 @@ import java.util.ArrayList;
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private static ElasticsearchController controller;
     private LocalDataBase database;
-    private ArrayList<Task> taskList;
-    private ArrayList<Bid> bidList;
+    private ArrayList<Task> remoteTaskList;
+    private ArrayList<Bid> remoteBidList;
+    private ArrayList<Task> localTaskList;
+    private ArrayList<Bid> localBidList;
 
     public SyncAdapter(Context context, boolean autoInitiate) {
         super(context, autoInitiate);
@@ -64,33 +69,64 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
      */
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-        ArrayList<User> userList = null;
+        Log.d("SYNCADAPTERER", "WORKING");
         try {
-            taskList = (ArrayList<Task>) controller.search("", Task.class);
-            bidList = (ArrayList<Bid>) controller.search("", Bid.class);
-            userList = (ArrayList<User>) controller.search("", User.class);
-            Log.d("syncadapter", "RUNNING");
+            remoteTaskList = (ArrayList<Task>) controller.search("", Task.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        Log.d("syncadapter", String.valueOf(taskList.size()));
-        Log.d("syncadapter", String.valueOf(bidList.size()));
-        Log.d("syncadapter", String.valueOf(userList.size()));
+        Log.d("SYNCADAPTERER", String.valueOf(remoteTaskList.size()));
+        localTaskList = (ArrayList<Task>) database.taskDAO().selectAll();
 
-        for(Task task : taskList) {
+        JestResult result = null;
+        double version;
+        for (Task localTask : localTaskList) {
+            if(remoteTaskList.contains(localTask)) {
+                try {
+                    result = controller.updateDocument(localTask, localTask.getVersion());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if(result != null && result.getResponseCode() == 200) {
+                    localTask.setVersion((int) result.getValue(Parameters.VERSION));
+                    database.taskDAO().update(localTask);
+
+                    SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
+                    builder.addColumns(new String[]{"taskID"});
+                    builder.addParameters(new String[]{localTask.getObjectID()});
+
+                    localBidList = (ArrayList<Bid>) database.bidDAO().searchBidsByQuery(builder.build());
+                    for(Bid bid : localBidList) {
+                        try {
+                            controller.createNewDocument(bid);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } else if(result.getResponseCode() == 409) {
+                    //rejected
+                }
+            } else {
+                try {
+                    version = controller.createNewDocument(localTask);
+                    localTask.setVersion((int)version);
+                    database.taskDAO().update(localTask);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        try {
+            remoteTaskList = (ArrayList<Task>) controller.search("", Task.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for(Task task : remoteTaskList){
             database.taskDAO().insert(task);
-            Log.d("syncadapter", "write task");
         }
-        Log.d("syncadapter", String.valueOf(database.taskDAO().selectAll().size()));
-        Log.d("syncadapter", String.valueOf(database.bidDAO().selectAll().size()));
-        for(Bid bid : bidList) {
-            database.bidDAO().insert(bid);
-        }
-
-        taskList.clear();
-        bidList.clear();
-        //database.taskDAO().insertMultiple(taskList.toArray(new Task[taskList.size()]));
-        //database.bidDAO().insertMultiple(bidList.toArray(new Bid[bidList.size()]));
     }
 }
+

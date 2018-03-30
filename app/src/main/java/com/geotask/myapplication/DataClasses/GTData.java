@@ -23,7 +23,8 @@ public abstract class GTData implements Serializable{
     private String type;
     @ColumnInfo
     private long date;
-    //ToDo refactor date from children
+    @ColumnInfo
+    private int version = 0; //ToDo update version when edit
 
     /**
      *sets the type of the data class
@@ -88,5 +89,31 @@ public abstract class GTData implements Serializable{
         String strDate = new SimpleDateFormat("MMM d, yyyy").format(new java.util.Date((long)date));
         //String strDate = new SimpleDateFormat("EEEE MMMM d, yyyy").format(new java.util.Date((long)date));
         return strDate;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        GTData gtData = (GTData) o;
+
+        if (!objectID.equals(gtData.objectID)) return false;
+        return type.equals(gtData.type);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = objectID.hashCode();
+        result = 31 * result + type.hashCode();
+        return result;
     }
 }

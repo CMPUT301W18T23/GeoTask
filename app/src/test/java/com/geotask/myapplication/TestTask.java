@@ -6,15 +6,27 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+
 
 public class TestTask {
 
 //	public static void main(String[] args) {
 //		testTask();
 
+	@Test
+	public void testEquals() {
+		Task task1 = new Task("testEquals", "testEquals", "testEquals");
+		Task task2 = new Task("testEquals", "testEquals", "testEquals");
+		task2.setObjectID(task1.getObjectID());
+
+		assertEquals(task1, task2);
+		assertFalse(task1 == task2);
+	}
 //	}
 	@Test
-	public static void testTask() {
+	public void testTask() {
 		testEntered();
 		testChanged();
 		testEmptyPicture();
@@ -26,7 +38,7 @@ public class TestTask {
 //		testNotEmpty();
 
 	}
-	public static void testEntered() {
+	public void testEntered() {
 		String Name = "jejewitt";
 		String Description  = "i need someone to test this task";
 		String Status = "Requested";
@@ -43,7 +55,7 @@ public class TestTask {
 		System.out.print(task.getName()+" "+  task.getDescription() + " "+ task.getStatus()+ " "+ task.getRequesterID() + " " + task.getAcceptedProviderID());
 	}
 	
-	public static void testChanged() { //check if adding new data
+	public void testChanged() { //check if adding new data
 		String Name = "jejewitt";
 		String Description  = "i need someone to test this task";
 		String Status = "Requested";
