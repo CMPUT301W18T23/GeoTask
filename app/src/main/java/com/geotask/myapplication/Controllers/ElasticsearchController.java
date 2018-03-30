@@ -174,7 +174,7 @@ public class ElasticsearchController {
         JestResult result = client.execute(request);
         return result;
     }
-    public JestResult updateDocument(GTData data, int version) throws IOException {
+    public JestResult updateDocument(GTData data, double version) throws IOException {
         data.setDate(new Date().getTime());
         Gson gson = new Gson();
         String json = gson.toJson(data);
@@ -182,7 +182,7 @@ public class ElasticsearchController {
                 .index(INDEX_NAME)
                 .type(data.getClass().toString())
                 .id(data.getObjectID())
-                .setParameter(Parameters.VERSION, version)
+                .setParameter(Parameters.VERSION, (int) version)
                 .build();
 
         JestResult result = client.execute(request);
@@ -275,10 +275,10 @@ public class ElasticsearchController {
         INDEX_NAME = testServerAddress;
     }
 
-    public int getDocumentVersion(String objectID) throws IOException {
+    public double getDocumentVersion(String objectID) throws IOException {
         Get request = new Get.Builder(INDEX_NAME, objectID).build();
 
         JestResult result = client.execute(request);
-        return (int) result.getValue(Parameters.VERSION);
+        return (double) result.getValue("_version");
     }
 }

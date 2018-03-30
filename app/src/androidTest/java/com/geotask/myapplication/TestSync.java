@@ -12,6 +12,7 @@ import com.geotask.myapplication.Controllers.ElasticsearchController;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.LocalFilesOps.LocalDataBase;
 import com.geotask.myapplication.Controllers.MasterController;
+import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
@@ -138,8 +139,41 @@ public class TestSync implements AsyncCallBackManager {
     }
 
     @Test
-    public void testConflictTaskEditedByFirstUserThenBiddedOnBySecondUser() {
+    public void testConflictTaskEditedByFirstUserThenBiddedOnBySecondUser() throws InterruptedException {
+        String userId = "testSync";
+        User user = new User("testSync", "testSync", "testSync");
+        user.setObjectID(userId);
 
+        Task task = new Task("beforeEdit", "beforeEdit", "beforeEdit");
+        task.setObjectID("testSync");
+        database.taskDAO().insert(task);
+
+        //server on version 2, client on version 1
+        try {
+            controller.createNewDocument(task);
+            controller.updateDocument(task, task.getVersion());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Bid bid = new Bid(userId, 123.0, task.getObjectID());
+        database.bidDAO().insert(bid);
+        task.addBid(bid);
+        assertEquals(1, database.bidDAO().selectAll().size());
+        assertEquals(1.0, database.taskDAO().selectAll().get(0).getVersion());
+
+        Context targetContext =
+                InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Intent intent = new Intent(targetContext, MenuActivity.class);
+        menuActivityRule.getActivity().setCurrentUser(user);
+        menuActivityRule.launchActivity(intent);
+
+        Thread.sleep(2000);
+        Task updated = database.taskDAO().selectByID("testSync");
+
+        assertEquals(2.0, updated.getVersion());
+        assertEquals(0, updated.getBidList().size());
+        assertEquals(0, database.bidDAO().selectAll().size());
     }
 
     @Test

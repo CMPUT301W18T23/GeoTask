@@ -12,13 +12,11 @@ import com.geotask.myapplication.Controllers.ElasticsearchController;
 import com.geotask.myapplication.Controllers.LocalFilesOps.LocalDataBase;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
-import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 import io.searchbox.client.JestResult;
-import io.searchbox.params.Parameters;
 
 //https://developer.android.com/training/sync-adapters/creating-sync-adapter.html
 
@@ -69,14 +67,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
      */
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-        Log.d("SYNCADAPTERER", "WORKING");
         try {
             remoteTaskList = (ArrayList<Task>) controller.search("", Task.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        Log.d("SYNCADAPTERER", String.valueOf(remoteTaskList.size()));
         localTaskList = (ArrayList<Task>) database.taskDAO().selectAll();
 
         JestResult result = null;
@@ -89,28 +85,28 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     e.printStackTrace();
                 }
                 if(result != null && result.getResponseCode() == 200) {
-                    localTask.setVersion((int) result.getValue(Parameters.VERSION));
+                    localTask.setVersion((Double) result.getValue("_version"));
                     database.taskDAO().update(localTask);
 
-                    SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
-                    builder.addColumns(new String[]{"taskID"});
-                    builder.addParameters(new String[]{localTask.getObjectID()});
-
-                    localBidList = (ArrayList<Bid>) database.bidDAO().searchBidsByQuery(builder.build());
-                    for(Bid bid : localBidList) {
-                        try {
-                            controller.createNewDocument(bid);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
+//                    SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
+//                    builder.addColumns(new String[]{"taskID"});
+//                    builder.addParameters(new String[]{localTask.getObjectID()});
+//
+//                    localBidList = (ArrayList<Bid>) database.bidDAO().searchBidsByQuery(builder.build());
+//                    for(Bid bid : localBidList) {
+//                        try {
+//                            controller.createNewDocument(bid);
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
                 } else if(result.getResponseCode() == 409) {
-                    //rejected
+                    database.bidDAO().deleteByTaskID(localTask.getObjectID());
                 }
             } else {
                 try {
                     version = controller.createNewDocument(localTask);
-                    localTask.setVersion((int)version);
+                    localTask.setVersion(version);
                     database.taskDAO().update(localTask);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -120,12 +116,18 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         try {
             remoteTaskList = (ArrayList<Task>) controller.search("", Task.class);
+            remoteBidList = (ArrayList<Bid>) controller.search("", Bid.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         for(Task task : remoteTaskList){
-            database.taskDAO().insert(task);
+            try {
+                task.setVersion(controller.getDocumentVersion(task.getObjectID()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            database.taskDAO().update(task);
         }
     }
 }

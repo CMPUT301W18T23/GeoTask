@@ -37,7 +37,7 @@ public interface TaskDAO {
     List<Task> selectByName(String name);
 
     @Update
-    void update(Task task);
+    int update(Task task);
 
     @Delete
     void delete(Task task);

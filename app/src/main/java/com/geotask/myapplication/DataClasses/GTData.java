@@ -24,7 +24,7 @@ public abstract class GTData implements Serializable{
     @ColumnInfo
     private long date;
     @ColumnInfo
-    private int version = 0; //ToDo update version when edit
+    private double version = 1; //ToDo update version when edit
 
     /**
      *sets the type of the data class
@@ -91,11 +91,11 @@ public abstract class GTData implements Serializable{
         return strDate;
     }
 
-    public int getVersion() {
+    public double getVersion() {
         return version;
     }
 
-    public void setVersion(int version) {
+    public void setVersion(double version) {
         this.version = version;
     }
 
