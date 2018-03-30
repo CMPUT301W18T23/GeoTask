@@ -11,7 +11,7 @@ import java.util.Date;
 /**
  * bid class for holding infomration about a bid
  */
-@Entity(tableName = "bids")
+@Entity(tableName = "bids") //ToDo foreign key link to task so can cascade delete
 public class Bid extends GTData implements Comparable{
 
 	@ColumnInfo(name = "provider_id")

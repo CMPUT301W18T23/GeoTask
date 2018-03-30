@@ -102,6 +102,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 //                    }
                 } else if(result.getResponseCode() == 409) {
                     database.bidDAO().deleteByTaskID(localTask.getObjectID());
+                    localTask.getBidList().clear();
+                    database.taskDAO().update(localTask);
                 }
             } else {
                 try {
