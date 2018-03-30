@@ -3,14 +3,18 @@ package com.geotask.myapplication;
 import android.accounts.Account;
 import android.support.v7.app.AppCompatActivity;
 
+import com.geotask.myapplication.Controllers.AsyncCallBackManager;
+import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
+import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * AbstractGeoTaskActivity
@@ -326,6 +330,69 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
                 new MasterController.AsyncUpdateDocument();
         asyncUpdateDocument.execute(getCurrentUser());
+    }
+
+    protected static void updateTaskMetaData(AsyncCallBackManager callback){
+        /*
+           Finding the lowest bid, and number of bids
+        */
+
+        //make the query
+        SuperBooleanBuilder builder = new SuperBooleanBuilder();
+        builder.put("taskID", getCurrentTask().getObjectID());
+
+        //perform the search
+        MasterController.AsyncSearch asyncSearch =
+                new MasterController.AsyncSearch(callback);
+        asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
+
+        List<Bid> result = null;
+        ArrayList<Bid> newBidList;
+
+        try {
+            //get the result
+            result = (List<Bid>) asyncSearch.get();
+            newBidList = new ArrayList<Bid>(result);
+            Double lowest = -1.0;
+
+            /*
+                setting the lowestBid TextView by querying for lowest bid. Here we also set
+                numBids while we are at it
+             */
+            if(newBidList.size() == 0){
+                getCurrentTask().setStatusRequested();                                  //change the status
+            } else  if(newBidList.size() == 1) {
+                if(getCurrentTask().getStatus().toLowerCase().compareTo("requested") == 0){
+                    getCurrentTask().setStatusBidded();
+                }
+                lowest = newBidList.get(0).getValue();
+            } else {
+                if(getCurrentTask().getStatus().toLowerCase().compareTo("requested") == 0){
+                    getCurrentTask().setStatusBidded();
+                }
+                lowest = newBidList.get(0).getValue();
+                for(Bid newBid : newBidList){                                     //iterate to find lowest
+                    if(newBid.getValue() < lowest){
+                        lowest = newBid.getValue();
+                    }
+                }
+            }
+            getCurrentTask().setLowestBid(lowest);
+            getCurrentTask().setNumBids(newBidList.size());
+            MasterController.AsyncUpdateDocument asyncUpdateDocument =  //update the status
+                    new MasterController.AsyncUpdateDocument();
+            asyncUpdateDocument.execute(getCurrentTask());
+
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        try {
+            Thread.sleep(400);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void setLastClicked(Task task){

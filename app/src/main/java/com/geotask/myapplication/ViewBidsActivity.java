@@ -153,13 +153,13 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
 
             try {
                 bidList = (ArrayList<Bid>) asyncSearch.get();
-                Collections.sort(bidList);
+                if(bidList != null) {
+                    Collections.sort(bidList);
+                }
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
 //        }
-
-
         adapter.notifyDataSetChanged();
         setEmptyString();
     }
@@ -353,14 +353,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         oldBids.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
-        MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument();
-        asyncUpdateDocument.execute(getCurrentTask());
-        try {
-            Thread.sleep(400);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        updateTaskMetaData(this);
     }
 
     /**
@@ -395,14 +388,15 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         adapter = new BidArrayAdapter(this, R.layout.bid_list_item, bidList);
         oldBids.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-        updateTask(bid, task);
+        updateTaskMetaData(this);
+        updateTaskAfterDelete(bid, task);
     }
 
 
     /**
      * Method to push any changes to bids on a task to the server
      */
-    public void updateTask(Bid bid , Task task){
+    public void updateTaskAfterDelete(Bid bid , Task task){
 
         if (bid.getObjectID().equals(task.getAccpeptedBidID())){
             task.setAcceptedProviderID(null);
@@ -419,10 +413,9 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         back.putExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT), task);
         back.putExtra("del", "1");
 
-        //task.syncBidData();
         setResult(Activity.RESULT_OK, back);
         try {
-            Thread.sleep(400);
+            Thread.sleep(200);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
