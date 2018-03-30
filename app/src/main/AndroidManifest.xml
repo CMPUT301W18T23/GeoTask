@@ -32,7 +32,8 @@
             android:noHistory="true" />
         <activity
             android:name=".ViewBidsActivity"
-            android:noHistory="true" />
+            android:noHistory="true"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".EditTaskActivity"
             android:exported="true" />

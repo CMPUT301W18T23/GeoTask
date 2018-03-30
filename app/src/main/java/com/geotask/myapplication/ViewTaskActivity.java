@@ -120,6 +120,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
 
         }
         name.setPaintFlags(name.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        addBidButton.setVisibility(View.INVISIBLE);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -507,6 +508,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
     public void onPostExecute(List<? extends GTData> dataList) {
     }
 
+
     @Override
     public void onBackPressed() {
         MenuActivity.setLastClicked(getCurrentTask());
@@ -514,4 +516,5 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
+
 }
