@@ -118,7 +118,7 @@ public class EditTaskActivity extends AbstractGeoTaskActivity implements AsyncCa
      * @see ViewTaskActivity
      */
     private void deleteData() {
-
+        //TODO -- can't delete a task that is accepted or completed
         SuperBooleanBuilder builder = new SuperBooleanBuilder();
         builder.put("taskID", getCurrentTask().getObjectID());
 
