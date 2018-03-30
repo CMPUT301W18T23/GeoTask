@@ -14,7 +14,6 @@ import android.widget.TextView;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.MasterController;
-import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
@@ -44,10 +43,10 @@ public class ViewProfileActivity extends AbstractGeoTaskActivity implements Asyn
     /**
      * sets up vars from intent to view user data
      * can be called from viewBidsActivity
-     * can be called from TaskViewActivity
+     * can be called from ViewTaskActivity
      *
      * @see ViewBidsActivity
-     * @see TaskViewActivity
+     * @see ViewTaskActivity
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {

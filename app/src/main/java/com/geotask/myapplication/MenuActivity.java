@@ -1,12 +1,7 @@
 package com.geotask.myapplication;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -43,8 +38,6 @@ import junit.framework.Assert;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
-import static java.sql.DriverManager.println;
 
 
 /** MenuActivity
@@ -184,7 +177,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 }
                 Task task = getTaskList().get(position);
                 lastClickedTask = task;
-                Intent intent = new Intent(MenuActivity.this, TaskViewActivity.class);
+                Intent intent = new Intent(MenuActivity.this, ViewTaskActivity.class);
                 setCurrentTask(lastClickedTask);
                 startActivity(intent);
                 Log.i("LifeCycle --->", "after activity return");

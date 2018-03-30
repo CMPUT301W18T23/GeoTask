@@ -11,8 +11,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -180,7 +178,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
                 new MasterController.AsyncUpdateDocument();
         asyncUpdateDocument.execute(task);
 
-        //go back to TaskViewActivity
+        //go back to ViewTaskActivity
         Intent intent = new Intent(ViewBidsActivity.this, MenuActivity.class);
         intent.putExtra("task", task);
         startActivity(intent);

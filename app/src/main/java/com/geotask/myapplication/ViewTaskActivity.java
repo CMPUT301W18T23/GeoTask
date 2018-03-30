@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -40,7 +39,7 @@ import java.util.concurrent.ExecutionException;
  * going to profile if username is clicked on
  */
 //https://stackoverflow.com/questions/4127725/how-can-i-remove-a-button-or-make-it-invisible-in-android
-public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncCallBackManager {
+public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncCallBackManager {
     private TextView title;
     private TextView name;
     private TextView description;
@@ -163,7 +162,7 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_edit) {
-            Intent intent = new Intent(TaskViewActivity.this, EditTaskActivity.class);
+            Intent intent = new Intent(ViewTaskActivity.this, EditTaskActivity.class);
             startActivity(intent);
             return true;
         } else if (id == R.id.action_star) {
@@ -179,7 +178,7 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
         } else if (id == R.id.action_delete){
             deleteData();
 
-            Intent intent = new Intent(TaskViewActivity.this, MenuActivity.class);
+            Intent intent = new Intent(ViewTaskActivity.this, MenuActivity.class);
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
@@ -191,7 +190,7 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
      * gets all bids for the task
      * deletes them 1 by 1
      * then deletes task
-     * @see TaskViewActivity
+     * @see ViewTaskActivity
      */
     private void deleteData() {
 
@@ -220,7 +219,7 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
 
         this.bidButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                Intent intent = new Intent(TaskViewActivity.this, ViewBidsActivity.class);
+                Intent intent = new Intent(ViewTaskActivity.this, ViewBidsActivity.class);
                 startActivityForResult(intent, 2);
                 updateStatus();  //for later ToDo ?????
             }
@@ -461,7 +460,7 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
         name.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(TaskViewActivity.this, ViewProfileActivity.class);
+                Intent intent = new Intent(ViewTaskActivity.this, ViewProfileActivity.class);
                 intent.putExtra(getString(R.string.VIEW_USER), userBeingViewed);
                 startActivity(intent);
             }
