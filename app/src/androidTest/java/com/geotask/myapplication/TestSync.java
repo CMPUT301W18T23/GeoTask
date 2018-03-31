@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -76,6 +77,8 @@ public class TestSync implements AsyncCallBackManager {
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(targetContext, MenuActivity.class);
         menuActivityRule.getActivity().setCurrentUser(user);
+        menuActivityRule.getActivity().setHistoryHash();
+        menuActivityRule.getActivity().setStarHash();
         menuActivityRule.launchActivity(intent);
 
         TimeUnit.SECONDS.sleep(10);
@@ -116,6 +119,8 @@ public class TestSync implements AsyncCallBackManager {
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(targetContext, MenuActivity.class);
         menuActivityRule.getActivity().setCurrentUser(user);
+        menuActivityRule.getActivity().setHistoryHash();
+        menuActivityRule.getActivity().setStarHash();
         menuActivityRule.launchActivity(intent);
 
         TimeUnit.SECONDS.sleep(10);
@@ -166,6 +171,8 @@ public class TestSync implements AsyncCallBackManager {
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(targetContext, MenuActivity.class);
         menuActivityRule.getActivity().setCurrentUser(user);
+        menuActivityRule.getActivity().setHistoryHash();
+        menuActivityRule.getActivity().setStarHash();
         menuActivityRule.launchActivity(intent);
 
         Thread.sleep(2000);
@@ -177,13 +184,164 @@ public class TestSync implements AsyncCallBackManager {
     }
 
     @Test
-    public void testConflictAcceptingBidThatWasAlreadyDeletedFromServer() {
+    public void testConflictAcceptingBidThatWasAlreadyDeletedFromServer() throws InterruptedException {
+        String Id = "testSync";
+        User user = new User("testSync", "testSync", "testSync");
+        user.setObjectID(Id);
 
+        Task task = new Task("beforeEdit", "beforeEdit", "beforeEdit");
+        task.setObjectID(Id);
+
+        try {
+            controller.createNewDocument(task);
+            controller.updateDocument(task, task.getVersion());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        Bid bid = new Bid(Id, 22.0, Id);
+        task.addBid(bid);
+
+        database.bidDAO().insert(bid);
+        database.taskDAO().insert(task);
+        assertEquals(1, database.taskDAO().selectAll().get(0).getBidList().size());
+
+
+        Context targetContext =
+                InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Intent intent = new Intent(targetContext, MenuActivity.class);
+        menuActivityRule.getActivity().setCurrentUser(user);
+        menuActivityRule.getActivity().setHistoryHash();
+        menuActivityRule.getActivity().setStarHash();
+        menuActivityRule.launchActivity(intent);
+
+        Thread.sleep(3000);
+
+        assertEquals(0, database.bidDAO().selectAll().size());
+        assertEquals(0, database.taskDAO().selectAll().get(0).getBidList().size());
     }
 
     @Test
-    public void testConflictTaskWasBiddedOnBySecondUserDuringEditingTaskByFirstUser() {
+    public void testConflictTaskWasBiddedOnBySecondUserDuringEditingTaskByFirstUser() throws InterruptedException {
+        String Id = "testSync";
+        User user = new User("testSync", "testSync", "testSync");
+        user.setObjectID(Id);
 
+        Task task = new Task("beforeEdit", "beforeEdit", "beforeEdit");
+        task.setObjectID(Id);
+
+        Bid bid = new Bid(Id, 22.0, Id);
+        task.addBid(bid);
+
+        try {
+            controller.createNewDocument(task);
+            controller.createNewDocument(bid);
+            controller.updateDocument(task, task.getVersion());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        task.setDescription("afterEdit");
+        database.taskDAO().insert(task);
+
+
+        Context targetContext =
+                InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Intent intent = new Intent(targetContext, MenuActivity.class);
+        menuActivityRule.getActivity().setCurrentUser(user);
+        menuActivityRule.getActivity().setHistoryHash();
+        menuActivityRule.getActivity().setStarHash();
+        menuActivityRule.launchActivity(intent);
+
+        Thread.sleep(3000);
+
+        Task remote = null;
+        try {
+            remote = (Task) controller.getDocument(Id, Task.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assertEquals("afterEdit", remote.getDescription());
+        assertEquals("afterEdit", database.taskDAO().selectAll().get(0).getDescription());
+        assertEquals(1, database.bidDAO().selectAll().size());
+    }
+
+    @Test
+    public void testBidLocalShouldBeAddedToServer() throws InterruptedException {
+        String Id = "testSync";
+        User user = new User("testSync", "testSync", "testSync");
+        user.setObjectID(Id);
+
+        Task task = new Task("beforeEdit", "beforeEdit", "beforeEdit");
+        task.setObjectID(Id);
+
+        Bid bid = new Bid(Id, 22.0, Id);
+        task.addBid(bid);
+        try {
+            controller.createNewDocument(task);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        database.taskDAO().insert(task);
+        database.bidDAO().insert(bid);
+
+        Context targetContext =
+                InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Intent intent = new Intent(targetContext, MenuActivity.class);
+        menuActivityRule.getActivity().setCurrentUser(user);
+        menuActivityRule.getActivity().setHistoryHash();
+        menuActivityRule.getActivity().setStarHash();
+        menuActivityRule.launchActivity(intent);
+
+        Thread.sleep(3000);
+
+        assertEquals(1, database.taskDAO().selectAll().get(0).getBidList().size());
+        assertEquals(1, database.bidDAO().selectAll().size());
+        Bid remote = null;
+        try {
+            controller.getDocument(bid.getObjectID(), Bid.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assertNotNull(remote);
+    }
+
+    @Test
+    public void testBidLocalShouldNotBeAddedToServerIfTaskNoLongerExistsOnServer() throws InterruptedException {
+        String Id = "testSync";
+        User user = new User("testSync", "testSync", "testSync");
+        user.setObjectID(Id);
+
+        Task task = new Task("beforeEdit", "beforeEdit", "beforeEdit");
+        task.setObjectID(Id);
+
+        Bid bid = new Bid(Id, 22.0, Id);
+        task.addBid(bid);
+
+        database.taskDAO().insert(task);
+        database.bidDAO().insert(bid);
+
+        Context targetContext =
+                InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Intent intent = new Intent(targetContext, MenuActivity.class);
+        menuActivityRule.getActivity().setCurrentUser(user);
+        menuActivityRule.getActivity().setHistoryHash();
+        menuActivityRule.getActivity().setStarHash();
+        menuActivityRule.launchActivity(intent);
+
+        Thread.sleep(3000);
+
+        assertEquals(0, database.taskDAO().selectAll().get(0).getBidList().size());
+        assertEquals(0, database.bidDAO().selectAll().size());
+        Bid remote = null;
+        try {
+            controller.getDocument(bid.getObjectID(), Bid.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assertNull(remote);
     }
 
     @Override
