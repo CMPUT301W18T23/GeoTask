@@ -134,6 +134,10 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
                 && (getCurrentTask().getStatus().toLowerCase().compareTo("requested") == 0)) {
             editBtn.setVisible(true);
             deleteBtn.setVisible(true);
+        } else if ((getCurrentUser().getObjectID().compareTo(getCurrentTask().getRequesterID()) == 0)
+                && (getCurrentTask().getStatus().toLowerCase().compareTo("completed") == 0)){
+            deleteBtn.setVisible(false);
+            editBtn.setVisible(false);
         } else if (getCurrentUser().getObjectID().compareTo(getCurrentTask().getRequesterID()) == 0){
             deleteBtn.setVisible(true);
             editBtn.setVisible(false);

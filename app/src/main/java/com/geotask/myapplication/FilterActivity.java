@@ -33,6 +33,7 @@ public class FilterActivity extends AbstractGeoTaskActivity implements AdapterVi
         final EditText rangeText = (EditText) findViewById(R.id.textRange);
         final FilterActivity context = this;
 
+        getSupportActionBar().setTitle("Filter");
 
         // Spinner element
         spinner = (Spinner) findViewById(R.id.spinner);

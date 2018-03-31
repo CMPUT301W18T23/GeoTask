@@ -242,9 +242,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
                         new MasterController.AsyncDeleteDocument();
                 asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
             }
-
         }
-
     }
 
     /**

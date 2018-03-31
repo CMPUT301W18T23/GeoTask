@@ -156,6 +156,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 setSearchKeywords("");
                 setSearchStatus("All");
                 setViewMode(R.integer.MODE_INT_ALL);
+                navigationView.setCheckedItem(R.id.nav_browse);
                 populateTaskView();
                 clearFiltersButton.setVisibility(View.INVISIBLE);
             }
@@ -214,6 +215,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         super.onStart();
         //Log.i("LifeCycle --->", "onStart is called");
         fab.show();
+        navigationView.setCheckedItem(R.id.nav_browse);
     }
 
     /**
@@ -297,6 +299,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 for (int i = 0; i < filterArray.length; i++) {
                     builder1.put("description", filterArray[i].toLowerCase());
                 }
+                if(filterArray.length > 0){
+                    navigationView.setCheckedItem(R.id.nav_filter);
+                }
             } else{
                 clearFiltersButton.setVisibility(View.INVISIBLE);
             }
@@ -304,7 +309,10 @@ public class MenuActivity extends AbstractGeoTaskActivity
             if (getSearchStatus()!= null){
                 clearFiltersButton.setVisibility(View.VISIBLE);
                 if(getSearchStatus().compareTo("All") ==0){
-                    clearFiltersButton.setVisibility(View.INVISIBLE);
+                    if(!showClear) {
+                        clearFiltersButton.setVisibility(View.INVISIBLE);
+                    }
+                    //TODO - uncomment when sync branch merged
                     //builder1.put("status", "requested");
                     //builder1.put("status", "bidded");
                 } else if (getSearchStatus().compareTo("Requested") == 0){
@@ -509,6 +517,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+        //navigationView.setCheckedItem(id);
         return true;
     }
 
