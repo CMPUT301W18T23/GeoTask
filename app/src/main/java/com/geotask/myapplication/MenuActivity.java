@@ -285,6 +285,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         } else if(getViewMode() == R.integer.MODE_INT_ASSIGNED) {
             setSearchStatus(null);
             builder1.put("status", "accepted");
+
         }
 
         //Add filter keywords to the builder if present
@@ -296,6 +297,8 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 for (int i = 0; i < filterArray.length; i++) {
                     builder1.put("description", filterArray[i].toLowerCase());
                 }
+            } else{
+                clearFiltersButton.setVisibility(View.INVISIBLE);
             }
 
             if (getSearchStatus()!= null){
@@ -310,9 +313,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
                     builder1.put("status", "bidded");
                 }
             }
-            if(!showClear){
-                clearFiltersButton.setVisibility(View.INVISIBLE);
-            }
+
         } catch (NullPointerException e) {
             e.printStackTrace();
         }

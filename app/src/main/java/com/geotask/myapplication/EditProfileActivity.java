@@ -136,4 +136,11 @@ public class EditProfileActivity extends AbstractGeoTaskActivity {
         }
         return true;
     }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(getBaseContext(), ViewProfileActivity.class);
+        intent.putExtra("user_being_viewed", getCurrentUser());
+        startActivity(intent);
+    }
 }

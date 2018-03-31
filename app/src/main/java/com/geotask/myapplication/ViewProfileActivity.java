@@ -179,6 +179,12 @@ public class ViewProfileActivity extends AbstractGeoTaskActivity implements Asyn
     }
 
     @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(getBaseContext(), MenuActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
     public void onPostExecute(GTData data) {
     }
 
