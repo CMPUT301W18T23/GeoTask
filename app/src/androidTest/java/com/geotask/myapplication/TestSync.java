@@ -25,7 +25,6 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -43,7 +42,7 @@ public class TestSync implements AsyncCallBackManager {
             new ActivityTestRule<>(MenuActivity.class, false, false);
 
     @Before
-    public void setUp() {
+    public void setUp() throws InterruptedException {
         controller.verifySettings();
         MasterController.verifySettings(InstrumentationRegistry.getTargetContext());
         MasterController.setTestSettings(TestServerAddress.getTestAddress());
@@ -81,7 +80,7 @@ public class TestSync implements AsyncCallBackManager {
         menuActivityRule.getActivity().setStarHash();
         menuActivityRule.launchActivity(intent);
 
-        TimeUnit.SECONDS.sleep(10);
+        Thread.sleep(5000);
 
         Task local = database.taskDAO().selectByID(task.getObjectID());
         assertNotNull(local);
@@ -123,7 +122,7 @@ public class TestSync implements AsyncCallBackManager {
         menuActivityRule.getActivity().setStarHash();
         menuActivityRule.launchActivity(intent);
 
-        TimeUnit.SECONDS.sleep(10);
+        Thread.sleep(5000);
 
         Task local = database.taskDAO().selectByID(task.getObjectID());
         assertNotNull(local);
@@ -175,7 +174,7 @@ public class TestSync implements AsyncCallBackManager {
         menuActivityRule.getActivity().setStarHash();
         menuActivityRule.launchActivity(intent);
 
-        Thread.sleep(2000);
+        Thread.sleep(5000);
         Task updated = database.taskDAO().selectByID("testSync");
 
         assertEquals(2.0, updated.getVersion());
@@ -216,7 +215,7 @@ public class TestSync implements AsyncCallBackManager {
         menuActivityRule.getActivity().setStarHash();
         menuActivityRule.launchActivity(intent);
 
-        Thread.sleep(3000);
+        Thread.sleep(5000);
 
         assertEquals(0, database.bidDAO().selectAll().size());
         assertEquals(0, database.taskDAO().selectAll().get(0).getBidList().size());
@@ -255,7 +254,7 @@ public class TestSync implements AsyncCallBackManager {
         menuActivityRule.getActivity().setStarHash();
         menuActivityRule.launchActivity(intent);
 
-        Thread.sleep(3000);
+        Thread.sleep(5000);
 
         Task remote = null;
         try {
@@ -295,7 +294,7 @@ public class TestSync implements AsyncCallBackManager {
         menuActivityRule.getActivity().setStarHash();
         menuActivityRule.launchActivity(intent);
 
-        Thread.sleep(3000);
+        Thread.sleep(5000);
 
         assertEquals(1, database.taskDAO().selectAll().get(0).getBidList().size());
         assertEquals(1, database.bidDAO().selectAll().size());
@@ -331,7 +330,7 @@ public class TestSync implements AsyncCallBackManager {
         menuActivityRule.getActivity().setStarHash();
         menuActivityRule.launchActivity(intent);
 
-        Thread.sleep(3000);
+        Thread.sleep(5000);
 
         assertEquals(0, database.taskDAO().selectAll().get(0).getBidList().size());
         assertEquals(0, database.bidDAO().selectAll().size());

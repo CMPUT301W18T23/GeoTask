@@ -296,7 +296,7 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
      * @return - true if starred, false if not starred
      */
     public static Boolean userStarred(String taskID){
-        if(starHash.containsKey(taskID)){
+        if(starHash!= null && starHash.containsKey(taskID)){
             return true;
         }
         return false;

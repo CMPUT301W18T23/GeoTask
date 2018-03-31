@@ -31,6 +31,12 @@ public class SQLQueryBuilder {
         }
     }
 
+    public void addColumns(String[] columns, String operator) {
+        for(String column : columns){
+            query1 += column + " " + operator + " ?";
+        }
+    }
+
     public void addParameters(String[] object) {
         this.object = object;
     }

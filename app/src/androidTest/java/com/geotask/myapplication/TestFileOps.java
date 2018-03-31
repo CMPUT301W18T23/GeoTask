@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
 @RunWith(AndroidJUnit4.class)
@@ -298,6 +299,31 @@ public class TestFileOps implements AsyncCallBackManager{
 
         assertEquals(1, resultList.size());
         assertEquals(bid.getObjectID(), resultList.get(0).getObjectID());
+    }
+
+    @Test
+    public void testMultiSearch() {
+        Task task = new Task("testMultiSearch", "testMultiSearch", "testMultiSearch");
+        dataBase.taskDAO().insert(task);
+
+        SQLQueryBuilder builder = new SQLQueryBuilder(Task.class);
+        builder.addColumns(new String[]{"status"}, "IN");
+        builder.addParameters(new String[]{"(provided|bidded)"});
+
+        MasterController.AsyncSearch asyncSearch =
+                new MasterController.AsyncSearch(this, InstrumentationRegistry.getTargetContext());
+        asyncSearch.execute(new AsyncArgumentWrapper(builder, Task.class));
+
+        List<Task> result = null;
+        try {
+            result = (List<Task>) asyncSearch.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        assertNotNull(result.get(0));
     }
 
     @Test

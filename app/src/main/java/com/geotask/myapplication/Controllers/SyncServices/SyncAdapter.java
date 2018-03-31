@@ -35,7 +35,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         controller.verifySettings();
         //controller.setTestSettings("cmput301w18t23test");
         if(database == null) {
-            Log.d("syncadapter", "open database");
+            Log.d("geotasksync", "open database");
             database = LocalDataBase.getDatabase(context);
         }
     }
@@ -51,7 +51,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         controller = new ElasticsearchController();
         controller.verifySettings();
         if(database == null) {
-            Log.d("syncadapter", "open database");
+            Log.d("geotasksync", "open database");
             database = LocalDataBase.getDatabase(context);
         }
     }
@@ -90,11 +90,13 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         try {
             remoteTaskList = (ArrayList<Task>) controller.search("", Task.class);
+            Log.d("geotasksync_remoteTAskList_size", String.valueOf(remoteTaskList.size()));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         localTaskList = (ArrayList<Task>) database.taskDAO().selectAll();
+        Log.d("geotasksync_localtasklist_size", String.valueOf(localTaskList.size()));
 
         JestResult result = null;
         double version;
@@ -140,6 +142,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         try {
             remoteTaskList = (ArrayList<Task>) controller.search("", Task.class);
             remoteBidList = (ArrayList<Bid>) controller.search("", Bid.class);
+            Log.d("geotasksync", "task: " + remoteTaskList.size() + " bid: " + remoteBidList.size());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -150,7 +153,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            database.taskDAO().update(task);
+            database.taskDAO().insert(task);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.geotask.myapplication;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -91,6 +92,11 @@ public class MenuActivity extends AbstractGeoTaskActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Bundle settings = new Bundle();
+        settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        settings.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        ContentResolver.requestSync(getAccount(), getString(R.string.SYNC_AUTHORITY), settings);
 
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
