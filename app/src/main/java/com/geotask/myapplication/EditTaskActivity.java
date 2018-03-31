@@ -63,7 +63,7 @@ public class EditTaskActivity extends AbstractGeoTaskActivity implements AsyncCa
      *handles data editing - called from editButton press
      * takes data from paramaters and sends to the update
      * returns udated task to update data
-     * @see TaskViewActivity
+     * @see ViewTaskActivity
      */
     private void editData() {
         String name =   editTitle.getText().toString();
@@ -114,7 +114,7 @@ public class EditTaskActivity extends AbstractGeoTaskActivity implements AsyncCa
      * gets all bids for the task
      * deletes them 1 by 1
      * then deletes task
-     * @see TaskViewActivity
+     * @see ViewTaskActivity
      */
     private void deleteData() {
 

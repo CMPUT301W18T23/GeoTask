@@ -45,8 +45,8 @@ public class TestStartFromViewTask {
     }
 
     @Rule
-    public ActivityTestRule<TaskViewActivity> activityRule
-            = new ActivityTestRule<>(TaskViewActivity.class, true, false);
+    public ActivityTestRule<ViewTaskActivity> activityRule
+            = new ActivityTestRule<>(ViewTaskActivity.class, true, false);
 
     @Test
     public void testEditTask() throws InterruptedException {
@@ -58,7 +58,7 @@ public class TestStartFromViewTask {
 
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
-        Intent result = new Intent(targetContext, TaskViewActivity.class);
+        Intent result = new Intent(targetContext, ViewTaskActivity.class);
 
         result.putExtra("task", task);
         result.putExtra("currentUser", user);
@@ -87,7 +87,7 @@ public class TestStartFromViewTask {
 
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
-        Intent result = new Intent(targetContext, TaskViewActivity.class);
+        Intent result = new Intent(targetContext, ViewTaskActivity.class);
 
         result.putExtra("task", task);
         result.putExtra("currentUser", user);

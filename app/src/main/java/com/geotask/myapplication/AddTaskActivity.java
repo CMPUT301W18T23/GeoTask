@@ -56,6 +56,8 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
         Picture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent(AddTaskActivity.this, SelectPhotoActivity.class);
+                startActivity(intent);
             }
         });
 

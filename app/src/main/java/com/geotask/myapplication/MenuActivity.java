@@ -116,7 +116,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         if((getTaskList() == null) || (getTaskList().size() == 0)) {
             setTaskList(new ArrayList<Task>());
         }
-        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), getLastClicked(), getCurrentUser());
         oldTasks.setAdapter(adapter);
 
         screenWidthInDPs = this.getScreenWidthInDPs();
@@ -196,9 +196,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
                     Log.i("click --->", "not-clicked");
                 }
                 Task task = getTaskList().get(position);
-                lastClickedTask = task;
-                Intent intent = new Intent(MenuActivity.this, TaskViewActivity.class);
-                setCurrentTask(lastClickedTask);
+                MenuActivity.setLastClicked(task);
+                Intent intent = new Intent(MenuActivity.this, ViewTaskActivity.class);
+                setCurrentTask(task);
                 startActivity(intent);
                 Log.i("LifeCycle --->", "after activity return");
             }
@@ -262,15 +262,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
         setOrientation();
     }
 
-
-    /**
-     * https://www.concretepage.com/android/android-local-bound-service-example-with-binder-and-serviceconnection
-     */
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
     /**
      * This function populates the listView by querying the server based on the view mode
      *
@@ -283,7 +274,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
             return;
         } else if (getViewMode() == R.integer.MODE_INT_HISTORY) {
             clearFiltersButton.setVisibility(View.VISIBLE);
-            adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
+            adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), getLastClicked(), getCurrentUser());
             oldTasks.setAdapter(adapter);
             adapter.notifyDataSetChanged();
             setEmptyString();
@@ -291,7 +282,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         } else if (getViewMode() == R.integer.MODE_INT_OTHERS_TASKS) {
             Log.i("other------>", String.format("%d", getViewMode()));
             clearFiltersButton.setVisibility(View.VISIBLE);
-            adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
+            adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), getLastClicked(), getCurrentUser());
             oldTasks.setAdapter(adapter);
             adapter.notifyDataSetChanged();
             setEmptyString();
@@ -384,7 +375,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
             }
         }
 
-        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), getLastClicked(), getCurrentUser());
         oldTasks.setAdapter(adapter);
         adapter.notifyDataSetChanged();
         setEmptyString();
@@ -538,14 +529,15 @@ public class MenuActivity extends AbstractGeoTaskActivity
     public void setStarredMode(){
         View snackView = getCurrentFocus();
         ArrayList<Task> starredTaskList = new ArrayList<Task>();
-        for(String taskID : getCurrentUser().getStarredList()){
+        //for(String taskID : getCurrentUser().getStarredList()){
+        for(String taskID : getStarHash().keySet()){
             MasterController.AsyncGetDocument asyncGetDocument =
                     new MasterController.AsyncGetDocument(this, this);
             asyncGetDocument.execute(new AsyncArgumentWrapper(taskID, Task.class));
             Task task = null;
             try {
                 task = (Task) asyncGetDocument.get();
-                starredTaskList.add(task);
+                //starredTaskList.add(task);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
@@ -556,12 +548,14 @@ public class MenuActivity extends AbstractGeoTaskActivity
             } else {
                 Snackbar.make(snackView, "Some tasks no longer exist and were removed", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                removeFromStarHash(taskID);
             }
         }
         setTaskList(starredTaskList);
-        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), getLastClicked(), getCurrentUser());
         oldTasks.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+        saveStarHashToServer();
         setEmptyString();
     }
 

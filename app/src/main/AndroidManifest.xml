@@ -37,12 +37,14 @@
             android:noHistory="true" />
         <activity
             android:name=".ViewBidsActivity"
-            android:noHistory="true" />
+            android:noHistory="true"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".EditTaskActivity"
             android:exported="true" />
-        <activity android:name=".TaskViewActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".ViewTaskActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".LoginActivity"
             android:noHistory="true">
@@ -56,9 +58,8 @@
         <activity
             android:name=".ViewProfileActivity"
             android:label="ViewProfileActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-        />
-        <!--/ -->
+            android:theme="@style/AppTheme.NoActionBar" />
+        <!-- / -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -95,6 +96,11 @@
             android:authorities="com.geotask.myapplication.provider"
             android:exported="false"
             android:syncable="true"/>
+        <activity
+            android:name="com.linchaolong.android.imagepicker.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat" />
+        <activity android:name=".SelectPhotoActivity" />
+        <activity android:name=".ViewPhotoActivity"></activity>
     </application>
 
 </manifest>

@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -40,7 +39,7 @@ import java.util.concurrent.ExecutionException;
  * going to profile if username is clicked on
  */
 //https://stackoverflow.com/questions/4127725/how-can-i-remove-a-button-or-make-it-invisible-in-android
-public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncCallBackManager {
+public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncCallBackManager {
     private TextView title;
     private TextView name;
     private TextView description;
@@ -50,7 +49,6 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
     private Button bidButton;
     private Button addBidButton;
     private Button doneButton;
-    private ImageView starIcon;
     private PopupWindow POPUP_WINDOW_DELETION = null;   //popup for error message
     private PopupWindow POPUP_WINDOW_DONE = null;   //popup for error message
     private User userBeingViewed;
@@ -96,18 +94,25 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
 
             }
         } else {
-            addBidButton.setVisibility(View.VISIBLE);
+            if ("Bidded".equals(getCurrentTask().getStatus())||"Requested".equals(getCurrentTask().getStatus())) {
+                addBidButton.setVisibility(View.VISIBLE);
+            } else {
+                addBidButton.setVisibility(View.INVISIBLE);
+            }
             doneButton.setVisibility(View.INVISIBLE);   // if not user hide done button
 
 
             //Increasing Hits
             Log.i("cur ------>", getCurrentTask().getObjectID());
             Log.i("cur ------>", getCurrentUser().getName());
-            if(!getCurrentUser().visited(getCurrentTask().getObjectID())) {
+
+            if(!userViewed(getCurrentTask().getObjectID())){
                 getCurrentTask().addHit();
                 MasterController.AsyncUpdateDocument asyncUpdateDocument =
                         new MasterController.AsyncUpdateDocument(this);
                 asyncUpdateDocument.execute(getCurrentTask());
+
+                saveHistoryHashToServer();
             }
             MasterController.AsyncUpdateDocument asyncUpdateDocument =
                     new MasterController.AsyncUpdateDocument(this);
@@ -118,6 +123,7 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
 
         }
         name.setPaintFlags(name.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        addBidButton.setVisibility(View.INVISIBLE);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -141,8 +147,9 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
         if((getCurrentUser().getObjectID().compareTo(getCurrentTask().getRequesterID()) != 0)
                 && (getCurrentTask().getStatus().toLowerCase().compareTo("accepted") != 0)
                 && (getCurrentTask().getStatus().toLowerCase().compareTo("completed") != 0)){
-            if (getCurrentUser().starred(getCurrentTask().getObjectID())) {
-                starBtn.setIcon(R.drawable.ic_star_white_24dp);
+            //if (getCurrentUser().starred(getCurrentTask().getObjectID())) {
+            if(userStarred(getCurrentTask().getObjectID())){
+                starBtn.setIcon(R.drawable.ic_star_yellow_24dp);
             } else {
                 starBtn.setIcon(R.drawable.ic_star_outline_white_24dp);
             }
@@ -163,25 +170,23 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_edit) {
-            Intent intent = new Intent(TaskViewActivity.this, EditTaskActivity.class);
+            Intent intent = new Intent(ViewTaskActivity.this, EditTaskActivity.class);
             startActivity(intent);
             return true;
         } else if (id == R.id.action_star) {
-            if (getCurrentUser().starred(getCurrentTask().getObjectID())) {
-                getCurrentUser().removeTaskFromStarredList(getCurrentTask().getObjectID());
+            if(userStarred(getCurrentTask().getObjectID())){
                 starBtn.setIcon(R.drawable.ic_star_outline_white_24dp);
+                toggleStar(getCurrentTask().getObjectID());
             } else {
-                getCurrentUser().addTaskToStarredList(getCurrentTask().getObjectID());
-                starBtn.setIcon(R.drawable.ic_star_white_24dp);
+                starBtn.setIcon(R.drawable.ic_star_yellow_24dp);
+                toggleStar(getCurrentTask().getObjectID());
             }
-            MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                    new MasterController.AsyncUpdateDocument(this);
-            asyncUpdateDocument.execute(getCurrentUser());
+            saveStarHashToServer();
             return true;
         } else if (id == R.id.action_delete){
             deleteData();
 
-            Intent intent = new Intent(TaskViewActivity.this, MenuActivity.class);
+            Intent intent = new Intent(ViewTaskActivity.this, MenuActivity.class);
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
@@ -193,7 +198,7 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
      * gets all bids for the task
      * deletes them 1 by 1
      * then deletes task
-     * @see TaskViewActivity
+     * @see ViewTaskActivity
      */
     private void deleteData() {
 
@@ -222,7 +227,7 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
 
         this.bidButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                Intent intent = new Intent(TaskViewActivity.this, ViewBidsActivity.class);
+                Intent intent = new Intent(ViewTaskActivity.this, ViewBidsActivity.class);
                 startActivityForResult(intent, 2);
                 updateStatus();  //for later ToDo ?????
             }
@@ -351,9 +356,24 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
     }
 
     public void triggerDone(View view){
-
         LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layout = layoutInflater.inflate(R.layout.task_completed_popup, null);
+
+        /*
+            Grabbing the accepted user in case we need to increment their completed tasks
+         */
+        User acceptedUser = null;
+        MasterController.AsyncGetDocument asyncGetDocument =
+                new MasterController.AsyncGetDocument(this);
+        asyncGetDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getAcceptedProviderID(), User.class));
+
+        try {
+            acceptedUser = (User) asyncGetDocument.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
 
         POPUP_WINDOW_DONE = new PopupWindow(this);
         POPUP_WINDOW_DONE.setContentView(layout);
@@ -372,27 +392,35 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
         });
 
         Button acceptBtn = (Button) layout.findViewById(R.id.btn_accept_done);
+        final User finalAcceptedUser = acceptedUser;
         acceptBtn.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                POPUP_WINDOW_DONE.dismiss();
-                Task newTask = getCurrentTask();
-                newTask.setStatusCompleted();
-                setCurrentTask(newTask);
-                MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                        new MasterController.AsyncUpdateDocument(getBaseContext());
-                asyncUpdateDocument.execute(getCurrentTask());
-                try {
-                    Thread.sleep(400);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                updateDisplayedValues();
+            /*
+                increment the user's completed tasks
+             */
+            finalAcceptedUser.incrementCompletedTasks();
+            MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                    new MasterController.AsyncUpdateDocument();
+            asyncUpdateDocument.execute(finalAcceptedUser);
+
+            POPUP_WINDOW_DONE.dismiss();
+            Task newTask = getCurrentTask();
+            newTask.setStatusCompleted();
+            setCurrentTask(newTask);
+            MasterController.AsyncUpdateDocument asyncUpdateDocument2 =
+                    new MasterController.AsyncUpdateDocument(getBaseContext());
+            asyncUpdateDocument2.execute(getCurrentTask());
+            try {
+                Thread.sleep(400);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            updateDisplayedValues();
             }
         });
-
     }
 
     /**
@@ -440,7 +468,7 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
         name.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(TaskViewActivity.this, ViewProfileActivity.class);
+                Intent intent = new Intent(ViewTaskActivity.this, ViewProfileActivity.class);
                 intent.putExtra(getString(R.string.VIEW_USER), userBeingViewed);
                 startActivity(intent);
             }
@@ -483,5 +511,13 @@ public class TaskViewActivity extends AbstractGeoTaskActivity  implements AsyncC
     public void onPostExecute(List<? extends GTData> dataList) {
     }
 
+
+    @Override
+    public void onBackPressed() {
+        MenuActivity.setLastClicked(getCurrentTask());
+        Intent intent = new Intent(getBaseContext(), MenuActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
 
 }

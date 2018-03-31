@@ -12,8 +12,8 @@ import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.R;
-import com.geotask.myapplication.TaskViewActivity;
 import com.geotask.myapplication.TestServerAddress;
+import com.geotask.myapplication.ViewTaskActivity;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -48,8 +48,8 @@ public class TestStory7TaskCompletionInteractions {
     }
 
     @Rule
-    public ActivityTestRule<TaskViewActivity> taskViewActivityActivityTestRule =
-            new ActivityTestRule<>(TaskViewActivity.class, false, false);
+    public ActivityTestRule<ViewTaskActivity> taskViewActivityActivityTestRule =
+            new ActivityTestRule<>(ViewTaskActivity.class, false, false);
 
     //7.a
     //part 5
@@ -89,7 +89,7 @@ public class TestStory7TaskCompletionInteractions {
 
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
-        Intent intent = new Intent(targetContext, TaskViewActivity.class);
+        Intent intent = new Intent(targetContext, ViewTaskActivity.class);
         intent.putExtra("currentUser", requester);
         intent.putExtra("task", task);
         taskViewActivityActivityTestRule.launchActivity(intent);

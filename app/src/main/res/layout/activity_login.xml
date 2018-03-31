@@ -15,7 +15,7 @@
         android:layout_marginTop="24dp"
         android:cropToPadding="false"
         android:scaleType="fitStart"
-        android:src="@drawable/geotaskicon3"
+        android:src="@drawable/geotaskicon22"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
