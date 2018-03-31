@@ -77,6 +77,8 @@ public class TestSync implements AsyncCallBackManager {
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(targetContext, MenuActivity.class);
         menuActivityRule.getActivity().setCurrentUser(user);
+        menuActivityRule.getActivity().setHistoryHash();
+        menuActivityRule.getActivity().setStarHash();
         menuActivityRule.launchActivity(intent);
 
         TimeUnit.SECONDS.sleep(10);
@@ -117,6 +119,8 @@ public class TestSync implements AsyncCallBackManager {
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(targetContext, MenuActivity.class);
         menuActivityRule.getActivity().setCurrentUser(user);
+        menuActivityRule.getActivity().setHistoryHash();
+        menuActivityRule.getActivity().setStarHash();
         menuActivityRule.launchActivity(intent);
 
         TimeUnit.SECONDS.sleep(10);
@@ -167,6 +171,8 @@ public class TestSync implements AsyncCallBackManager {
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(targetContext, MenuActivity.class);
         menuActivityRule.getActivity().setCurrentUser(user);
+        menuActivityRule.getActivity().setHistoryHash();
+        menuActivityRule.getActivity().setStarHash();
         menuActivityRule.launchActivity(intent);
 
         Thread.sleep(2000);
@@ -206,6 +212,8 @@ public class TestSync implements AsyncCallBackManager {
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(targetContext, MenuActivity.class);
         menuActivityRule.getActivity().setCurrentUser(user);
+        menuActivityRule.getActivity().setHistoryHash();
+        menuActivityRule.getActivity().setStarHash();
         menuActivityRule.launchActivity(intent);
 
         Thread.sleep(3000);
@@ -243,6 +251,8 @@ public class TestSync implements AsyncCallBackManager {
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(targetContext, MenuActivity.class);
         menuActivityRule.getActivity().setCurrentUser(user);
+        menuActivityRule.getActivity().setHistoryHash();
+        menuActivityRule.getActivity().setStarHash();
         menuActivityRule.launchActivity(intent);
 
         Thread.sleep(3000);
@@ -281,6 +291,8 @@ public class TestSync implements AsyncCallBackManager {
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(targetContext, MenuActivity.class);
         menuActivityRule.getActivity().setCurrentUser(user);
+        menuActivityRule.getActivity().setHistoryHash();
+        menuActivityRule.getActivity().setStarHash();
         menuActivityRule.launchActivity(intent);
 
         Thread.sleep(3000);
@@ -315,6 +327,8 @@ public class TestSync implements AsyncCallBackManager {
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(targetContext, MenuActivity.class);
         menuActivityRule.getActivity().setCurrentUser(user);
+        menuActivityRule.getActivity().setHistoryHash();
+        menuActivityRule.getActivity().setStarHash();
         menuActivityRule.launchActivity(intent);
 
         Thread.sleep(3000);

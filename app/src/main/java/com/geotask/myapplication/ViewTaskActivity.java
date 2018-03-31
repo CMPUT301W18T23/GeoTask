@@ -364,7 +364,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
          */
         User acceptedUser = null;
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this);
+                new MasterController.AsyncGetDocument(this, this);
         asyncGetDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getAcceptedProviderID(), User.class));
 
         try {
@@ -403,7 +403,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
              */
             finalAcceptedUser.incrementCompletedTasks();
             MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                    new MasterController.AsyncUpdateDocument();
+                    new MasterController.AsyncUpdateDocument(getBaseContext());
             asyncUpdateDocument.execute(finalAcceptedUser);
 
             POPUP_WINDOW_DONE.dismiss();

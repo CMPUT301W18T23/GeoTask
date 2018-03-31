@@ -16,8 +16,6 @@ import com.geotask.myapplication.DataClasses.Task;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import io.searchbox.client.JestResult;
-
 //https://developer.android.com/training/sync-adapters/creating-sync-adapter.html
 
 
@@ -67,70 +65,91 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
      */
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-        try {
-            remoteTaskList = (ArrayList<Task>) controller.search("", Task.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        localTaskList = (ArrayList<Task>) database.taskDAO().selectAll();
-
-        JestResult result = null;
-        double version;
-        for (Task localTask : localTaskList) {
-            if(remoteTaskList.contains(localTask)) {
-                try {
-                    result = controller.updateDocument(localTask, localTask.getVersion());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                if(result != null && result.getResponseCode() == 200) {
-                    localTask.setVersion((Double) result.getValue("_version"));
-                    database.taskDAO().update(localTask);
-
-//                    SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
-//                    builder.addColumns(new String[]{"taskID"});
-//                    builder.addParameters(new String[]{localTask.getObjectID()});
-//
-//                    localBidList = (ArrayList<Bid>) database.bidDAO().searchBidsByQuery(builder.build());
-//                    for(Bid bid : localBidList) {
-//                        try {
-//                            controller.createNewDocument(bid);
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-                } else if(result.getResponseCode() == 409) {
-                    database.bidDAO().deleteByTaskID(localTask.getObjectID());
-                    localTask.getBidList().clear();
-                    database.taskDAO().update(localTask);
-                }
-            } else {
-                try {
-                    version = controller.createNewDocument(localTask);
-                    localTask.setVersion(version);
-                    database.taskDAO().update(localTask);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+//        database.taskDAO().delete();
+//        database.bidDAO().delete();
 
         try {
             remoteTaskList = (ArrayList<Task>) controller.search("", Task.class);
             remoteBidList = (ArrayList<Bid>) controller.search("", Bid.class);
+            Log.d("SYNCADAPTER_SIZE", remoteBidList.size() + " " + remoteTaskList.size());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        for(Task task : remoteTaskList){
-            try {
-                task.setVersion(controller.getDocumentVersion(task.getObjectID()));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            database.taskDAO().update(task);
+        for(Task task: remoteTaskList){
+            database.taskDAO().insert(task);
         }
+        for(Bid bid : remoteBidList){
+            database.bidDAO().insert(bid);
+        }
+        remoteTaskList.clear();
+        remoteBidList.clear();
+
+
+//        try {
+//            remoteTaskList = (ArrayList<Task>) controller.search("", Task.class);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        localTaskList = (ArrayList<Task>) database.taskDAO().selectAll();
+//
+//        JestResult result = null;
+//        double version;
+//        for (Task localTask : localTaskList) {
+//            if(remoteTaskList.contains(localTask)) {
+//                try {
+//                    result = controller.updateDocument(localTask, localTask.getVersion());
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                if(result != null && result.getResponseCode() == 200) {
+//                    localTask.setVersion((Double) result.getValue("_version"));
+//                    database.taskDAO().update(localTask);
+//
+////                    SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
+////                    builder.addColumns(new String[]{"taskID"});
+////                    builder.addParameters(new String[]{localTask.getObjectID()});
+////
+////                    localBidList = (ArrayList<Bid>) database.bidDAO().searchBidsByQuery(builder.build());
+////                    for(Bid bid : localBidList) {
+////                        try {
+////                            controller.createNewDocument(bid);
+////                        } catch (IOException e) {
+////                            e.printStackTrace();
+////                        }
+////                    }
+//                } else if(result.getResponseCode() == 409) {
+//                    database.bidDAO().deleteByTaskID(localTask.getObjectID());
+//                    localTask.getBidList().clear();
+//                    database.taskDAO().update(localTask);
+//                }
+//            } else {
+//                try {
+//                    version = controller.createNewDocument(localTask);
+//                    localTask.setVersion(version);
+//                    database.taskDAO().update(localTask);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//
+//        try {
+//            remoteTaskList = (ArrayList<Task>) controller.search("", Task.class);
+//            remoteBidList = (ArrayList<Bid>) controller.search("", Bid.class);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        for(Task task : remoteTaskList){
+//            try {
+//                task.setVersion(controller.getDocumentVersion(task.getObjectID()));
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            database.taskDAO().update(task);
+//        }
     }
 }
 

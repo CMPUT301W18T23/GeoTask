@@ -1,5 +1,7 @@
 package com.geotask.myapplication;
 
+import android.accounts.Account;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -9,6 +11,7 @@ import android.widget.Toast;
 
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.MasterController;
+import com.geotask.myapplication.Controllers.SyncServices.CreateAccount;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.User;
 
@@ -19,13 +22,27 @@ import java.util.List;
 public class LoginActivity extends AbstractGeoTaskActivity implements AsyncCallBackManager {
 
     private EditText emailText;
-
+    private final CreateAccount createAccount = new CreateAccount();
+    private Account account;
+    private ContentResolver syncResolver;
     /**
      * Initiate variables, set on click listeners for buttons
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        account = createAccount.CreateAccount(this);
+        syncResolver = this.getContentResolver();
+        ContentResolver.addPeriodicSync(
+                account,
+                getString(R.string.SYNC_AUTHORITY),
+                Bundle.EMPTY, 900);
+
+        Bundle settings = new Bundle();
+        settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        settings.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        ContentResolver.requestSync(account, getString(R.string.SYNC_AUTHORITY), settings);
         setContentView(R.layout.activity_login);
 
         MasterController.verifySettings(this);
@@ -68,6 +85,8 @@ public class LoginActivity extends AbstractGeoTaskActivity implements AsyncCallB
                     .show();
         } else {
             setCurrentUser(user);
+            setHistoryHash();
+            setStarHash();
             Intent intent = new Intent(getBaseContext(), MenuActivity.class);
             startActivity(intent);
         }

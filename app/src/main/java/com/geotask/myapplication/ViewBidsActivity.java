@@ -296,7 +296,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         builder.put("taskID", getCurrentTask().getObjectID());
 
         MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this);
+                new MasterController.AsyncSearch(this, this);
         asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
 
         try {
@@ -304,7 +304,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
             //for(Bid bid : bidList){
                 if((bid.getObjectID().compareTo(keeper) !=0) && (bid.getProviderID().compareTo(getCurrentUser().getObjectID()) == 0)){
                     MasterController.AsyncDeleteDocument asyncDeleteDocument =
-                            new MasterController.AsyncDeleteDocument();
+                            new MasterController.AsyncDeleteDocument(this);
                     asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
                     if(bidList.contains(bid)){
                         bidList.remove(bid);
@@ -315,7 +315,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
             for(Bid bid : bidList){
                 if((bid.getObjectID().compareTo(keeper) !=0) && (bid.getProviderID().compareTo(getCurrentUser().getObjectID()) == 0)){
                     MasterController.AsyncDeleteDocument asyncDeleteDocument =
-                            new MasterController.AsyncDeleteDocument();
+                            new MasterController.AsyncDeleteDocument(this);
                     asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
                     if(bidList.contains(bid)){
                         bidList.remove(bid);
@@ -340,7 +340,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         deleteOldBids(bid.getObjectID());
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument();
+                new MasterController.AsyncCreateNewDocument(this);
         asyncCreateNewDocument.execute(bid);
 
         //populateBidView();

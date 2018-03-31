@@ -2,6 +2,7 @@ package com.geotask.myapplication;
 
 import android.accounts.Account;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
+import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +40,7 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
     private static HashMap<String, Boolean> historyHash;
     private static Task lastClickedTask = null;
     private static ContentResolver syncResolver;
+    private static Context context;
 
 
 
@@ -252,7 +255,7 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
         getCurrentUser().setHistoryList(newHistoryList);
 
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument();
+                new MasterController.AsyncUpdateDocument(context);
         asyncUpdateDocument.execute(getCurrentUser());
     }
 
@@ -333,7 +336,7 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
         getCurrentUser().setStarredList(newStarList);
 
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument();
+                new MasterController.AsyncUpdateDocument(context);
         asyncUpdateDocument.execute(getCurrentUser());
     }
 
@@ -348,7 +351,7 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
 
         //perform the search
         MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(callback);
+                new MasterController.AsyncSearch(callback, context);
         asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
 
         List<Bid> result = null;
@@ -385,7 +388,7 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
             getCurrentTask().setLowestBid(lowest);
             getCurrentTask().setNumBids(newBidList.size());
             MasterController.AsyncUpdateDocument asyncUpdateDocument =  //update the status
-                    new MasterController.AsyncUpdateDocument();
+                    new MasterController.AsyncUpdateDocument(context);
             asyncUpdateDocument.execute(getCurrentTask());
 
         } catch (ExecutionException e) {
@@ -418,5 +421,11 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        this.context = getBaseContext();
     }
 }

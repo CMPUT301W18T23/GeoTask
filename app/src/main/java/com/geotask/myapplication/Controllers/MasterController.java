@@ -67,6 +67,28 @@ public class MasterController {
     /**
      * AsyncTask for putting document into server
      */
+    public static class AuthenticateLogin extends AsyncTask<GTData, Void, Void> {
+
+        private Context context;
+
+        public AuthenticateLogin(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected Void doInBackground(GTData... datas) {
+            verifySettings(context);
+            for(GTData data : datas)
+                try {
+                    controller.createNewDocument(data);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            return null;
+        }
+    }
+
+
     public static class AsyncCreateNewDocument extends AsyncTask<GTData, Void, Void> {
 
         private Context context;
@@ -92,12 +114,7 @@ public class MasterController {
                     database.bidDAO().insert((Bid) data);
                 }
 
-                //ToDo JobScheduler
-//                try {
-//                    controller.createNewDocument(data);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
+                //ToDo JobSchedule
             }
             return null;
         }
