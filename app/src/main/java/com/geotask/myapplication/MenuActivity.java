@@ -118,6 +118,8 @@ public class MenuActivity extends AbstractGeoTaskActivity
             setSearchKeywords("");
         }
 
+        setSearchStatus("All");
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this,
@@ -152,6 +154,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 Snackbar.make(snackView, "Search Filters Cleared", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                 setSearchKeywords("");
+                setSearchStatus("All");
                 setViewMode(R.integer.MODE_INT_ALL);
                 populateTaskView();
                 clearFiltersButton.setVisibility(View.INVISIBLE);
@@ -273,22 +276,41 @@ public class MenuActivity extends AbstractGeoTaskActivity
 
         //Only show tasks created by the user
         if(getViewMode() == R.integer.MODE_INT_REQUESTER) {
+            setSearchStatus(null);
             builder1.put("requesterID", getCurrentUser().getObjectID());
         } else if(getViewMode() == R.integer.MODE_INT_ACCEPTED) {
+            setSearchStatus(null);
             builder1.put("requesterID", getCurrentUser().getObjectID());
             builder1.put("status", "accepted");
         } else if(getViewMode() == R.integer.MODE_INT_ASSIGNED) {
+            setSearchStatus(null);
             builder1.put("status", "accepted");
         }
 
         //Add filter keywords to the builder if present
         try {
+            Boolean showClear = false;
             if(!getSearchKeywords().equals("")) {
+                showClear = true;
                 clearFiltersButton.setVisibility(View.VISIBLE);
-                for(int i = 0; i < filterArray.length; i++) {
+                for (int i = 0; i < filterArray.length; i++) {
                     builder1.put("description", filterArray[i].toLowerCase());
                 }
-            } else {
+            }
+
+            if (getSearchStatus()!= null){
+                clearFiltersButton.setVisibility(View.VISIBLE);
+                if(getSearchStatus().compareTo("All") ==0){
+                    clearFiltersButton.setVisibility(View.INVISIBLE);
+                    //builder1.put("status", "requested");
+                    //builder1.put("status", "bidded");
+                } else if (getSearchStatus().compareTo("Requested") == 0){
+                    builder1.put("status", "requested");
+                } else if (getSearchStatus().compareTo("Bidded") == 0){
+                    builder1.put("status", "bidded");
+                }
+            }
+            if(!showClear){
                 clearFiltersButton.setVisibility(View.INVISIBLE);
             }
         } catch (NullPointerException e) {
@@ -421,6 +443,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
             getSupportActionBar().setTitle("All Tasks");
             setViewMode(R.integer.MODE_INT_ALL);
             setSearchKeywords("");
+            setSearchStatus("All");
             populateTaskView();
             adapter.notifyDataSetChanged();
 
@@ -479,6 +502,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
             getSupportActionBar().setTitle("All Tasks");
             Snackbar.make(snackView, "Changed view to \"All\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
+            setSearchStatus("All");
             populateTaskView();
         }
 

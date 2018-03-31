@@ -81,9 +81,10 @@ public class RegisterActivity extends AbstractGeoTaskActivity{
                     Toast.LENGTH_SHORT)
                     .show();
             return false;
-        }else if(newName.length() > 8){
+        }else if(newName.length() > 30){
             Toast.makeText(this,
-                    R.string.NAME_EXCEEDS_8_CHARACTER_WHEN_REGISTER_AND_EDIT_USER,
+                    //R.string.NAME_EXCEEDS_8_CHARACTER_WHEN_REGISTER_AND_EDIT_USER,
+                    "Name cannot exceed 30 characters",
                     Toast.LENGTH_SHORT)
                     .show();
             return false;

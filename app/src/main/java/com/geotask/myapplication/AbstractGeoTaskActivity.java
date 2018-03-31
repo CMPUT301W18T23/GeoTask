@@ -32,6 +32,7 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
     private static int viewMode = R.integer.MODE_INT_ALL;
     private static String searchKeywords;
     private static double searchRange;
+    private static String searchStatus;
     private static HashMap<String, Boolean> starHash;
     private static HashMap<String, Boolean> historyHash;
     private static Task lastClickedTask = null;
@@ -400,5 +401,13 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
     }
     public static Task getLastClicked(){
         return lastClickedTask;
+    }
+
+    public static String getSearchStatus() {
+        return searchStatus;
+    }
+
+    public static void setSearchStatus(String searchStatus) {
+        AbstractGeoTaskActivity.searchStatus = searchStatus;
     }
 }

@@ -41,7 +41,7 @@ public class LoginActivity extends AbstractGeoTaskActivity implements AsyncCallB
         //Sends the user to MenuActivity
         loginButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                login_check();
+                loginCheck();
             }
         });
 
@@ -60,7 +60,7 @@ public class LoginActivity extends AbstractGeoTaskActivity implements AsyncCallB
      * Check if the entered email for login is valid,
      * and log the user in with elastic search
      */
-    private void login_check() {
+    private void loginCheck() {
         String email = emailText.getText().toString().trim().toLowerCase();
 
         if(!MasterController.existsProfile(email)){
