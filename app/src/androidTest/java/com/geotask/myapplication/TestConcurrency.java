@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.searchbox.client.JestResult;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -94,20 +96,20 @@ public class TestConcurrency implements AsyncCallBackManager{
     public void testIndexingMultipleTimesShouldUpVersionNumber() {
         Task task = new Task("testIndexing", "testIndexing", "testIndexing");
 
-        double code = 0;
+        JestResult result = null;
         try {
-            code = controller.createNewDocument(task);
+            result = controller.createNewDocument(task);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        assertEquals(1.0, code);
+        assertEquals(1.0, result.getValue("_version"));
 
         try {
-            code = controller.createNewDocument(task);
+            result = controller.createNewDocument(task);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        assertEquals(2.0, code);
+        assertEquals(2.0, result.getValue("_version"));
     }
 
     @Override

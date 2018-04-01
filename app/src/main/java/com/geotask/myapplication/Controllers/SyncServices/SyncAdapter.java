@@ -99,11 +99,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         Log.d("geotasksync_localtasklist_size", String.valueOf(localTaskList.size()));
 
         JestResult result = null;
-        double version;
         for (Task localTask : localTaskList) {
             if(remoteTaskList.contains(localTask)) {
                 try {
                     result = controller.updateDocument(localTask, localTask.getVersion());
+                    localTask.setVersion((Double) result.getValue("_version"));
+                    database.taskDAO().update(localTask);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -130,8 +131,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 }
             } else {
                 try {
-                    version = controller.createNewDocument(localTask);
-                    localTask.setVersion(version);
+                    result = controller.createNewDocument(localTask);
+                    localTask.setVersion((Double) result.getValue("_version"));
                     database.taskDAO().update(localTask);
                 } catch (IOException e) {
                     e.printStackTrace();

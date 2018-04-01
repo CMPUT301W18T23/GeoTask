@@ -90,7 +90,7 @@ public class ElasticsearchController {
      * @param data - GTData that should be added to the database
      * @return - ID of the document
      */
-    public double createNewDocument(GTData data) throws IOException {
+    public JestResult createNewDocument(GTData data) throws IOException {
         data.setDate(new Date().getTime());
         Gson gson = new Gson();
         String json = gson.toJson(data);
@@ -101,7 +101,7 @@ public class ElasticsearchController {
                 .build();
 
         JestResult result = client.execute(request);
-        return (double) result.getValue("_version");
+        return result;
     }
 
     /**

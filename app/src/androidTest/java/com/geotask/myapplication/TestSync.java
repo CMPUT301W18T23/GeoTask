@@ -9,7 +9,6 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.ElasticsearchController;
-import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.LocalFilesOps.LocalDataBase;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
@@ -17,6 +16,7 @@ import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,7 +24,6 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -44,33 +43,47 @@ public class TestSync implements AsyncCallBackManager {
     @Before
     public void setUp() throws InterruptedException {
         controller.verifySettings();
+        database = LocalDataBase.getDatabase(InstrumentationRegistry.getTargetContext());
         MasterController.verifySettings(InstrumentationRegistry.getTargetContext());
         MasterController.setTestSettings(TestServerAddress.getTestAddress());
         try {
-            MasterController.deleteIndex();
             MasterController.createIndex();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         database = LocalDataBase.getDatabase(InstrumentationRegistry.getTargetContext());
         database.bidDAO().delete();
         database.taskDAO().delete();
         database.userDAO().delete();
     }
 
+    @After
+    public void tearDown() {
+
+    }
+
     @Test
     public void testSyncDown() throws InterruptedException, IOException {
         assertEquals(0, database.taskDAO().selectAll().size());
         assertEquals(0, database.bidDAO().selectAll().size());
+        assertNotNull(controller);
+        assertNotNull(database);
 
-        String userId = "testSync";
-        User user = new User("testSync", "testSync", "testSync");
-        user.setObjectID(userId);
-        Task task = new Task("testSync","testSync", "testSync");
+        String test = "testDown";
+        User user = new User(test, test, test);
+        user.setObjectID(test);
+        Task task = new Task(test, test, test);
 
         controller.createNewDocument(user);
         controller.createNewDocument(task);
+
+        assertEquals(0, database.taskDAO().selectAll().size());
+        assertEquals(0, database.bidDAO().selectAll().size());
+        try {
+            assertNotNull(controller.getDocument(test, Task.class));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
@@ -84,26 +97,15 @@ public class TestSync implements AsyncCallBackManager {
 
         Task local = database.taskDAO().selectByID(task.getObjectID());
         assertNotNull(local);
-
-        MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
-        asyncGetDocument.execute(new AsyncArgumentWrapper(task.getObjectID(), Task.class));
-
-        Task result = null;
-        try {
-            result = (Task) asyncGetDocument.get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        assertNotNull(result);
-        assertEquals(task.getObjectID(), result.getObjectID());
+        assertEquals(local, task);
     }
 
     @Test
     public void testSyncUp() throws InterruptedException {
         assertEquals(0, database.taskDAO().selectAll().size());
         assertEquals(0, database.bidDAO().selectAll().size());
+        assertNotNull(controller);
+        assertNotNull(database);
 
         Task task = new Task("testSyncUp", "testSyncUp", "testSyncUp");
 
@@ -124,35 +126,73 @@ public class TestSync implements AsyncCallBackManager {
 
         Thread.sleep(5000);
 
-        Task local = database.taskDAO().selectByID(task.getObjectID());
-        assertNotNull(local);
-
-        MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
-        asyncGetDocument.execute(new AsyncArgumentWrapper(task.getObjectID(), Task.class));
-
-        Task result = null;
+        Task remote = null;
         try {
-            result = (Task) asyncGetDocument.get();
-        } catch (ExecutionException e) {
+            remote = (Task) controller.getDocument(task.getObjectID(), Task.class);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-        assertNotNull(result);
-        assertEquals(task.getObjectID(), result.getObjectID());
+        assertNotNull(remote);
+        assertEquals(remote, task);
+    }
+
+    @Test
+    public void testSyncUpAndDown() throws InterruptedException {
+        assertEquals(0, database.taskDAO().selectAll().size());
+        assertEquals(0, database.bidDAO().selectAll().size());
+        assertNotNull(controller);
+        assertNotNull(database);
+
+        String test = "testSyncUpAndDown";
+        Task local = new Task(test,test,test);
+        Task remote = new Task(test,test,test);
+
+        database.taskDAO().insert(local);
+        try {
+            controller.createNewDocument(remote);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        User user = new User(test,test,test);
+        Context targetContext =
+                InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Intent intent = new Intent(targetContext, MenuActivity.class);
+        menuActivityRule.getActivity().setCurrentUser(user);
+        menuActivityRule.getActivity().setHistoryHash();
+        menuActivityRule.getActivity().setStarHash();
+        menuActivityRule.launchActivity(intent);
+
+        Thread.sleep(5000);
+
+        List<Task> localResult = null;
+        List<Task> remoteResult = null;
+
+        localResult = database.taskDAO().selectAll();
+        try {
+            remoteResult = (List<Task>) controller.search("", Task.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        assertNotNull(localResult);
+        assertNotNull(remoteResult);
+        assertEquals(2, localResult.size());
+        assertEquals(2, remoteResult.size());
     }
 
     @Test
     public void testConflictTaskEditedByFirstUserThenBiddedOnBySecondUser() throws InterruptedException {
-        String userId = "testSync";
-        User user = new User("testSync", "testSync", "testSync");
-        user.setObjectID(userId);
+        String test = "testConflictTaskEditedByFirstUserThenBiddedOnBySecondUser";
+        User user = new User(test, test, test);
+        user.setObjectID(test);
 
-        Task task = new Task("beforeEdit", "beforeEdit", "beforeEdit");
-        task.setObjectID("testSync");
-        database.taskDAO().insert(task);
+        Task task = new Task(test, test, test);
+        task.setObjectID(test);
 
         //server on version 2, client on version 1
+        database.taskDAO().insert(task);
         try {
             controller.createNewDocument(task);
             controller.updateDocument(task, task.getVersion());
@@ -160,7 +200,8 @@ public class TestSync implements AsyncCallBackManager {
             e.printStackTrace();
         }
 
-        Bid bid = new Bid(userId, 123.0, task.getObjectID());
+        //edit on local version 1 object
+        Bid bid = new Bid(test, 123.0, task.getObjectID());
         database.bidDAO().insert(bid);
         task.addBid(bid);
         assertEquals(1, database.bidDAO().selectAll().size());
@@ -175,7 +216,7 @@ public class TestSync implements AsyncCallBackManager {
         menuActivityRule.launchActivity(intent);
 
         Thread.sleep(5000);
-        Task updated = database.taskDAO().selectByID("testSync");
+        Task updated = database.taskDAO().selectByID(test);
 
         assertEquals(2.0, updated.getVersion());
         assertEquals(0, updated.getBidList().size());
