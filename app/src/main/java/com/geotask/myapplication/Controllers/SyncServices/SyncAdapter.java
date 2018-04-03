@@ -12,6 +12,7 @@ import com.geotask.myapplication.Controllers.ElasticsearchController;
 import com.geotask.myapplication.Controllers.LocalFilesOps.LocalDataBase;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
+import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -66,96 +67,74 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
      * @param syncResult sends information back to syncAdapter framework
      */
     @Override
-    public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-//        database.taskDAO().delete();
-//        database.bidDAO().delete();
-//
-//        try {
-//            remoteTaskList = (ArrayList<Task>) controller.search("", Task.class);
-//            remoteBidList = (ArrayList<Bid>) controller.search("", Bid.class);
-//            Log.d("SYNCADAPTER_SIZE", remoteBidList.size() + " " + remoteTaskList.size());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        for(Task task: remoteTaskList){
-//            database.taskDAO().insert(task);
-//        }
-//        for(Bid bid : remoteBidList){
-//            database.bidDAO().insert(bid);
-//        }
-//        remoteTaskList.clear();
-//        remoteBidList.clear();
+    public void onPerformSync(Account account,
+                              Bundle extras,
+                              String authority,
+                              ContentProviderClient provider,
+                              SyncResult syncResult) {
 
+        // select all locally edited or new queries
+        SQLQueryBuilder query = new SQLQueryBuilder(Task.class);
+        query.addColumns(new String[] {"flag"});
+        query.addParameters(new Boolean[] {true});
+        localTaskList = (ArrayList<Task>) database.taskDAO().searchTasksByQuery(query.build());
 
+        // get all tasks on server
         try {
             remoteTaskList = (ArrayList<Task>) controller.search("", Task.class);
             Log.d("geotasksync_remoteTAskList_size", String.valueOf(remoteTaskList.size()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) {e.printStackTrace();}
 
-        localTaskList = (ArrayList<Task>) database.taskDAO().selectAll();
-        Log.d("geotasksync_localtasklist_size", String.valueOf(localTaskList.size()));
-
-        JestResult result = null;
+        // compare data and sync
+        JestResult result;
         for (Task localTask : localTaskList) {
-            if(remoteTaskList.contains(localTask)) {
-                try {
+            try {
+                if(remoteTaskList.contains(localTask)) {
                     result = controller.updateDocument(localTask, localTask.getVersion());
-                    localTask.setVersion((Double) result.getValue("_version"));
-                    database.taskDAO().update(localTask);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                if(result != null && result.getResponseCode() == 200) {
-                    localTask.setVersion((Double) result.getValue("_version"));
-                    database.taskDAO().update(localTask);
-
-//                    SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
-//                    builder.addColumns(new String[]{"taskID"});
-//                    builder.addParameters(new String[]{localTask.getObjectID()});
-//
-//                    localBidList = (ArrayList<Bid>) database.bidDAO().searchBidsByQuery(builder.build());
-//                    for(Bid bid : localBidList) {
-//                        try {
-//                            controller.createNewDocument(bid);
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-                } else if(result.getResponseCode() == 409) {
-                    database.bidDAO().deleteByTaskID(localTask.getObjectID());
-                    localTask.getBidList().clear();
-                    database.taskDAO().update(localTask);
-                }
-            } else {
-                try {
+                    if(result.getResponseCode() == 409 && localTask.isClientOriginalFlag()) {//if document is edited locally
+                            merge(localTask, (Task) controller.getDocument(localTask.getObjectID(), Task.class));
+                            controller.updateDocument(localTask, localTask.getVersion());
+                    }
+                } else {
                     result = controller.createNewDocument(localTask);
                     localTask.setVersion((Double) result.getValue("_version"));
                     database.taskDAO().update(localTask);
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
-            }
+            } catch (Exception e) {e.printStackTrace();}
+        }
+
+        query = new SQLQueryBuilder(Bid.class);
+        query.addColumns(new String[] {"flag"});
+        query.addParameters(new Boolean[] {true});
+        localBidList = (ArrayList<Bid>) database.bidDAO().searchBidsByQuery(query.build());
+
+        for(Bid localBid : localBidList) {
+            try {
+                result = controller.createNewDocument(localBid);
+            } catch (Exception e) {e.printStackTrace();}
         }
 
         try {
             remoteTaskList = (ArrayList<Task>) controller.search("", Task.class);
             remoteBidList = (ArrayList<Bid>) controller.search("", Bid.class);
             Log.d("geotasksync", "task: " + remoteTaskList.size() + " bid: " + remoteBidList.size());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        for(Task task : remoteTaskList){
-            try {
+            database.taskDAO().delete();
+            for(Task task : remoteTaskList){
                 task.setVersion(controller.getDocumentVersion(task.getObjectID()));
-            } catch (IOException e) {
-                e.printStackTrace();
+                database.taskDAO().insert(task);
             }
-            database.taskDAO().insert(task);
-        }
+
+            database.bidDAO().delete();
+            for(Bid bid : remoteBidList){
+                database.bidDAO().insert(bid);
+            }
+        } catch (IOException e) {e.printStackTrace();}
+    }
+
+    private void merge(Task oldTask, Task newTask) {
+
     }
 }
+
 

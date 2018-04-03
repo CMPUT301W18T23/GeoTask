@@ -257,6 +257,7 @@ public class MasterController {
             verifySettings(context);
 
             for(GTData data: dataList) {
+                data.setClientOriginalFlag(true);
                 if (data instanceof Task){
                     database.taskDAO().update((Task) data);
                 } else if (data instanceof User) {

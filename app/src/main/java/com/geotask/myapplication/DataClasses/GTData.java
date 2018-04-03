@@ -25,6 +25,8 @@ public abstract class GTData implements Serializable{
     private long date;
     @ColumnInfo
     private double version = 1; //ToDo update version when edit
+    @ColumnInfo(name = "flag")
+    private transient boolean clientOriginalFlag = true;
 
     /**
      *sets the type of the data class
@@ -115,5 +117,13 @@ public abstract class GTData implements Serializable{
         int result = objectID.hashCode();
         result = 31 * result + type.hashCode();
         return result;
+    }
+
+    public boolean isClientOriginalFlag() {
+        return clientOriginalFlag;
+    }
+
+    public void setClientOriginalFlag(boolean clientOriginalFlag) {
+        this.clientOriginalFlag = clientOriginalFlag;
     }
 }

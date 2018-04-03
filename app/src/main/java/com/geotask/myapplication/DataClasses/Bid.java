@@ -21,6 +21,7 @@ public class Bid extends GTData implements Comparable{
 	@ColumnInfo(name = "task_id")
 	private String taskID;
 
+
 	@Ignore
 	public Bid(){};
 

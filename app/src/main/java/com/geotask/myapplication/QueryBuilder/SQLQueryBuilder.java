@@ -9,7 +9,7 @@ import java.lang.reflect.Type;
 
 public class SQLQueryBuilder {
     String query1;
-    private String[] object;
+    private Object[] object;
 
     public SQLQueryBuilder(Type type) {
         if(type.equals(Bid.class)){
@@ -18,8 +18,6 @@ public class SQLQueryBuilder {
             query1 = "SELECT * FROM tasks WHERE ";
         }
     }
-
-
 
     public SimpleSQLiteQuery build() {
         return new SimpleSQLiteQuery(query1, object);
@@ -37,7 +35,7 @@ public class SQLQueryBuilder {
         }
     }
 
-    public void addParameters(String[] object) {
+    public void addParameters(Object[] object) {
         this.object = object;
     }
 }

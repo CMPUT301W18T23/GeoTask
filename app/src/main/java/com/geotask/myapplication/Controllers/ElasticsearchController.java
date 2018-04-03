@@ -214,6 +214,7 @@ public class ElasticsearchController {
         } else if (type.equals(User.class)) {
             dataList = result.getSourceAsObjectList(User.class);
         }
+
         return dataList;
     }
 
