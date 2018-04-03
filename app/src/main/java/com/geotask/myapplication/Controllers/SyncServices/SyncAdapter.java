@@ -73,11 +73,16 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                               ContentProviderClient provider,
                               SyncResult syncResult) {
 
-        // select all locally edited or new queries
+        // select all locally edited or new tasks
         SQLQueryBuilder query = new SQLQueryBuilder(Task.class);
         query.addColumns(new String[] {"flag"});
         query.addParameters(new Boolean[] {true});
         localTaskList = (ArrayList<Task>) database.taskDAO().searchTasksByQuery(query.build());
+
+        query = new SQLQueryBuilder(Bid.class);
+        query.addColumns(new String[] {"flag"});
+        query.addParameters(new Boolean[] {true});
+        localBidList = (ArrayList<Bid>) database.bidDAO().searchBidsByQuery(query.build());
 
         // get all tasks on server
         try {
@@ -89,12 +94,15 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         JestResult result;
         for (Task localTask : localTaskList) {
             try {
+                //if local task was edited
                 if(remoteTaskList.contains(localTask)) {
                     result = controller.updateDocument(localTask, localTask.getVersion());
-                    if(result.getResponseCode() == 409 && localTask.isClientOriginalFlag()) {//if document is edited locally
-                            merge(localTask, (Task) controller.getDocument(localTask.getObjectID(), Task.class));
-                            controller.updateDocument(localTask, localTask.getVersion());
+                    if(result.getResponseCode() == 409 && localTask.isClientOriginalFlag()) {
+                        merge(localBidList, localTask,
+                                (Task) controller.getDocument(localTask.getObjectID(), Task.class));
+                        controller.updateDocument(localTask, localTask.getVersion());
                     }
+                //if local task was new
                 } else {
                     result = controller.createNewDocument(localTask);
                     localTask.setVersion((Double) result.getValue("_version"));
@@ -102,11 +110,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 }
             } catch (Exception e) {e.printStackTrace();}
         }
-
-        query = new SQLQueryBuilder(Bid.class);
-        query.addColumns(new String[] {"flag"});
-        query.addParameters(new Boolean[] {true});
-        localBidList = (ArrayList<Bid>) database.bidDAO().searchBidsByQuery(query.build());
 
         for(Bid localBid : localBidList) {
             try {
@@ -132,8 +135,19 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         } catch (IOException e) {e.printStackTrace();}
     }
 
-    private void merge(Task oldTask, Task newTask) {
-
+    //if local is edited and remote is edited by someone else
+    private void merge(ArrayList<Bid> localBidList, Task local, Task remote) {
+        //merge bidlist, add bids that weren't synced from server
+        for(Bid bid : localBidList){
+            if(bid.getTaskID() == local.getObjectID()) {
+                remote.addBid(bid);
+            }
+        }
+        if(local.isClientOriginalFlag()){ //local edited
+            local.setBidList(remote.getBidList()); //remote bidlist + local edits
+        } else { //local bidded on
+            local = remote; //remote bidlist + no local edits
+        }
     }
 }
 

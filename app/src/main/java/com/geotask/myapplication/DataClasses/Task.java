@@ -52,6 +52,8 @@ public class Task extends GTData implements Comparable{
 	private Double lowestBid;
 	@ColumnInfo
 	private Integer numBids;
+	@ColumnInfo
+	private transient boolean editedFlag;
 
 	public String getLocation() {
 		return location;
@@ -81,6 +83,7 @@ public class Task extends GTData implements Comparable{
 		this.location = location;
 		this.lowestBid = -1.0;
 		this.numBids = 0;
+		editedFlag = false;
 	}
 
 	/**
@@ -101,6 +104,7 @@ public class Task extends GTData implements Comparable{
 		this.requesterID = requesterID;
 		this.lowestBid = -1.0;
 		this.numBids = 0;
+		editedFlag = false;
 	}
 
 	/**
@@ -394,5 +398,17 @@ public class Task extends GTData implements Comparable{
 	@Override
 	public int hashCode() {
 		return super.hashCode();
+	}
+
+	public void setPhotoList(ArrayList<String> photoList) {
+		this.photoList = photoList;
+	}
+
+	public boolean isEditedFlag() {
+		return editedFlag;
+	}
+
+	public void setEditedFlag(boolean editedFlag) {
+		this.editedFlag = editedFlag;
 	}
 }

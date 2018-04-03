@@ -147,6 +147,7 @@ public class EditTaskActivity extends AbstractGeoTaskActivity implements AsyncCa
         //taskBeingEdited.syncBidData();
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
                 new MasterController.AsyncUpdateDocument(this);
+        getCurrentTask().setEditedFlag(true);
         asyncUpdateDocument.execute(getCurrentTask());
     }
 
