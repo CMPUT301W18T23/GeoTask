@@ -325,13 +325,15 @@ public class MenuActivity extends AbstractGeoTaskActivity
 
             if (getSearchStatus()!= null){
                 clearFiltersButton.setVisibility(View.VISIBLE);
-                if(getSearchStatus().compareTo("All") ==0){
-                    if(!showClear) {
-                        clearFiltersButton.setVisibility(View.INVISIBLE);
-                    }
-                    //TODO - uncomment when sync branch merged
-                    //builder1.put("status", "requested");
-                    //builder1.put("status", "bidded");
+                if(getViewMode() == R.integer.MODE_INT_ALL) {
+                    if(getSearchStatus().compareTo("All") ==0){
+                        if(!showClear) {
+                            clearFiltersButton.setVisibility(View.INVISIBLE);
+                        }
+                        //TODO - uncomment when sync branch merged
+                        //builder1.put("status", "requested");
+                        //builder1.put("status", "bidded");
+                }
                 } else if (getSearchStatus().compareTo("Requested") == 0){
                     builder1.put("status", "requested");
                 } else if (getSearchStatus().compareTo("Bidded") == 0){
