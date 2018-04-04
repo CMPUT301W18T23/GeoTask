@@ -4,13 +4,24 @@ package com.geotask.myapplication;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.geotask.myapplication.DataClasses.User;
+
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import static com.geotask.myapplication.AbstractGeoTaskActivity.setCurrentUser;
 
 @RunWith(AndroidJUnit4.class)
 public class TestFilter {
 
     @Rule
-    public ActivityTestRule<MenuActivity> menuActivityRule = new ActivityTestRule<>(MenuActivity.class);
+    public ActivityTestRule<MenuActivity> MenuActivity = new ActivityTestRule<>(MenuActivity.class);
 
+    @Test
+    public void Filter() {
+        User user = new User("kehan123456", "kehan1@gmail.com", "7801111111");
+        setCurrentUser(user);
+
+    }
 }

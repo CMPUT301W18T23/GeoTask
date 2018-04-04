@@ -406,14 +406,15 @@ public class TestElasticSearch implements AsyncCallBackManager {
         assertEquals(targetName, result.get(0).getName());
     }
 
+    //seems to not be passing because of duplcates - test server needs to be wiped for this to pass
     @Test
     public void testSearchUsers() throws InterruptedException {
         String targetUser = "target";
         User user1 = new User("user", "1@gmail.com", "5553333");
         User user2 = new User("user", "2@gmail.com", "6663333");
         User user3 = new User("user", "1@gmail.com", "7773333");
-        User user4 = new User("user", "1@yahoo.com", "8883333");
-        User user5 = new User(targetUser, "1@yahoo.ca", "8883333");
+        User user4 = new User("user", "1@yahoo.com", "88833334");
+        User user5 = new User(targetUser, "1@yahoo.ca", "88833334");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
                 new MasterController.AsyncCreateNewDocument();
@@ -422,7 +423,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
         TimeUnit.SECONDS.sleep(5);
 
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
-        builder1.put("phonenum", "8883333");
+        builder1.put("phonenum", "88833334");
         SuperBooleanBuilder builder2 = new SuperBooleanBuilder();
         builder2.put("email", "1@yahoo.ca");
 
@@ -442,7 +443,6 @@ public class TestElasticSearch implements AsyncCallBackManager {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-
         assertEquals(2, result1.size());
         assertEquals(1, result2.size());
         assertEquals(targetUser, result2.get(0).getName());
