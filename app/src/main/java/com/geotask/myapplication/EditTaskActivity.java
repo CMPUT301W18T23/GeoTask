@@ -118,28 +118,35 @@ public class EditTaskActivity extends AbstractGeoTaskActivity implements AsyncCa
      * @see ViewTaskActivity
      */
     private void deleteData() {
-        //TODO -- can't delete a task that is accepted or completed
-        SuperBooleanBuilder builder = new SuperBooleanBuilder();
-        builder.put("taskID", getCurrentTask().getObjectID());
+        String taskStatus = getCurrentTask().getStatus();
+        if(taskStatus.compareTo("Accepted") != 0 && taskStatus.compareTo("Completed") != 0) {
+            SuperBooleanBuilder builder = new SuperBooleanBuilder();
+            builder.put("taskID", getCurrentTask().getObjectID());
 
-        MasterController.AsyncDeleteDocument asyncDeleteTask =
-                new MasterController.AsyncDeleteDocument();
-        asyncDeleteTask.execute(new AsyncArgumentWrapper(getCurrentTask().getObjectID(), Task.class));
+            MasterController.AsyncDeleteDocument asyncDeleteTask =
+                    new MasterController.AsyncDeleteDocument();
+            asyncDeleteTask.execute(new AsyncArgumentWrapper(getCurrentTask().getObjectID(), Task.class));
 
-        MasterController.AsyncDeleteDocumentByQuery asyncDeleteDocumentByQuery =
-                new MasterController.AsyncDeleteDocumentByQuery();
-        asyncDeleteDocumentByQuery.execute(new AsyncArgumentWrapper(builder, Bid.class));
+            MasterController.AsyncDeleteDocumentByQuery asyncDeleteDocumentByQuery =
+                    new MasterController.AsyncDeleteDocumentByQuery();
+            asyncDeleteDocumentByQuery.execute(new AsyncArgumentWrapper(builder, Bid.class));
 
-        try {
-            Thread.sleep(400);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            try {
+                Thread.sleep(400);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            Intent back = new Intent();
+            back.putExtra("del", "1");
+            setResult(Activity.RESULT_OK, back);
+            finish();
+        } else {
+            Toast.makeText(this,
+                    R.string.CANT_DELETE_TASK,
+                    Toast.LENGTH_LONG)
+                    .show();
         }
-
-        Intent back = new Intent();
-        back.putExtra("del", "1");
-        setResult(Activity.RESULT_OK, back);
-        finish();
     }
 
 

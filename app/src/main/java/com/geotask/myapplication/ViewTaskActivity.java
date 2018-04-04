@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
@@ -185,10 +186,19 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
             saveStarHashToServer();
             return true;
         } else if (id == R.id.action_delete){
-            deleteData();
+            String taskStatus = getCurrentTask().getStatus();
+            if(taskStatus.compareTo("Accepted") != 0 && taskStatus.compareTo("Completed") != 0) {
+                deleteData();
 
-            Intent intent = new Intent(ViewTaskActivity.this, MenuActivity.class);
-            startActivity(intent);
+                Intent intent = new Intent(ViewTaskActivity.this, MenuActivity.class);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this,
+                        R.string.CANT_DELETE_TASK,
+                        Toast.LENGTH_LONG)
+                        .show();
+            }
+
         }
         return super.onOptionsItemSelected(item);
     }

@@ -64,7 +64,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        
+
         oldBids = findViewById(R.id.bidListView);
         bidList = new ArrayList<>();
         emptyText = (TextView) findViewById(R.id.empty_bid_string);
