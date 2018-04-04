@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.Espresso;
 import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.espresso.contrib.NavigationViewActions;
 import android.support.test.rule.ActivityTestRule;
@@ -26,6 +27,7 @@ import static android.support.test.espresso.contrib.DrawerMatchers.isClosed;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.geotask.myapplication.AbstractGeoTaskActivity.setCurrentUser;
 import static org.hamcrest.CoreMatchers.containsString;
 
 /**
@@ -41,27 +43,29 @@ public class TestEditProfile {
 
     @Test
     public void RegisterTest(){
-        User user = new User("kehan123456", "kehan1", "780");
+        User user = new User("kehan123456", "kehan1@gmail.com", "780");
         Intent intent = new Intent(InstrumentationRegistry.getInstrumentation().getTargetContext(), EditProfileActivity.class);
-        intent.putExtra("currentUser",user);
+        setCurrentUser(user);
         EditProfileActivity.launchActivity(intent);
 
 
         onView(withId(R.id.UserName)).perform(clearText(),typeText("kehan1234561"),closeSoftKeyboard())
                 .check(matches(withText(containsString("kehan123456"))));
 
-        onView(withId(R.id.UserEmail)).perform(clearText(),typeText("kehan11"),closeSoftKeyboard())
-                .check(matches(withText(containsString("kehan1"))));
+        onView(withId(R.id.UserEmail)).perform(clearText(),typeText("kehan11@gmail.com"),closeSoftKeyboard())
+                .check(matches(withText(containsString("kehan11@gmail.com"))));
 
-        onView(withId(R.id.UserPhone)).perform(clearText(),typeText("7801"),closeSoftKeyboard())
-                .check(matches(withText(containsString("780"))));
+        onView(withId(R.id.UserPhone)).perform(clearText(),typeText(String.valueOf("7802222")),closeSoftKeyboard())
+                .check(matches(withText(containsString("7802222"))));
 
         onView(withId(R.id.SaveEdit))
                 .perform(click());
 
-        onView(withId(R.id.drawer_layout))
-                .check(matches(isClosed(Gravity.LEFT)))
-                .perform(DrawerActions.open());
-        onView(withId(R.id.nav_view))
-                .perform(NavigationViewActions.navigateTo(R.id.nav_profile));}
+//        Espresso.pressBack();
+//        onView(withId(R.id.drawer_layout))
+//                .check(matches(isClosed(Gravity.LEFT)))
+//                .perform(DrawerActions.open());
+//        onView(withId(R.id.nav_view))
+//                .perform(NavigationViewActions.navigateTo(R.id.nav_profile));
+    }
 }

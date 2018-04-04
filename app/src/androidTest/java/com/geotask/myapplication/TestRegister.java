@@ -52,10 +52,10 @@ public class TestRegister {
         onView(withId(R.id.newName)).perform(clearText(),typeText("kehan123456"),closeSoftKeyboard());
         // .check(matches(withText("")));
 
-        onView(withId(R.id.newEmail)).perform(clearText(),typeText("kehan1"),closeSoftKeyboard());
+        onView(withId(R.id.newEmail)).perform(clearText(),typeText("kehan1@gmail.com"),closeSoftKeyboard());
         // .check(matches(withText("")));
 
-        onView(withId(R.id.newPhone)).perform(clearText(),typeText("780"),closeSoftKeyboard());
+        onView(withId(R.id.newPhone)).perform(clearText(),typeText(String.valueOf("7801111")),closeSoftKeyboard());
         // .check(matches(withText("")));
 
         onView(withId(R.id.newSave))

@@ -51,26 +51,26 @@ public class TestElasticSearch implements AsyncCallBackManager {
 //        }
    }
 
-    @Test
-    public void utility() {
-        MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this);
-        asyncGetDocument.execute(new AsyncArgumentWrapper("x8mc929sb1ni5si1", Task.class));
-
-        Task task = null;
-        try {
-            task = (Task) asyncGetDocument.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        task.setStatusCompleted();
-        MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument();
-        asyncUpdateDocument.execute(task);
-    }
+//    @Test
+//    public void utility() {
+//        MasterController.AsyncGetDocument asyncGetDocument =
+//                new MasterController.AsyncGetDocument(this);
+//        asyncGetDocument.execute(new AsyncArgumentWrapper("x8mc929sb1ni5si1", Task.class));
+//
+//        Task task = null;
+//        try {
+//            task = (Task) asyncGetDocument.get();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        } catch (ExecutionException e) {
+//            e.printStackTrace();
+//        }
+//
+//        task.setStatusCompleted();
+//        MasterController.AsyncUpdateDocument asyncUpdateDocument =
+//                new MasterController.AsyncUpdateDocument();
+//        asyncUpdateDocument.execute(task);
+//    }
 
     @Test
     //@Ignore
@@ -409,11 +409,11 @@ public class TestElasticSearch implements AsyncCallBackManager {
     @Test
     public void testSearchUsers() throws InterruptedException {
         String targetUser = "target";
-        User user1 = new User("user", "1@gmail.com", "555");
-        User user2 = new User("user", "2@gmail.com", "666");
-        User user3 = new User("user", "1@gmail.com", "777");
-        User user4 = new User("user", "1@yahoo.com", "888");
-        User user5 = new User(targetUser, "1@yahoo.ca", "888");
+        User user1 = new User("user", "1@gmail.com", "5553333");
+        User user2 = new User("user", "2@gmail.com", "6663333");
+        User user3 = new User("user", "1@gmail.com", "7773333");
+        User user4 = new User("user", "1@yahoo.com", "8883333");
+        User user5 = new User(targetUser, "1@yahoo.ca", "8883333");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
                 new MasterController.AsyncCreateNewDocument();
@@ -422,7 +422,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
         TimeUnit.SECONDS.sleep(5);
 
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
-        builder1.put("phonenum", "888");
+        builder1.put("phonenum", "8883333");
         SuperBooleanBuilder builder2 = new SuperBooleanBuilder();
         builder2.put("email", "1@yahoo.ca");
 
