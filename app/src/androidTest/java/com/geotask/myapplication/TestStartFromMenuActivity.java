@@ -54,11 +54,8 @@ public class TestStartFromMenuActivity  implements AsyncCallBackManager {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-
-
         setCurrentUser(user);
-
+        System.out.print("e");
 
         try {
             MasterController.deleteIndex();
@@ -96,6 +93,7 @@ public class TestStartFromMenuActivity  implements AsyncCallBackManager {
     @Rule
     public ActivityTestRule<MenuActivity> menuActivityRule = new ActivityTestRule<>(MenuActivity.class);
 
+    //TODO data seems to bot be set
     @Test
     public void testOnClickItemInListShouldOpenTaskDetail() {
         assertTrue(menuActivityRule.getActivity() != null);
