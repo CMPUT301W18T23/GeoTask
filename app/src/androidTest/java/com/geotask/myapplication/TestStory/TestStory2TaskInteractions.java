@@ -48,9 +48,9 @@ public class TestStory2TaskInteractions {
             e.printStackTrace();
         }
 
-        String newemail = "testEmail";
-        String newname = "testUserName";
-        String newphone = "123456789";
+        String newemail = "kehan1@ualberta.ca";
+        String newname = "KehanWang";
+        String newphone = "7808858151";
 
 
         User user = new User(newname, newemail, newphone);
@@ -63,8 +63,8 @@ public class TestStory2TaskInteractions {
                 new MasterController.AsyncCreateNewDocument();
         asyncCreateNewDocument.execute(task, user);
 
-
     }
+
 
     private ActivityTestRule<LoginActivity> LoginActivityTestRule =
             new ActivityTestRule<>(LoginActivity.class, false, false);
@@ -73,8 +73,8 @@ public class TestStory2TaskInteractions {
     @Test
     public void testViewTaskDetail() throws InterruptedException {
 
-        String newemail = "testEmail";
-        String newname = "testUserName";
+        String newemail = "kehan1@ualberta.ca";
+        String newname = "KehanWang";
         String title = "testViewTask";
         String desc = "testViewTaskDesc";
 
@@ -87,7 +87,7 @@ public class TestStory2TaskInteractions {
         onView(withId(R.id.loginButton)).perform(click());
 
         onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).perform(click());
-        onView(withId(R.id.textViewTitle)).check(matches(withText(containsString(title))));
+        onView(withId(R.id.textViewTitle)).check(matches(withText(title)));
         onView(withId(R.id.textViewName)).check(matches(withText(containsString(newname))));
         onView(withId(R.id.textViewDescription)).check(matches(withText(startsWith(desc))));
     }
@@ -96,8 +96,8 @@ public class TestStory2TaskInteractions {
     @Test
     public void testEditTaskDetail() throws InterruptedException {
 
-        String newemail = "testEmail";
-        String newname = "testUserName";
+        String newemail = "kehan1@ualberta.ca";
+        String newname = "KehanWang";
         String title = "testViewTask";
         String desc = "testViewTaskDesc";
 
@@ -112,7 +112,7 @@ public class TestStory2TaskInteractions {
 
         onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).perform(click());
 
-        //onView(withId(R.id.editTaskButton)).perform(click());
+        onView(withId(R.id.action_edit)).perform(click());
 
         onView(withId(R.id.editTitle)).perform(replaceText(title));
         onView(withId(R.id.editDescription)).perform(replaceText(desc));
@@ -121,8 +121,8 @@ public class TestStory2TaskInteractions {
 
         //onView(withId(R.id.editTaskButton)).perform(click());
 
-        onView(withId(R.id.editTitle)).check(matches(withText(startsWith(title))));
-        onView(withId(R.id.editDescription)).check(matches(withText(startsWith(desc))));
+        onView(withId(R.id.textViewTitle)).check(matches(withText(startsWith(title))));
+        onView(withId(R.id.textViewDescription)).check(matches(withText(startsWith(desc))));
 
     }
 }

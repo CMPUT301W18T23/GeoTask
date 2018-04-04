@@ -3,6 +3,7 @@ package com.geotask.myapplication.TestStory;
 import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.Espresso;
 import android.support.test.espresso.contrib.DrawerActions;
 import android.support.test.espresso.contrib.NavigationViewActions;
 import android.support.test.espresso.matcher.ViewMatchers;
@@ -172,7 +173,7 @@ public class TestStory1BasicUserInteractions {
         onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).perform(click());
 
         //onView(withId(R.id.editTaskButton)).perform(click());
-        onView(withId(R.id.deleteButton)).perform(click());
+        onView(withId(R.id.action_delete)).perform(click());
     }
 
     //1.e
