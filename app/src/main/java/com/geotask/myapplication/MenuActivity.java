@@ -8,6 +8,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
@@ -84,6 +85,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
     TextView drawerUsername;
     TextView drawerEmail;
     TextView emptyText;
+    SwipeRefreshLayout refreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +96,17 @@ public class MenuActivity extends AbstractGeoTaskActivity
         setSupportActionBar(toolbar);
         oldTasks = findViewById(R.id.taskListView);
         emptyText = findViewById(R.id.empty_task_string);
+        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshLayout.setRefreshing(true);
+                populateTaskView();
+                refreshLayout.setRefreshing(false);
+            }
+        });
+
+
         if((getTaskList() == null) || (getTaskList().size() == 0)) {
             setTaskList(new ArrayList<Task>());
         }
@@ -232,6 +245,8 @@ public class MenuActivity extends AbstractGeoTaskActivity
         drawerUsername = (TextView) headerView.findViewById(R.id.drawer_name);
         drawerEmail = (TextView) headerView.findViewById(R.id.drawer_email);
 
+
+
         //TODO - set drawerImage to user profile pic
         drawerUsername.setText(getCurrentUser().getName());
         drawerEmail.setText(getCurrentUser().getEmail());
@@ -245,6 +260,8 @@ public class MenuActivity extends AbstractGeoTaskActivity
         super.onRestart();
         setOrientation();
     }
+
+    
 
     /**
      * This function populates the listView by querying the server based on the view mode
