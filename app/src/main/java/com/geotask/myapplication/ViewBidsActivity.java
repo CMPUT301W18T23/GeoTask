@@ -48,6 +48,8 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
     private User profile;
     private Toolbar toolbar;
     private MenuItem bidBtn;
+    private Button acceptBtn;
+    private Button cancelBtn;
     SwipeRefreshLayout refreshLayout;
 
     /**
@@ -62,6 +64,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        
         oldBids = findViewById(R.id.bidListView);
         bidList = new ArrayList<>();
         emptyText = (TextView) findViewById(R.id.empty_bid_string);
@@ -273,7 +276,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
 
         final EditText value = (EditText) layout.findViewById(R.id.editTextAmmount);
 
-        Button cancelBtn = (Button) layout.findViewById(R.id.btn_cancel);
+        cancelBtn = (Button) layout.findViewById(R.id.btn_cancel);
         cancelBtn.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -283,7 +286,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
             }
         });
 
-        Button acceptBtn = (Button) layout.findViewById(R.id.btn_accept_bid);
+        acceptBtn = (Button) layout.findViewById(R.id.btn_accept_bid);
         acceptBtn.setOnClickListener(new View.OnClickListener()
         {
             @Override
