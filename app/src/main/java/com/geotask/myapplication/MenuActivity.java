@@ -261,7 +261,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         setOrientation();
     }
 
-    
+
 
     /**
      * This function populates the listView by querying the server based on the view mode
