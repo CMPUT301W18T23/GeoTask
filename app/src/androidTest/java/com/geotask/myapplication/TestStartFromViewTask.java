@@ -65,7 +65,7 @@ public class TestStartFromViewTask {
 
         activityRule.launchActivity(result);
 
-        onView(withId(R.id.editTaskButton)).perform(click());
+        //onView(withId(R.id.editTaskButton)).perform(click());
 
         onView(withId(R.id.editTitle)).perform(replaceText("updated_string"));
         onView(withId(R.id.editButton)).perform(click());
