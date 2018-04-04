@@ -48,7 +48,7 @@ public interface BidDAO {
      * wipes bids table, use responsibly
      */
     @Query("DELETE FROM bids")
-    void delete();
+    int delete();
 
     @Query("SELECT * FROM bids WHERE object_id LIKE :id")
     Bid selectByID(String id);

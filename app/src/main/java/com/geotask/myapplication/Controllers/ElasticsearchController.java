@@ -27,6 +27,7 @@ import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 import io.searchbox.indices.CreateIndex;
 import io.searchbox.indices.DeleteIndex;
+import io.searchbox.indices.Refresh;
 import io.searchbox.indices.mapping.PutMapping;
 import io.searchbox.params.Parameters;
 
@@ -281,5 +282,9 @@ public class ElasticsearchController {
 
         JestResult result = client.execute(request);
         return (double) result.getValue("_version");
+    }
+
+    public void refresh() throws IOException {
+        client.execute(new Refresh.Builder().build());
     }
 }

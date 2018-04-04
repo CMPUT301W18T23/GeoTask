@@ -78,16 +78,18 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         query.addColumns(new String[] {"flag"});
         query.addParameters(new Boolean[] {true});
         localTaskList = (ArrayList<Task>) database.taskDAO().searchTasksByQuery(query.build());
+        Log.d("geotasksync", "localTaskList_size = " + localTaskList.size());
 
         query = new SQLQueryBuilder(Bid.class);
         query.addColumns(new String[] {"flag"});
         query.addParameters(new Boolean[] {true});
         localBidList = (ArrayList<Bid>) database.bidDAO().searchBidsByQuery(query.build());
+        Log.d("geotasksync", "localBidList_size = " + localBidList.size());
 
         // get all tasks on server
         try {
             remoteTaskList = (ArrayList<Task>) controller.search("", Task.class);
-            Log.d("geotasksync_remoteTAskList_size", String.valueOf(remoteTaskList.size()));
+            Log.d("geotasksync", "remoteTAskList_size = " + remoteTaskList.size());
         } catch (IOException e) {e.printStackTrace();}
 
         // compare data and sync
@@ -96,14 +98,19 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             try {
                 //if local task was edited
                 if(remoteTaskList.contains(localTask)) {
+                    Log.d("geotasksync", "remote contains local");
                     result = controller.updateDocument(localTask, localTask.getVersion());
                     if(result.getResponseCode() == 409 && localTask.isClientOriginalFlag()) {
+                        Log.d("geotasksync", "local push rejected");
                         merge(localBidList, localTask,
                                 (Task) controller.getDocument(localTask.getObjectID(), Task.class));
-                        controller.updateDocument(localTask, localTask.getVersion());
+                        Log.d("geotasksync", "merged result = " + localTask.getBidList().size());
+                        result = controller.updateDocument(localTask, controller.getDocumentVersion(localTask.getObjectID()));
+                        Log.d("geotasksync", "409 update result = " + result.getJsonString());
                     }
                 //if local task was new
                 } else {
+                    Log.d("geotasksync", "remote does not contain local");
                     result = controller.createNewDocument(localTask);
                     localTask.setVersion((Double) result.getValue("_version"));
                     database.taskDAO().update(localTask);
@@ -111,43 +118,68 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             } catch (Exception e) {e.printStackTrace();}
         }
 
+        Log.d("geotasksync", "localbidlist size is still " + localBidList.size());
         for(Bid localBid : localBidList) {
             try {
-                result = controller.createNewDocument(localBid);
+                if(controller.getDocument(localBid.getTaskID(), Bid.class) != null) {
+                    result = controller.createNewDocument(localBid);
+                    Log.d("geotasksync", result.getJsonString());
+                }
             } catch (Exception e) {e.printStackTrace();}
+        }
+
+        try {
+            controller.refresh();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         try {
             remoteTaskList = (ArrayList<Task>) controller.search("", Task.class);
             remoteBidList = (ArrayList<Bid>) controller.search("", Bid.class);
-            Log.d("geotasksync", "task: " + remoteTaskList.size() + " bid: " + remoteBidList.size());
+            Log.d("geotasksync", "remote updated task: " + remoteTaskList.size() +
+                    ". remote updated bid: " + remoteBidList.size());
 
-            database.taskDAO().delete();
+            //database.taskDAO().delete();
+            Log.d("geotasksync", "task rows deleted = " + database.taskDAO().delete());
             for(Task task : remoteTaskList){
                 task.setVersion(controller.getDocumentVersion(task.getObjectID()));
                 database.taskDAO().insert(task);
             }
+            Log.d("geotasksync", "task size after pull = " + database.taskDAO().selectAll().size());
 
-            database.bidDAO().delete();
+            //database.bidDAO().delete();
+            Log.d("geotasksync", "bid rows deleted = " + database.bidDAO().delete());
             for(Bid bid : remoteBidList){
                 database.bidDAO().insert(bid);
             }
+            Log.d("geotasksync", "bid size after pull = " + database.bidDAO().selectAll().size());
         } catch (IOException e) {e.printStackTrace();}
     }
 
     //if local is edited and remote is edited by someone else
     private void merge(ArrayList<Bid> localBidList, Task local, Task remote) {
+        Log.d("geotasksync_merge", "merging");
+        Log.d("geotasksync_merge", localBidList.toString());
         //merge bidlist, add bids that weren't synced from server
         for(Bid bid : localBidList){
-            if(bid.getTaskID() == local.getObjectID()) {
+            Log.d("geotasksync_merge", bid.getTaskID() + " " + local.getObjectID());
+            Log.d("geotasksync_merge", String.valueOf(bid.getTaskID().equals(local.getObjectID())));
+            if(bid.getTaskID().equals(local.getObjectID())) {
                 remote.addBid(bid);
+                Log.d("geotasksync_merge", remote.getBidList().toString());
             }
         }
+        Log.d("geotasksync_merge", "merged bid list = " + remote.getBidList().toString());
+
         if(local.isClientOriginalFlag()){ //local edited
+            Log.d("geotasksync_merge", "local edited");
             local.setBidList(remote.getBidList()); //remote bidlist + local edits
         } else { //local bidded on
+            Log.d("geotasksync_merge", "local not edited");
             local = remote; //remote bidlist + no local edits
         }
+        Log.d("geotasksync_merge", "merged result = " + local.getBidList().size());
     }
 }
 

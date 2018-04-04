@@ -29,6 +29,13 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
+
+/**
+ * MUST run tests individually.
+ * MUST run tests individually.
+ * not guarranteed to pass entire test suite when ran together due to racing conditions caused by
+ * multithreading and networking
+ */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class TestSync implements AsyncCallBackManager {
@@ -47,6 +54,7 @@ public class TestSync implements AsyncCallBackManager {
         MasterController.verifySettings(InstrumentationRegistry.getTargetContext());
         MasterController.setTestSettings(TestServerAddress.getTestAddress());
         try {
+            MasterController.deleteIndex();
             MasterController.createIndex();
         } catch (IOException e) {
             e.printStackTrace();
@@ -138,7 +146,7 @@ public class TestSync implements AsyncCallBackManager {
     }
 
     @Test
-    public void testSyncUpAndDown() throws InterruptedException {
+    public void testSyncUpAndDown() throws Exception {
         assertEquals(0, database.taskDAO().selectAll().size());
         assertEquals(0, database.bidDAO().selectAll().size());
         assertNotNull(controller);
@@ -154,6 +162,8 @@ public class TestSync implements AsyncCallBackManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        assertNotNull(controller.getDocument(remote.getObjectID(), Task.class));
 
         User user = new User(test,test,test);
         Context targetContext =
@@ -183,8 +193,8 @@ public class TestSync implements AsyncCallBackManager {
     }
 
     @Test
-    public void testConflictTaskEditedByFirstUserThenBiddedOnBySecondUser() throws InterruptedException {
-        String test = "testConflictTaskEditedByFirstUserThenBiddedOnBySecondUser";
+    public void testConflictTaskEditedByOfflineUserThenBiddedOnByOnlineUser() throws InterruptedException {
+        String test = "testConflictTaskEditedByOfflineUserThenBiddedOnByOnlineUser";
         User user = new User(test, test, test);
         user.setObjectID(test);
 
@@ -218,112 +228,28 @@ public class TestSync implements AsyncCallBackManager {
         Thread.sleep(5000);
         Task updated = database.taskDAO().selectByID(test);
 
-        assertEquals(2.0, updated.getVersion());
-        assertEquals(0, updated.getBidList().size());
-        assertEquals(0, database.bidDAO().selectAll().size());
-    }
-
-    @Test
-    public void testConflictAcceptingBidThatWasAlreadyDeletedFromServer() throws InterruptedException {
-        String Id = "testSync";
-        User user = new User("testSync", "testSync", "testSync");
-        user.setObjectID(Id);
-
-        Task task = new Task("beforeEdit", "beforeEdit", "beforeEdit");
-        task.setObjectID(Id);
-
-        try {
-            controller.createNewDocument(task);
-            controller.updateDocument(task, task.getVersion());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-        Bid bid = new Bid(Id, 22.0, Id);
-        task.addBid(bid);
-
-        database.bidDAO().insert(bid);
-        database.taskDAO().insert(task);
-        assertEquals(1, database.taskDAO().selectAll().get(0).getBidList().size());
-
-
-        Context targetContext =
-                InstrumentationRegistry.getInstrumentation().getTargetContext();
-        Intent intent = new Intent(targetContext, MenuActivity.class);
-        menuActivityRule.getActivity().setCurrentUser(user);
-        menuActivityRule.getActivity().setHistoryHash();
-        menuActivityRule.getActivity().setStarHash();
-        menuActivityRule.launchActivity(intent);
-
-        Thread.sleep(5000);
-
-        assertEquals(0, database.bidDAO().selectAll().size());
-        assertEquals(0, database.taskDAO().selectAll().get(0).getBidList().size());
-    }
-
-    @Test
-    public void testConflictTaskWasBiddedOnBySecondUserDuringEditingTaskByFirstUser() throws InterruptedException {
-        String Id = "testSync";
-        User user = new User("testSync", "testSync", "testSync");
-        user.setObjectID(Id);
-
-        Task task = new Task("beforeEdit", "beforeEdit", "beforeEdit");
-        task.setObjectID(Id);
-
-        Bid bid = new Bid(Id, 22.0, Id);
-        task.addBid(bid);
-
-        try {
-            controller.createNewDocument(task);
-            controller.createNewDocument(bid);
-            controller.updateDocument(task, task.getVersion());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-        task.setDescription("afterEdit");
-        database.taskDAO().insert(task);
-
-
-        Context targetContext =
-                InstrumentationRegistry.getInstrumentation().getTargetContext();
-        Intent intent = new Intent(targetContext, MenuActivity.class);
-        menuActivityRule.getActivity().setCurrentUser(user);
-        menuActivityRule.getActivity().setHistoryHash();
-        menuActivityRule.getActivity().setStarHash();
-        menuActivityRule.launchActivity(intent);
-
-        Thread.sleep(5000);
-
-        Task remote = null;
-        try {
-            remote = (Task) controller.getDocument(Id, Task.class);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        assertEquals("afterEdit", remote.getDescription());
-        assertEquals("afterEdit", database.taskDAO().selectAll().get(0).getDescription());
+        assertEquals(3.0, updated.getVersion());
+        assertEquals(1, updated.getBidList().size());
         assertEquals(1, database.bidDAO().selectAll().size());
     }
 
     @Test
     public void testBidLocalShouldBeAddedToServer() throws InterruptedException {
-        String Id = "testSync";
-        User user = new User("testSync", "testSync", "testSync");
-        user.setObjectID(Id);
+        String test = "testBidLocalShouldBeAddedToServer";
+        User user = new User(test,test,test);
+        user.setObjectID(test);
 
-        Task task = new Task("beforeEdit", "beforeEdit", "beforeEdit");
-        task.setObjectID(Id);
+        Task task = new Task(test,test,test);
+        task.setObjectID(test);
 
-        Bid bid = new Bid(Id, 22.0, Id);
-        task.addBid(bid);
         try {
             controller.createNewDocument(task);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        Bid bid = new Bid(test, 22.0, test);
+        task.addBid(bid);
         database.taskDAO().insert(task);
         database.bidDAO().insert(bid);
 
@@ -339,29 +265,35 @@ public class TestSync implements AsyncCallBackManager {
 
         assertEquals(1, database.taskDAO().selectAll().get(0).getBidList().size());
         assertEquals(1, database.bidDAO().selectAll().size());
-        Bid remote = null;
+        List<Bid> remote = null;
         try {
-            controller.getDocument(bid.getObjectID(), Bid.class);
+            remote = (List<Bid>) controller.search("", Bid.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
         assertNotNull(remote);
+        assertEquals(bid, remote.get(0));
     }
 
     @Test
     public void testBidLocalShouldNotBeAddedToServerIfTaskNoLongerExistsOnServer() throws InterruptedException {
-        String Id = "testSync";
-        User user = new User("testSync", "testSync", "testSync");
-        user.setObjectID(Id);
+        String test = "testBidLocalShouldNotBeAddedToServerIfTaskNoLongerExistsOnServer";
+        User user = new User(test,test,test);
+        user.setObjectID(test);
 
-        Task task = new Task("beforeEdit", "beforeEdit", "beforeEdit");
-        task.setObjectID(Id);
+        Task task = new Task(test,test,test);
+        task.setObjectID(test);
+        task.setClientOriginalFlag(false);
 
-        Bid bid = new Bid(Id, 22.0, Id);
-        task.addBid(bid);
+        Bid bid1 = new Bid(test, 22.0, test);
+        task.addBid(bid1);
+        Bid bid2 = new Bid(test, 23.0, test);
+        bid2.setClientOriginalFlag(false);
+        task.addBid(bid2);
 
         database.taskDAO().insert(task);
-        database.bidDAO().insert(bid);
+        database.bidDAO().insert(bid1);
+        database.bidDAO().insert(bid2);
 
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
@@ -373,11 +305,11 @@ public class TestSync implements AsyncCallBackManager {
 
         Thread.sleep(5000);
 
-        assertEquals(0, database.taskDAO().selectAll().get(0).getBidList().size());
-        assertEquals(0, database.bidDAO().selectAll().size());
+        assertEquals(0, database.taskDAO().selectAll().size());
+        assertEquals(0,database.bidDAO().selectAll().size());
         Bid remote = null;
         try {
-            controller.getDocument(bid.getObjectID(), Bid.class);
+            remote = (Bid) controller.search("", Bid.class);
         } catch (Exception e) {
             e.printStackTrace();
         }

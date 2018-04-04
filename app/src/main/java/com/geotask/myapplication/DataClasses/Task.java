@@ -411,4 +411,5 @@ public class Task extends GTData implements Comparable{
 	public void setEditedFlag(boolean editedFlag) {
 		this.editedFlag = editedFlag;
 	}
+
 }
