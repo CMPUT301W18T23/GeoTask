@@ -26,6 +26,9 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.geotask.myapplication.AbstractGeoTaskActivity.getCurrentTask;
+import static com.geotask.myapplication.AbstractGeoTaskActivity.setCurrentTask;
+import static com.geotask.myapplication.AbstractGeoTaskActivity.setCurrentUser;
 import static org.hamcrest.CoreMatchers.containsString;
 
 //https://developer.android.com/training/testing/espresso/recipes.html
@@ -55,17 +58,18 @@ public class TestStartFromViewTask {
         Task task = new Task(targetUserId, "TestTest", "TestTest", "2234");
         User user = new User("testtestUser", "testtestUser", "testtestUser");
         user.setObjectID(targetUserId);
-
+        task.setObjectID(targetUserId);
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent result = new Intent(targetContext, ViewTaskActivity.class);
 
-        result.putExtra("task", task);
-        result.putExtra("currentUser", user);
+        setCurrentUser(user);
+        setCurrentTask(task);
+
 
         activityRule.launchActivity(result);
 
-        //onView(withId(R.id.editTaskButton)).perform(click());
+        onView(withId(R.id.action_edit)).perform(click());
 
         onView(withId(R.id.editTitle)).perform(replaceText("updated_string"));
         onView(withId(R.id.editButton)).perform(click());
@@ -77,21 +81,21 @@ public class TestStartFromViewTask {
     public void testAddBidShouldLetYouAddBidIfProviderModeAndNotYourOwnTask() {
 
 
-
+        String taskObjectId = "testTaskThatIsNotYourOwnBid123";
+//        String taslID = "testing123";
         String targetUserId = "testAddBidShouldLetYouAddBidIfProviderModeAndNotYourOwnTask_id";
         String requesterId = "testAddBidShouldLetYouAddBidIfProviderModeAndNotYourOwnTask_id2";
         Task task = new Task(targetUserId, "TestTest", "TestTest", "2234");
         User user = new User("testtestUser", "testtestUser", "testtestUser");
         user.setObjectID(targetUserId);
         task.setRequesterID(requesterId);
-
+//        task.setObjectID(taskObjectId);
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent result = new Intent(targetContext, ViewTaskActivity.class);
 
-        result.putExtra("task", task);
-        result.putExtra("currentUser", user);
-
+        setCurrentUser(user);
+        setCurrentTask(task);
         activityRule.launchActivity(result);
 
 

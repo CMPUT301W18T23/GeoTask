@@ -355,6 +355,11 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         });
 
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateDisplayedValues();
+    }
 
     public void triggerDone(View view){
         LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

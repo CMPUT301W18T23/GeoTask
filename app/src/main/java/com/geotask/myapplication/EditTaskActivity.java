@@ -91,8 +91,11 @@ public class EditTaskActivity extends AbstractGeoTaskActivity implements AsyncCa
                     Toast.LENGTH_SHORT)
                     .show();
         } else {
-            getCurrentTask().setName(name);
-            getCurrentTask().setDescription(description);
+            Task update = getCurrentTask();
+            update.setName(name);
+            update.setDescription(description);
+            setCurrentTask(update);
+//            getCurrentTask().setDescription(description);
 
             updateTask();
 
