@@ -11,6 +11,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -42,9 +43,9 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
     private String coordString;
 
     /**
-     *sets up buttons
-     * @param savedInstanceState
-     * nothing is returned
+     * sets up buttons
+     *
+     * @param savedInstanceState nothing is returned
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,61 +87,39 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
     }
 
     /**
-     *gets text for adding task,
+     * gets text for adding task,
      * checks if it is valid,
      * then adds a new task through master controller
      * if text is not valid it notifies the user
      * no paramaters or return values
      * uses UserEntryStringValidator to validate if the text is correct
+     *
      * @see UserEntryStringValidator
      */
-    private void addTask(){
+    private void addTask() {
         Save.setEnabled(false);
         String titleString = Title.getText().toString().trim();
         String descriptionString = Description.getText().toString().trim();
 
         //check if location permission is given, if not just make location = ""
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED){
-            //permission already granted, get the last location
-            mFusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            // Got last known location. In some rare situations this can be null.
-                            if (location != null) {
-                                //set coordString to the correct location, formatted
-                                coordString = Double.toString(location.getLatitude()) + "," + Double.toString(location.getLongitude());
-                            }
-                            else { coordString = ""; }
-                        }
-                    });
-        }
-        else {
-            //permission not granted, ask for permission
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    1);         //defining 1 to be the requestCode for accessing fine location
+        retrieveLocation();
 
-        }
-        //end of permission check/request
-
-        if(titleString.length() > 30) {
+        if (titleString.length() > 30) {
             Toast.makeText(this,
                     getString(R.string.TASK_TITLE_TOO_LONG),
                     Toast.LENGTH_LONG)
                     .show();
-        } else if(titleString.length() <= 0) {
+        } else if (titleString.length() <= 0) {
             Toast.makeText(this,
                     getString(R.string.TASK_TITLE_EMPTY),
                     Toast.LENGTH_SHORT)
                     .show();
-        } else if(descriptionString.length() > 300) {
+        } else if (descriptionString.length() > 300) {
             Toast.makeText(this,
                     getString(R.string.TASK_DESCRIPTION_TOO_LONG),
                     Toast.LENGTH_LONG)
                     .show();
-        } else if(descriptionString.length() <= 0) {
+        } else if (descriptionString.length() <= 0) {
             Toast.makeText(this,
                     getString(R.string.TASK_DESCRIPTION_EMPTY),
                     Toast.LENGTH_SHORT)
@@ -163,6 +142,38 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
         }
     }
 
+    public void retrieveLocation() {
+        Log.e("testing", "retrieving location");
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            //permission already granted, get the last location
+            mFusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            Log.e("testing", "onSuccess");
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                Log.e("testing", "loc is not null");
+                                //set coordString to the correct location, formatted
+                                coordString = Double.toString(location.getLatitude()).trim()
+                                        + "," + Double.toString(location.getLongitude()).trim();
+                            } else {
+                                Log.e("testing", "location was null, setting coord to \"\"");
+                                coordString = "";
+                            }
+                        }
+                    });
+        } else {
+            //permission not granted, ask for permission
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    1);         //defining 1 to be the requestCode for accessing fine location
+
+        }
+        //end of permission check/request
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -171,25 +182,11 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED){
-                            mFusedLocationClient.getLastLocation()
-                                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                                        @Override
-                                        public void onSuccess(Location location) {
-                                            // Got last known location. In some rare situations this can be null.
-                                            if (location != null) {
-                                                //give server the correct location, formatted as a string: "aa.bb,cc.dd"
-                                                coordString = Double.toString(location.getLatitude()) + "," + Double.toString(location.getLongitude());
-                                            } else {
-                                                coordString = "";
-                                            }
-                                        }
-                                    });
-                    }
+                    retrieveLocation();
 
                 } else {
                     //permission was denied
+                    Log.e("testing", "permission explicitly denied, setting coord to \"\"");
                     coordString = "";
                 }
                 return;
@@ -197,4 +194,3 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
         }
     }
 }
-

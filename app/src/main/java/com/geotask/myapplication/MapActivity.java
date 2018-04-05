@@ -13,8 +13,14 @@
 
 package com.geotask.myapplication;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
@@ -22,6 +28,7 @@ import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -29,6 +36,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -43,6 +51,9 @@ import static com.geotask.myapplication.AbstractGeoTaskActivity.getTaskList;
 
 public class MapActivity extends AbstractGeoTaskActivity implements OnMapReadyCallback {
     private ArrayList<Task> taskList = getTaskList();
+    private FusedLocationProviderClient mFusedLocationClient; //for location grabbing
+    private Double user_locationX;
+    private Double user_locationY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,12 +71,14 @@ public class MapActivity extends AbstractGeoTaskActivity implements OnMapReadyCa
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        // add a default marker at and move camera to user location
-        LatLng user_location = new LatLng( 53.523, -113.526);//getCurrentUser().getLocationX(), getCurrentUser().getLocationY()); //get user location, input as floats to the LatLng function
+        // add a "You are here" marker at and move camera to user location
+        retrieveLocation();     //get user location, input as floats to the LatLng function
+        LatLng user_location = new LatLng(user_locationX, user_locationY);
         googleMap.addMarker(new MarkerOptions().position(user_location)
                 .title("You are here."));
         googleMap.moveCamera(CameraUpdateFactory.zoomTo(13));
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(user_location));
+
 
         //add a marker for each task with a location
         for (int i = 0; i < taskList.size(); i++) {
@@ -81,4 +94,59 @@ public class MapActivity extends AbstractGeoTaskActivity implements OnMapReadyCa
         }
 
     }
+
+    public void retrieveLocation() {
+        Log.e("testing", "retrieving user location");
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            //permission already granted, get the last location
+            mFusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            Log.e("testing", "onSuccess");
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                Log.e("testing", "loc is not null");
+                                //set coordString to the correct location, formatted
+                                user_locationX = location.getLatitude();
+                                user_locationY = location.getLongitude();
+                            } else {
+                                Log.e("testing", "location was null, setting user_location to \"\"");
+                                user_locationX = 0.0;
+                                user_locationY = 0.0;
+                            }
+                        }
+                    });
+        } else {
+            //permission not granted, ask for permission
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    1);         //defining 1 to be the requestCode for accessing fine location
+
+        }
+        //end of permission check/request
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    retrieveLocation();
+
+                } else {
+                    //permission was denied
+                    Log.e("testing", "permission explicitly denied, setting user_loc to 0,0");
+                    user_locationX = 0.0;
+                    user_locationY = 0.0;
+                }
+                return;
+            }
+        }
+    }
 }
+
