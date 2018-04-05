@@ -159,7 +159,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
 //            }
 //        }else{
             SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
-            builder.addColumns(new String[] {"taskID"});
+            builder.addColumns(new String[] {"taskId"});
             builder.addParameters(new String[] {getCurrentTask().getObjectID()});
 
             MasterController.AsyncSearch asyncSearch =
@@ -240,7 +240,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
 
     public void deleteAllBut(Task task){
         SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
-        builder.addColumns(new String[] {"taskID"});
+        builder.addColumns(new String[] {"taskId"});
         builder.addParameters(new String[] {task.getObjectID()});
 
         MasterController.AsyncSearch asyncSearch =
@@ -307,7 +307,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
 
     private void deleteOldBids(String keeper){
         SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
-        builder.addColumns(new String[] {"taskID"});
+        builder.addColumns(new String[] {"taskId"});
         builder.addParameters(new String[] {getCurrentTask().getObjectID()});
 
         MasterController.AsyncSearch asyncSearch =
@@ -380,7 +380,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
 
         SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
-        builder.addColumns(new String[] {"taskID"});
+        builder.addColumns(new String[] {"taskId"});
         builder.addParameters(new String[] {task.getObjectID()});
 
 
