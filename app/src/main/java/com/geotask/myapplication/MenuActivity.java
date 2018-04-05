@@ -8,6 +8,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
@@ -31,7 +32,7 @@ import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
-import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
+import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
 
 import junit.framework.Assert;
 
@@ -84,16 +85,36 @@ public class MenuActivity extends AbstractGeoTaskActivity
     TextView drawerUsername;
     TextView drawerEmail;
     TextView emptyText;
+    SwipeRefreshLayout refreshLayout;
+
+    Task lastClickedTask = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+//        Bundle settings = new Bundle();
+//        settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+//        settings.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+//        ContentResolver.requestSync(getAccount(), getString(R.string.SYNC_AUTHORITY), settings);
 
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         oldTasks = findViewById(R.id.taskListView);
         emptyText = findViewById(R.id.empty_task_string);
+        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshLayout.setRefreshing(true);
+                populateTaskView();
+                refreshLayout.setRefreshing(false);
+            }
+        });
+
+
         if((getTaskList() == null) || (getTaskList().size() == 0)) {
             setTaskList(new ArrayList<Task>());
         }
@@ -112,7 +133,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
         }
 
         try {
-            filterArray = getSearchKeywords().split(" ");
+            if(filterArray != null) {
+                filterArray = getSearchKeywords().split(" ");
+            }
         } catch (NullPointerException e) {
             e.printStackTrace();
             setSearchKeywords("");
@@ -232,6 +255,8 @@ public class MenuActivity extends AbstractGeoTaskActivity
         drawerUsername = (TextView) headerView.findViewById(R.id.drawer_name);
         drawerEmail = (TextView) headerView.findViewById(R.id.drawer_email);
 
+
+
         //TODO - set drawerImage to user profile pic
         drawerUsername.setText(getCurrentUser().getName());
         drawerEmail.setText(getCurrentUser().getEmail());
@@ -245,6 +270,8 @@ public class MenuActivity extends AbstractGeoTaskActivity
         super.onRestart();
         setOrientation();
     }
+
+
 
     /**
      * This function populates the listView by querying the server based on the view mode
@@ -274,20 +301,21 @@ public class MenuActivity extends AbstractGeoTaskActivity
         }
         Log.i("none------>", String.format("%d", getViewMode()));
         getTaskList().clear();
-        SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
+        SQLQueryBuilder builder1 = new SQLQueryBuilder(Task.class);
 
         //Only show tasks created by the user
         if(getViewMode() == R.integer.MODE_INT_REQUESTER) {
             setSearchStatus(null);
-            builder1.put("requesterID", getCurrentUser().getObjectID());
+            builder1.addColumns(new String[] {"requesterID"});
+            builder1.addParameters(new String[] {getCurrentUser().getObjectID()});
         } else if(getViewMode() == R.integer.MODE_INT_ACCEPTED) {
             setSearchStatus(null);
-            builder1.put("requesterID", getCurrentUser().getObjectID());
-            builder1.put("status", "accepted");
+            builder1.addColumns(new String[] {"requesterID", "status"});
+            builder1.addParameters(new String[] {getCurrentUser().getObjectID(), "accepted"});
         } else if(getViewMode() == R.integer.MODE_INT_ASSIGNED) {
             setSearchStatus(null);
-            builder1.put("status", "accepted");
-
+            builder1.addColumns(new String[] {"status"});
+            builder1.addParameters(new String[] {"accepted"});
         }
 
         //Add filter keywords to the builder if present
@@ -297,7 +325,8 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 showClear = true;
                 clearFiltersButton.setVisibility(View.VISIBLE);
                 for (int i = 0; i < filterArray.length; i++) {
-                    builder1.put("description", filterArray[i].toLowerCase());
+                    builder1.addColumns(new String[]{"description"});
+                    builder1.addParameters(new String[] {filterArray[i].toLowerCase()});
                 }
                 if(filterArray.length > 0){
                     navigationView.setCheckedItem(R.id.nav_filter);
@@ -308,17 +337,21 @@ public class MenuActivity extends AbstractGeoTaskActivity
 
             if (getSearchStatus()!= null){
                 clearFiltersButton.setVisibility(View.VISIBLE);
-                if(getSearchStatus().compareTo("All") ==0){
-                    if(!showClear) {
-                        clearFiltersButton.setVisibility(View.INVISIBLE);
-                    }
-                    //TODO - uncomment when sync branch merged
-                    //builder1.put("status", "requested");
-                    //builder1.put("status", "bidded");
+                if(getViewMode() == R.integer.MODE_INT_ALL) {
+                    if(getSearchStatus().compareTo("All") ==0){
+                        if(!showClear) {
+                            clearFiltersButton.setVisibility(View.INVISIBLE);
+                        }
+                        //TODO - uncomment when sync branch merged
+                        //builder1.put("status", "requested");
+                        //builder1.put("status", "bidded");
+                }
                 } else if (getSearchStatus().compareTo("Requested") == 0){
-                    builder1.put("status", "requested");
+                    builder1.addColumns(new String[] {"status"});
+                    builder1.addParameters(new String[] {"requested"});
                 } else if (getSearchStatus().compareTo("Bidded") == 0){
-                    builder1.put("status", "bidded");
+                    builder1.addColumns(new String[] {"status"});
+                    builder1.addParameters(new String[] {"bidded"});
                 }
             }
 
@@ -327,7 +360,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         }
 
         MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this);
+                new MasterController.AsyncSearch(this, this);
         asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
 
         try {
@@ -339,11 +372,12 @@ public class MenuActivity extends AbstractGeoTaskActivity
         //Only show tasks which have been bidded on by current user
         //Need to do this after elastic search by removing results without bids by the user
        if(getViewMode() == R.integer.MODE_INT_PROVIDER) {
-           SuperBooleanBuilder builder2 = new SuperBooleanBuilder();
-           builder2.put("providerID", getCurrentUser().getObjectID());
+           SQLQueryBuilder builder2 = new SQLQueryBuilder(Bid.class);
+           builder2.addColumns(new String[] {"providerID"});
+           builder2.addParameters(new String[] {getCurrentUser().getObjectID()});
 
            MasterController.AsyncSearch asyncSearch2 =
-                   new MasterController.AsyncSearch(this);
+                   new MasterController.AsyncSearch(this, this);
            asyncSearch2.execute(new AsyncArgumentWrapper(builder2, Bid.class));
 
            try {
@@ -545,7 +579,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         //for(String taskID : getCurrentUser().getStarredList()){
         for(String taskID : getStarHash().keySet()){
             MasterController.AsyncGetDocument asyncGetDocument =
-                    new MasterController.AsyncGetDocument(this);
+                    new MasterController.AsyncGetDocument(this, this);
             asyncGetDocument.execute(new AsyncArgumentWrapper(taskID, Task.class));
             Task task = null;
             try {

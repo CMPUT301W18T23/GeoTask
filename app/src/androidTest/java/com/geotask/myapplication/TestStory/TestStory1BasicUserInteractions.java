@@ -51,7 +51,7 @@ public class TestStory1BasicUserInteractions {
 
     @BeforeClass
     public static void oneTimeSetUp() {
-        MasterController.verifySettings();
+        MasterController.verifySettings(InstrumentationRegistry.getTargetContext());
         MasterController.setTestSettings(TestServerAddress.getTestAddress());
         try {
             MasterController.deleteIndex();
@@ -61,7 +61,7 @@ public class TestStory1BasicUserInteractions {
         }
         User user = new User("KehanWang", "kehan1@ualberta.ca", "7808858151");
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument
-                = new MasterController.AsyncCreateNewDocument();
+                = new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(user);
 
     }
@@ -123,7 +123,7 @@ public class TestStory1BasicUserInteractions {
         user.setObjectID(userId);
         Task task = new Task (userId,"Cmput301", "TestStory1 bugs");
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument
-                = new MasterController.AsyncCreateNewDocument();
+                = new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(user, task);
 
         Context targetContext =
@@ -151,7 +151,7 @@ public class TestStory1BasicUserInteractions {
         user.setObjectID(userId);
         Task task = new Task (userId,"Cmput301", "TestStory1 bugs");
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument
-                = new MasterController.AsyncCreateNewDocument();
+                = new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(user, task);
 
         Context targetContext =
@@ -202,7 +202,7 @@ public class TestStory1BasicUserInteractions {
         Task task = new Task (userId,"Cmput301", "TestStory1 bugs");
         Task task2 = new Task ("provider", "Cmput3012", "test view all availble tasks");
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument
-                = new MasterController.AsyncCreateNewDocument();
+                = new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(user, task,task2);
 
         Context targetContext =

@@ -47,7 +47,7 @@ public class TestStory5TaskBiddingInteractions {
 
     @BeforeClass
     public static void oneTimeSetUp() {
-        MasterController.verifySettings();
+        MasterController.verifySettings(InstrumentationRegistry.getTargetContext());
         MasterController.setTestSettings(TestServerAddress.getTestAddress());
         try {
             MasterController.deleteIndex();
@@ -78,7 +78,7 @@ public class TestStory5TaskBiddingInteractions {
         task.setAcceptedProviderID(provider.getObjectID());
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument();
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(task, requester, provider);
 
         Thread.sleep(1000);
@@ -123,7 +123,7 @@ public class TestStory5TaskBiddingInteractions {
         task.addBid(bid);
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument();
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(task, requester, bid, provider);
 
         Thread.sleep(1000);
@@ -188,7 +188,7 @@ public class TestStory5TaskBiddingInteractions {
         task.addBid(bid3);
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument();
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(task, requester, bid1, bid2, bid3, provider);
 
         Thread.sleep(1000);
@@ -234,7 +234,7 @@ public class TestStory5TaskBiddingInteractions {
         task.addBid(bid3);
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument();
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(task, requester, bid1, bid2, bid3, provider);
 
         Thread.sleep(1000);
@@ -275,7 +275,7 @@ public class TestStory5TaskBiddingInteractions {
         task.addBid(bid);
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument();
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(task, requester, bid, provider);
 
         Thread.sleep(1000);

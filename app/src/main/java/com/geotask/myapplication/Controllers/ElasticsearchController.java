@@ -1,6 +1,7 @@
 package com.geotask.myapplication.Controllers;
 
 import android.os.StrictMode;
+import android.util.Log;
 
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
@@ -14,6 +15,7 @@ import com.searchly.jestdroid.JestDroidClient;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Date;
 import java.util.List;
 
 import io.searchbox.client.JestResult;
@@ -25,6 +27,8 @@ import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 import io.searchbox.indices.CreateIndex;
 import io.searchbox.indices.DeleteIndex;
+import io.searchbox.indices.Refresh;
+import io.searchbox.indices.mapping.PutMapping;
 import io.searchbox.params.Parameters;
 
 /*
@@ -46,15 +50,34 @@ public class ElasticsearchController {
      * Creates the index
      * @throws IOException
      */
-    protected void createIndex() throws IOException {
+    public void createIndex() throws IOException {
         client.execute(new CreateIndex.Builder(INDEX_NAME).build());
     }
 
+    public String putMapping() throws IOException {
+        String map =
+                "{\"" + Task.class.toString() + "\": " +
+                    "{\"_timestamp\": " +
+                        "{" +
+                            "\"enabled\": true," +
+                            "\"store\": true," +
+                            //"\"path\": \"serverDate\", " +
+                            "\"format\": \"YYYY-MM-dd\", " +
+                            "\"default\" : \"2018-05-05\" " +
+                        "}" +
+                    "}" +
+                "}";
+        Log.d("JESTMAPPING", map);
+        PutMapping putMapping = new PutMapping.Builder(INDEX_NAME, Task.class.toString(), map).build();
+        Log.d("JESTMAPPING", putMapping.toString());
+        JestResult result = client.execute(putMapping);
+        return String.valueOf(result.getJsonString());
+    }
     /**
      * Delete the index
      * @throws IOException
      */
-    protected int deleteIndex() throws IOException {
+    public int deleteIndex() throws IOException {
         JestResult result = client.execute(new DeleteIndex.Builder(INDEX_NAME).build());
         return result.getResponseCode();
     }
@@ -68,7 +91,8 @@ public class ElasticsearchController {
      * @param data - GTData that should be added to the database
      * @return - ID of the document
      */
-    protected void createNewDocument(GTData data) throws IOException {
+    public JestResult createNewDocument(GTData data) throws IOException {
+        data.setDate(new Date().getTime());
         Gson gson = new Gson();
         String json = gson.toJson(data);
         Index request = new Index.Builder(json)
@@ -77,7 +101,8 @@ public class ElasticsearchController {
                 .id(data.getObjectID())
                 .build();
 
-        client.execute(request);
+        JestResult result = client.execute(request);
+        return result;
     }
 
     /**
@@ -86,11 +111,10 @@ public class ElasticsearchController {
      * @param ID - ID of the document
      * @return GTData object
      */
-    protected GTData getDocument(String ID, Type type) throws Exception {
+    public GTData getDocument(String ID, Type type) throws Exception {
         Get request = new Get.Builder(INDEX_NAME, ID).build();
 
         JestResult result = client.execute(request);
-
         GTData data = null;
         if (type.equals(Bid.class)) {
             data = result.getSourceAsObject(Bid.class);
@@ -109,7 +133,7 @@ public class ElasticsearchController {
      * @param type - type of document
      * @return - response code of deletion (200 on success, 400 on failure)
      */
-    protected int deleteDocument(String ID, Type type) throws IOException {
+    public int deleteDocument(String ID, Type type) throws IOException {
         return client.execute(new Delete.Builder(ID)
                         .index(INDEX_NAME)
                         .type(type.toString())
@@ -124,11 +148,12 @@ public class ElasticsearchController {
      * @param type type of document
      * @throws IOException
      */
-    protected void deleteDocumentByValue(String query, Type type) throws IOException {
-        client.execute(new DeleteByQuery.Builder(query)
-                .addIndex(INDEX_NAME)
-                .addType(type.toString())
-                .build());
+    public int deleteDocumentByValue(String query, Type type) throws IOException {
+        JestResult result = client.execute(new DeleteByQuery.Builder(query)
+                                .addIndex(INDEX_NAME)
+                                .addType(type.toString())
+                                .build());
+        return result.getResponseCode();
     }
 
     /**
@@ -137,18 +162,40 @@ public class ElasticsearchController {
      * @param data
      * @throws IOException
      */
-    protected void updateDocument(GTData data) throws IOException {
-        deleteDocument(data.getObjectID(), data.getClass());
-        createNewDocument(data);
-    }
+    public JestResult updateDocument(GTData data) throws IOException {
+        data.setDate(new Date().getTime());
+        Gson gson = new Gson();
+        String json = gson.toJson(data);
+        Index request = new Index.Builder(json)
+                .index(INDEX_NAME)
+                .type(data.getClass().toString())
+                .id(data.getObjectID())
+                .build();
 
+        JestResult result = client.execute(request);
+        return result;
+    }
+    public JestResult updateDocument(GTData data, double version) throws IOException {
+        data.setDate(new Date().getTime());
+        Gson gson = new Gson();
+        String json = gson.toJson(data);
+        Index request = new Index.Builder(json)
+                .index(INDEX_NAME)
+                .type(data.getClass().toString())
+                .id(data.getObjectID())
+                .setParameter(Parameters.VERSION, (int) version)
+                .build();
+
+        JestResult result = client.execute(request);
+        return result;
+    }
     /**
      * searchBids - Method that searches the elasticSearch database and returns a list of bid objects
      *
      * @param query - query of terms that has been already formatted
      * @return a list of Bid objects
      */
-    protected List<? extends GTData> search(String query, Type type) throws IOException {
+    public List<? extends GTData> search(String query, Type type) throws IOException {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
@@ -168,6 +215,7 @@ public class ElasticsearchController {
         } else if (type.equals(User.class)) {
             dataList = result.getSourceAsObjectList(User.class);
         }
+
         return dataList;
     }
 
@@ -177,7 +225,7 @@ public class ElasticsearchController {
      * @param email - email of the registering use
      * @return true if the email is in use, false otherwise
      */
-    public boolean existsProfile(String email) {
+    public User existsProfile(String email) {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
@@ -187,20 +235,20 @@ public class ElasticsearchController {
                 .addIndex(INDEX_NAME)
                 .addType(User.class.toString())
                 .build();
+
+        User result = null;
         try {
-            if(client.execute(search).getTotal() != 0){
-                    return true;
-                }
+            result = client.execute(search).getSourceAsObject(User.class);
         } catch (IOException e1) {
             e1.printStackTrace();
         }
-        return false;
+        return result;
     }
 
     /**
      * verifySettings - Initializes client if not previously initialized
      */
-    protected void verifySettings() {
+    public void verifySettings() {
         if(client == null) {
             DroidClientConfig.Builder builder = new DroidClientConfig.Builder(SERVER_ADDRESS);
             DroidClientConfig config = builder.build();
@@ -215,7 +263,7 @@ public class ElasticsearchController {
     /**
      * Turn off the light when you are done, this app is environmentally friendly
      */
-    protected void shutDown() {
+    public void shutDown() {
         if(client != null) {
             client.shutdownClient();
         }
@@ -225,8 +273,18 @@ public class ElasticsearchController {
      * point server address to test index
      * @param testServerAddress
      */
-    protected void setTestSettings(String testServerAddress) {
+    public void setTestSettings(String testServerAddress) {
         INDEX_NAME = testServerAddress;
     }
 
+    public double getDocumentVersion(String objectID) throws IOException {
+        Get request = new Get.Builder(INDEX_NAME, objectID).build();
+
+        JestResult result = client.execute(request);
+        return (double) result.getValue("_version");
+    }
+
+    public void refresh() throws IOException {
+        client.execute(new Refresh.Builder().build());
+    }
 }

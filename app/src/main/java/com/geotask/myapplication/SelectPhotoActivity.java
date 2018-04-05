@@ -1,11 +1,10 @@
 package com.geotask.myapplication;
 
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -16,7 +15,6 @@ import com.geotask.myapplication.Adapters.PhotoAdapter;
 import com.linchaolong.android.imagepicker.ImagePicker;
 import com.linchaolong.android.imagepicker.cropper.CropImage;
 import com.linchaolong.android.imagepicker.cropper.CropImageView;
-
 
 import java.util.ArrayList;
 import java.util.List;

@@ -20,6 +20,7 @@ public class RegisterActivity extends AbstractGeoTaskActivity{
     private EditText newEmail;
     private EditText newPhone;
     private User newUser;
+    private Button saveUserButton;
 
 
     /**
@@ -34,7 +35,8 @@ public class RegisterActivity extends AbstractGeoTaskActivity{
         newPhone = findViewById(R.id.newPhone);
         newEmail = findViewById(R.id.newEmail);
 
-        Button saveUserButton = findViewById(R.id.newSave);
+        saveUserButton = findViewById(R.id.newSave);
+        saveUserButton.setEnabled(true);
         saveUserButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 register_check();
@@ -49,10 +51,13 @@ public class RegisterActivity extends AbstractGeoTaskActivity{
      */
     protected void register_check() {
         if (isValid()) {
+            saveUserButton.setEnabled(false);
             String userName = newName.getText().toString().trim();
             String userPhone = newPhone.getText().toString().trim();
             String userEmail = newEmail.getText().toString().trim().toLowerCase();
-            if(MasterController.existsProfile(userEmail)){
+
+            User user = MasterController.existsProfile(userEmail);
+            if(user != null){
                 Toast.makeText(this,
                         R.string.EMAIL_ALREADY_IN_USE_WHEN_REGISTERING_AND_EDITING,
                         Toast.LENGTH_SHORT)
@@ -60,9 +65,9 @@ public class RegisterActivity extends AbstractGeoTaskActivity{
             } else {
                 newUser = new User(userName, userEmail, userPhone);
 
-                MasterController.AsyncCreateNewDocument asyncCreateNewDocument
-                        = new MasterController.AsyncCreateNewDocument();
-                asyncCreateNewDocument.execute(newUser);
+                MasterController.AuthenticateLogin asyncAuthenticaLogin
+                        = new MasterController.AuthenticateLogin(this);
+                asyncAuthenticaLogin.execute(newUser);
 
                 Intent intent = new Intent(getBaseContext(), LoginActivity.class);
                 startActivity(intent);

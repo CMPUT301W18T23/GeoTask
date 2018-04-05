@@ -1,5 +1,6 @@
 package com.geotask.myapplication.TestStory;
 
+import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.geotask.myapplication.Controllers.MasterController;
@@ -16,7 +17,7 @@ public class TestStory6TaskAssignmentInteractions {
 
     @BeforeClass
     public static void oneTimeSetUp() {
-        MasterController.verifySettings();
+        MasterController.verifySettings(InstrumentationRegistry.getTargetContext());
         MasterController.setTestSettings(TestServerAddress.getTestAddress());
         try {
             MasterController.deleteIndex();

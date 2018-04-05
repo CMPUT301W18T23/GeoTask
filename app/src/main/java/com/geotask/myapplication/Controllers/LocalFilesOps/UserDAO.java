@@ -13,6 +13,7 @@ import com.geotask.myapplication.DataClasses.User;
 
 import java.util.List;
 
+
 /**
  * Data Access Object for User and local SQL database
  */
@@ -41,4 +42,10 @@ public interface UserDAO {
      */
     @Query("DELETE FROM users")
     void delete();
+
+    @Query("SELECT * FROM users WHERE objectId LIKE :id")
+    User selectByID(String id);
+
+    @Query("DELETE FROM users WHERE objectId LIKE :id")
+    int deleteByID(String id);
 }

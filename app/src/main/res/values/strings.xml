@@ -28,6 +28,7 @@
     <string name="MODE_REQUESTER">Requester</string>
     <string name="MODE_PROVIDER">Provider</string>
     <string name="INVALID_TASK_DATA_WHEN_CREATING_NEW_TASK">Please enter valid task data.</string>
+    <string name="CANT_DELETE_TASK">Can\'t delete a task which is accepted or completed.</string>
     <string name="TASK_TITLE_TOO_LONG">Task title should not exceed 30 characters.</string>
     <string name="TASK_TITLE_EMPTY">Task title is empty.</string>
     <string name="TASK_DESCRIPTION_TOO_LONG">Task description should not exceed 300 characters.</string>
@@ -37,6 +38,7 @@
     <string name="TASK_STATUS_BIDDED">Bidded</string>
     <string name="CURRENT_TASK_BEING_VIEWED">Task</string>
     <string name="VIEW_USER">user_being_viewed</string>
+    <string name="SYNC_AUTHORITY">"com.geotask.myapplication.provider"</string>
     <string name="DECIMAL_INVALID">Enter a valid decimal</string>
     <string name="title_activity_view_profile2">ViewProfile2Activity</string>
 </resources>

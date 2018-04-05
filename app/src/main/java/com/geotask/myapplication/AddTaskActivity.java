@@ -52,6 +52,7 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
         Picture = findViewById(R.id.TaskPictures);
         Map = findViewById(R.id.TaskMap);
         Save = findViewById(R.id.TaskSave);
+        Save.setEnabled(true);
 
         Picture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,6 +87,7 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
      * @see UserEntryStringValidator
      */
     private void addTask(){
+        Save.setEnabled(false);
         String titleString = Title.getText().toString().trim();
         String descriptionString = Description.getText().toString().trim();
 
@@ -133,7 +135,7 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
             newTask = new Task(getCurrentUser().getObjectID(), titleString, descriptionString);
 
             MasterController.AsyncCreateNewDocument asyncCreateNewDocument
-                    = new MasterController.AsyncCreateNewDocument();
+                    = new MasterController.AsyncCreateNewDocument(this);
             asyncCreateNewDocument.execute(newTask);
 
             try {

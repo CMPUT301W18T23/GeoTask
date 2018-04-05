@@ -97,7 +97,7 @@ public class BidArrayAdapter extends ArrayAdapter<Bid> implements AsyncCallBackM
 
             //get the provider profile
             MasterController.AsyncGetDocument asyncGetDocument =
-                    new MasterController.AsyncGetDocument(this);
+                    new MasterController.AsyncGetDocument(this, getContext());
             asyncGetDocument.execute(new AsyncArgumentWrapper(item.getProviderID(), User.class));
 
             User remote = null;

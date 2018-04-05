@@ -8,11 +8,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.geotask.myapplication.R;
 
 import java.util.List;
-
-
-import com.geotask.myapplication.R;
 
 
 
