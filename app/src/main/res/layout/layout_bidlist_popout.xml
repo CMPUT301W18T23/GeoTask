@@ -53,7 +53,7 @@
             android:layout_marginStart="16dp"
             android:backgroundTint="@android:color/holo_red_light"
             android:elevation="24dp"
-            android:text="Delete"
+            android:text="Decline"
             android:textAllCaps="true"
             android:textColor="@android:color/background_light"
             app:layout_constraintBottom_toBottomOf="parent"
