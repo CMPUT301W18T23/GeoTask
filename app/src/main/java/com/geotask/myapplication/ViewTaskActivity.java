@@ -223,6 +223,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         MasterController.AsyncDeleteDocument asyncDeleteTask =
                 new MasterController.AsyncDeleteDocument(this);
         asyncDeleteTask.execute(new AsyncArgumentWrapper(getCurrentTask().getObjectID(), Task.class));
+        setCurrentTask(null);
 
         MasterController.AsyncDeleteBidsByTaskID asyncDeleteDocumentByQuery =
                 new MasterController.AsyncDeleteBidsByTaskID(this);

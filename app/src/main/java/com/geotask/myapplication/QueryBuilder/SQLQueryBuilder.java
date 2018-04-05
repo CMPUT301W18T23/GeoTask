@@ -28,7 +28,7 @@ public class SQLQueryBuilder {
         for(String column : columns){
             query1 += column + " = ? AND ";
         }
-        query1.substring(0, query1.length() - 4);
+        query1 = query1.substring(0, query1.length() - 4);
     }
 
     public void addColumns(String[] columns, String operator) {
