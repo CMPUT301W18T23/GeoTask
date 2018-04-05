@@ -11,6 +11,7 @@ import java.util.List;
 /**
  * controls all local data changes for Bid. Do not call explicitly, use MasterController
  */
+
 public class BidDatabaseController {
     private static LocalDataBase database;
     private static Context context;

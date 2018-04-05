@@ -1,9 +1,14 @@
 package com.geotask.myapplication.Controllers;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
+import com.geotask.myapplication.Controllers.LocalFilesOps.LocalDataBase;
+import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
+import com.geotask.myapplication.DataClasses.Task;
+import com.geotask.myapplication.DataClasses.User;
 
 import java.io.IOException;
 import java.util.List;
@@ -13,13 +18,17 @@ import java.util.List;
  * Contains ElasticsearchController and 3 DatabaseController.
  * Do not call ElasticSearchController and DatabaseControllers explicitly, use this instead.
  */
-//ToDo add sync logic between local and server
+//ToDo add sync logic between local and server, ToDo JobScheduler
 public class MasterController {
 
-    static ElasticsearchController controller = new ElasticsearchController();
+    private static ElasticsearchController controller = new ElasticsearchController();
+    private static LocalDataBase database;
 
-    public static void verifySettings() {
+    public static void verifySettings(Context context) {
         controller.verifySettings();
+        if(database == null) {
+            database = LocalDataBase.getDatabase(context);
+        }
     }
 
     public static void setTestSettings(String testSettings) {
@@ -50,7 +59,7 @@ public class MasterController {
         controller.shutDown();
     }
 
-    public static boolean existsProfile(String s) {
+    public static User existsProfile(String s) {
         controller.verifySettings();
         return controller.existsProfile(s);
     }
@@ -58,8 +67,35 @@ public class MasterController {
     /**
      * AsyncTask for putting document into server
      */
+    public static class AuthenticateLogin extends AsyncTask<GTData, Void, Void> {
+
+        private Context context;
+
+        public AuthenticateLogin(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected Void doInBackground(GTData... datas) {
+            verifySettings(context);
+            for(GTData data : datas)
+                try {
+                    controller.createNewDocument(data);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            return null;
+        }
+    }
+
+
     public static class AsyncCreateNewDocument extends AsyncTask<GTData, Void, Void> {
 
+        private Context context;
+
+        public AsyncCreateNewDocument(Context context) {
+            this.context = context;
+        }
         /**
          *
          * @param dataList queue of GTData waiting for execution
@@ -67,14 +103,18 @@ public class MasterController {
          */
         @Override
         protected Void doInBackground(GTData... dataList) {
-            controller.verifySettings();
+            verifySettings(context);
 
             for(GTData data : dataList) {
-                try {
-                    controller.createNewDocument(data);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (data instanceof Task){
+                    database.taskDAO().insert((Task) data);
+                } else if (data instanceof User) {
+                    database.userDAO().insert((User) data);
+                } else if (data instanceof Bid) {
+                    database.bidDAO().insert((Bid) data);
                 }
+
+                //ToDo JobSchedule
             }
             return null;
         }
@@ -85,13 +125,15 @@ public class MasterController {
      */
     public static class AsyncGetDocument extends AsyncTask<AsyncArgumentWrapper, Void, GTData> {
         private AsyncCallBackManager callBack = null;
+        private Context context;
 
         /**
          * contains the reference to the calling activity
          * @param callback
          */
-        public AsyncGetDocument(AsyncCallBackManager callback) {
+        public AsyncGetDocument(AsyncCallBackManager callback, Context context) {
             this.callBack = callback;
+            this.context = context;
         }
 
         /**
@@ -101,14 +143,23 @@ public class MasterController {
          */
         @Override
         protected GTData doInBackground(AsyncArgumentWrapper... argumentList) {
+            verifySettings(context);
+
             GTData result = null;
-            controller.verifySettings();
 
             for (AsyncArgumentWrapper argument : argumentList) {
-                try {
-                    result = controller.getDocument(argument.getID(), argument.getType());
-                } catch (Exception e) {
-                    e.printStackTrace();
+                verifySettings(context);
+
+                if (argument.getType().equals(Task.class)){
+                    result = database.taskDAO().selectByID(argument.getID());
+                } else if (argument.getType().equals(User.class)) {
+                    try {
+                        result = controller.getDocument(argument.getID(), argument.getType());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else if (argument.getType().equals(Bid.class)) {
+                    result = database.bidDAO().selectByID(argument.getID());
                 }
             }
             return result;
@@ -131,6 +182,12 @@ public class MasterController {
      */
     public static class AsyncDeleteDocument extends  AsyncTask<AsyncArgumentWrapper, Void, Void> {
 
+        private Context context;
+
+        public AsyncDeleteDocument(Context context){
+            this.context = context;
+        }
+
         /**
          *
          * @param argumentList
@@ -138,31 +195,53 @@ public class MasterController {
          */
         @Override
         protected Void doInBackground(AsyncArgumentWrapper... argumentList) {
-            controller.verifySettings();
+            verifySettings(context);
 
             for(AsyncArgumentWrapper argument : argumentList) {
-                try {
-                    controller.deleteDocument(argument.getID(), argument.getType());
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (argument.getType().equals(Task.class)){
+                    database.taskDAO().deleteByID(argument.getID());
+                } else if (argument.getType().equals(User.class)) {
+                    try {
+                        controller.deleteDocument(argument.getID(), argument.getType());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else if (argument.getType().equals(Bid.class)) {
+                    database.bidDAO().deleteByID(argument.getID());
                 }
+
+                //ToDo JobScheduler
+//                try {
+//                    controller.deleteDocument(argument.getID(), argument.getType());
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
             }
             return null;
         }
     }
 
-    public static class AsyncDeleteDocumentByQuery extends AsyncTask<AsyncArgumentWrapper, Void, Void> {
+    public static class AsyncDeleteBidsByTaskID extends AsyncTask<AsyncArgumentWrapper, Void, Void> {
+
+        private Context context;
+
+        public AsyncDeleteBidsByTaskID (Context context) {
+            this.context = context;
+        }
 
         @Override
         protected Void doInBackground(AsyncArgumentWrapper... argumentList) {
-            controller.verifySettings();
+            verifySettings(context);
 
             for(AsyncArgumentWrapper argument : argumentList) {
-                try {
-                    controller.deleteDocumentByValue(argument.getSearchQuery(), argument.getType());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                database.bidDAO().deleteByTaskID(argument.getID());
+
+                //ToDo JobScheduler
+//                try {
+//                    controller.deleteDocumentByValue(argument.getID(), argument.getType());
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
             }
             return null;
         }
@@ -174,16 +253,33 @@ public class MasterController {
      */
     public static class AsyncUpdateDocument extends AsyncTask<GTData, Void, Void> {
 
+
+        private Context context;
+
+        public AsyncUpdateDocument(Context context) {
+            this.context = context;
+        }
+
         @Override
         protected Void doInBackground(GTData... dataList) {
-            controller.verifySettings();
+            verifySettings(context);
 
             for(GTData data: dataList) {
-                try {
-                    controller.updateDocument(data);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                data.setClientOriginalFlag(true);
+                if (data instanceof Task){
+                    database.taskDAO().update((Task) data);
+                } else if (data instanceof User) {
+                    database.userDAO().update((User) data);
+                } else if (data instanceof Bid) {
+                    database.bidDAO().update((Bid) data);
                 }
+
+                //ToDo JobScheduler
+//                try {
+//                    controller.updateDocument(data);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
             }
             return null;
         }
@@ -203,22 +299,24 @@ public class MasterController {
      * AsyncTask for search, returns result through callBack
      */
     public static class AsyncSearch extends AsyncTask<AsyncArgumentWrapper, Void, List<? extends GTData>> {
+        private Context context;
         private AsyncCallBackManager callBack = null;
 
-        public AsyncSearch(AsyncCallBackManager callback) {
+        public AsyncSearch(AsyncCallBackManager callback, Context context) {
             this.callBack = callback;
+            this.context = context;
         }
 
         @Override
         protected List<? extends GTData> doInBackground(AsyncArgumentWrapper... argumentWrappers) {
             List<? extends GTData> resultList = null;
-            controller.verifySettings();
+            verifySettings(context);
 
             for(AsyncArgumentWrapper argument : argumentWrappers) {
-                try {
-                    resultList = controller.search(argument.getSearchQuery(), argument.getType());
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (argument.getType().equals(Task.class)){
+                    resultList = database.taskDAO().searchTasksByQuery(argument.getSQLQuery());
+                } else if (argument.getType().equals(Bid.class)) {
+                    resultList = database.bidDAO().searchBidsByQuery(argument.getSQLQuery());
                 }
             }
             return resultList;
@@ -235,6 +333,7 @@ public class MasterController {
     }
 
     public static List<? extends GTData> slowSearch(AsyncArgumentWrapper argument){
+        controller.verifySettings();
         List<? extends GTData> resultList = null;
         try {
             resultList = controller.search(argument.getSearchQuery(), argument.getType());

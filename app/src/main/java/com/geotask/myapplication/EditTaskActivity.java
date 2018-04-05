@@ -15,7 +15,6 @@ import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
-import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import java.util.List;
 
@@ -120,16 +119,14 @@ public class EditTaskActivity extends AbstractGeoTaskActivity implements AsyncCa
     private void deleteData() {
         String taskStatus = getCurrentTask().getStatus();
         if(taskStatus.compareTo("Accepted") != 0 && taskStatus.compareTo("Completed") != 0) {
-            SuperBooleanBuilder builder = new SuperBooleanBuilder();
-            builder.put("taskID", getCurrentTask().getObjectID());
 
             MasterController.AsyncDeleteDocument asyncDeleteTask =
-                    new MasterController.AsyncDeleteDocument();
+                    new MasterController.AsyncDeleteDocument(this);
             asyncDeleteTask.execute(new AsyncArgumentWrapper(getCurrentTask().getObjectID(), Task.class));
 
-            MasterController.AsyncDeleteDocumentByQuery asyncDeleteDocumentByQuery =
-                    new MasterController.AsyncDeleteDocumentByQuery();
-            asyncDeleteDocumentByQuery.execute(new AsyncArgumentWrapper(builder, Bid.class));
+            MasterController.AsyncDeleteBidsByTaskID asyncDeleteBidsByTaskID =
+                    new MasterController.AsyncDeleteBidsByTaskID(this);
+            asyncDeleteBidsByTaskID.execute(new AsyncArgumentWrapper(getCurrentTask().getObjectID(), Bid.class));
 
             try {
                 Thread.sleep(400);
@@ -157,7 +154,8 @@ public class EditTaskActivity extends AbstractGeoTaskActivity implements AsyncCa
     private void updateTask(){  //this should hopefully work when get really data to get
         //taskBeingEdited.syncBidData();
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument();
+                new MasterController.AsyncUpdateDocument(this);
+        getCurrentTask().setEditedFlag(true);
         asyncUpdateDocument.execute(getCurrentTask());
     }
 

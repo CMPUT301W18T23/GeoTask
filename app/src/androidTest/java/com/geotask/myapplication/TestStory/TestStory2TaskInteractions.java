@@ -39,7 +39,7 @@ public class TestStory2TaskInteractions {
 
     @BeforeClass
     public static void oneTimeSetUp() {
-        MasterController.verifySettings();
+        MasterController.verifySettings(InstrumentationRegistry.getTargetContext());
         MasterController.setTestSettings(TestServerAddress.getTestAddress());
         try {
             MasterController.deleteIndex();
@@ -60,7 +60,7 @@ public class TestStory2TaskInteractions {
 
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument();
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(task, user);
 
 

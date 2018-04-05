@@ -6,11 +6,9 @@ import android.arch.persistence.room.TypeConverters;
 
 import com.geotask.myapplication.Controllers.Helpers.BidListConverter;
 import com.geotask.myapplication.Controllers.Helpers.EmailConverter;
-import com.geotask.myapplication.Controllers.Helpers.HashMapConverter;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 
 /**
  * data structure for A User

@@ -1,5 +1,6 @@
 package com.geotask.myapplication;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -8,30 +9,41 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
-import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.MasterController;
+import com.geotask.myapplication.Controllers.SyncServices.CreateAccount;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.User;
-import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 
 //https://stackoverflow.com/questions/2736389/how-to-pass-an-object-from-one-activity-to-another-on-android
 public class LoginActivity extends AbstractGeoTaskActivity implements AsyncCallBackManager {
 
     private EditText emailText;
-
+    private final CreateAccount createAccount = new CreateAccount();
     /**
      * Initiate variables, set on click listeners for buttons
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setAccount(createAccount.CreateAccount(this));
+        setSyncResolver(this.getContentResolver());
+        getContentResolver().addPeriodicSync(
+                getAccount(),
+                getString(R.string.SYNC_AUTHORITY),
+                Bundle.EMPTY, 900);
+
+        Bundle settings = new Bundle();
+        settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        settings.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        ContentResolver.requestSync(getAccount(), getString(R.string.SYNC_AUTHORITY), settings);
+
         setContentView(R.layout.activity_login);
 
-        MasterController.verifySettings();
+        MasterController.verifySettings(this);
 
         emailText = findViewById(R.id.emailText);
         Button loginButton = findViewById(R.id.loginButton);
@@ -41,7 +53,7 @@ public class LoginActivity extends AbstractGeoTaskActivity implements AsyncCallB
         //Sends the user to MenuActivity
         loginButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                loginCheck();
+                login_check();
             }
         });
 
@@ -60,39 +72,21 @@ public class LoginActivity extends AbstractGeoTaskActivity implements AsyncCallB
      * Check if the entered email for login is valid,
      * and log the user in with elastic search
      */
-    private void loginCheck() {
+    private void login_check() {
         String email = emailText.getText().toString().trim().toLowerCase();
 
-        if(!MasterController.existsProfile(email)){
+        User user = MasterController.existsProfile(email);
+        if(user == null){
             Toast.makeText(this,
                     R.string.FAILED_LOGIN_EMAIL_NOT_REGISTERED,
                     Toast.LENGTH_SHORT)
                     .show();
         } else {
-            SuperBooleanBuilder builder = new SuperBooleanBuilder();
-            builder.put("email", email);
-
-            MasterController.AsyncSearch asyncSearch =
-                    new MasterController.AsyncSearch(this);
-            asyncSearch.execute(new AsyncArgumentWrapper(builder, User.class));
-
-            List<User> result;
-            try {
-                result = (List<User>) asyncSearch.get();
-
-                /*
-                    Setting the globals
-                 */
-                setCurrentUser(result.get(0));
-                setHistoryHash();
-                setStarHash();
-
-                Intent intent = new Intent(getBaseContext(), MenuActivity.class);
-                startActivity(intent);
-            } catch (ExecutionException | InterruptedException e) {
-                e.printStackTrace();
-            }
-
+            setCurrentUser(user);
+            setHistoryHash();
+            setStarHash();
+            Intent intent = new Intent(getBaseContext(), MenuActivity.class);
+            startActivity(intent);
         }
     }
 

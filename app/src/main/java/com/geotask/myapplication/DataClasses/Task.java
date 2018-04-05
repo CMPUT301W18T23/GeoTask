@@ -6,11 +6,13 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.TypeConverters;
 import android.support.annotation.NonNull;
 
-import com.geotask.myapplication.Controllers.Helpers.BidListConverter;
 import com.geotask.myapplication.Controllers.Helpers.GetLowestBidFromServer;
+import com.geotask.myapplication.Controllers.Helpers.HashSetConverter;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 
 /**
  *	data stucture for a task
@@ -24,21 +26,21 @@ import java.util.Date;
  */
 @Entity(tableName = "tasks")
 public class Task extends GTData implements Comparable{
-	@ColumnInfo(name = "task_name")
+	@ColumnInfo
 	private String name;
 	@ColumnInfo
 	private String description;
 	@ColumnInfo //ToDo change type to Enum
 	private String status;
 	@Ignore
-	private ArrayList<String> photoList = new ArrayList<String>();
-	@TypeConverters(BidListConverter.class)
-	private ArrayList<String> bidList = new ArrayList<>();
+	private ArrayList<String> photoList = new ArrayList<>();
+	@TypeConverters(HashSetConverter.class)
+	private HashSet<String> bidList = new HashSet<>();
 	@ColumnInfo
 	private Double accpetedBid;
 	@ColumnInfo
 	private String accpeptedBidID;
-	@ColumnInfo(name = "requester_id")
+	@ColumnInfo(name = "requesterId")
 	private String requesterID;
 	@ColumnInfo
 	private String acceptedProviderID;
@@ -50,6 +52,8 @@ public class Task extends GTData implements Comparable{
 	private Double lowestBid;
 	@ColumnInfo
 	private Integer numBids;
+	@ColumnInfo
+	private transient boolean editedFlag;
 
 	public String getLocation() {
 		return location;
@@ -79,6 +83,7 @@ public class Task extends GTData implements Comparable{
 		this.location = location;
 		this.lowestBid = -1.0;
 		this.numBids = 0;
+		editedFlag = false;
 	}
 
 	/**
@@ -100,6 +105,7 @@ public class Task extends GTData implements Comparable{
 		this.requesterID = requesterID;
 		this.lowestBid = -1.0;
 		this.numBids = 0;
+		editedFlag = false;
 	}
 
 	/**
@@ -254,7 +260,7 @@ public class Task extends GTData implements Comparable{
 	 *gets list of bids
 	 * @return bidList
 	 */
-	public ArrayList<String> getBidList() {
+	public HashSet<String> getBidList() {
 		return bidList;
 	}
 
@@ -270,7 +276,7 @@ public class Task extends GTData implements Comparable{
 	 *sets bidlist from given value
 	 * @param bidList
 	 */
-	public void setBidList(ArrayList<String> bidList) {
+	public void setBidList(HashSet<String> bidList) {
 		this.bidList = bidList;
 	}
 
@@ -338,7 +344,8 @@ public class Task extends GTData implements Comparable{
 	 * @return  this.name + " " + this.description + " " + bidList.toString()
 	 */
 	public String toString(){
-		return this.name + " " + this.description + " " + bidList.toString();
+		Gson gson = new Gson();
+		return gson.toJson(this);
 	}
 
 	public Double getLowestBid() {
@@ -380,4 +387,30 @@ public class Task extends GTData implements Comparable{
 		int ret = (int) ((int) this.getDate() - other.getDate());
 		return ret;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		if (!super.equals(o)) return false;
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	public void setPhotoList(ArrayList<String> photoList) {
+		this.photoList = photoList;
+	}
+
+	public boolean isEditedFlag() {
+		return editedFlag;
+	}
+
+	public void setEditedFlag(boolean editedFlag) {
+		this.editedFlag = editedFlag;
+	}
+
 }

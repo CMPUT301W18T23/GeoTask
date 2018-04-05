@@ -55,7 +55,9 @@ public class RegisterActivity extends AbstractGeoTaskActivity{
             String userName = newName.getText().toString().trim();
             String userPhone = newPhone.getText().toString().trim();
             String userEmail = newEmail.getText().toString().trim().toLowerCase();
-            if(MasterController.existsProfile(userEmail)){
+
+            User user = MasterController.existsProfile(userEmail);
+            if(user != null){
                 Toast.makeText(this,
                         R.string.EMAIL_ALREADY_IN_USE_WHEN_REGISTERING_AND_EDITING,
                         Toast.LENGTH_SHORT)
@@ -63,9 +65,9 @@ public class RegisterActivity extends AbstractGeoTaskActivity{
             } else {
                 newUser = new User(userName, userEmail, userPhone);
 
-                MasterController.AsyncCreateNewDocument asyncCreateNewDocument
-                        = new MasterController.AsyncCreateNewDocument();
-                asyncCreateNewDocument.execute(newUser);
+                MasterController.AuthenticateLogin asyncAuthenticaLogin
+                        = new MasterController.AuthenticateLogin(this);
+                asyncAuthenticaLogin.execute(newUser);
 
                 Intent intent = new Intent(getBaseContext(), LoginActivity.class);
                 startActivity(intent);

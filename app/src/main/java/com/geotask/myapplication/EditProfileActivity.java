@@ -62,7 +62,7 @@ public class EditProfileActivity extends AbstractGeoTaskActivity {
             getCurrentUser().setPhonenum(userPhoneString);
 
             MasterController.AsyncUpdateDocument asyncUpdateDocument
-                    = new MasterController.AsyncUpdateDocument();
+                    = new MasterController.AsyncUpdateDocument(this);
             asyncUpdateDocument.execute(getCurrentUser());
 
             Intent intent = new Intent(getBaseContext(), ViewProfileActivity.class);

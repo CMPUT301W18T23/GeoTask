@@ -6,15 +6,27 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+
 
 public class TestTask {
 
 //	public static void main(String[] args) {
 //		testTask();
 
+	@Test
+	public void testEquals() {
+		Task task1 = new Task("testEquals", "testEquals", "testEquals");
+		Task task2 = new Task("testEquals", "testEquals", "testEquals");
+		task2.setObjectID(task1.getObjectID());
+
+		assertEquals(task1, task2);
+		assertFalse(task1 == task2);
+	}
 //	}
 	@Test
-	public static void testTask() {
+	public void testTask() {
 		testEntered();
 		testChanged();
 		testEmptyPicture();
@@ -26,13 +38,13 @@ public class TestTask {
 //		testNotEmpty();
 
 	}
-	public static void testEntered() {
+	public void testEntered() {
 		String Name = "jejewitt";
 		String Description  = "i need someone to test this task";
 		String Status = "Requested";
 		String Provider = "James";
 		String Requester = "Jewitt";
-		Task task = new Task(Name, Description, "lolol");
+		Task task = new Task(Name, Description, "fff");
 		task.setRequesterID(Provider);
 		task.setAcceptedProviderID(Requester);
 		assert(Name == task.getName());
@@ -43,7 +55,7 @@ public class TestTask {
 		System.out.print(task.getName()+" "+  task.getDescription() + " "+ task.getStatus()+ " "+ task.getRequesterID() + " " + task.getAcceptedProviderID());
 	}
 	
-	public static void testChanged() { //check if adding new data
+	public void testChanged() { //check if adding new data
 		String Name = "jejewitt";
 		String Description  = "i need someone to test this task";
 		String Status = "Requested";
@@ -54,7 +66,7 @@ public class TestTask {
 		String Requester = "Jewitt";
 		String newProvider = "notJames";
 		String newRequester = "notJewitt";
-		Task task = new Task(Name, Description, ";p;pp;");
+		Task task = new Task(Name, Description, "fff");
 		task.setName(newName);
 		task.setDescription(newDescription);
 		task.setStatus(newStatus);
@@ -73,11 +85,11 @@ public class TestTask {
 	
 	//testing pictures
 	public static void testEmptyPicture() {
-		Task task = new Task("jejewitt", "i need someone to test this task", "loloo");
+		Task task = new Task("jejewitt", "i need someone to test this task", "fff");
 		assert(task.getPictures().isEmpty());   //need to hide because this will fail otherwise	
 	}
 	public static void testAddPicture() {
-		Task task = new Task("jejewitt", "i need someone to test this task", "lolool");
+		Task task = new Task("jejewitt", "i need someone to test this task", "fff");
 		String picture = "/test/a/b";
 		ArrayList<String> pic = new ArrayList<String>();
 		task.setPicture(picture); //need to add picture to
@@ -86,7 +98,7 @@ public class TestTask {
 	}
 	
 	public static void testDeletePicture() {
-		Task task = new Task("jejewitt", "i need someone to test this task", "lolol");
+		Task task = new Task("jejewitt", "i need someone to test this task", "FFF");
 		String picture = "/test/a/b";
 		ArrayList<String> pic = new ArrayList<String>();
 		task.setPicture(picture); //need to add picture to
@@ -95,7 +107,7 @@ public class TestTask {
 	}
 	
 	public static void testDigits() {
-		Task task = new Task("jejewitt", "i need someone to test this task", "lolollol");
+		Task task = new Task("jejewitt", "i need someone to test this task", "FFF");
 		Double ammount = 2.22;
 		task.setAcceptedBid(ammount);
 		assert(task.getAcceptedBid() == ammount);

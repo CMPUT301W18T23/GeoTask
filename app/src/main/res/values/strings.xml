@@ -38,6 +38,7 @@
     <string name="TASK_STATUS_BIDDED">Bidded</string>
     <string name="CURRENT_TASK_BEING_VIEWED">Task</string>
     <string name="VIEW_USER">user_being_viewed</string>
+    <string name="SYNC_AUTHORITY">"com.geotask.myapplication.provider"</string>
     <string name="DECIMAL_INVALID">Enter a valid decimal</string>
     <string name="title_activity_view_profile2">ViewProfile2Activity</string>
 </resources>

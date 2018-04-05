@@ -28,7 +28,7 @@ import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
-import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
+import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -158,11 +158,12 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
 //                e.printStackTrace();
 //            }
 //        }else{
-            SuperBooleanBuilder builder = new SuperBooleanBuilder();
-            builder.put("taskID", getCurrentTask().getObjectID());
+            SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
+            builder.addColumns(new String[] {"taskID"});
+            builder.addParameters(new String[] {getCurrentTask().getObjectID()});
 
             MasterController.AsyncSearch asyncSearch =
-                    new MasterController.AsyncSearch(this);
+                    new MasterController.AsyncSearch(this, this);
             asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
 
             try {
@@ -223,7 +224,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         task.setStatusAccepted();
 
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument();
+                new MasterController.AsyncUpdateDocument(this);
         asyncUpdateDocument.execute(task);
         //The following should wok, but needs to be tested after the array is truly populated by the
         //master controller
@@ -238,11 +239,12 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
     }
 
     public void deleteAllBut(Task task){
-        SuperBooleanBuilder builder = new SuperBooleanBuilder();
-        builder.put("taskID", task.getObjectID());
+        SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
+        builder.addColumns(new String[] {"taskID"});
+        builder.addParameters(new String[] {task.getObjectID()});
 
         MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this);
+                new MasterController.AsyncSearch(this, this);
         asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
         ArrayList<Bid> bidList = new ArrayList<Bid>();
         try {
@@ -253,7 +255,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         for (Bid bid : bidList) {
             if (!task.getAccpeptedBidID().equals(bid.getObjectID())){
                 MasterController.AsyncDeleteDocument asyncDeleteDocument =
-                        new MasterController.AsyncDeleteDocument();
+                        new MasterController.AsyncDeleteDocument(this);
                 asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
             }
         }
@@ -304,11 +306,12 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
     }
 
     private void deleteOldBids(String keeper){
-        SuperBooleanBuilder builder = new SuperBooleanBuilder();
-        builder.put("taskID", getCurrentTask().getObjectID());
+        SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
+        builder.addColumns(new String[] {"taskID"});
+        builder.addParameters(new String[] {getCurrentTask().getObjectID()});
 
         MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this);
+                new MasterController.AsyncSearch(this, this);
         asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
 
         try {
@@ -316,7 +319,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
             //for(Bid bid : bidList){
                 if((bid.getObjectID().compareTo(keeper) !=0) && (bid.getProviderID().compareTo(getCurrentUser().getObjectID()) == 0)){
                     MasterController.AsyncDeleteDocument asyncDeleteDocument =
-                            new MasterController.AsyncDeleteDocument();
+                            new MasterController.AsyncDeleteDocument(this);
                     asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
                     if(bidList.contains(bid)){
                         bidList.remove(bid);
@@ -327,7 +330,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
             for(Bid bid : bidList){
                 if((bid.getObjectID().compareTo(keeper) !=0) && (bid.getProviderID().compareTo(getCurrentUser().getObjectID()) == 0)){
                     MasterController.AsyncDeleteDocument asyncDeleteDocument =
-                            new MasterController.AsyncDeleteDocument();
+                            new MasterController.AsyncDeleteDocument(this);
                     asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
                     if(bidList.contains(bid)){
                         bidList.remove(bid);
@@ -352,7 +355,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         deleteOldBids(bid.getObjectID());
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument();
+                new MasterController.AsyncCreateNewDocument(this);
         asyncCreateNewDocument.execute(bid);
 
         //populateBidView();
@@ -373,15 +376,16 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
      */
     public void deleteBid(Bid bid, Task task){
         MasterController.AsyncDeleteDocument asyncDeleteDocument =
-                new MasterController.AsyncDeleteDocument();
+                new MasterController.AsyncDeleteDocument(this);
         asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
 
-        SuperBooleanBuilder builder = new SuperBooleanBuilder();
-        builder.put("taskID", task.getObjectID());
+        SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
+        builder.addColumns(new String[] {"taskID"});
+        builder.addParameters(new String[] {task.getObjectID()});
 
 
         MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this);
+                new MasterController.AsyncSearch(this, this);
         asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
 
         List<Bid> result = null;
@@ -432,7 +436,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
             e.printStackTrace();
         }
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument();
+                new MasterController.AsyncUpdateDocument(this);
         asyncUpdateDocument.execute(task);
     }
 
@@ -442,7 +446,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
     public void triggerPopup(View view, final Bid bid, final Task task){
 
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this);
+                new MasterController.AsyncGetDocument(this, this);
         asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getProviderID(), User.class));
 
         try {
@@ -545,7 +549,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
     }
     public void triggerViewProfile(View view, final Bid bid, final Task task){
         MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this);
+                new MasterController.AsyncGetDocument(this, this);
         asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getProviderID(), User.class));
 
         try {

@@ -9,10 +9,11 @@ import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
+
 /**
  * singleton RoomDataBase object used to instanstiate reference used to access database
  */
-@Database(entities = {User.class, Bid.class, Task.class}, version = 7)
+@Database(entities = {User.class, Bid.class, Task.class}, version = 15)
 public abstract class LocalDataBase extends RoomDatabase{
 
     private static LocalDataBase instance;

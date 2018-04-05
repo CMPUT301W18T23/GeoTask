@@ -5,12 +5,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
@@ -21,11 +19,10 @@ import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.MenuActivity;
-import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
+import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
 import com.geotask.myapplication.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -171,12 +168,13 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
              */
 
             //make the query
-            SuperBooleanBuilder builder = new SuperBooleanBuilder();
-            builder.put("taskID", item.getObjectID());
+            SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
+            builder.addColumns(new String[] {"taskID"});
+            builder.addParameters(new String[] {item.getObjectID()});
 
             //perform the search
             MasterController.AsyncSearch asyncSearch =
-                    new MasterController.AsyncSearch(this);
+                    new MasterController.AsyncSearch(this, context);
             asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
 
             List<Bid> result = null;
@@ -218,7 +216,7 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
                 item.setLowestBid(lowest);
                 item.setNumBids(bidList.size());
                 MasterController.AsyncUpdateDocument asyncUpdateDocument =  //update the status
-                        new MasterController.AsyncUpdateDocument();
+                        new MasterController.AsyncUpdateDocument(context);
                 asyncUpdateDocument.execute(item);
 
             } catch (ExecutionException e) {
@@ -251,7 +249,7 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
 
         if((item.getStatus().compareTo("Accepted") == 0) || (item.getStatus().compareTo("Completed") == 0)){
             MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this);
+                new MasterController.AsyncGetDocument(this, context);
             asyncGetDocument.execute(new AsyncArgumentWrapper(item.getAccpeptedBidID(), Bid.class));
 
             Bid remote = null;
