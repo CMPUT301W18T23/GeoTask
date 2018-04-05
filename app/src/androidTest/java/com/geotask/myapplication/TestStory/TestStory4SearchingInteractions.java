@@ -57,13 +57,32 @@ public class TestStory4SearchingInteractions {
 
     private ActivityTestRule<LoginActivity> LoginActivityTestRule =
             new ActivityTestRule<>(LoginActivity.class, false, true);
+    @Test
+    public void testProfileRegistration() {
+        String newname = "testUserName";
+        String newphone = "123456789";
+        String newemail = "testEmail@e.com";
 
+        Context targetContext =
+                InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Intent intent = new Intent(targetContext, LoginActivity.class);
+        LoginActivityTestRule.launchActivity(intent);
+
+        onView(ViewMatchers.withId(R.id.registerButton)).perform(click());
+        onView(withId(R.id.newName)).perform(replaceText(newname));
+        onView(withId(R.id.newPhone)).perform(replaceText(newphone));
+        onView(withId(R.id.newEmail)).perform(replaceText(newemail));
+        onView(withId(R.id.newSave)).perform(click());
+
+        onView(withId(R.id.emailText)).perform(replaceText(newemail));
+        onView(withId(R.id.loginButton)).perform(click());
+    }
     //4.a
     @Test
     public void testSearch() {
         String newname = "testUserName";
         String newphone = "123456789";
-        String newemail = "testEmail";
+        String newemail = "testEmail@e.com";
 
         User user = new User(newname, newemail, newphone);
 
