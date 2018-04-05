@@ -429,14 +429,15 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
      */
     public void notComplete() {
         MasterController.AsyncDeleteDocument asyncDeleteDocument =
-                new MasterController.AsyncDeleteDocument();
+                new MasterController.AsyncDeleteDocument(this);
         asyncDeleteDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getAccpeptedBidID(), Bid.class));
 
-        SuperBooleanBuilder builder = new SuperBooleanBuilder();
-        builder.put("taskID", getCurrentTask().getObjectID());
+        SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
+        builder.addColumns(new String[] {"taskID"});
+        builder.addParameters(new String[] {getCurrentTask().getObjectID()});
 
         MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this);
+                new MasterController.AsyncSearch(this, this);
         asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
 
         try {
@@ -456,7 +457,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         }
 
         MasterController.AsyncUpdateDocument asyncUpdateDocument
-                = new MasterController.AsyncUpdateDocument();
+                = new MasterController.AsyncUpdateDocument(this);
         asyncUpdateDocument.execute(getCurrentTask());
 
         updateTaskMetaData(this);
@@ -525,10 +526,16 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
             newTask.setStatusCompleted();
             setCurrentTask(newTask);
             MasterController.AsyncUpdateDocument asyncUpdateDocument2 =
-                    new MasterController.AsyncUpdateDocument();
+                    new MasterController.AsyncUpdateDocument(getBaseContext());
             asyncUpdateDocument2.execute(getCurrentTask());
-            asyncUpdateDocument.get();
-            updateDisplayedValues();
+                try {
+                    asyncUpdateDocument.get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+                updateDisplayedValues();
             }
         });
     }
