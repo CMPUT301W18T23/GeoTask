@@ -159,7 +159,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-
+        Task task = new Task("f", "f", "f");
         assertEquals(user.getName(), remote.getName());
     }
 

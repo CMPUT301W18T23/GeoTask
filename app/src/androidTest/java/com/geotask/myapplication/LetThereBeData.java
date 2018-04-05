@@ -1,5 +1,6 @@
 package com.geotask.myapplication;
 
+import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.geotask.myapplication.Controllers.MasterController;
@@ -15,7 +16,7 @@ public class LetThereBeData {
     public void data() {
         User michael = new User("Michael", "mtang", "5555555");
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument();
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(michael);
     }
 }
