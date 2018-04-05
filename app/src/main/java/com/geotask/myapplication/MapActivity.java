@@ -17,34 +17,37 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
+import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
+import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
+import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.apache.commons.lang3.ObjectUtils;
+
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.geotask.myapplication.AbstractGeoTaskActivity.getTaskList;
 
 /**
  * Created by James on 2018-03-17.
  */
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, AsyncCallBackManager {
-    private List<Task> taskList;
+public class MapActivity extends AbstractGeoTaskActivity implements OnMapReadyCallback {
+    private ArrayList<Task> taskList = getTaskList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //get the tasks form the server
-        /*SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
-        MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this);
-        asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));*/
-
+        getSupportActionBar().setTitle("Map of GeoTasks"); //set the title
 
         // Retrieve the content view that renders the map.
         setContentView(R.layout.activity_map);
@@ -61,32 +64,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         LatLng user_location = new LatLng( 53.523, -113.526);//getCurrentUser().getLocationX(), getCurrentUser().getLocationY()); //get user location, input as floats to the LatLng function
         googleMap.addMarker(new MarkerOptions().position(user_location)
                 .title("You are here."));
-        googleMap.moveCamera(CameraUpdateFactory.zoomTo(15));
+        googleMap.moveCamera(CameraUpdateFactory.zoomTo(13));
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(user_location));
 
-        //
-
-        //add a marker for each task
-        /*for (int i = 0; i < taskList.size(); i++) {
+        //add a marker for each task with a location
+        for (int i = 0; i < taskList.size(); i++) {
             if(taskList.get(i).getLocation() == ""){ continue; }
             //add custom marker for this task
             LatLng taskLocation = new LatLng(taskList.get(i).getLocationX(), taskList.get(i).getLocationY());
+            //LatLng taskLocation = new LatLng(54, -114);//#####del me
             googleMap.addMarker(new MarkerOptions()         //add the marker to the map
-                .position(taskLocation)
-                .title(taskList.get(i).getName())
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-        }*/
+                .position(taskLocation)                     //set position of marker
+                .title(taskList.get(i).getName())           //set name of marker
+                );                                          //set the icon to be the profile picture of the task requester
+            //googleMap.moveCamera(CameraUpdateFactory.newLatLng(taskLocation));
+        }
 
-    }
-
-    @Override
-    public void onPostExecute(GTData data) {
-
-    }
-
-    @Override
-    public void onPostExecute(List<? extends GTData> searchResult) {
-        //add the rest of the markers by iterating over the list of tasks and getting location
-        taskList = (List<Task>) searchResult;
     }
 }

@@ -1,10 +1,16 @@
 //https://developer.android.com/training/location/retrieve-current.html#permissions
 //https://developer.android.com/training/permissions/requesting.html
 
+
 package com.geotask.myapplication;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,6 +20,8 @@ import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Task;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 /**
  * handles adding a task by the task requester
  * the user must be in requester mode for the button to show to go to this activity
@@ -88,24 +96,30 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
         String descriptionString = Description.getText().toString().trim();
 
         //check if location permission is given, if not just make location = ""
-        /*if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED){
+            //permission already granted, get the last location
             mFusedLocationClient.getLastLocation()
                     .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                         @Override
                         public void onSuccess(Location location) {
                             // Got last known location. In some rare situations this can be null.
                             if (location != null) {
-                                //give server the correct location, formatted
+                                //set coordString to the correct location, formatted
                                 coordString = Double.toString(location.getLatitude()) + "," + Double.toString(location.getLongitude());
                             }
                             else { coordString = ""; }
                         }
                     });
-        } else {
-            //give server no location
-            coordString = "";
-        }*/
+        }
+        else {
+            //permission not granted, ask for permission
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    1);         //defining 1 to be the requestCode for accessing fine location
+
+        }
+        //end of permission check/request
 
         if(titleString.length() > 30) {
             Toast.makeText(this,
@@ -128,7 +142,7 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
                     Toast.LENGTH_SHORT)
                     .show();
         } else {
-            newTask = new Task(getCurrentUser().getObjectID(), titleString, descriptionString);
+            newTask = new Task(getCurrentUser().getObjectID(), titleString, descriptionString, coordString);
 
             MasterController.AsyncCreateNewDocument asyncCreateNewDocument
                     = new MasterController.AsyncCreateNewDocument();
@@ -144,4 +158,39 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
             startActivity(intent);
         }
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED){
+                            mFusedLocationClient.getLastLocation()
+                                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                                        @Override
+                                        public void onSuccess(Location location) {
+                                            // Got last known location. In some rare situations this can be null.
+                                            if (location != null) {
+                                                //give server the correct location, formatted as a string: "aa.bb,cc.dd"
+                                                coordString = Double.toString(location.getLatitude()) + "," + Double.toString(location.getLongitude());
+                                            } else {
+                                                coordString = "";
+                                            }
+                                        }
+                                    });
+                    }
+
+                } else {
+                    //permission was denied
+                    coordString = "";
+                }
+                return;
+            }
+        }
+    }
 }
+

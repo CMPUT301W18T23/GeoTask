@@ -65,7 +65,7 @@ public class Task extends GTData{
 	//ToDo locations
 
 
-	@Ignore
+	//@Ignore
 	public Task(String requesterID, String name, String description, String location) { //need string for pictures
 		super.setType(Task.class.toString());
 		this.name = name;
@@ -87,6 +87,7 @@ public class Task extends GTData{
 	 * @param name
 	 * @param description
 	 */
+	@Ignore
 	public Task(String requesterID, String name, String description) { //need string for pictures
 		super.setType(Task.class.toString());
 		this.name = name;
