@@ -60,10 +60,13 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
         Picture = findViewById(R.id.TaskPictures);
         Map = findViewById(R.id.TaskMap);
         Save = findViewById(R.id.TaskSave);
+        Save.setEnabled(true);
 
         Picture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent(AddTaskActivity.this, SelectPhotoActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -92,6 +95,7 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
      * @see UserEntryStringValidator
      */
     private void addTask(){
+        Save.setEnabled(false);
         String titleString = Title.getText().toString().trim();
         String descriptionString = Description.getText().toString().trim();
 

@@ -13,8 +13,8 @@ import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.R;
-import com.geotask.myapplication.TaskViewActivity;
 import com.geotask.myapplication.TestServerAddress;
+import com.geotask.myapplication.ViewTaskActivity;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -59,8 +59,8 @@ public class TestStory5TaskBiddingInteractions {
 
 
     @Rule
-    public ActivityTestRule<TaskViewActivity> testPlaceBidActivityRule =
-            new ActivityTestRule<>(TaskViewActivity.class, false, false);
+    public ActivityTestRule<ViewTaskActivity> testPlaceBidActivityRule =
+            new ActivityTestRule<>(ViewTaskActivity.class, false, false);
     //5.a
     @Test
     public void testPlaceBid() throws InterruptedException {
@@ -85,7 +85,7 @@ public class TestStory5TaskBiddingInteractions {
 
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
-        Intent intent = new Intent(targetContext, TaskViewActivity.class);
+        Intent intent = new Intent(targetContext, ViewTaskActivity.class);
         intent.putExtra("currentUser", provider);
         intent.putExtra("task", task);
         testPlaceBidActivityRule.launchActivity(intent);
@@ -130,7 +130,7 @@ public class TestStory5TaskBiddingInteractions {
 
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
-        Intent intent = new Intent(targetContext, TaskViewActivity.class);
+        Intent intent = new Intent(targetContext, ViewTaskActivity.class);
         intent.putExtra("currentUser", requester);
         intent.putExtra("task", task);
         taskViewActivityActivityTestRule.launchActivity(intent);
@@ -160,8 +160,8 @@ public class TestStory5TaskBiddingInteractions {
     }
 
     @Rule
-    public ActivityTestRule<TaskViewActivity> taskViewActivityActivityTestRule =
-            new ActivityTestRule<>(TaskViewActivity.class, false, false);
+    public ActivityTestRule<ViewTaskActivity> taskViewActivityActivityTestRule =
+            new ActivityTestRule<>(ViewTaskActivity.class, false, false);
     //5.e
     @Test
     public void testViewBidsOnTask() throws InterruptedException {
@@ -195,7 +195,7 @@ public class TestStory5TaskBiddingInteractions {
 
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
-        Intent intent = new Intent(targetContext, TaskViewActivity.class);
+        Intent intent = new Intent(targetContext, ViewTaskActivity.class);
         intent.putExtra("currentUser", requester);
         intent.putExtra("task", task);
         taskViewActivityActivityTestRule.launchActivity(intent);
@@ -241,7 +241,7 @@ public class TestStory5TaskBiddingInteractions {
 
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
-        Intent intent = new Intent(targetContext, TaskViewActivity.class);
+        Intent intent = new Intent(targetContext, ViewTaskActivity.class);
         intent.putExtra("currentUser", requester);
         intent.putExtra("task", task);
         taskViewActivityActivityTestRule.launchActivity(intent);
@@ -282,7 +282,7 @@ public class TestStory5TaskBiddingInteractions {
 
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
-        Intent intent = new Intent(targetContext, TaskViewActivity.class);
+        Intent intent = new Intent(targetContext, ViewTaskActivity.class);
         intent.putExtra("currentUser", requester);
         intent.putExtra("task", task);
         taskViewActivityActivityTestRule.launchActivity(intent);

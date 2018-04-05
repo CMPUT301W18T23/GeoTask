@@ -11,9 +11,12 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
+ * HashMapConverter
+ *
+ * This class is used by SQL if needed
+ *
  * Created by Kyle on 2018-03-23.
  */
-
 public class HashMapConverter {
 
     @TypeConverter

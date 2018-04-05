@@ -4,6 +4,7 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.TypeConverters;
+import android.support.annotation.NonNull;
 
 import com.geotask.myapplication.Controllers.Helpers.BidListConverter;
 import com.geotask.myapplication.Controllers.Helpers.GetLowestBidFromServer;
@@ -22,7 +23,7 @@ import java.util.Date;
  * 			Author Rohit Jain, Oct 18, 2012, no licence stated
  */
 @Entity(tableName = "tasks")
-public class Task extends GTData{
+public class Task extends GTData implements Comparable{
 	@ColumnInfo(name = "task_name")
 	private String name;
 	@ColumnInfo
@@ -93,7 +94,7 @@ public class Task extends GTData{
 		this.name = name;
 		this.description = description;
 		this.hitCounter = 0;
-		this.status = "requested";
+		this.status = "Requested";
 		super.setDate(new Date().getTime());
 		this.accpetedBid = -1.0; //ToDo
 		this.requesterID = requesterID;
@@ -373,4 +374,10 @@ public class Task extends GTData{
 		}
 	}
 
+	@Override
+	public int compareTo(@NonNull Object o) {
+		Task other = (Task) o;
+		int ret = (int) ((int) this.getDate() - other.getDate());
+		return ret;
+	}
 }

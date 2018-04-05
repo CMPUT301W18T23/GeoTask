@@ -17,6 +17,7 @@ import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -111,7 +112,8 @@ public class BidArrayAdapter extends ArrayAdapter<Bid> implements AsyncCallBackM
 
             headerSub.providerName.setText(provider.getName());
             headerSub.numProvided.setText(String.format("%d tasks completed", provider.getCompletedTasks()));
-            headerSub.date.setText(item.getDateString());
+            String strDate = new SimpleDateFormat("EEEE MMMM d, yyyy").format(new java.util.Date((long)item.getDate()));
+            headerSub.date.setText(strDate);
 
             return row;
     }

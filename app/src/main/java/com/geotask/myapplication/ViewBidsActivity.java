@@ -4,15 +4,18 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -24,6 +27,7 @@ import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
+import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import java.util.ArrayList;
@@ -37,9 +41,16 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
     private ArrayList<Bid> bidList;
     private ArrayAdapter<Bid> adapter;
     private PopupWindow POPUP_WINDOW_DELETION = null;   //popup for error message
+    private PopupWindow POPUP_WINDOW_PROFILE = null;   //popup for error message
     private GTData data = null;
     private List<? extends GTData> searchResult = null;
     private TextView emptyText;
+    private User profile;
+    private Toolbar toolbar;
+    private MenuItem bidBtn;
+    private Button acceptBtn;
+    private Button cancelBtn;
+    SwipeRefreshLayout refreshLayout;
 
     /**
      * Initiate variables, and set an on click listener for
@@ -48,11 +59,24 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_view_bids);
+        //setContentView(R.layout.activity_view_bids);
+        setContentView(R.layout.app_bar_menu_view_bids);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
 
         oldBids = findViewById(R.id.bidListView);
         bidList = new ArrayList<>();
         emptyText = (TextView) findViewById(R.id.empty_bid_string);
+        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.bid_refresh_layout);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshLayout.setRefreshing(true);
+                populateBidView();
+                refreshLayout.setRefreshing(false);
+            }
+        });
 
         oldBids.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -62,37 +86,94 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
                 Bid bid = bidList.get(position);
                 if(getCurrentTask().getRequesterID().compareTo(getCurrentUser().getObjectID()) == 0){
 //                    Bid bid = bidList.get(position);
-                    triggerPopup(view, bid, getCurrentTask());
-                    adapter.notifyDataSetChanged();
+                    if ("Completed".equals(getCurrentTask().getStatus())){
+                        triggerViewProfile(view, bid, getCurrentTask());
+                    }else if ("Accepted".equals(getCurrentTask().getStatus())){
+                        triggerDeletePopup(view, bid, getCurrentTask());
+                    }else{
+                        triggerPopup(view, bid, getCurrentTask());
+                        adapter.notifyDataSetChanged();
+                    }
                 }else if (getCurrentUser().getObjectID().equals(bid.getProviderID())){
                     triggerDeletePopup(view, bid, getCurrentTask());
                     adapter.notifyDataSetChanged();
+                }else{
+                    triggerViewProfile(view, bid, getCurrentTask());
                 }
             }
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_view_bids, menu);
+        bidBtn = toolbar.getMenu().findItem(R.id.action_bid);
+        if((getCurrentTask().getRequesterID().compareTo(getCurrentUser().getObjectID()) != 0)
+                && ("Bidded".equals(getCurrentTask().getStatus())||"Requested".equals(getCurrentTask().getStatus()))){
+            bidBtn.setVisible(true);
+        } else {
+            bidBtn.setVisible(false);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_bid) {
+            triggerPopup();
+        }
+        return super.onOptionsItemSelected(item);
+    }
     /**
      * Query the elastic search server and fill the list view
      * with all bids for the task
      */
     private void populateBidView(){
         //TODO - build query that returns list of bids that all have task ID == this.taskID
+
         /// THIS SHOULD WORK BUT IS CURRENTLY COMMENTED OUT
-        SuperBooleanBuilder builder = new SuperBooleanBuilder();
-        builder.put("taskID", getCurrentTask().getObjectID());
+//        if ("Accepted".equals(getCurrentTask().getStatus())) {
+//
+//            MasterController.AsyncGetDocument asyncGetDocument =
+//                    new MasterController.AsyncGetDocument(this);
+//            asyncGetDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getAccpeptedBidID(), Bid.class));
+//
+//            Bid accepted = null;
+//            try {
+//                accepted = (Bid) asyncGetDocument.get();
+//                if(bidList.isEmpty()){
+//                    bidList.add(accepted);
+//                }
+//            } catch (ExecutionException e) {
+//                e.printStackTrace();
+//            }catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }else{
+            SuperBooleanBuilder builder = new SuperBooleanBuilder();
+            builder.put("taskID", getCurrentTask().getObjectID());
 
-        MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this);
-        asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
+            MasterController.AsyncSearch asyncSearch =
+                    new MasterController.AsyncSearch(this);
+            asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
 
-        try {
-            bidList = (ArrayList<Bid>) asyncSearch.get();
-            Collections.sort(bidList);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-
+            try {
+                bidList = (ArrayList<Bid>) asyncSearch.get();
+                if(bidList != null) {
+                    Collections.sort(bidList);
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+//        }
         adapter.notifyDataSetChanged();
         setEmptyString();
     }
@@ -141,18 +222,150 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         task.setAccpeptedBidID(bid.getObjectID());
         task.setStatusAccepted();
 
-        //The following should wok, but needs to be tested after the array is truly populated by the
-        //master controller
-
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
                 new MasterController.AsyncUpdateDocument();
         asyncUpdateDocument.execute(task);
+        //The following should wok, but needs to be tested after the array is truly populated by the
+        //master controller
+        deleteAllBut(task);
 
-        //go back to TaskViewActivity
+        //go back to ViewTaskActivity
         Intent intent = new Intent(ViewBidsActivity.this, MenuActivity.class);
         intent.putExtra("task", task);
+        MenuActivity.setLastClicked(getCurrentTask());
         startActivity(intent);
 
+    }
+
+    public void deleteAllBut(Task task){
+        SuperBooleanBuilder builder = new SuperBooleanBuilder();
+        builder.put("taskID", task.getObjectID());
+
+        MasterController.AsyncSearch asyncSearch =
+                new MasterController.AsyncSearch(this);
+        asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
+        ArrayList<Bid> bidList = new ArrayList<Bid>();
+        try {
+            bidList = (ArrayList<Bid>) asyncSearch.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        for (Bid bid : bidList) {
+            if (!task.getAccpeptedBidID().equals(bid.getObjectID())){
+                MasterController.AsyncDeleteDocument asyncDeleteDocument =
+                        new MasterController.AsyncDeleteDocument();
+                asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
+            }
+        }
+    }
+
+    /**
+     * sets  up popup for bid
+     * accept_bid_popout xml file for popout
+     */
+    public void triggerPopup(){
+
+        LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = layoutInflater.inflate(R.layout.accept_bid_popout, null);
+
+        POPUP_WINDOW_DELETION = new PopupWindow(this);
+        POPUP_WINDOW_DELETION.setContentView(layout);
+        POPUP_WINDOW_DELETION.setFocusable(true);
+        POPUP_WINDOW_DELETION.setBackgroundDrawable(null);
+        POPUP_WINDOW_DELETION.showAtLocation(layout, Gravity.CENTER, 1, 1);
+
+        final EditText value = (EditText) layout.findViewById(R.id.editTextAmmount);
+
+        cancelBtn = (Button) layout.findViewById(R.id.btn_cancel);
+        cancelBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                POPUP_WINDOW_DELETION.dismiss();
+            }
+        });
+
+        acceptBtn = (Button) layout.findViewById(R.id.btn_accept_bid);
+        acceptBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+
+                if (!value.getText().toString().isEmpty()) {
+                    POPUP_WINDOW_DELETION.dismiss();
+                    Double number = Double.parseDouble(value.getText().toString());
+                    addBid(number);
+                }
+                //TODO - go back to previous intent
+            }
+        });
+    }
+
+    private void deleteOldBids(String keeper){
+        SuperBooleanBuilder builder = new SuperBooleanBuilder();
+        builder.put("taskID", getCurrentTask().getObjectID());
+
+        MasterController.AsyncSearch asyncSearch =
+                new MasterController.AsyncSearch(this);
+        asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
+
+        try {
+            for(Bid bid : (ArrayList<Bid>) asyncSearch.get()){
+            //for(Bid bid : bidList){
+                if((bid.getObjectID().compareTo(keeper) !=0) && (bid.getProviderID().compareTo(getCurrentUser().getObjectID()) == 0)){
+                    MasterController.AsyncDeleteDocument asyncDeleteDocument =
+                            new MasterController.AsyncDeleteDocument();
+                    asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
+                    if(bidList.contains(bid)){
+                        bidList.remove(bid);
+                    }
+                }
+            }
+
+            for(Bid bid : bidList){
+                if((bid.getObjectID().compareTo(keeper) !=0) && (bid.getProviderID().compareTo(getCurrentUser().getObjectID()) == 0)){
+                    MasterController.AsyncDeleteDocument asyncDeleteDocument =
+                            new MasterController.AsyncDeleteDocument();
+                    asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
+                    if(bidList.contains(bid)){
+                        bidList.remove(bid);
+                    }
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     *  uses MasterController to add a new bid. value is passode over
+     @throws InterruptedException
+
+      * @param value
+     */
+    private void addBid(Double value){
+        Bid bid = new Bid(getCurrentUser().getObjectID(), value, getCurrentTask().getObjectID());
+        deleteOldBids(bid.getObjectID());
+
+        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new MasterController.AsyncCreateNewDocument();
+        asyncCreateNewDocument.execute(bid);
+
+        //populateBidView();
+        Log.i("Adding --->", bid.getValue().toString());
+        bidList.add(bid);
+        Collections.sort(bidList);
+        Log.i("Size --->",String.format("%d", bidList.size()));
+
+        adapter = new BidArrayAdapter(this, R.layout.bid_list_item, bidList);
+        oldBids.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+
+        updateTaskMetaData(this);
     }
 
     /**
@@ -183,19 +396,19 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
         bidList.remove(bid);
         adapter = new BidArrayAdapter(this, R.layout.bid_list_item, bidList);
         oldBids.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-        updateTask(bid, task);
+        updateTaskMetaData(this);
+        updateTaskAfterDelete(bid, task);
     }
 
 
     /**
      * Method to push any changes to bids on a task to the server
      */
-    public void updateTask(Bid bid , Task task){
+    public void updateTaskAfterDelete(Bid bid , Task task){
 
         if (bid.getObjectID().equals(task.getAccpeptedBidID())){
             task.setAcceptedProviderID(null);
@@ -212,10 +425,9 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         back.putExtra(getString(R.string.UPDATED_TASK_AFTER_EDIT), task);
         back.putExtra("del", "1");
 
-        //task.syncBidData();
         setResult(Activity.RESULT_OK, back);
         try {
-            Thread.sleep(400);
+            Thread.sleep(200);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -228,6 +440,19 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
      * Set up buttons in the view for the popup with various bid functionality
      */
     public void triggerPopup(View view, final Bid bid, final Task task){
+
+        MasterController.AsyncGetDocument asyncGetDocument =
+                new MasterController.AsyncGetDocument(this);
+        asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getProviderID(), User.class));
+
+        try {
+            profile = (User) asyncGetDocument.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layout = layoutInflater.inflate(R.layout.layout_bidlist_popout, null);
 
@@ -272,7 +497,8 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
 
                 Intent intent = new Intent(ViewBidsActivity.this, ViewProfileActivity.class);
 //                intent.putExtra("userID", bid.getProviderID());
-                intent.putExtra(getString(R.string.CURRENT_USER), getCurrentUser()); //ToDo issue #31 here????
+
+                intent.putExtra(getString(R.string.VIEW_USER), profile); //ToDo issue #31 here????
                 startActivity(intent);
             }
         });
@@ -317,6 +543,54 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
             }
         });
     }
+    public void triggerViewProfile(View view, final Bid bid, final Task task){
+        MasterController.AsyncGetDocument asyncGetDocument =
+                new MasterController.AsyncGetDocument(this);
+        asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getProviderID(), User.class));
+
+        try {
+            profile = (User) asyncGetDocument.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = layoutInflater.inflate(R.layout.view_profile_bid_popout, null);
+
+        POPUP_WINDOW_PROFILE = new PopupWindow(this);
+        POPUP_WINDOW_PROFILE.setContentView(layout);
+        POPUP_WINDOW_PROFILE.setFocusable(true);
+        POPUP_WINDOW_PROFILE.setBackgroundDrawable(null);
+        POPUP_WINDOW_PROFILE.showAtLocation(layout, Gravity.CENTER, 1, 1);
+
+        Button profileBtn = (Button) layout.findViewById(R.id.btn_delete_my_bid);  // this goes to profile. for some reason if i change the name, the layout messes up
+        profileBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                POPUP_WINDOW_PROFILE.dismiss();
+                Intent intent = new Intent(ViewBidsActivity.this, ViewProfileActivity.class);
+//                intent.putExtra("userID", bid.getProviderID());
+
+                intent.putExtra(getString(R.string.VIEW_USER), profile); //ToDo issue #31 here????
+                startActivity(intent);
+            }
+        });
+
+        Button backBtn = (Button) layout.findViewById(R.id.btn_back);
+        backBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                POPUP_WINDOW_PROFILE.dismiss();
+            }
+        });
+    }
+
 
     public void setEmptyString(){
         Log.i("BidList ----->", String.format("%d", bidList.size()));

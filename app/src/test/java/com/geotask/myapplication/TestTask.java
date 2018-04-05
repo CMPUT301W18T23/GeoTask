@@ -32,7 +32,7 @@ public class TestTask {
 		String Status = "Requested";
 		String Provider = "James";
 		String Requester = "Jewitt";
-		Task task = new Task(Name, Description);
+		Task task = new Task(Name, Description, "lolol");
 		task.setRequesterID(Provider);
 		task.setAcceptedProviderID(Requester);
 		assert(Name == task.getName());
@@ -54,7 +54,7 @@ public class TestTask {
 		String Requester = "Jewitt";
 		String newProvider = "notJames";
 		String newRequester = "notJewitt";
-		Task task = new Task(Name, Description);
+		Task task = new Task(Name, Description, ";p;pp;");
 		task.setName(newName);
 		task.setDescription(newDescription);
 		task.setStatus(newStatus);
@@ -73,11 +73,11 @@ public class TestTask {
 	
 	//testing pictures
 	public static void testEmptyPicture() {
-		Task task = new Task("jejewitt", "i need someone to test this task");
+		Task task = new Task("jejewitt", "i need someone to test this task", "loloo");
 		assert(task.getPictures().isEmpty());   //need to hide because this will fail otherwise	
 	}
 	public static void testAddPicture() {
-		Task task = new Task("jejewitt", "i need someone to test this task");
+		Task task = new Task("jejewitt", "i need someone to test this task", "lolool");
 		String picture = "/test/a/b";
 		ArrayList<String> pic = new ArrayList<String>();
 		task.setPicture(picture); //need to add picture to
@@ -86,7 +86,7 @@ public class TestTask {
 	}
 	
 	public static void testDeletePicture() {
-		Task task = new Task("jejewitt", "i need someone to test this task");
+		Task task = new Task("jejewitt", "i need someone to test this task", "lolol");
 		String picture = "/test/a/b";
 		ArrayList<String> pic = new ArrayList<String>();
 		task.setPicture(picture); //need to add picture to
@@ -95,7 +95,7 @@ public class TestTask {
 	}
 	
 	public static void testDigits() {
-		Task task = new Task("jejewitt", "i need someone to test this task");
+		Task task = new Task("jejewitt", "i need someone to test this task", "lolollol");
 		Double ammount = 2.22;
 		task.setAcceptedBid(ammount);
 		assert(task.getAcceptedBid() == ammount);

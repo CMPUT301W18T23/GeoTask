@@ -42,7 +42,7 @@ public class TestViewBidsActivity implements AsyncCallBackManager {
     public ActivityTestRule<ViewBidsActivity> viewBidsActivity = new ActivityTestRule<ViewBidsActivity>(ViewBidsActivity.class){
         @Override
         protected Intent getActivityIntent() {
-            Intent intent = new Intent(InstrumentationRegistry.getContext(), ViewBidsActivity.class);
+            Intent intent = new Intent(InstrumentationRegistry.getTargetContext(), ViewBidsActivity.class);
             intent.putExtra("currentUser", user);
             intent.putExtra("task", task);
             return intent;

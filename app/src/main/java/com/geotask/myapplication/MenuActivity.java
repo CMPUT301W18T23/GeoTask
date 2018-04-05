@@ -1,18 +1,14 @@
 package com.geotask.myapplication;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
@@ -43,8 +39,6 @@ import junit.framework.Assert;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
-import static java.sql.DriverManager.println;
 
 
 /** MenuActivity
@@ -91,7 +85,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
     TextView drawerUsername;
     TextView drawerEmail;
     TextView emptyText;
-    Task lastClickedTask = null;
+    SwipeRefreshLayout refreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,8 +96,21 @@ public class MenuActivity extends AbstractGeoTaskActivity
         setSupportActionBar(toolbar);
         oldTasks = findViewById(R.id.taskListView);
         emptyText = findViewById(R.id.empty_task_string);
-        super.setTaskList(new ArrayList<Task>());
-        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
+        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshLayout.setRefreshing(true);
+                populateTaskView();
+                refreshLayout.setRefreshing(false);
+            }
+        });
+
+
+        if((getTaskList() == null) || (getTaskList().size() == 0)) {
+            setTaskList(new ArrayList<Task>());
+        }
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), getLastClicked(), getCurrentUser());
         oldTasks.setAdapter(adapter);
 
         screenWidthInDPs = this.getScreenWidthInDPs();
@@ -123,6 +130,8 @@ public class MenuActivity extends AbstractGeoTaskActivity
             e.printStackTrace();
             setSearchKeywords("");
         }
+
+        setSearchStatus("All");
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -158,6 +167,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 Snackbar.make(snackView, "Search Filters Cleared", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                 setSearchKeywords("");
+                setSearchStatus("All");
+                setViewMode(R.integer.MODE_INT_ALL);
+                navigationView.setCheckedItem(R.id.nav_browse);
                 populateTaskView();
                 clearFiltersButton.setVisibility(View.INVISIBLE);
             }
@@ -180,9 +192,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
                     Log.i("click --->", "not-clicked");
                 }
                 Task task = getTaskList().get(position);
-                lastClickedTask = task;
-                Intent intent = new Intent(MenuActivity.this, TaskViewActivity.class);
-                setCurrentTask(lastClickedTask);
+                MenuActivity.setLastClicked(task);
+                Intent intent = new Intent(MenuActivity.this, ViewTaskActivity.class);
+                setCurrentTask(task);
                 startActivity(intent);
                 Log.i("LifeCycle --->", "after activity return");
             }
@@ -216,6 +228,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         super.onStart();
         //Log.i("LifeCycle --->", "onStart is called");
         fab.show();
+        navigationView.setCheckedItem(R.id.nav_browse);
     }
 
     /**
@@ -232,6 +245,8 @@ public class MenuActivity extends AbstractGeoTaskActivity
         drawerUsername = (TextView) headerView.findViewById(R.id.drawer_name);
         drawerEmail = (TextView) headerView.findViewById(R.id.drawer_email);
 
+
+
         //TODO - set drawerImage to user profile pic
         drawerUsername.setText(getCurrentUser().getName());
         drawerEmail.setText(getCurrentUser().getEmail());
@@ -246,39 +261,86 @@ public class MenuActivity extends AbstractGeoTaskActivity
         setOrientation();
     }
 
+
+
     /**
      * This function populates the listView by querying the server based on the view mode
      *
      */
     private void populateTaskView(){
-        getTaskList().clear();
-
+        Log.i("start with2------->", String.format("%d", getTaskList().size()));
         if(getViewMode() == R.integer.MODE_INT_STARRED){
+            getTaskList().clear();
             setStarredMode();
             return;
+        } else if (getViewMode() == R.integer.MODE_INT_HISTORY) {
+            clearFiltersButton.setVisibility(View.VISIBLE);
+            adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), getLastClicked(), getCurrentUser());
+            oldTasks.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+            setEmptyString();
+            return;
+        } else if (getViewMode() == R.integer.MODE_INT_OTHERS_TASKS) {
+            Log.i("other------>", String.format("%d", getViewMode()));
+            clearFiltersButton.setVisibility(View.VISIBLE);
+            adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), getLastClicked(), getCurrentUser());
+            oldTasks.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+            setEmptyString();
+            return;
         }
+        Log.i("none------>", String.format("%d", getViewMode()));
+        getTaskList().clear();
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
 
         //Only show tasks created by the user
         if(getViewMode() == R.integer.MODE_INT_REQUESTER) {
+            setSearchStatus(null);
             builder1.put("requesterID", getCurrentUser().getObjectID());
         } else if(getViewMode() == R.integer.MODE_INT_ACCEPTED) {
+            setSearchStatus(null);
             builder1.put("requesterID", getCurrentUser().getObjectID());
             builder1.put("status", "accepted");
         } else if(getViewMode() == R.integer.MODE_INT_ASSIGNED) {
+            setSearchStatus(null);
             builder1.put("status", "accepted");
+
         }
 
         //Add filter keywords to the builder if present
         try {
+            Boolean showClear = false;
             if(!getSearchKeywords().equals("")) {
+                showClear = true;
                 clearFiltersButton.setVisibility(View.VISIBLE);
-                for(int i = 0; i < filterArray.length; i++) {
+                for (int i = 0; i < filterArray.length; i++) {
                     builder1.put("description", filterArray[i].toLowerCase());
                 }
-            } else {
+                if(filterArray.length > 0){
+                    navigationView.setCheckedItem(R.id.nav_filter);
+                }
+            } else{
                 clearFiltersButton.setVisibility(View.INVISIBLE);
             }
+
+            if (getSearchStatus()!= null){
+                clearFiltersButton.setVisibility(View.VISIBLE);
+                if(getViewMode() == R.integer.MODE_INT_ALL) {
+                    if(getSearchStatus().compareTo("All") ==0){
+                        if(!showClear) {
+                            clearFiltersButton.setVisibility(View.INVISIBLE);
+                        }
+                        //TODO - uncomment when sync branch merged
+                        //builder1.put("status", "requested");
+                        //builder1.put("status", "bidded");
+                }
+                } else if (getSearchStatus().compareTo("Requested") == 0){
+                    builder1.put("status", "requested");
+                } else if (getSearchStatus().compareTo("Bidded") == 0){
+                    builder1.put("status", "bidded");
+                }
+            }
+
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
@@ -342,7 +404,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
             }
         }
 
-        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), getLastClicked(), getCurrentUser());
         oldTasks.setAdapter(adapter);
         adapter.notifyDataSetChanged();
         setEmptyString();
@@ -409,6 +471,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
             getSupportActionBar().setTitle("All Tasks");
             setViewMode(R.integer.MODE_INT_ALL);
             setSearchKeywords("");
+            setSearchStatus("All");
             populateTaskView();
             adapter.notifyDataSetChanged();
 
@@ -467,11 +530,13 @@ public class MenuActivity extends AbstractGeoTaskActivity
             getSupportActionBar().setTitle("All Tasks");
             Snackbar.make(snackView, "Changed view to \"All\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
+            setSearchStatus("All");
             populateTaskView();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+        //navigationView.setCheckedItem(id);
         return true;
     }
 
@@ -496,14 +561,15 @@ public class MenuActivity extends AbstractGeoTaskActivity
     public void setStarredMode(){
         View snackView = getCurrentFocus();
         ArrayList<Task> starredTaskList = new ArrayList<Task>();
-        for(String taskID : getCurrentUser().getStarredList()){
+        //for(String taskID : getCurrentUser().getStarredList()){
+        for(String taskID : getStarHash().keySet()){
             MasterController.AsyncGetDocument asyncGetDocument =
                     new MasterController.AsyncGetDocument(this);
             asyncGetDocument.execute(new AsyncArgumentWrapper(taskID, Task.class));
             Task task = null;
             try {
                 task = (Task) asyncGetDocument.get();
-                starredTaskList.add(task);
+                //starredTaskList.add(task);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
@@ -514,12 +580,14 @@ public class MenuActivity extends AbstractGeoTaskActivity
             } else {
                 Snackbar.make(snackView, "Some tasks no longer exist and were removed", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                removeFromStarHash(taskID);
             }
         }
         setTaskList(starredTaskList);
-        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), lastClickedTask, getCurrentUser());
+        adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), getLastClicked(), getCurrentUser());
         oldTasks.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+        saveStarHashToServer();
         setEmptyString();
     }
 

@@ -3,12 +3,8 @@ package com.geotask.myapplication;
 import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.contrib.DrawerActions;
-import android.support.test.espresso.contrib.NavigationViewActions;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.view.Gravity;
-import android.view.Menu;
 
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Task;
@@ -28,7 +24,6 @@ import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard
 import static android.support.test.espresso.action.ViewActions.replaceText;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.contrib.DrawerMatchers.isClosed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -50,8 +45,8 @@ public class TestStartFromViewTask {
     }
 
     @Rule
-    public ActivityTestRule<TaskViewActivity> activityRule
-            = new ActivityTestRule<>(TaskViewActivity.class, true, false);
+    public ActivityTestRule<ViewTaskActivity> activityRule
+            = new ActivityTestRule<>(ViewTaskActivity.class, true, false);
 
     @Test
     public void testEditTask() throws InterruptedException {
@@ -63,14 +58,14 @@ public class TestStartFromViewTask {
 
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
-        Intent result = new Intent(targetContext, TaskViewActivity.class);
+        Intent result = new Intent(targetContext, ViewTaskActivity.class);
 
         result.putExtra("task", task);
         result.putExtra("currentUser", user);
 
         activityRule.launchActivity(result);
 
-        onView(withId(R.id.editTaskButton)).perform(click());
+        //onView(withId(R.id.editTaskButton)).perform(click());
 
         onView(withId(R.id.editTitle)).perform(replaceText("updated_string"));
         onView(withId(R.id.editButton)).perform(click());
@@ -92,7 +87,7 @@ public class TestStartFromViewTask {
 
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
-        Intent result = new Intent(targetContext, TaskViewActivity.class);
+        Intent result = new Intent(targetContext, ViewTaskActivity.class);
 
         result.putExtra("task", task);
         result.putExtra("currentUser", user);

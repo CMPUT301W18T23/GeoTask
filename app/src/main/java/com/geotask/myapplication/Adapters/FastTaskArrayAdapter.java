@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -24,6 +25,7 @@ import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 import com.geotask.myapplication.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -76,7 +78,7 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
 
     }
 
-    @SuppressLint("CutPasteId")
+    @SuppressLint({"CutPasteId", "DefaultLocale"})
     @Override
     /*
      * There are 7 fields of the list item that are filled here:
@@ -100,8 +102,6 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
             LayoutInflater inflater = ((Activity)context).getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);
 
-            //int dpWidth = MenuActivity.screenWidthInDPs;
-
             headerSub = new HeaderSub();
 
             headerSub.name = (TextView) row.findViewById(R.id.task_list_title);
@@ -121,16 +121,14 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
                         ImageView starIcon = (ImageView) finalRow.findViewById(R.id.btn_star);
                         Log.i("click ----->", String.format("Clicked at pos: %d", position));
                         Log.i("click ----->", clickedTask.getName());
-                        if (user.starred(clickedTask.getObjectID())) {
-                            user.removeTaskFromStarredList(clickedTask.getObjectID());
+                        if(MenuActivity.userStarred(clickedTask.getObjectID())){
+                            MenuActivity.toggleStar(clickedTask.getObjectID());
                             starIcon.setImageResource(R.drawable.ic_star_outline_grey600_24dp);
                         } else {
-                            user.addTaskToStarredList(clickedTask.getObjectID());
-                            starIcon.setImageResource(R.drawable.ic_star_grey600_24dp);
+                            MenuActivity.toggleStar(clickedTask.getObjectID());
+                            starIcon.setImageResource(R.drawable.ic_star_yellow_24dp);
                         }
-                        MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                                new MasterController.AsyncUpdateDocument();
-                        asyncUpdateDocument.execute(user);
+                        MenuActivity.saveStarHashToServer();
                     }
                 });
             }
@@ -153,7 +151,6 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
         } else {
             headerSub.name.setMaxEms((MenuActivity.screenWidthInDPs / 22) - 10);
         }
-        //String viewString = String.format(" %d Views", item.getHitCounter());
         headerSub.hits.setText(String.format("Viewed %d times", item.getHitCounter()));
         headerSub.date.setText(item.getDateString());
 
@@ -243,16 +240,16 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
             Setting the icon for the task
          */
         if (item.getStatus().compareTo("Accepted") == 0){
-            headerSub.icon.setImageResource(R.drawable.ic_checkbox_blank_circle_grey600_24dp);
+            headerSub.icon.setImageResource(R.drawable.ic_checkbox_blank_circle_purple_24dp);
         } else if (item.getStatus().compareTo("Completed") == 0) {
-            headerSub.icon.setImageResource(R.drawable.ic_check_circle_grey600_24dp);
+            headerSub.icon.setImageResource(R.drawable.ic_check_circle_green_24dp);
         } else if(item.getStatus().compareTo("Bidded") == 0) {
-            headerSub.icon.setImageResource(R.drawable.ic_cisco_webex_grey600_24dp);
+            headerSub.icon.setImageResource(R.drawable.ic_cisco_webex_dark_blue_24dp);
         } else {
-            headerSub.icon.setImageResource(R.drawable.ic_circle_outline_grey600_24dp);
+            headerSub.icon.setImageResource(R.drawable.ic_circle_outline_dark_blue_24dp);
         }
 
-        if(item.getStatus().compareTo("Accepted") == 0){
+        if((item.getStatus().compareTo("Accepted") == 0) || (item.getStatus().compareTo("Completed") == 0)){
             MasterController.AsyncGetDocument asyncGetDocument =
                 new MasterController.AsyncGetDocument(this);
             asyncGetDocument.execute(new AsyncArgumentWrapper(item.getAccpeptedBidID(), Bid.class));
@@ -261,6 +258,7 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
             try {
                 remote = (Bid) asyncGetDocument.get();
                 headerSub.lowestBid.setText(String.format("Accepted for: %.2f", remote.getValue()));
+                headerSub.bids.setText(String.format("Bids: %d", item.getNumBids()));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
@@ -272,8 +270,8 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
         *   Only show if you are not the owner of the task
         */
         if(user.getObjectID().compareTo(item.getRequesterID()) != 0) {
-            if (user.starred(item.getObjectID())) {
-                headerSub.starIcon.setImageResource(R.drawable.ic_star_grey600_24dp);
+            if (MenuActivity.userStarred(item.getObjectID())) {
+                headerSub.starIcon.setImageResource(R.drawable.ic_star_yellow_24dp);
             } else {
                 headerSub.starIcon.setImageResource(R.drawable.ic_star_outline_grey600_24dp);
             }

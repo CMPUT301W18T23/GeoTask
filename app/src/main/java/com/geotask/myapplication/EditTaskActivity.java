@@ -64,7 +64,7 @@ public class EditTaskActivity extends AbstractGeoTaskActivity implements AsyncCa
      *handles data editing - called from editButton press
      * takes data from paramaters and sends to the update
      * returns udated task to update data
-     * @see TaskViewActivity
+     * @see ViewTaskActivity
      */
     private void editData() {
         String name =   editTitle.getText().toString();
@@ -115,31 +115,38 @@ public class EditTaskActivity extends AbstractGeoTaskActivity implements AsyncCa
      * gets all bids for the task
      * deletes them 1 by 1
      * then deletes task
-     * @see TaskViewActivity
+     * @see ViewTaskActivity
      */
     private void deleteData() {
+        String taskStatus = getCurrentTask().getStatus();
+        if(taskStatus.compareTo("Accepted") != 0 && taskStatus.compareTo("Completed") != 0) {
+            SuperBooleanBuilder builder = new SuperBooleanBuilder();
+            builder.put("taskID", getCurrentTask().getObjectID());
 
-        SuperBooleanBuilder builder = new SuperBooleanBuilder();
-        builder.put("taskID", getCurrentTask().getObjectID());
+            MasterController.AsyncDeleteDocument asyncDeleteTask =
+                    new MasterController.AsyncDeleteDocument();
+            asyncDeleteTask.execute(new AsyncArgumentWrapper(getCurrentTask().getObjectID(), Task.class));
 
-        MasterController.AsyncDeleteDocument asyncDeleteTask =
-                new MasterController.AsyncDeleteDocument();
-        asyncDeleteTask.execute(new AsyncArgumentWrapper(getCurrentTask().getObjectID(), Task.class));
+            MasterController.AsyncDeleteDocumentByQuery asyncDeleteDocumentByQuery =
+                    new MasterController.AsyncDeleteDocumentByQuery();
+            asyncDeleteDocumentByQuery.execute(new AsyncArgumentWrapper(builder, Bid.class));
 
-        MasterController.AsyncDeleteDocumentByQuery asyncDeleteDocumentByQuery =
-                new MasterController.AsyncDeleteDocumentByQuery();
-        asyncDeleteDocumentByQuery.execute(new AsyncArgumentWrapper(builder, Bid.class));
+            try {
+                Thread.sleep(400);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
-        try {
-            Thread.sleep(400);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            Intent back = new Intent();
+            back.putExtra("del", "1");
+            setResult(Activity.RESULT_OK, back);
+            finish();
+        } else {
+            Toast.makeText(this,
+                    R.string.CANT_DELETE_TASK,
+                    Toast.LENGTH_LONG)
+                    .show();
         }
-
-        Intent back = new Intent();
-        back.putExtra("del", "1");
-        setResult(Activity.RESULT_OK, back);
-        finish();
     }
 
 
