@@ -3,6 +3,7 @@ package com.geotask.myapplication.TestStory;
 import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.Espresso;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -31,6 +32,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.anything;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.startsWith;
 
 @RunWith(AndroidJUnit4.class)
 public class TestStory7TaskCompletionInteractions {
@@ -78,37 +80,39 @@ public class TestStory7TaskCompletionInteractions {
         task.setStatus("Accepted");
         task.setAcceptedBid(bid1.getValue());
         task.addBid(bid1);
-        Bid bid2 = new Bid(provider.getObjectID(), 12.0, task.getObjectID());
-        task.addBid(bid2);
-
-        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
+//        Bid bid2 = new Bid(provider.getObjectID(), 12.0, task.getObjectID());
+//        task.addBid(bid2);
+//        bid2,
+                MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
                 new MasterController.AsyncCreateNewDocument();
-        asyncCreateNewDocument.execute(task, requester, bid1, bid2, provider);
+        asyncCreateNewDocument.execute(task, requester, bid1, provider);
 
         Thread.sleep(1000);
 
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(targetContext, ViewTaskActivity.class);
-        intent.putExtra("currentUser", requester);
-        intent.putExtra("task", task);
+        taskViewActivityActivityTestRule.getActivity().setCurrentUser(requester);
+        taskViewActivityActivityTestRule.getActivity().setCurrentTask(task);
+//        intent.putExtra("currentUser", requester);
+//        intent.putExtra("task", task);
         taskViewActivityActivityTestRule.launchActivity(intent);
 
         onView(ViewMatchers.withId(R.id.status_header))
                 .check(matches(withText(containsString("Accepted"))));
 
-        onView(withId(R.id.bidsButton)).perform(click());
-        onData(anything()).inAdapterView(withId(R.id.bidListView)).atPosition(0).perform(click());
-        onView(withId(R.id.btn_delete)).perform(click());
+//        onView(withId(R.id.bidsButton)).perform(click());
+//        onData(anything()).inAdapterView(withId(R.id.bidListView)).atPosition(0).perform(click());
+//        onView(withId(R.id.btn_delete_my_bid)).perform(click());
         Thread.sleep(2000);
-        pressBack();
-        onView(withId(R.id.status_header))
-                .check(matches(withText(containsString("Bidded"))));
-
+////        Espresso.pressBack();
+////        pressBack();
+//        onView(withId(R.id.status_header))
+//                .check(matches(withText(startsWith("Bidded"))));
         onView(withId(R.id.bidsButton)).perform(click());
         onData(anything()).inAdapterView(withId(R.id.bidListView)).atPosition(0).perform(click());
-        onView(withId(R.id.btn_delete)).perform(click());
-        pressBack();
+        onView(withId(R.id.btn_delete_my_bid)).perform(click());
+//        pressBack();
 
         onView(withId(R.id.status_header))
                 .check(matches(withText(containsString("Requested"))));}
