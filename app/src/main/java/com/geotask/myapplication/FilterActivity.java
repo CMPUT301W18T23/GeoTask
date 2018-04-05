@@ -68,18 +68,30 @@ public class FilterActivity extends AbstractGeoTaskActivity implements AdapterVi
         //On-Click listener for Apply button to apply filters and return to the list view
         applyButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-            setResult(RESULT_OK);
-            //set new filters and return to MenuActivity
-            Intent intent = new Intent(getBaseContext(), MenuActivity.class);
-            try {
-                setSearchRange(Double.parseDouble(rangeText.getText().toString()));
-                setSearchKeywords(keywordsText.getText().toString());
-                setSearchStatus(status);
-                startActivity(intent);
-            } catch(NumberFormatException e) {
-                rangeText.setText("");
-                Toast.makeText(context, R.string.DECIMAL_INVALID, Toast.LENGTH_SHORT).show();
-            }
+                setResult(RESULT_OK);
+                //set new filters and return to MenuActivity
+                Intent intent = new Intent(getBaseContext(), MenuActivity.class);
+                try {
+                    if(rangeText.getText().toString().compareTo("")  != 0) {
+                        double newRange = Double.parseDouble(rangeText.getText().toString());
+                        if(newRange > 0) {
+                            setSearchRange(newRange);
+                        }
+                        else {
+                            throw new NumberFormatException();
+                        }
+                    }
+                    else {
+                        //To represent no range set
+                        setSearchRange(-1);
+                    }
+                    setSearchKeywords(keywordsText.getText().toString());
+                    setSearchStatus(status);
+                    startActivity(intent);
+                } catch(NumberFormatException e) {
+                    rangeText.setText("");
+                    Toast.makeText(context, R.string.DECIMAL_INVALID, Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
