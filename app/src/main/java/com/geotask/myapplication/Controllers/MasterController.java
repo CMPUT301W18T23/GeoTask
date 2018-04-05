@@ -109,7 +109,11 @@ public class MasterController {
                 if (data instanceof Task){
                     database.taskDAO().insert((Task) data);
                 } else if (data instanceof User) {
-                    database.userDAO().insert((User) data);
+                    try {
+                        controller.createNewDocument(data);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 } else if (data instanceof Bid) {
                     database.bidDAO().insert((Bid) data);
                 }

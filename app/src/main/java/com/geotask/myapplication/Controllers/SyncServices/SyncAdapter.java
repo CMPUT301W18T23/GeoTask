@@ -72,6 +72,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                               String authority,
                               ContentProviderClient provider,
                               SyncResult syncResult) {
+//        database.taskDAO().delete();
+//        database.bidDAO().delete();
+//        database.userDAO().delete();
 
         // select all locally edited or new tasks
         SQLQueryBuilder query = new SQLQueryBuilder(Task.class);
