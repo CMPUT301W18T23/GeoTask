@@ -28,14 +28,14 @@ public interface BidDAO {
     @Query("SElECT * FROM bids")
     List<Bid> selectAll();
 
-    @Query("SELECT * FROM bids WHERE provider_id LIKE :providerID")
+    @Query("SELECT * FROM bids WHERE providerId LIKE :providerID")
     List<Bid> selectByProvider(String providerID);
 
-    @Query("SELECT * FROM bids WHERE task_id LIKE :taskID")
+    @Query("SELECT * FROM bids WHERE taskId LIKE :taskID")
     List<Bid> selectByTask(String taskID);
 
     //ToDo: enfore that provider can only bid once on a task
-    @Query("SELECT * FROM bids WHERE provider_id LIKE :providerID AND task_id LIKE :taskID")
+    @Query("SELECT * FROM bids WHERE providerId LIKE :providerID AND taskId LIKE :taskID")
     Bid selectBid(String providerID, String taskID);
 
     @Update
@@ -50,13 +50,13 @@ public interface BidDAO {
     @Query("DELETE FROM bids")
     int delete();
 
-    @Query("SELECT * FROM bids WHERE object_id LIKE :id")
+    @Query("SELECT * FROM bids WHERE objectId LIKE :id")
     Bid selectByID(String id);
 
-    @Query("DELETE FROM bids WHERE object_id LIKE :id")
+    @Query("DELETE FROM bids WHERE objectId LIKE :id")
     void deleteByID(String id);
 
-    @Query("DELETE FROM bids WHERE task_id LIKE :id")
+    @Query("DELETE FROM bids WHERE taskId LIKE :id")
     void deleteByTaskID(String id);
 
     @RawQuery

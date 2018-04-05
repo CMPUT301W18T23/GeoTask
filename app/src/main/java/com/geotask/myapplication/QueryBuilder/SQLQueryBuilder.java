@@ -13,9 +13,9 @@ public class SQLQueryBuilder {
 
     public SQLQueryBuilder(Type type) {
         if(type.equals(Bid.class)){
-            query1 = "SELECT * FROM bids WHERE ";
+            query1 = "SELECT * FROM bids ";
         } else if (type.equals(Task.class)) {
-            query1 = "SELECT * FROM tasks WHERE ";
+            query1 = "SELECT * FROM tasks ";
         }
     }
 
@@ -24,9 +24,11 @@ public class SQLQueryBuilder {
     }
 
     public void addColumns(String[] columns) {
+        query1 += "WHERE ";
         for(String column : columns){
-            query1 += column + " = ?";
+            query1 += column + " = ? AND ";
         }
+        query1.substring(0, query1.length() - 4);
     }
 
     public void addColumns(String[] columns, String operator) {

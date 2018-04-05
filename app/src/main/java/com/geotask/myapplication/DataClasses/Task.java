@@ -26,7 +26,7 @@ import java.util.HashSet;
  */
 @Entity(tableName = "tasks")
 public class Task extends GTData implements Comparable{
-	@ColumnInfo(name = "task_name")
+	@ColumnInfo
 	private String name;
 	@ColumnInfo
 	private String description;
@@ -40,7 +40,7 @@ public class Task extends GTData implements Comparable{
 	private Double accpetedBid;
 	@ColumnInfo
 	private String accpeptedBidID;
-	@ColumnInfo(name = "requester_id")
+	@ColumnInfo(name = "requesterId")
 	private String requesterID;
 	@ColumnInfo
 	private String acceptedProviderID;

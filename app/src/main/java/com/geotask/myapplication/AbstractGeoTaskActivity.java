@@ -13,7 +13,7 @@ import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
-import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
+import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -347,8 +347,9 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
         */
 
         //make the query
-        SuperBooleanBuilder builder = new SuperBooleanBuilder();
-        builder.put("taskID", getCurrentTask().getObjectID());
+        SQLQueryBuilder builder = new SQLQueryBuilder(Task.class);
+        builder.addColumns(new String[] {"taskID"});
+        builder.addParameters(new String[] {getCurrentTask().getObjectID()});
 
         //perform the search
         MasterController.AsyncSearch asyncSearch =

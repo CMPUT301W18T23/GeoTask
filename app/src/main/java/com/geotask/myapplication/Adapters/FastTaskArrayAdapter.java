@@ -19,7 +19,7 @@ import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.MenuActivity;
-import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
+import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
 import com.geotask.myapplication.R;
 
 import java.util.ArrayList;
@@ -168,8 +168,9 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
              */
 
             //make the query
-            SuperBooleanBuilder builder = new SuperBooleanBuilder();
-            builder.put("taskID", item.getObjectID());
+            SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
+            builder.addColumns(new String[] {"taskID"});
+            builder.addParameters(new String[] {item.getObjectID()});
 
             //perform the search
             MasterController.AsyncSearch asyncSearch =

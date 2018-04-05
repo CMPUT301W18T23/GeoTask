@@ -43,9 +43,9 @@ public interface UserDAO {
     @Query("DELETE FROM users")
     void delete();
 
-    @Query("SELECT * FROM users WHERE object_id LIKE :id")
+    @Query("SELECT * FROM users WHERE objectId LIKE :id")
     User selectByID(String id);
 
-    @Query("DELETE FROM users WHERE object_id LIKE :id")
+    @Query("DELETE FROM users WHERE objectId LIKE :id")
     int deleteByID(String id);
 }

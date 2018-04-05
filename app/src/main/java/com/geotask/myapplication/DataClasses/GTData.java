@@ -17,7 +17,7 @@ public abstract class GTData implements Serializable{
 
     @PrimaryKey
     @NonNull
-    @ColumnInfo(name = "object_id")
+    @ColumnInfo(name = "objectId")
     private String objectID = UniqueIDGenerator.generate();
     @ColumnInfo
     private String type;

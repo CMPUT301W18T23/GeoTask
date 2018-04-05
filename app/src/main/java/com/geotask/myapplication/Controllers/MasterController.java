@@ -153,7 +153,11 @@ public class MasterController {
                 if (argument.getType().equals(Task.class)){
                     result = database.taskDAO().selectByID(argument.getID());
                 } else if (argument.getType().equals(User.class)) {
-                    result = database.userDAO().selectByID(argument.getID());
+                    try {
+                        result = controller.getDocument(argument.getID(), argument.getType());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } else if (argument.getType().equals(Bid.class)) {
                     result = database.bidDAO().selectByID(argument.getID());
                 }
@@ -197,7 +201,11 @@ public class MasterController {
                 if (argument.getType().equals(Task.class)){
                     database.taskDAO().deleteByID(argument.getID());
                 } else if (argument.getType().equals(User.class)) {
-                    database.userDAO().deleteByID(argument.getID());
+                    try {
+                        controller.deleteDocument(argument.getID(), argument.getType());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 } else if (argument.getType().equals(Bid.class)) {
                     database.bidDAO().deleteByID(argument.getID());
                 }
@@ -306,7 +314,7 @@ public class MasterController {
 
             for(AsyncArgumentWrapper argument : argumentWrappers) {
                 if (argument.getType().equals(Task.class)){
-                    resultList = database.taskDAO().selectAll();
+                    resultList = database.taskDAO().searchTasksByQuery(argument.getSQLQuery());
                 } else if (argument.getType().equals(Bid.class)) {
                     resultList = database.bidDAO().searchBidsByQuery(argument.getSQLQuery());
                 }

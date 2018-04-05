@@ -25,7 +25,7 @@ import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
-import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
+import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -216,8 +216,9 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
      */
     private void deleteData() {
 
-        SuperBooleanBuilder builder = new SuperBooleanBuilder();
-        builder.put("taskID", getCurrentTask().getObjectID());
+        SQLQueryBuilder builder = new SQLQueryBuilder(Task.class);
+        builder.addColumns(new String[]{"taskID"});
+        builder.addParameters(new String[] {getCurrentTask().getObjectID()});
 
         MasterController.AsyncDeleteDocument asyncDeleteTask =
                 new MasterController.AsyncDeleteDocument(this);

@@ -18,7 +18,7 @@ import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
-import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
+import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
 import com.geotask.myapplication.R;
 
 import java.util.ArrayList;
@@ -133,8 +133,9 @@ public class TaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCallBac
 
 
         //make the query
-        SuperBooleanBuilder builder = new SuperBooleanBuilder();
-        builder.put("taskID", item.getObjectID());
+        SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
+        builder.addColumns(new String[] {"taskID"});
+        builder.addParameters(new String[] {item.getObjectID()});
 
         //perform the search
         MasterController.AsyncSearch asyncSearch =

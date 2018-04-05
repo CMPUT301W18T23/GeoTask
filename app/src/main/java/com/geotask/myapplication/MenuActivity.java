@@ -33,7 +33,7 @@ import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
-import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
+import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
 
 import junit.framework.Assert;
 
@@ -302,20 +302,21 @@ public class MenuActivity extends AbstractGeoTaskActivity
         }
         Log.i("none------>", String.format("%d", getViewMode()));
         getTaskList().clear();
-        SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
+        SQLQueryBuilder builder1 = new SQLQueryBuilder(Task.class);
 
         //Only show tasks created by the user
         if(getViewMode() == R.integer.MODE_INT_REQUESTER) {
             setSearchStatus(null);
-            builder1.put("requesterID", getCurrentUser().getObjectID());
+            builder1.addColumns(new String[] {"requesterID"});
+            builder1.addParameters(new String[] {getCurrentUser().getObjectID()});
         } else if(getViewMode() == R.integer.MODE_INT_ACCEPTED) {
             setSearchStatus(null);
-            builder1.put("requesterID", getCurrentUser().getObjectID());
-            builder1.put("status", "accepted");
+            builder1.addColumns(new String[] {"requesterID", "status"});
+            builder1.addParameters(new String[] {getCurrentUser().getObjectID(), "accepted"});
         } else if(getViewMode() == R.integer.MODE_INT_ASSIGNED) {
             setSearchStatus(null);
-            builder1.put("status", "accepted");
-
+            builder1.addColumns(new String[] {"status"});
+            builder1.addParameters(new String[] {"accepted"});
         }
 
         //Add filter keywords to the builder if present
@@ -325,7 +326,8 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 showClear = true;
                 clearFiltersButton.setVisibility(View.VISIBLE);
                 for (int i = 0; i < filterArray.length; i++) {
-                    builder1.put("description", filterArray[i].toLowerCase());
+                    builder1.addColumns(new String[]{"description"});
+                    builder1.addParameters(new String[] {filterArray[i].toLowerCase()});
                 }
                 if(filterArray.length > 0){
                     navigationView.setCheckedItem(R.id.nav_filter);
@@ -346,9 +348,11 @@ public class MenuActivity extends AbstractGeoTaskActivity
                         //builder1.put("status", "bidded");
                 }
                 } else if (getSearchStatus().compareTo("Requested") == 0){
-                    builder1.put("status", "requested");
+                    builder1.addColumns(new String[] {"status"});
+                    builder1.addParameters(new String[] {"requested"});
                 } else if (getSearchStatus().compareTo("Bidded") == 0){
-                    builder1.put("status", "bidded");
+                    builder1.addColumns(new String[] {"status"});
+                    builder1.addParameters(new String[] {"bidded"});
                 }
             }
 
@@ -369,8 +373,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
         //Only show tasks which have been bidded on by current user
         //Need to do this after elastic search by removing results without bids by the user
        if(getViewMode() == R.integer.MODE_INT_PROVIDER) {
-           SuperBooleanBuilder builder2 = new SuperBooleanBuilder();
-           builder2.put("providerID", getCurrentUser().getObjectID());
+           SQLQueryBuilder builder2 = new SQLQueryBuilder(Bid.class);
+           builder2.addColumns(new String[] {"providerID"});
+           builder2.addParameters(new String[] {getCurrentUser().getObjectID()});
 
            MasterController.AsyncSearch asyncSearch2 =
                    new MasterController.AsyncSearch(this, this);

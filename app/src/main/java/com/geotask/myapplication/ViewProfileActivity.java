@@ -17,7 +17,7 @@ import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
-import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
+import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -149,8 +149,9 @@ public class ViewProfileActivity extends AbstractGeoTaskActivity implements Asyn
 
     public ArrayList<Task> getUsersTasks(){
         ArrayList<Task> taskList = new ArrayList<Task>();
-        SuperBooleanBuilder builder2 = new SuperBooleanBuilder();
-        builder2.put("requesterID", viewUser.getObjectID());
+        SQLQueryBuilder builder2 = new SQLQueryBuilder(Task.class);
+        builder2.addColumns(new String[] {"requesterID"});
+        builder2.addParameters(new String[] {viewUser.getObjectID()});
 
         MasterController.AsyncSearch asyncSearch2 =
                 new MasterController.AsyncSearch(this, this);
