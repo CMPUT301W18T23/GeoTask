@@ -83,9 +83,10 @@ public class EditProfileActivity extends AbstractGeoTaskActivity {
                     Toast.LENGTH_SHORT)
                     .show();
             return false;
-        }else if(userName.length() > 8){
+        }else if(userName.length() > 30){
             Toast.makeText(this,
-                    R.string.NAME_EXCEEDS_8_CHARACTER_WHEN_REGISTER_AND_EDIT_USER,
+                    //R.string.NAME_EXCEEDS_8_CHARACTER_WHEN_REGISTER_AND_EDIT_USER,
+                    "Name cannot exceed 30 characters",
                     Toast.LENGTH_SHORT)
                     .show();
             return false;
@@ -134,5 +135,12 @@ public class EditProfileActivity extends AbstractGeoTaskActivity {
             }
         }
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(getBaseContext(), ViewProfileActivity.class);
+        intent.putExtra("user_being_viewed", getCurrentUser());
+        startActivity(intent);
     }
 }

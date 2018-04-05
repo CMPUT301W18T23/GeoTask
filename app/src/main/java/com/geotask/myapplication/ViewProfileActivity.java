@@ -77,6 +77,12 @@ public class ViewProfileActivity extends AbstractGeoTaskActivity implements Asyn
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        getSupportActionBar().setTitle("Profile View");
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_profile, menu);
@@ -175,6 +181,12 @@ public class ViewProfileActivity extends AbstractGeoTaskActivity implements Asyn
             Log.i("size2----->", String.format("%d",getTaskList().size()));
             setViewMode(R.integer.MODE_INT_OTHERS_TASKS);
         }
+        startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(getBaseContext(), MenuActivity.class);
         startActivity(intent);
     }
 

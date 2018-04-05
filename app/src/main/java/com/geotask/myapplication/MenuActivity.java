@@ -9,6 +9,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
@@ -85,6 +86,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
     TextView drawerUsername;
     TextView drawerEmail;
     TextView emptyText;
+    SwipeRefreshLayout refreshLayout;
 
     Task lastClickedTask = null;
 
@@ -103,6 +105,17 @@ public class MenuActivity extends AbstractGeoTaskActivity
         setSupportActionBar(toolbar);
         oldTasks = findViewById(R.id.taskListView);
         emptyText = findViewById(R.id.empty_task_string);
+        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshLayout.setRefreshing(true);
+                populateTaskView();
+                refreshLayout.setRefreshing(false);
+            }
+        });
+
+
         if((getTaskList() == null) || (getTaskList().size() == 0)) {
             setTaskList(new ArrayList<Task>());
         }
@@ -128,6 +141,8 @@ public class MenuActivity extends AbstractGeoTaskActivity
             e.printStackTrace();
             setSearchKeywords("");
         }
+
+        setSearchStatus("All");
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -163,7 +178,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 Snackbar.make(snackView, "Search Filters Cleared", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                 setSearchKeywords("");
+                setSearchStatus("All");
                 setViewMode(R.integer.MODE_INT_ALL);
+                navigationView.setCheckedItem(R.id.nav_browse);
                 populateTaskView();
                 clearFiltersButton.setVisibility(View.INVISIBLE);
             }
@@ -222,6 +239,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         super.onStart();
         //Log.i("LifeCycle --->", "onStart is called");
         fab.show();
+        navigationView.setCheckedItem(R.id.nav_browse);
     }
 
     /**
@@ -238,6 +256,8 @@ public class MenuActivity extends AbstractGeoTaskActivity
         drawerUsername = (TextView) headerView.findViewById(R.id.drawer_name);
         drawerEmail = (TextView) headerView.findViewById(R.id.drawer_email);
 
+
+
         //TODO - set drawerImage to user profile pic
         drawerUsername.setText(getCurrentUser().getName());
         drawerEmail.setText(getCurrentUser().getEmail());
@@ -251,6 +271,8 @@ public class MenuActivity extends AbstractGeoTaskActivity
         super.onRestart();
         setOrientation();
     }
+
+
 
     /**
      * This function populates the listView by querying the server based on the view mode
@@ -284,24 +306,52 @@ public class MenuActivity extends AbstractGeoTaskActivity
 
         //Only show tasks created by the user
         if(getViewMode() == R.integer.MODE_INT_REQUESTER) {
+            setSearchStatus(null);
             builder1.put("requesterID", getCurrentUser().getObjectID());
         } else if(getViewMode() == R.integer.MODE_INT_ACCEPTED) {
+            setSearchStatus(null);
             builder1.put("requesterID", getCurrentUser().getObjectID());
             builder1.put("status", "accepted");
         } else if(getViewMode() == R.integer.MODE_INT_ASSIGNED) {
+            setSearchStatus(null);
             builder1.put("status", "accepted");
+
         }
 
         //Add filter keywords to the builder if present
         try {
+            Boolean showClear = false;
             if(!getSearchKeywords().equals("")) {
+                showClear = true;
                 clearFiltersButton.setVisibility(View.VISIBLE);
-                for(int i = 0; i < filterArray.length; i++) {
+                for (int i = 0; i < filterArray.length; i++) {
                     builder1.put("description", filterArray[i].toLowerCase());
                 }
-            } else {
+                if(filterArray.length > 0){
+                    navigationView.setCheckedItem(R.id.nav_filter);
+                }
+            } else{
                 clearFiltersButton.setVisibility(View.INVISIBLE);
             }
+
+            if (getSearchStatus()!= null){
+                clearFiltersButton.setVisibility(View.VISIBLE);
+                if(getViewMode() == R.integer.MODE_INT_ALL) {
+                    if(getSearchStatus().compareTo("All") ==0){
+                        if(!showClear) {
+                            clearFiltersButton.setVisibility(View.INVISIBLE);
+                        }
+                        //TODO - uncomment when sync branch merged
+                        //builder1.put("status", "requested");
+                        //builder1.put("status", "bidded");
+                }
+                } else if (getSearchStatus().compareTo("Requested") == 0){
+                    builder1.put("status", "requested");
+                } else if (getSearchStatus().compareTo("Bidded") == 0){
+                    builder1.put("status", "bidded");
+                }
+            }
+
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
@@ -432,6 +482,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
             getSupportActionBar().setTitle("All Tasks");
             setViewMode(R.integer.MODE_INT_ALL);
             setSearchKeywords("");
+            setSearchStatus("All");
             populateTaskView();
             adapter.notifyDataSetChanged();
 
@@ -490,11 +541,13 @@ public class MenuActivity extends AbstractGeoTaskActivity
             getSupportActionBar().setTitle("All Tasks");
             Snackbar.make(snackView, "Changed view to \"All\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
+            setSearchStatus("All");
             populateTaskView();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+        //navigationView.setCheckedItem(id);
         return true;
     }
 

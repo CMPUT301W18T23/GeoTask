@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
@@ -137,6 +138,10 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
                 && (getCurrentTask().getStatus().toLowerCase().compareTo("requested") == 0)) {
             editBtn.setVisible(true);
             deleteBtn.setVisible(true);
+        } else if ((getCurrentUser().getObjectID().compareTo(getCurrentTask().getRequesterID()) == 0)
+                && (getCurrentTask().getStatus().toLowerCase().compareTo("completed") == 0)){
+            deleteBtn.setVisible(false);
+            editBtn.setVisible(false);
         } else if (getCurrentUser().getObjectID().compareTo(getCurrentTask().getRequesterID()) == 0){
             deleteBtn.setVisible(true);
             editBtn.setVisible(false);
@@ -184,10 +189,19 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
             saveStarHashToServer();
             return true;
         } else if (id == R.id.action_delete){
-            deleteData();
+            String taskStatus = getCurrentTask().getStatus();
+            if(taskStatus.compareTo("Accepted") != 0 && taskStatus.compareTo("Completed") != 0) {
+                deleteData();
 
-            Intent intent = new Intent(ViewTaskActivity.this, MenuActivity.class);
-            startActivity(intent);
+                Intent intent = new Intent(ViewTaskActivity.this, MenuActivity.class);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this,
+                        R.string.CANT_DELETE_TASK,
+                        Toast.LENGTH_LONG)
+                        .show();
+            }
+
         }
         return super.onOptionsItemSelected(item);
     }

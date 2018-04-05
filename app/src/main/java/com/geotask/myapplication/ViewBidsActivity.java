@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
@@ -47,6 +48,9 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
     private User profile;
     private Toolbar toolbar;
     private MenuItem bidBtn;
+    private Button acceptBtn;
+    private Button cancelBtn;
+    SwipeRefreshLayout refreshLayout;
 
     /**
      * Initiate variables, and set an on click listener for
@@ -60,9 +64,19 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
         oldBids = findViewById(R.id.bidListView);
         bidList = new ArrayList<>();
         emptyText = (TextView) findViewById(R.id.empty_bid_string);
+        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.bid_refresh_layout);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshLayout.setRefreshing(true);
+                populateBidView();
+                refreshLayout.setRefreshing(false);
+            }
+        });
 
         oldBids.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -242,9 +256,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
                         new MasterController.AsyncDeleteDocument(this);
                 asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
             }
-
         }
-
     }
 
     /**
@@ -264,7 +276,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
 
         final EditText value = (EditText) layout.findViewById(R.id.editTextAmmount);
 
-        Button cancelBtn = (Button) layout.findViewById(R.id.btn_cancel);
+        cancelBtn = (Button) layout.findViewById(R.id.btn_cancel);
         cancelBtn.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -274,7 +286,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
             }
         });
 
-        Button acceptBtn = (Button) layout.findViewById(R.id.btn_accept_bid);
+        acceptBtn = (Button) layout.findViewById(R.id.btn_accept_bid);
         acceptBtn.setOnClickListener(new View.OnClickListener()
         {
             @Override
