@@ -238,13 +238,13 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
             Setting the icon for the task
          */
         if (item.getStatus().compareTo("Accepted") == 0){
-            headerSub.icon.setImageResource(R.drawable.ic_checkbox_blank_circle_purple_24dp);
+            headerSub.icon.setImageResource(R.drawable.ic_checkbox_blank_circle_dark_orange_24dp);
         } else if (item.getStatus().compareTo("Completed") == 0) {
             headerSub.icon.setImageResource(R.drawable.ic_check_circle_green_24dp);
         } else if(item.getStatus().compareTo("Bidded") == 0) {
             headerSub.icon.setImageResource(R.drawable.ic_cisco_webex_dark_blue_24dp);
         } else {
-            headerSub.icon.setImageResource(R.drawable.ic_circle_outline_dark_blue_24dp);
+            headerSub.icon.setImageResource(R.drawable.ic_circle_outline_purple_24dp);
         }
 
         if((item.getStatus().compareTo("Accepted") == 0) || (item.getStatus().compareTo("Completed") == 0)){
