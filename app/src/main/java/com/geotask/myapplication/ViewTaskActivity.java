@@ -224,7 +224,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
     private void deleteData() {
 
         SQLQueryBuilder builder = new SQLQueryBuilder(Task.class);
-        builder.addColumns(new String[]{"taskID"});
+        builder.addColumns(new String[]{"taskId"});
         builder.addParameters(new String[] {getCurrentTask().getObjectID()});
 
         MasterController.AsyncDeleteDocument asyncDeleteTask =
@@ -433,7 +433,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         asyncDeleteDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getAccpeptedBidID(), Bid.class));
 
         SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
-        builder.addColumns(new String[] {"taskID"});
+        builder.addColumns(new String[] {"taskId"});
         builder.addParameters(new String[] {getCurrentTask().getObjectID()});
 
         MasterController.AsyncSearch asyncSearch =

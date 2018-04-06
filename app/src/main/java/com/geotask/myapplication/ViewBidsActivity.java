@@ -326,17 +326,16 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
                     }
                 }
             }
-
-            for(Bid bid : bidList){
-                if((bid.getObjectID().compareTo(keeper) !=0) && (bid.getProviderID().compareTo(getCurrentUser().getObjectID()) == 0)){
-                    MasterController.AsyncDeleteDocument asyncDeleteDocument =
-                            new MasterController.AsyncDeleteDocument(this);
-                    asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
-                    if(bidList.contains(bid)){
-                        bidList.remove(bid);
-                    }
-                }
-            }
+//            for(Bid bid : bidList){
+//                if((bid.getObjectID().compareTo(keeper) !=0) && (bid.getProviderID().compareTo(getCurrentUser().getObjectID()) == 0)){
+//                    MasterController.AsyncDeleteDocument asyncDeleteDocument =
+//                            new MasterController.AsyncDeleteDocument(this);
+//                    asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
+//                    if(bidList.contains(bid)){
+//                        bidList.remove(bid);
+//                    }
+//                }
+//            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -382,7 +381,6 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
         builder.addColumns(new String[] {"taskId"});
         builder.addParameters(new String[] {task.getObjectID()});
-
 
         MasterController.AsyncSearch asyncSearch =
                 new MasterController.AsyncSearch(this, this);

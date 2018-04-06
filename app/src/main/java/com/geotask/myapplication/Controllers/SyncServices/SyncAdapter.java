@@ -99,19 +99,9 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         JestResult result;
         for (Task localTask : localTaskList) {
             try {
-                //if local task was edited
                 if(remoteTaskList.contains(localTask)) {
                     Log.d("geotasksync", "remote contains local");
                     result = controller.updateDocument(localTask, localTask.getVersion());
-                    if(result.getResponseCode() == 409 && localTask.isClientOriginalFlag()) {
-                        Log.d("geotasksync", "local push rejected");
-                        merge(localBidList, localTask,
-                                (Task) controller.getDocument(localTask.getObjectID(), Task.class));
-                        Log.d("geotasksync", "merged result = " + localTask.getBidList().size());
-                        result = controller.updateDocument(localTask, controller.getDocumentVersion(localTask.getObjectID()));
-                        Log.d("geotasksync", "409 update result = " + result.getJsonString());
-                    }
-                //if local task was new
                 } else {
                     Log.d("geotasksync", "remote does not contain local");
                     result = controller.createNewDocument(localTask);
@@ -124,7 +114,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         Log.d("geotasksync", "localbidlist size is still " + localBidList.size());
         for(Bid localBid : localBidList) {
             try {
-                if(controller.getDocument(localBid.getTaskID(), Bid.class) != null) {
+                if(controller.getDocument(localBid.getTaskID(), Task.class) != null) {
                     result = controller.createNewDocument(localBid);
                     Log.d("geotasksync", result.getJsonString());
                 }
@@ -158,31 +148,6 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             }
             Log.d("geotasksync", "bid size after pull = " + database.bidDAO().selectAll().size());
         } catch (IOException e) {e.printStackTrace();}
-    }
-
-    //if local is edited and remote is edited by someone else
-    private void merge(ArrayList<Bid> localBidList, Task local, Task remote) {
-        Log.d("geotasksync_merge", "merging");
-        Log.d("geotasksync_merge", localBidList.toString());
-        //merge bidlist, add bids that weren't synced from server
-        for(Bid bid : localBidList){
-            Log.d("geotasksync_merge", bid.getTaskID() + " " + local.getObjectID());
-            Log.d("geotasksync_merge", String.valueOf(bid.getTaskID().equals(local.getObjectID())));
-            if(bid.getTaskID().equals(local.getObjectID())) {
-                remote.addBid(bid);
-                Log.d("geotasksync_merge", remote.getBidList().toString());
-            }
-        }
-        Log.d("geotasksync_merge", "merged bid list = " + remote.getBidList().toString());
-
-        if(local.isClientOriginalFlag()){ //local edited
-            Log.d("geotasksync_merge", "local edited");
-            local.setBidList(remote.getBidList()); //remote bidlist + local edits
-        } else { //local bidded on
-            Log.d("geotasksync_merge", "local not edited");
-            local = remote; //remote bidlist + no local edits
-        }
-        Log.d("geotasksync_merge", "merged result = " + local.getBidList().size());
     }
 }
 

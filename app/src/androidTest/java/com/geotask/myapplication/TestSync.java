@@ -31,6 +31,7 @@ import static junit.framework.Assert.assertNull;
 
 
 /**
+ * MUST CHANGE SERVER ADDRESS MANUALLY since android service doesn't change the address
  * MUST run tests individually.
  * MUST run tests individually.
  * not guarranteed to pass entire test suite when ran together due to racing conditions caused by
@@ -201,20 +202,23 @@ public class TestSync implements AsyncCallBackManager {
         Task task = new Task(test, test, test);
         task.setObjectID(test);
 
+        Bid bid = new Bid(test, 123.0, task.getObjectID());
+        task.addBid(bid);
+
         //server on version 2, client on version 1
         database.taskDAO().insert(task);
         try {
+            controller.createNewDocument(bid);
             controller.createNewDocument(task);
             controller.updateDocument(task, task.getVersion());
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        //edit on local version 1 object
-        Bid bid = new Bid(test, 123.0, task.getObjectID());
-        database.bidDAO().insert(bid);
-        task.addBid(bid);
-        assertEquals(1, database.bidDAO().selectAll().size());
+        try {
+            assertEquals(2.0, controller.getDocumentVersion(task.getObjectID()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         assertEquals(1.0, database.taskDAO().selectAll().get(0).getVersion());
 
         Context targetContext =
@@ -228,9 +232,56 @@ public class TestSync implements AsyncCallBackManager {
         Thread.sleep(5000);
         Task updated = database.taskDAO().selectByID(test);
 
-        assertEquals(3.0, updated.getVersion());
+        assertEquals(2.0, updated.getVersion());
         assertEquals(1, updated.getBidList().size());
         assertEquals(1, database.bidDAO().selectAll().size());
+    }
+
+    @Test
+    public void testConflictTaskBiddedOnByOfflineUserShouldNotPushIfTaskWasEditedByFirstUser() throws InterruptedException {
+        String test = "testConflictTaskBiddedOnByOfflineUserShouldNotPushIfTaskWasEditedByFirstUser";
+        User user = new User(test,test,test);
+        user.setObjectID(test);
+
+        Task task = new Task(test,test,test);
+        task.setObjectID(test);
+        try {
+            controller.createNewDocument(task);
+            controller.updateDocument(task, task.getVersion());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Bid bid = new Bid(test,22.22,test);
+        task.addBid(bid);
+        database.taskDAO().insert(task);
+        database.bidDAO().insert(bid);
+
+        try {
+            assertEquals(task, controller.getDocument(task.getObjectID(), Task.class));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assertEquals(1, database.bidDAO().selectAll().size());
+        assertEquals(1, database.taskDAO().selectAll().size());
+
+        Context targetContext =
+                InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Intent intent = new Intent(targetContext, MenuActivity.class);
+        menuActivityRule.getActivity().setCurrentUser(user);
+        menuActivityRule.getActivity().setHistoryHash();
+        menuActivityRule.getActivity().setStarHash();
+        menuActivityRule.launchActivity(intent);
+
+        Thread.sleep(5000);
+        Task remote = null;
+        try {
+            remote = (Task) controller.getDocument(task.getObjectID(), Task.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assertNotNull(remote);
+        assertEquals(0, remote.getBidList().size());
     }
 
     @Test

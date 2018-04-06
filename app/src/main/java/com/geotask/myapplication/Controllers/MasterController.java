@@ -2,6 +2,7 @@ package com.geotask.myapplication.Controllers;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.LocalFilesOps.LocalDataBase;
@@ -317,6 +318,7 @@ public class MasterController {
             verifySettings(context);
 
             for(AsyncArgumentWrapper argument : argumentWrappers) {
+                Log.d("BUGSBUGSBUGS", String.valueOf(argument.getSQLQuery()));
                 if (argument.getType().equals(Task.class)){
                     resultList = database.taskDAO().searchTasksByQuery(argument.getSQLQuery());
                 } else if (argument.getType().equals(Bid.class)) {
