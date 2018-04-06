@@ -1,0 +1,283 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 16,
+    "identityHash": "a4ab3f9236bbc4456635adc25841763f",
+    "entities": [
+      {
+        "tableName": "users",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `email` TEXT, `phonenum` TEXT, `completedTasks` INTEGER, `location` TEXT, `historyList` TEXT, `starredList` TEXT, `objectId` TEXT NOT NULL, `type` TEXT, `date` INTEGER NOT NULL, `version` REAL NOT NULL, `flag` INTEGER NOT NULL, PRIMARY KEY(`objectId`))",
+        "fields": [
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "phonenum",
+            "columnName": "phonenum",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "completedTasks",
+            "columnName": "completedTasks",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "location",
+            "columnName": "location",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "historyList",
+            "columnName": "historyList",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "starredList",
+            "columnName": "starredList",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "objectID",
+            "columnName": "objectId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "version",
+            "columnName": "version",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clientOriginalFlag",
+            "columnName": "flag",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "objectId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "bids",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`providerId` TEXT, `value` REAL, `taskId` TEXT, `objectId` TEXT NOT NULL, `type` TEXT, `date` INTEGER NOT NULL, `version` REAL NOT NULL, `flag` INTEGER NOT NULL, PRIMARY KEY(`objectId`))",
+        "fields": [
+          {
+            "fieldPath": "providerID",
+            "columnName": "providerId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "value",
+            "columnName": "value",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "taskID",
+            "columnName": "taskId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "objectID",
+            "columnName": "objectId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "version",
+            "columnName": "version",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clientOriginalFlag",
+            "columnName": "flag",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "objectId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "tasks",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `description` TEXT, `status` TEXT, `bidList` TEXT, `accpetedBid` REAL, `accpeptedBidID` TEXT, `requesterId` TEXT, `acceptedProviderID` TEXT, `hitCounter` INTEGER NOT NULL, `location` TEXT, `lowestBid` REAL, `numBids` INTEGER, `editedFlag` INTEGER NOT NULL, `objectId` TEXT NOT NULL, `type` TEXT, `date` INTEGER NOT NULL, `version` REAL NOT NULL, `flag` INTEGER NOT NULL, PRIMARY KEY(`objectId`))",
+        "fields": [
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "bidList",
+            "columnName": "bidList",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "accpetedBid",
+            "columnName": "accpetedBid",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "accpeptedBidID",
+            "columnName": "accpeptedBidID",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "requesterID",
+            "columnName": "requesterId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "acceptedProviderID",
+            "columnName": "acceptedProviderID",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "hitCounter",
+            "columnName": "hitCounter",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "location",
+            "columnName": "location",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "lowestBid",
+            "columnName": "lowestBid",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "numBids",
+            "columnName": "numBids",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "editedFlag",
+            "columnName": "editedFlag",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "objectID",
+            "columnName": "objectId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "version",
+            "columnName": "version",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clientOriginalFlag",
+            "columnName": "flag",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "objectId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"a4ab3f9236bbc4456635adc25841763f\")"
+    ]
+  }
+}
