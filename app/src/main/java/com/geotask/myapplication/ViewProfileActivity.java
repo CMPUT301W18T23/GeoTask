@@ -175,6 +175,7 @@ public class ViewProfileActivity extends AbstractGeoTaskActivity implements Asyn
 
     public void viewTasks(View view){ //TODO
         Intent intent = new Intent(ViewProfileActivity.this, MenuActivity.class);
+        /*
         if(getCurrentUser().getObjectID().compareTo(viewUser.getObjectID()) ==0){
             setViewMode(R.integer.MODE_INT_REQUESTER);
         } else {
@@ -182,6 +183,11 @@ public class ViewProfileActivity extends AbstractGeoTaskActivity implements Asyn
             Log.i("size2----->", String.format("%d",getTaskList().size()));
             setViewMode(R.integer.MODE_INT_OTHERS_TASKS);
         }
+        */
+        setTaskList(getUsersTasks());
+        Log.i("size2----->", String.format("%d",getTaskList().size()));
+        setViewMode(R.integer.MODE_INT_OTHERS_TASKS);
+        setLastViewedUser(viewUser);
         startActivity(intent);
     }
 

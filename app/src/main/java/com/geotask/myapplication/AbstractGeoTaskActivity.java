@@ -42,9 +42,17 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
     private static Task lastClickedTask = null;
     private static ContentResolver syncResolver;
     private static Context context;
+    private static User lastViewedUser;
 
 
 
+    public static User getLastViewedUser() {
+        return lastViewedUser;
+    }
+
+    public static void setLastViewedUser(User lastViewedUser) {
+        AbstractGeoTaskActivity.lastViewedUser = lastViewedUser;
+    }
     /**
      * Method to retrieve the User object that the current user is using the app
      *

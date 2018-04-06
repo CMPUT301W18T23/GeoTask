@@ -139,4 +139,11 @@ public class RegisterActivity extends AbstractGeoTaskActivity{
         }
         return true;
     }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+        startActivity(intent);
+    }
+
 }
