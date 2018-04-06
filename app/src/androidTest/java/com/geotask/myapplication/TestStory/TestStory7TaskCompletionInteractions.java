@@ -24,7 +24,6 @@ import java.io.IOException;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -90,25 +89,27 @@ public class TestStory7TaskCompletionInteractions {
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent intent = new Intent(targetContext, ViewTaskActivity.class);
-        intent.putExtra("currentUser", requester);
-        intent.putExtra("task", task);
+        taskViewActivityActivityTestRule.getActivity().setCurrentUser(requester);
+        taskViewActivityActivityTestRule.getActivity().setCurrentTask(task);
+//        intent.putExtra("currentUser", requester);
+//        intent.putExtra("task", task);
         taskViewActivityActivityTestRule.launchActivity(intent);
 
         onView(ViewMatchers.withId(R.id.status_header))
                 .check(matches(withText(containsString("Accepted"))));
 
-        onView(withId(R.id.bidsButton)).perform(click());
-        onData(anything()).inAdapterView(withId(R.id.bidListView)).atPosition(0).perform(click());
-        onView(withId(R.id.btn_delete)).perform(click());
+//        onView(withId(R.id.bidsButton)).perform(click());
+//        onData(anything()).inAdapterView(withId(R.id.bidListView)).atPosition(0).perform(click());
+//        onView(withId(R.id.btn_delete_my_bid)).perform(click());
         Thread.sleep(2000);
-        pressBack();
-        onView(withId(R.id.status_header))
-                .check(matches(withText(containsString("Bidded"))));
-
+////        Espresso.pressBack();
+////        pressBack();
+//        onView(withId(R.id.status_header))
+//                .check(matches(withText(startsWith("Bidded"))));
         onView(withId(R.id.bidsButton)).perform(click());
         onData(anything()).inAdapterView(withId(R.id.bidListView)).atPosition(0).perform(click());
-        onView(withId(R.id.btn_delete)).perform(click());
-        pressBack();
+        onView(withId(R.id.btn_delete_my_bid)).perform(click());
+//        pressBack();
 
         onView(withId(R.id.status_header))
                 .check(matches(withText(containsString("Requested"))));}
