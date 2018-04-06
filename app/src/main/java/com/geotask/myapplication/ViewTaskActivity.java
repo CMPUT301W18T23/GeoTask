@@ -418,8 +418,8 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
             @Override
             public void onClick(View v)
             {
-            POPUP_WINDOW_DONE.dismiss();
-            notComplete();
+                POPUP_WINDOW_DONE.dismiss();
+                notComplete();
             }
         });
     }
@@ -516,18 +516,18 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
             /*
                 increment the user's completed tasks
              */
-            finalAcceptedUser.incrementCompletedTasks();
-            MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                    new MasterController.AsyncUpdateDocument(getBaseContext());
-            asyncUpdateDocument.execute(finalAcceptedUser);
+                finalAcceptedUser.incrementCompletedTasks();
+                MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                        new MasterController.AsyncUpdateDocument(getBaseContext());
+                asyncUpdateDocument.execute(finalAcceptedUser);
 
-            POPUP_WINDOW_DONE.dismiss();
-            Task newTask = getCurrentTask();
-            newTask.setStatusCompleted();
-            setCurrentTask(newTask);
-            MasterController.AsyncUpdateDocument asyncUpdateDocument2 =
-                    new MasterController.AsyncUpdateDocument(getBaseContext());
-            asyncUpdateDocument2.execute(getCurrentTask());
+                POPUP_WINDOW_DONE.dismiss();
+                Task newTask = getCurrentTask();
+                newTask.setStatusCompleted();
+                setCurrentTask(newTask);
+                MasterController.AsyncUpdateDocument asyncUpdateDocument2 =
+                        new MasterController.AsyncUpdateDocument(getBaseContext());
+                asyncUpdateDocument2.execute(getCurrentTask());
                 try {
                     asyncUpdateDocument.get();
                 } catch (InterruptedException e) {
@@ -542,9 +542,9 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
 
     /**
      *  uses MasterController to add a new bid. value is passode over
-      @throws InterruptedException
+     @throws InterruptedException
 
-     * @param value
+      * @param value
      */
     private void addBid(Double value){
         Bid bid = new Bid(getCurrentUser().getObjectID(), value, getCurrentTask().getObjectID());
@@ -610,7 +610,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    updateDisplayedValues();
+        updateDisplayedValues();
     }
 
     @Override

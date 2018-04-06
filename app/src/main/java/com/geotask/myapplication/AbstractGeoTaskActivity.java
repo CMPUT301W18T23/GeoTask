@@ -348,7 +348,7 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
 
         //make the query
         SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
-        builder.addColumns(new String[] {"taskId"});
+        builder.addColumns(new String[] {"taskID"});
         builder.addParameters(new String[] {getCurrentTask().getObjectID()});
 
         //perform the search

@@ -137,27 +137,26 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
      * with all bids for the task
      */
     private void populateBidView(){
-        //TODO - build query that returns list of bids that all have task ID == this.taskID
 
         /// THIS SHOULD WORK BUT IS CURRENTLY COMMENTED OUT
-//        if ("Accepted".equals(getCurrentTask().getStatus())) {
-//
-//            MasterController.AsyncGetDocument asyncGetDocument =
-//                    new MasterController.AsyncGetDocument(this);
-//            asyncGetDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getAccpeptedBidID(), Bid.class));
-//
-//            Bid accepted = null;
-//            try {
-//                accepted = (Bid) asyncGetDocument.get();
-//                if(bidList.isEmpty()){
-//                    bidList.add(accepted);
-//                }
-//            } catch (ExecutionException e) {
-//                e.printStackTrace();
-//            }catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }else{
+        if ("Accepted".equals(getCurrentTask().getStatus())) {
+
+            MasterController.AsyncGetDocument asyncGetDocument =
+                    new MasterController.AsyncGetDocument(this, this);
+            asyncGetDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getAccpeptedBidID(), Bid.class));
+
+            Bid accepted = null;
+            try {
+                accepted = (Bid) asyncGetDocument.get();
+                if(bidList.isEmpty()){
+                    bidList.add(accepted);
+                }
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else{
             SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
             builder.addColumns(new String[] {"taskId"});
             builder.addParameters(new String[] {getCurrentTask().getObjectID()});
@@ -174,7 +173,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
-//        }
+        }
         adapter.notifyDataSetChanged();
         setEmptyString();
     }
@@ -533,6 +532,10 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
                 finish();
             }
         });
+
+        if(getCurrentUser().getObjectID().compareTo(getCurrentTask().getRequesterID()) == 0) {
+            deleteBtn.setText("DECLINE");
+        }
 
         Button dontDeleteBtn = (Button) layout.findViewById(R.id.btn_do_not_delete_my_bid);
         dontDeleteBtn.setOnClickListener(new View.OnClickListener()
