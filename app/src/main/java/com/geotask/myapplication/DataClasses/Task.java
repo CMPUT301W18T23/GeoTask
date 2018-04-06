@@ -76,7 +76,7 @@ public class Task extends GTData implements Comparable{
 		this.name = name;
 		this.description = description;
 		this.hitCounter = 0;
-		this.status = "requested";
+		this.status = "Requested";
 		super.setDate(new Date().getTime());
 		this.accpetedBid = -1.0; //ToDo
 		this.requesterID = requesterID;

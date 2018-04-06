@@ -451,9 +451,9 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
 
         getCurrentTask().setAcceptedBid(-1.0);
         if(bidList.size() <= 0) {
-            getCurrentTask().setStatus("requested");
+            getCurrentTask().setStatus("Requested");
         } else if(bidList.size() > 0) {
-            getCurrentTask().setStatus("bidded");
+            getCurrentTask().setStatus("Bidded");
         }
 
         MasterController.AsyncUpdateDocument asyncUpdateDocument

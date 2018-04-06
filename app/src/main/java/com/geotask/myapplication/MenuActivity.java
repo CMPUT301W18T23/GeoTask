@@ -311,11 +311,11 @@ public class MenuActivity extends AbstractGeoTaskActivity
         } else if(getViewMode() == R.integer.MODE_INT_ACCEPTED) {
             setSearchStatus(null);
             builder1.addColumns(new String[] {"requesterID", "status"});
-            builder1.addParameters(new String[] {getCurrentUser().getObjectID(), "accepted"});
+            builder1.addParameters(new String[] {getCurrentUser().getObjectID(), "Accepted"});
         } else if(getViewMode() == R.integer.MODE_INT_ASSIGNED) {
             setSearchStatus(null);
-            builder1.addColumns(new String[] {"status"});
-            builder1.addParameters(new String[] {"accepted"});
+            builder1.addColumns(new String[] {"acceptedProviderID"});
+            builder1.addParameters(new String[] {getCurrentUser().getObjectID()});
         }
 
         //Add filter keywords to the builder if present
@@ -342,16 +342,15 @@ public class MenuActivity extends AbstractGeoTaskActivity
                         if(!showClear) {
                             clearFiltersButton.setVisibility(View.INVISIBLE);
                         }
-                        //TODO - uncomment when sync branch merged
-                        //builder1.put("status", "requested");
-                        //builder1.put("status", "bidded");
+                        //builder1.addColumns(new String[] {"status", "status"});
+                        //builder1.addParameters(new String[] {"Requested", "Bidded"});
                 }
                 } else if (getSearchStatus().compareTo("Requested") == 0){
                     builder1.addColumns(new String[] {"status"});
-                    builder1.addParameters(new String[] {"requested"});
+                    builder1.addParameters(new String[] {"Requested"});
                 } else if (getSearchStatus().compareTo("Bidded") == 0){
                     builder1.addColumns(new String[] {"status"});
-                    builder1.addParameters(new String[] {"bidded"});
+                    builder1.addParameters(new String[] {"Bidded"});
                 }
             }
 
