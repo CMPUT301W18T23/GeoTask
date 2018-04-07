@@ -72,6 +72,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
     private ListView oldTasks; //named taskListView
     private ArrayAdapter<Task> adapter;
     private String mode;
+    //private ArrayList<String> filterArray;
     private String[] filterArray;
     private FloatingActionButton fab;
     private Button clearFiltersButton;
@@ -94,8 +95,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
 
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -135,16 +134,22 @@ public class MenuActivity extends AbstractGeoTaskActivity
             getSupportActionBar().setTitle("Tasks I Have Bid On");
         }
 
+
         try {
             if(filterArray != null) {
                 filterArray = getSearchKeywords().split(" ");
+                //for
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
+            //filterArray = new ArrayList<String>();
             setSearchKeywords("");
         }
 
-        setSearchStatus("All");
+
+        //filterArray = new ArrayList<String>();
+        //setSearchKeywords("");
+        //Log.i("filter-a-------->", getSearchKeywords());
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -274,8 +279,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
         setOrientation();
     }
 
-
-
     /**
      * This function populates the listView by querying the server based on the view mode
      *
@@ -306,67 +309,91 @@ public class MenuActivity extends AbstractGeoTaskActivity
         getTaskList().clear();
         SQLQueryBuilder builder1 = new SQLQueryBuilder(Task.class);
 
+        Boolean anyStatus = false;
         //Only show tasks created by the user
         if(getViewMode() == R.integer.MODE_INT_REQUESTER) {
             setSearchStatus(null);
             builder1.addColumns(new String[] {"requesterID"});
             builder1.addParameters(new String[] {getCurrentUser().getObjectID()});
+            anyStatus = true;
         } else if(getViewMode() == R.integer.MODE_INT_ACCEPTED) {
             setSearchStatus(null);
             builder1.addColumns(new String[] {"requesterID", "status"});
             builder1.addParameters(new String[] {getCurrentUser().getObjectID(), "Accepted"});
+            anyStatus = true;
         } else if(getViewMode() == R.integer.MODE_INT_ASSIGNED) {
             setSearchStatus(null);
             builder1.addColumns(new String[] {"acceptedProviderID"});
             builder1.addParameters(new String[] {getCurrentUser().getObjectID()});
+            anyStatus = true;
         }
 
         //Add filter keywords to the builder if present
         try {
             Boolean showClear = false;
-            if(!getSearchKeywords().equals("")) {
+            Log.i("filter-------->", "test");
+            //Log.i("filter-------->", getSearchKeywords());
+            String test = getSearchKeywords();
+            Boolean tes2 = (getSearchKeywords() != null);
+            if((getSearchKeywords() != null) && !(getSearchKeywords().compareTo("") == 0)) {
+                Log.i("filter-------->", getSearchKeywords());
+                Log.i("filter-------->",  getSearchKeywords().split(" ").toString());
                 showClear = true;
+                //filterArray = getSearchKeywords().split(" ");
                 clearFiltersButton.setVisibility(View.VISIBLE);
-                for (int i = 0; i < filterArray.length; i++) {
+                //for (int i = 0; i < filterArray.size(); i++) {
+                for (String searchTerm : getSearchKeywords().split(" ")){
                     builder1.addColumns(new String[]{"description"});
-                    builder1.addParameters(new String[] {filterArray[i].toLowerCase()});
+                    builder1.addParameters(new String[] {searchTerm.toLowerCase()});
+                    Log.d("BUGSBUGSBUGSMterm", searchTerm.toString());
+                    Log.d("BUGSBUGSBUGSmenu", String.valueOf(builder1.build().getSql() + " " + builder1.build().getArgCount()));
+                    //builder1.addParameters(new String[] {filterArray.get(i).toLowerCase()});
                 }
-                if(filterArray.length > 0){
+                if (getSearchKeywords().split(" ").length > 0){
                     navigationView.setCheckedItem(R.id.nav_filter);
                 }
-            } else{
+
+            } else {
                 clearFiltersButton.setVisibility(View.INVISIBLE);
             }
 
             statusSearchBool = false;
             if (getSearchStatus()!= null){
                 clearFiltersButton.setVisibility(View.VISIBLE);
+                int test2 = getViewMode();
                 if(getViewMode() == R.integer.MODE_INT_ALL) {
                     if(getSearchStatus().compareTo("All") ==0){
                         if(!showClear) {
                             clearFiltersButton.setVisibility(View.INVISIBLE);
                         }
                         statusSearchBool = true;
+                    }
+                    if(getSearchStatus().compareTo("Requested") == 0) {
+                        builder1.addColumns(new String[] {"status"});
+                        builder1.addParameters(new String[] {"Requested"});
+
+                    } else if(getSearchStatus().compareTo("Bidded") == 0) {
+                        builder1.addColumns(new String[] {"status"});
+                        builder1.addParameters(new String[] {"Bidded"});
+                    }
                 }
-                } else if (getSearchStatus().compareTo("Requested") == 0){
-                    builder1.addColumns(new String[] {"status"});
-                    builder1.addParameters(new String[] {"Requested"});
-                } else if (getSearchStatus().compareTo("Bidded") == 0){
-                    builder1.addColumns(new String[] {"status"});
-                    builder1.addParameters(new String[] {"Bidded"});
-                }
+            } else {
+                statusSearchBool = true;
             }
 
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
 
-        if(!statusSearchBool) {
+        if(anyStatus || (!statusSearchBool)){
             MasterController.AsyncSearch asyncSearch =
                     new MasterController.AsyncSearch(this, this);
             asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
+
             try {
                 setTaskList((ArrayList<Task>) asyncSearch.get());
+                ArrayList<Task> newList = getTaskList();
+                setTaskList(newList);
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
@@ -378,6 +405,8 @@ public class MenuActivity extends AbstractGeoTaskActivity
             builder1.addParameters(new String[] {"Requested"});
             builder3.addColumns(new String[] {"status"});
             builder3.addParameters(new String[] {"Bidded"});
+            Log.d("BUGSBUGSBUGSstatus", builder1.build().getSql() + " " + builder1.build().getArgCount() + " " + builder3.build().getSql() + " " + builder3.build().getArgCount());
+
 
             MasterController.AsyncSearch asyncSearch1 =
                     new MasterController.AsyncSearch(this, this);
@@ -399,10 +428,13 @@ public class MenuActivity extends AbstractGeoTaskActivity
 
             tempTaskList1.addAll(tempTaskList2);
             setTaskList(tempTaskList1);
-
         }
 
-
+        /*
+        if(getViewMode() == R.integer.MODE_INT_ALL) {
+            clearFiltersButton.setVisibility(View.INVISIBLE);
+        }
+        */
 
         //Only show tasks which have been bidded on by current user
         //Need to do this after elastic search by removing results without bids by the user

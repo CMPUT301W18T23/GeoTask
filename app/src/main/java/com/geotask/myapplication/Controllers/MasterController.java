@@ -296,12 +296,14 @@ public class MasterController {
             verifySettings(context);
 
             for(AsyncArgumentWrapper argument : argumentWrappers) {
-                Log.d("BUGSBUGSBUGS", String.valueOf(argument.getSQLQuery()));
+                Log.d("BUGSBUGSBUGS", String.valueOf(argument.getSQLQuery().getSql() + " " +
+                        argument.getSQLQuery().getArgCount()));
                 if (argument.getType().equals(Task.class)){
                     resultList = database.taskDAO().searchTasksByQuery(argument.getSQLQuery());
                 } else if (argument.getType().equals(Bid.class)) {
                     resultList = database.bidDAO().searchBidsByQuery(argument.getSQLQuery());
                 }
+                Log.d("BUGSBUGSBUGS", resultList.toString());
             }
             return resultList;
         }
@@ -312,8 +314,6 @@ public class MasterController {
                 callBack.onPostExecute(dataList);
             }
         }
-
-
     }
 
     public static List<? extends GTData> slowSearch(AsyncArgumentWrapper argument){
