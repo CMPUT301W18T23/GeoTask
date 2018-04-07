@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.geotask.myapplication.Adapters.BidArrayAdapter;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
@@ -142,7 +143,6 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
      */
     private void populateBidView(){
 
-        /// THIS SHOULD WORK BUT IS CURRENTLY COMMENTED OUT
         if ("Accepted".equals(getCurrentTask().getStatus())) {
 
             MasterController.AsyncGetDocument asyncGetDocument =
@@ -490,6 +490,18 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
             }
         });
 
+        if(networkIsAvailable()) {
+            deleteBtn.setEnabled(true);
+            acceptBtn.setEnabled(true);
+        } else {
+            deleteBtn.setEnabled(false);
+            acceptBtn.setEnabled(false);
+            Toast.makeText(this,
+                    R.string.CANNOT_EDIT_BID_OFFLINE,
+                    Toast.LENGTH_SHORT)
+                    .show();
+        }
+
         Button viewProfileBtn = (Button) layout.findViewById(R.id.btn_visit_profile);
         viewProfileBtn.setOnClickListener(new View.OnClickListener()
         {
@@ -518,7 +530,18 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         POPUP_WINDOW_DELETION.setBackgroundDrawable(null);
         POPUP_WINDOW_DELETION.showAtLocation(layout, Gravity.CENTER, 1, 1);
 
+
         Button deleteBtn = (Button) layout.findViewById(R.id.btn_delete_my_bid);
+
+        if(networkIsAvailable()) {
+            deleteBtn.setEnabled(true);
+        } else {
+            deleteBtn.setEnabled(false);
+            Toast.makeText(this,
+                    R.string.CANNOT_DELETE_BID_OFFLINE,
+                    Toast.LENGTH_SHORT)
+                    .show();
+        }
         deleteBtn.setOnClickListener(new View.OnClickListener()
         {
             @Override
