@@ -11,7 +11,10 @@
     <string name="title_activity_menu">MenuActivity</string>
     <string name="CANNOT_DELETE_BID_OFFLINE">Can\'t delete a bid in offline mode.</string>
     <string name="CANNOT_EDIT_BID_OFFLINE">Can\'t edit a bid in offline mode.</string>
+    <string name="CANNOT_EDIT_PROFILE_OFFLINE">Can\'t edit your profile in offline mode.</string>
     <string name="CANNOT_LOGIN_OFFLINE">Can\'t login in offline mode.</string>
+    <string name="CANNOT_DECLINE_ACCEPTED_OFFLINE">Can\'t decline an accepted bid in offline mode.</string>
+    <string name="CANNOT_COMPLETE_TASK_OFFLINE">Can\'t set a task to completed in offline mode.</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

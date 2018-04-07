@@ -61,7 +61,6 @@ public class LoginActivity extends AbstractGeoTaskActivity implements AsyncCallB
                             Toast.LENGTH_SHORT)
                             .show();
                 }
-
             }
         });
 
