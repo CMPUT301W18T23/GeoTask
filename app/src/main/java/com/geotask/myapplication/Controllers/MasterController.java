@@ -312,8 +312,6 @@ public class MasterController {
                 callBack.onPostExecute(dataList);
             }
         }
-
-
     }
 
     public static List<? extends GTData> slowSearch(AsyncArgumentWrapper argument){

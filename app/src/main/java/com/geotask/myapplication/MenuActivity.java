@@ -72,6 +72,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
     private ListView oldTasks; //named taskListView
     private ArrayAdapter<Task> adapter;
     private String mode;
+    //private ArrayList<String> filterArray;
     private String[] filterArray;
     private FloatingActionButton fab;
     private Button clearFiltersButton;
@@ -134,16 +135,22 @@ public class MenuActivity extends AbstractGeoTaskActivity
             getSupportActionBar().setTitle("Tasks I Have Bid On");
         }
 
+
         try {
             if(filterArray != null) {
                 filterArray = getSearchKeywords().split(" ");
+                //for
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
+            //filterArray = new ArrayList<String>();
             setSearchKeywords("");
         }
 
-        setSearchStatus("All");
+
+        //filterArray = new ArrayList<String>();
+        //setSearchKeywords("");
+        //Log.i("filter-a-------->", getSearchKeywords());
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -273,8 +280,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
         setOrientation();
     }
 
-
-
     /**
      * This function populates the listView by querying the server based on the view mode
      *
@@ -323,17 +328,30 @@ public class MenuActivity extends AbstractGeoTaskActivity
         //Add filter keywords to the builder if present
         try {
             Boolean showClear = false;
-            if(!getSearchKeywords().equals("")) {
+            Log.i("filter-------->", "test");
+            //Log.i("filter-------->", getSearchKeywords());
+            String test = getSearchKeywords();
+            Boolean tes2 = (getSearchKeywords() != null);
+            if((getSearchKeywords() != null) && !(getSearchKeywords().compareTo("") == 0)) {
+                Log.i("filter-------->", getSearchKeywords());
+                Log.i("filter-------->",  getSearchKeywords().split(" ").toString());
                 showClear = true;
+                //filterArray = getSearchKeywords().split(" ");
                 clearFiltersButton.setVisibility(View.VISIBLE);
-                for (int i = 0; i < filterArray.length; i++) {
+                //for (int i = 0; i < filterArray.size(); i++) {
+                for (String searchTerm : getSearchKeywords().split(" ")){
                     builder1.addColumns(new String[]{"description"});
-                    builder1.addParameters(new String[] {filterArray[i].toLowerCase()});
+                    builder1.addParameters(new String[] {searchTerm.toLowerCase()});
+                    //builder1.addParameters(new String[] {filterArray.get(i).toLowerCase()});
                 }
-                if(filterArray.length > 0){
+                //if(filterArray.size() > 0){
+                //TODO - THIS CRASHES THE SQL????
+                /*
+                if (getSearchKeywords().split(" ").length > 0){
                     navigationView.setCheckedItem(R.id.nav_filter);
                 }
-            } else{
+                */
+            } else {
                 clearFiltersButton.setVisibility(View.INVISIBLE);
             }
 
@@ -353,6 +371,8 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 } else if (getSearchStatus().compareTo("Bidded") == 0){
                     builder1.addColumns(new String[] {"status"});
                     builder1.addParameters(new String[] {"Bidded"});
+                } else if (getSearchStatus().compareTo("All") == 0){
+
                 }
             }
 
@@ -361,11 +381,29 @@ public class MenuActivity extends AbstractGeoTaskActivity
         }
 
         if(!statusSearchBool) {
+            ArrayList<Task> tempTaskList2 = new ArrayList<Task>();
             MasterController.AsyncSearch asyncSearch =
                     new MasterController.AsyncSearch(this, this);
+            MasterController.AsyncSearch asyncSearch2 =
+                    new MasterController.AsyncSearch(this, this);
+
+            SQLQueryBuilder builder3 = builder1.clone();
+            builder1.addColumns(new String[] {"status"});
+            builder1.addParameters(new String[] {"Requested"});
+
+            builder3.addColumns(new String[] {"status"});
+            builder3.addParameters(new String[] {"Bidded"});
+            //builder3.addColumns(new String[]{"description"});
+            //builder3.addParameters(new String[] {"a"});
+
             asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
+            asyncSearch2.execute(new AsyncArgumentWrapper(builder3, Task.class));
             try {
                 setTaskList((ArrayList<Task>) asyncSearch.get());
+                tempTaskList2 = (ArrayList<Task>) asyncSearch2.get();
+                ArrayList<Task> newList = getTaskList();
+                newList.addAll(tempTaskList2);
+                setTaskList(newList);
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
@@ -401,7 +439,11 @@ public class MenuActivity extends AbstractGeoTaskActivity
 
         }
 
-
+        /*
+        if(getViewMode() == R.integer.MODE_INT_ALL) {
+            clearFiltersButton.setVisibility(View.INVISIBLE);
+        }
+        */
 
         //Only show tasks which have been bidded on by current user
         //Need to do this after elastic search by removing results without bids by the user
