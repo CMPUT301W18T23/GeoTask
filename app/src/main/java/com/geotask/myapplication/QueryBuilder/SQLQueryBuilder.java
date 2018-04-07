@@ -1,7 +1,6 @@
 package com.geotask.myapplication.QueryBuilder;
 
 import android.arch.persistence.db.SimpleSQLiteQuery;
-import android.util.Log;
 
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
@@ -55,8 +54,6 @@ public class SQLQueryBuilder implements Cloneable {
             System.arraycopy(this.object, 0, temp, 0, this.object.length);
             System.arraycopy(object, 0, temp, this.object.length, object.length);
             this.object = temp;
-
-            Log.d("dd", "dd");
         }
     }
 
