@@ -23,6 +23,7 @@ import org.junit.runners.JUnit4;
 import java.io.IOException;
 import java.util.List;
 
+import static junit.framework.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -168,9 +169,9 @@ public class TestElasticSearch implements AsyncCallBackManager {
         controller.refresh();
 
         SuperBooleanBuilder searchTask = new SuperBooleanBuilder();
-        searchTask.put("taskID", targetTask);
+        searchTask.put("taskID", targetTask.toLowerCase());
         SuperBooleanBuilder searchProvider = new SuperBooleanBuilder();
-        searchProvider.put("providerID", targetProvider);
+        searchProvider.put("providerID", targetProvider.toLowerCase());
 
         List<Bid> resultTask = (List<Bid>) controller.search(searchTask.toString(), Bid.class);
         List<Bid> resultProvider = (List<Bid>) controller.search(searchProvider.toString(), Bid.class);
@@ -282,7 +283,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
         User user1 = new User("Kyle1", "kyleg@email.com", "555");
         controller.createNewDocument(user1);
 
-        assertTrue(controller.existsProfile("kyleg@email.com") != null);
+        assertFalse(controller.existsProfile("kyleg@email.com") == null);
     }
 
     @After
