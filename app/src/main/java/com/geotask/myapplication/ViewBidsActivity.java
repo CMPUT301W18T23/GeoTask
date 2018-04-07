@@ -75,6 +75,10 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
                 refreshLayout.setRefreshing(true);
                 populateBidView();
                 refreshLayout.setRefreshing(false);
+//                Bundle settings = new Bundle();
+//                settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+//                settings.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+//                ContentResolver.requestSync(getAccount(), getString(R.string.SYNC_AUTHORITY), settings);
             }
         });
 

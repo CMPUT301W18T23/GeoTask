@@ -95,10 +95,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        Bundle settings = new Bundle();
-//        settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-//        settings.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-//        ContentResolver.requestSync(getAccount(), getString(R.string.SYNC_AUTHORITY), settings);
+
 
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -113,6 +110,10 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 refreshLayout.setRefreshing(true);
                 populateTaskView();
                 refreshLayout.setRefreshing(false);
+//                Bundle settings = new Bundle();
+//                settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+//                settings.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+//                ContentResolver.requestSync(getAccount(), getString(R.string.SYNC_AUTHORITY), settings);
             }
         });
 
