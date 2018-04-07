@@ -37,7 +37,7 @@ public class TestIDGenerator {
     public void TestIDGenerator() {
         String ID = UniqueIDGenerator.generate();
 
-        assertEquals(16, ID.length());
+        assertEquals(29, ID.length());
 
         System.out.println(ID);
 

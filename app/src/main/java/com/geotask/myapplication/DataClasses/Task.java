@@ -6,7 +6,6 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.TypeConverters;
 import android.support.annotation.NonNull;
 
-import com.geotask.myapplication.Controllers.Helpers.GetLowestBidFromServer;
 import com.geotask.myapplication.Controllers.Helpers.HashSetConverter;
 import com.google.gson.Gson;
 
@@ -76,7 +75,7 @@ public class Task extends GTData implements Comparable{
 		this.name = name;
 		this.description = description;
 		this.hitCounter = 0;
-		this.status = "requested";
+		this.status = "Requested";
 		super.setDate(new Date().getTime());
 		this.accpetedBid = -1.0; //ToDo
 		this.requesterID = requesterID;
@@ -362,23 +361,6 @@ public class Task extends GTData implements Comparable{
 
 	public void setNumBids(Integer numBids) {
 		this.numBids = numBids;
-	}
-
-	public void syncBidData(){
-		ArrayList<Double> newVals = new GetLowestBidFromServer().searchAndReturnLowest(this);
-		assert(newVals.size() == 2);
-		this.numBids = newVals.get(1).intValue();
-		this.lowestBid = newVals.get(0);
-		try {
-			Thread.sleep(400);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		if(this.getNumBids() == 0){
-			this.setStatusRequested();
-		} else if (this.getNumBids() > 0){
-			this.setStatusBidded();
-		}
 	}
 
 	@Override

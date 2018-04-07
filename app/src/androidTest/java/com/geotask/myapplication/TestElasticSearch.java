@@ -1,9 +1,10 @@
 package com.geotask.myapplication;
 
 import android.support.test.InstrumentationRegistry;
+import android.util.Log;
 
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
-import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
+import com.geotask.myapplication.Controllers.ElasticsearchController;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
@@ -21,11 +22,9 @@ import org.junit.runners.JUnit4;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
+import static junit.framework.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -35,6 +34,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
 
     private GTData data = null;
     private List<? extends GTData> searchResult = null;
+    ElasticsearchController controller = new ElasticsearchController();
 
     @BeforeClass
     public static void oneTimeSetUp() {
@@ -51,329 +51,138 @@ public class TestElasticSearch implements AsyncCallBackManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-   }
-
-    public void utility() {
-        MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
-        asyncGetDocument.execute(new AsyncArgumentWrapper("x8mc929sb1ni5si1", Task.class));
-
-        Task task = null;
-        try {
-            task = (Task) asyncGetDocument.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        task.setStatusCompleted();
-        MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument(InstrumentationRegistry.getTargetContext());
-        asyncUpdateDocument.execute(task);
     }
 
     @Test
-    //@Ignore
-    public void kyleSetUp() {
-        MasterController.verifySettings(InstrumentationRegistry.getTargetContext());
-        //MasterController.setTestSettings(TestServerAddress.getTestAddress());
-        //try {
-            //MasterController.deleteIndex();
-            //MasterController.createIndex();
-        /*
-            MasterController.AsyncDeleteDocument asyncDeleteDocument =
-                    new MasterController.AsyncDeleteDocument();
-            asyncDeleteDocument.execute(new AsyncArgumentWrapper("l23srvrcy9xbafnf", User.class));
-            */
-        //} catch (IOException e) {
-            //e.printStackTrace();
-        //}
-    }
+    public void testAsyncCreateAndGetBid() throws Exception {
+        String test = "testAsyncCreateAndGetBid";
+        Bid bid = new Bid(test,1.1,test);
+        controller.createNewDocument(bid);
 
-    @Test
-    public void testAsyncCreateAndGetBid() throws InterruptedException {
-        Bid bid = new Bid("test async ProviderID", 1.2, "test async taskID");
-
-        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
-        asyncCreateNewDocument.execute(bid);
-
-        TimeUnit.SECONDS.sleep(3);
-
-        MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
-        asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
-
-        Bid remote = null;
-        try {
-            remote = (Bid) asyncGetDocument.get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        Bid remote = (Bid) controller.getDocument(bid.getObjectID(), Bid.class);
 
         assertEquals(bid.getProviderID(), remote.getProviderID());
     }
 
     @Test
-    public void testAsyncCreateAndGetTask() throws InterruptedException {
-        Task task = new Task("randomid","test Task", "test Description");
+    public void testAsyncCreateAndGetTask() throws Exception {
+        String test = "testAsyncCreateAndGetTask";
+        Task task = new Task(test,test,test);
+        controller.createNewDocument(task);
 
-        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
-        asyncCreateNewDocument.execute(task);
-
-        TimeUnit.SECONDS.sleep(3);
-
-        MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
-        asyncGetDocument.execute(new AsyncArgumentWrapper(task.getObjectID(), Task.class));
-
-        Task remote = null;
-        try {
-            remote = (Task) asyncGetDocument.get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        Task remote = (Task) controller.getDocument(task.getObjectID(), Task.class);
 
         assertEquals(task.getDate(), remote.getDate());
     }
 
     @Test
-    public void testCreateAndGetUser() throws InterruptedException {
-        User user = new User("test user 1", "test_email@gmail.com", "555-555-5555");
+    public void testCreateAndGetUser() throws Exception {
+        String test = "testCreateAndGetUser";
+        User user = new User(test,test,test);
+        controller.createNewDocument(user);
 
-        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
-        asyncCreateNewDocument.execute(user);
+        User remote = (User) controller.getDocument(user.getObjectID(), User.class);
 
-        TimeUnit.SECONDS.sleep(3);
-
-        MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
-        asyncGetDocument.execute(new AsyncArgumentWrapper(user.getObjectID(), User.class));
-
-        User remote = null;
-        try {
-            remote = (User) asyncGetDocument.get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-        Task task = new Task("f", "f", "f");
         assertEquals(user.getName(), remote.getName());
     }
 
     @Test
-    public void testDeleteDocument() throws InterruptedException {
-        Bid bid = new Bid("test delete document", 2.1, "test delete document");
+    public void testDeleteDocument() throws Exception {
+        String test = "testDeleteDocument";
+        Bid bid = new Bid(test, 1.2, test);
+        controller.createNewDocument(bid);
 
-        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
-        asyncCreateNewDocument.execute(bid);
-
-        TimeUnit.SECONDS.sleep(3);
-
-        MasterController.AsyncGetDocument asyncGetDocumentWhenDocumentExist =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
-        asyncGetDocumentWhenDocumentExist.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
-
-        Bid remote = null;
-        try {
-            remote = (Bid) asyncGetDocumentWhenDocumentExist.get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        Bid remote = (Bid) controller.getDocument(bid.getObjectID(), Bid.class);
         assertEquals(bid.getProviderID(), remote.getProviderID());
 
+        controller.deleteDocument(bid.getObjectID(), Bid.class);
 
-        MasterController.AsyncDeleteDocument asyncDeleteDocument =
-                new MasterController.AsyncDeleteDocument(InstrumentationRegistry.getTargetContext());
-        asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
-
-        TimeUnit.SECONDS.sleep(3);
-
-        MasterController.AsyncGetDocument asyncGetDocumentWhenDocumentShouldNotExist =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
-        asyncGetDocumentWhenDocumentShouldNotExist.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
-
-        try {
-            remote = (Bid) asyncGetDocumentWhenDocumentShouldNotExist.get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
+        remote = (Bid) controller.getDocument(bid.getObjectID(), Bid.class);
         assertNull(remote);
     }
 
     @Test
-    public void testUpdateBid() throws InterruptedException {
-        Bid bid = new Bid("test update document", 8.1, "test update document");
+    public void testUpdateBid() throws Exception {
+        String test = "testUpdateBid";
+        Bid bid = new Bid(test, 2.1, test);
 
-        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
-        asyncCreateNewDocument.execute(bid);
+        controller.createNewDocument(bid);
 
-        TimeUnit.SECONDS.sleep(3);
-
-        MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this,InstrumentationRegistry.getTargetContext());
-        asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
-
-        Bid remote = null;
-        try {
-            remote = (Bid) asyncGetDocument.get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        Bid remote = (Bid) controller.getDocument(bid.getObjectID(), Bid.class);
         assertEquals(bid.getProviderID(), remote.getProviderID());
 
         String updateString = "updated";
         bid.setProviderID(updateString);
-        MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument(InstrumentationRegistry.getTargetContext());
-        asyncUpdateDocument.execute(bid);
+        controller.updateDocument(bid);
 
-        TimeUnit.SECONDS.sleep(3);
-
-        MasterController.AsyncGetDocument asyncGetDocumentAfterUpdate =
-                new MasterController.AsyncGetDocument(this,InstrumentationRegistry.getTargetContext());
-        asyncGetDocumentAfterUpdate.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
-
-        try {
-            remote = (Bid) asyncGetDocumentAfterUpdate.get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
+        remote = (Bid) controller.getDocument(bid.getObjectID(), Bid.class);
         assertEquals(updateString, remote.getProviderID());
     }
 
     @Test
-    public void testUpdateTask() throws InterruptedException {
-        Task task = new Task("randomid","test update task", "test update description");
+    public void testUpdateTask() throws Exception {
+        String test = "testUpdateTask";
+        Task task = new Task(test,test,test);
+        controller.createNewDocument(task);
 
-        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
-        asyncCreateNewDocument.execute(task);
-
-        TimeUnit.SECONDS.sleep(3);
-
-        MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
-        asyncGetDocument.execute(new AsyncArgumentWrapper(task.getObjectID(), Task.class));
-
-        Task remote = null;
-        try {
-            remote = (Task) asyncGetDocument.get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        Task remote = (Task) controller.getDocument(task.getObjectID(), Task.class);
         assertEquals(task.getName(), remote.getName());
 
         String updateString = "updated";
         task.setName(updateString);
-        MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument(InstrumentationRegistry.getTargetContext());
-        asyncUpdateDocument.execute(task);
+        controller.updateDocument(task);
 
-        TimeUnit.SECONDS.sleep(3);
-
-        MasterController.AsyncGetDocument asyncGetDocumentAfterUpdate =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
-        asyncGetDocumentAfterUpdate.execute(new AsyncArgumentWrapper(task.getObjectID(), Task.class));
-
-        try {
-            remote = (Task) asyncGetDocumentAfterUpdate.get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        remote = (Task) controller.getDocument(task.getObjectID(), Task.class);
 
         assertEquals(updateString, remote.getName());
     }
 
     @Test
-    public void testUpdateUser() throws InterruptedException {
-        User user = new User("test update user 1", "test_email@gmail.com", "555-555-5555");
+    public void testUpdateUser() throws Exception {
+        String test = "testUpdateUser";
+        User user = new User(test,test,test);
+        controller.createNewDocument(user);
 
-        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
-        asyncCreateNewDocument.execute(user);
-
-        TimeUnit.SECONDS.sleep(3);
-
-        MasterController.AsyncGetDocument asyncGetDocument =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
-        asyncGetDocument.execute(new AsyncArgumentWrapper(user.getObjectID(), User.class));
-
-        User remote = null;
-        try {
-            remote = (User) asyncGetDocument.get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        User remote = (User) controller.getDocument(user.getObjectID(), User.class);
         assertEquals(user.getName(), remote.getName());
 
         String updateString = "updated";
         user.setName(updateString);
-        MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                new MasterController.AsyncUpdateDocument(InstrumentationRegistry.getTargetContext());
-        asyncUpdateDocument.execute(user);
+        controller.updateDocument(user);
 
-        TimeUnit.SECONDS.sleep(3);
-
-        MasterController.AsyncGetDocument asyncGetDocumentAfterUpdate =
-                new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
-        asyncGetDocumentAfterUpdate.execute(new AsyncArgumentWrapper(user.getObjectID(), User.class));
-
-        try {
-            remote = (User) asyncGetDocumentAfterUpdate.get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        remote = (User) controller.getDocument(user.getObjectID(), User.class);
 
         assertEquals(updateString, remote.getName());
     }
 
     @Test
-    public void testSearchBid() throws InterruptedException {
-        Bid bid1 = new Bid("aprovider", 3.1, "atask");
-        Bid bid2 = new Bid("bprovider", 3.2, "atask");
-        Bid bid3 = new Bid("cprovider", 3.3, "atask");
+    public void testSearchBid() throws InterruptedException, IOException {
+        String targetProvider = "targetProvider";
+        String targetTask = "targetTask";
+        Bid bid1 = new Bid(targetProvider, 3.1, "test");
+        Bid bid2 = new Bid(targetProvider, 3.2, targetTask);
+        Bid bid3 = new Bid(targetProvider, 3.3, targetTask);
 
-        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
-        asyncCreateNewDocument.execute(bid1, bid2, bid3);
+        controller.createNewDocument(bid1);
+        controller.createNewDocument(bid2);
+        controller.createNewDocument(bid3);
+        controller.refresh();
 
-        TimeUnit.SECONDS.sleep(5);
+        SuperBooleanBuilder searchTask = new SuperBooleanBuilder();
+        searchTask.put("taskID", targetTask.toLowerCase());
+        SuperBooleanBuilder searchProvider = new SuperBooleanBuilder();
+        searchProvider.put("providerID", targetProvider.toLowerCase());
 
-        SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
-        builder1.put("taskID", "atask");
-        SuperBooleanBuilder builder2 = new SuperBooleanBuilder();
-        builder2.put("providerID", "aprovider");
+        List<Bid> resultTask = (List<Bid>) controller.search(searchTask.toString(), Bid.class);
+        List<Bid> resultProvider = (List<Bid>) controller.search(searchProvider.toString(), Bid.class);
+        Log.d("123123123", searchTask.toString() + "%%%" + searchProvider.toString());
 
-        MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this, InstrumentationRegistry.getTargetContext());
-        asyncSearch.execute(new AsyncArgumentWrapper(builder1, Bid.class));
-        MasterController.AsyncSearch asyncSearch1 =
-                new MasterController.AsyncSearch(this, InstrumentationRegistry.getTargetContext());
-        asyncSearch1.execute(new AsyncArgumentWrapper(builder2, Bid.class));
-
-        List<Bid> result1 = null;
-        List<Bid> result2 = null;
-
-        try {
-            result1 = (List<Bid>) asyncSearch.get();
-            result2 = (List<Bid>) asyncSearch1.get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        assertEquals(3, result1.size());
-        assertEquals(1, result2.size());
+        assertEquals(3, resultProvider.size());
+        assertEquals(2, resultTask.size());
     }
 
     @Test
-    public void testSearchTasks() throws InterruptedException {
+    public void testSearchTasks() throws InterruptedException, IOException {
         Task task1 = new Task("random id","test search task", "test search task");
         task1.setAcceptedBid(1.1);
         String target = "targettargettarget";
@@ -381,34 +190,22 @@ public class TestElasticSearch implements AsyncCallBackManager {
         Task task2 = new Task("random ID", targetName, target);
         task2.setAcceptedBid(1.2);
 
-        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
-        asyncCreateNewDocument.execute(task1, task2);
-
-        TimeUnit.SECONDS.sleep(5);
-
+        controller.createNewDocument(task1);
+        controller.createNewDocument(task2);
+        controller.refresh();
 
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
         builder1.put("description", target);
+        Log.d("123123123", builder1.toString());
 
-        MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this, InstrumentationRegistry.getTargetContext());
-        asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
-
-        List<Task> result = null;
-
-        try {
-            result = (List<Task>) asyncSearch.get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        List<Task> result = (List<Task>) controller.search(builder1.toString(), Task.class);
 
         assertEquals(1, result.size());
         assertEquals(targetName, result.get(0).getName());
     }
 
     @Test
-    public void testSearchUsers() throws InterruptedException {
+    public void testSearchUsers() throws InterruptedException, IOException {
         String targetUser = "target";
         User user1 = new User("user", "1@gmail.com", "555");
         User user2 = new User("user", "2@gmail.com", "666");
@@ -416,33 +213,20 @@ public class TestElasticSearch implements AsyncCallBackManager {
         User user4 = new User("user", "1@yahoo.com", "888");
         User user5 = new User(targetUser, "1@yahoo.ca", "888");
 
-        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
-        asyncCreateNewDocument.execute(user1, user2, user3, user4, user5);
-
-        TimeUnit.SECONDS.sleep(5);
+        controller.createNewDocument(user1);
+        controller.createNewDocument(user2);
+        controller.createNewDocument(user3);
+        controller.createNewDocument(user4);
+        controller.createNewDocument(user5);
+        controller.refresh();
 
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
         builder1.put("phonenum", "888");
         SuperBooleanBuilder builder2 = new SuperBooleanBuilder();
         builder2.put("email", "1@yahoo.ca");
 
-        MasterController.AsyncSearch asyncSearch1 =
-                new MasterController.AsyncSearch(this, InstrumentationRegistry.getTargetContext());
-        asyncSearch1.execute(new AsyncArgumentWrapper(builder1, User.class));
-        MasterController.AsyncSearch asyncSearch2 =
-                new MasterController.AsyncSearch(this, InstrumentationRegistry.getTargetContext());
-        asyncSearch2.execute(new AsyncArgumentWrapper(builder2, User.class));
-
-        List<User> result1 = null;
-        List<User> result2 = null;
-
-        try {
-            result1 = (List<User>) asyncSearch1.get();
-            result2 = (List<User>) asyncSearch2.get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        List<User> result1 = (List<User>) controller.search(builder1.toString(), User.class);
+        List<User> result2 = (List<User>) controller.search(builder2.toString(), User.class);
 
         assertEquals(2, result1.size());
         assertEquals(1, result2.size());
@@ -450,7 +234,7 @@ public class TestElasticSearch implements AsyncCallBackManager {
     }
 
     @Test
-    public void testSearchReturnMoreThanTenItems() throws InterruptedException {
+    public void testSearchReturnMoreThanTenItems() throws InterruptedException, IOException {
         User user1 = new User("user", "1@gmail.com", "555");
         User user2 = new User("user", "2@gmail.com", "666");
         User user3 = new User("user", "1@gmail.com", "777");
@@ -467,49 +251,39 @@ public class TestElasticSearch implements AsyncCallBackManager {
         User user14 = new User("user", "1@yahoo.com", "888");
         User user15 = new User("user", "1@yahoo.ca", "888");
 
-        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
-        asyncCreateNewDocument.execute(user1, user2, user3, user4, user5,
-                                        user6, user7, user8, user9, user10,
-                                        user11, user12, user13, user14, user15);
-
-        TimeUnit.SECONDS.sleep(10);
+        controller.createNewDocument(user1);
+        controller.createNewDocument(user2);
+        controller.createNewDocument(user3);
+        controller.createNewDocument(user4);
+        controller.createNewDocument(user5);
+        controller.createNewDocument(user6);
+        controller.createNewDocument(user7);
+        controller.createNewDocument(user8);
+        controller.createNewDocument(user9);
+        controller.createNewDocument(user10);
+        controller.createNewDocument(user11);
+        controller.createNewDocument(user12);
+        controller.createNewDocument(user13);
+        controller.createNewDocument(user14);
+        controller.createNewDocument(user15);
+        controller.refresh();
 
         SuperBooleanBuilder builder1 = new SuperBooleanBuilder();
         builder1.put("name", "user");
 
-        MasterController.AsyncSearch asyncSearch1 =
-                new MasterController.AsyncSearch(this, InstrumentationRegistry.getTargetContext());
-        asyncSearch1.execute(new AsyncArgumentWrapper(builder1, User.class));
-
-        List<User> result1 = null;
-
-        try {
-            result1 = (List<User>) asyncSearch1.get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        List<User> result1 = (List<User>) controller.search(builder1.toString(), User.class);
 
         assertEquals(15, result1.size());
     }
 
     @Test
-    public void testMultiSearch() {
-
-    }
-
-    @Test
-    public void testExistsProfile() throws InterruptedException {
-        assertFalse(MasterController.existsProfile("kyleg@email.com") == null);
+    public void testExistsProfile() throws InterruptedException, IOException {
+        assertTrue(MasterController.existsProfile("kyleg@email.com") == null);
 
         User user1 = new User("Kyle1", "kyleg@email.com", "555");
-        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
-                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
-        asyncCreateNewDocument.execute(user1);
+        controller.createNewDocument(user1);
 
-        TimeUnit.SECONDS.sleep(2);
-
-        assertTrue(MasterController.existsProfile("kyleg@email.com") == null);
+        assertFalse(controller.existsProfile("kyleg@email.com") == null);
     }
 
     @After

@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.geotask.myapplication.Adapters.BidArrayAdapter;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
@@ -75,6 +76,10 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
                 refreshLayout.setRefreshing(true);
                 populateBidView();
                 refreshLayout.setRefreshing(false);
+//                Bundle settings = new Bundle();
+//                settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+//                settings.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+//                ContentResolver.requestSync(getAccount(), getString(R.string.SYNC_AUTHORITY), settings);
             }
         });
 
@@ -137,27 +142,25 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
      * with all bids for the task
      */
     private void populateBidView(){
-        //TODO - build query that returns list of bids that all have task ID == this.taskID
 
-        /// THIS SHOULD WORK BUT IS CURRENTLY COMMENTED OUT
-//        if ("Accepted".equals(getCurrentTask().getStatus())) {
-//
-//            MasterController.AsyncGetDocument asyncGetDocument =
-//                    new MasterController.AsyncGetDocument(this);
-//            asyncGetDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getAccpeptedBidID(), Bid.class));
-//
-//            Bid accepted = null;
-//            try {
-//                accepted = (Bid) asyncGetDocument.get();
-//                if(bidList.isEmpty()){
-//                    bidList.add(accepted);
-//                }
-//            } catch (ExecutionException e) {
-//                e.printStackTrace();
-//            }catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }else{
+        if ("Accepted".equals(getCurrentTask().getStatus())) {
+
+            MasterController.AsyncGetDocument asyncGetDocument =
+                    new MasterController.AsyncGetDocument(this, this);
+            asyncGetDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getAccpeptedBidID(), Bid.class));
+
+            Bid accepted = null;
+            try {
+                accepted = (Bid) asyncGetDocument.get();
+                if(bidList.isEmpty()){
+                    bidList.add(accepted);
+                }
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else{
             SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
             builder.addColumns(new String[] {"taskId"});
             builder.addParameters(new String[] {getCurrentTask().getObjectID()});
@@ -174,7 +177,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
-//        }
+        }
         adapter.notifyDataSetChanged();
         setEmptyString();
     }
@@ -326,7 +329,6 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
                     }
                 }
             }
-
             for(Bid bid : bidList){
                 if((bid.getObjectID().compareTo(keeper) !=0) && (bid.getProviderID().compareTo(getCurrentUser().getObjectID()) == 0)){
                     MasterController.AsyncDeleteDocument asyncDeleteDocument =
@@ -382,7 +384,6 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
         builder.addColumns(new String[] {"taskId"});
         builder.addParameters(new String[] {task.getObjectID()});
-
 
         MasterController.AsyncSearch asyncSearch =
                 new MasterController.AsyncSearch(this, this);
@@ -489,6 +490,18 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
             }
         });
 
+        if(networkIsAvailable()) {
+            deleteBtn.setEnabled(true);
+            acceptBtn.setEnabled(true);
+        } else {
+            deleteBtn.setEnabled(false);
+            acceptBtn.setEnabled(false);
+            Toast.makeText(this,
+                    R.string.CANNOT_EDIT_BID_OFFLINE,
+                    Toast.LENGTH_SHORT)
+                    .show();
+        }
+
         Button viewProfileBtn = (Button) layout.findViewById(R.id.btn_visit_profile);
         viewProfileBtn.setOnClickListener(new View.OnClickListener()
         {
@@ -517,7 +530,18 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         POPUP_WINDOW_DELETION.setBackgroundDrawable(null);
         POPUP_WINDOW_DELETION.showAtLocation(layout, Gravity.CENTER, 1, 1);
 
+
         Button deleteBtn = (Button) layout.findViewById(R.id.btn_delete_my_bid);
+
+        if(networkIsAvailable()) {
+            deleteBtn.setEnabled(true);
+        } else {
+            deleteBtn.setEnabled(false);
+            Toast.makeText(this,
+                    R.string.CANNOT_DELETE_BID_OFFLINE,
+                    Toast.LENGTH_SHORT)
+                    .show();
+        }
         deleteBtn.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -535,6 +559,10 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
                 finish();
             }
         });
+
+        if(getCurrentUser().getObjectID().compareTo(getCurrentTask().getRequesterID()) == 0) {
+            deleteBtn.setText("DECLINE");
+        }
 
         Button dontDeleteBtn = (Button) layout.findViewById(R.id.btn_do_not_delete_my_bid);
         dontDeleteBtn.setOnClickListener(new View.OnClickListener()

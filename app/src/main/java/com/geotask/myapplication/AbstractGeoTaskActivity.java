@@ -3,6 +3,8 @@ package com.geotask.myapplication;
 import android.accounts.Account;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -42,9 +44,17 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
     private static Task lastClickedTask = null;
     private static ContentResolver syncResolver;
     private static Context context;
+    private static User lastViewedUser;
 
 
 
+    public static User getLastViewedUser() {
+        return lastViewedUser;
+    }
+
+    public static void setLastViewedUser(User lastViewedUser) {
+        AbstractGeoTaskActivity.lastViewedUser = lastViewedUser;
+    }
     /**
      * Method to retrieve the User object that the current user is using the app
      *
@@ -341,13 +351,26 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
         asyncUpdateDocument.execute(getCurrentUser());
     }
 
+
+    /**
+     * Checks if internet connection is available
+     * @return Boolean network state
+     * Taken from: https://stackoverflow.com/questions/4238921/detect-whether-there-is-an-internet-connection-available-on-android
+     */
+    public boolean networkIsAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
     protected static void updateTaskMetaData(AsyncCallBackManager callback){
         /*
            Finding the lowest bid, and number of bids
         */
 
         //make the query
-        SQLQueryBuilder builder = new SQLQueryBuilder(Task.class);
+        SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
         builder.addColumns(new String[] {"taskID"});
         builder.addParameters(new String[] {getCurrentTask().getObjectID()});
 

@@ -41,7 +41,15 @@ public class EditProfileActivity extends AbstractGeoTaskActivity {
         saveEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Edit_Check();
+                if(networkIsAvailable()) {
+                    Edit_Check();
+                } else {
+                    Toast.makeText(getBaseContext(),
+                            R.string.CANNOT_EDIT_PROFILE_OFFLINE,
+                            Toast.LENGTH_LONG)
+                            .show();
+                }
+
             }
         });
     }

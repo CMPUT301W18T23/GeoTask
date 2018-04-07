@@ -112,17 +112,17 @@ public class TestStory2TaskInteractions {
 
         onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).perform(click());
 
-        //onView(withId(R.id.editTaskButton)).perform(click());
+        onView(withId(R.id.action_edit)).perform(click());
 
         onView(withId(R.id.editTitle)).perform(replaceText(title));
         onView(withId(R.id.editDescription)).perform(replaceText(desc));
 
         onView(withId(R.id.editButton)).perform(click());
 
-        //onView(withId(R.id.editTaskButton)).perform(click());
+        onView(withId(R.id.action_edit)).perform(click());
 
-        onView(withId(R.id.editTitle)).check(matches(withText(startsWith(title))));
-        onView(withId(R.id.editDescription)).check(matches(withText(startsWith(desc))));
+        onView(withId(R.id.textViewTitle)).check(matches(withText(startsWith(title))));
+        onView(withId(R.id.textViewDescription)).check(matches(withText(startsWith(desc))));
 
     }
 }

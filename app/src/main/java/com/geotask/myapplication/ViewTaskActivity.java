@@ -225,7 +225,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
     private void deleteData() {
 
         SQLQueryBuilder builder = new SQLQueryBuilder(Task.class);
-        builder.addColumns(new String[]{"taskID"});
+        builder.addColumns(new String[]{"taskId"});
         builder.addParameters(new String[] {getCurrentTask().getObjectID()});
 
         MasterController.AsyncDeleteDocument asyncDeleteTask =
@@ -265,13 +265,27 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
 
         this.doneButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                triggerDone(v);
+                if(networkIsAvailable()) {
+                    triggerDone(v);
+                } else {
+                    Toast.makeText(getBaseContext(),
+                            R.string.CANNOT_COMPLETE_TASK_OFFLINE,
+                            Toast.LENGTH_LONG)
+                            .show();
+                }
             }
         });
 
         this.notCompleteButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                triggerNotComplete(v);
+                if(networkIsAvailable()) {
+                    triggerNotComplete(v);
+                } else {
+                    Toast.makeText(getBaseContext(),
+                            R.string.CANNOT_DECLINE_ACCEPTED_OFFLINE,
+                            Toast.LENGTH_LONG)
+                            .show();
+                }
             }
         });
 
@@ -419,8 +433,8 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
             @Override
             public void onClick(View v)
             {
-            POPUP_WINDOW_DONE.dismiss();
-            notComplete();
+                POPUP_WINDOW_DONE.dismiss();
+                notComplete();
             }
         });
     }
@@ -434,7 +448,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         asyncDeleteDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getAccpeptedBidID(), Bid.class));
 
         SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
-        builder.addColumns(new String[] {"taskID"});
+        builder.addColumns(new String[] {"taskId"});
         builder.addParameters(new String[] {getCurrentTask().getObjectID()});
 
         MasterController.AsyncSearch asyncSearch =
@@ -452,9 +466,9 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
 
         getCurrentTask().setAcceptedBid(-1.0);
         if(bidList.size() <= 0) {
-            getCurrentTask().setStatus("requested");
+            getCurrentTask().setStatus("Requested");
         } else if(bidList.size() > 0) {
-            getCurrentTask().setStatus("bidded");
+            getCurrentTask().setStatus("Bidded");
         }
 
         MasterController.AsyncUpdateDocument asyncUpdateDocument
@@ -517,18 +531,18 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
             /*
                 increment the user's completed tasks
              */
-            finalAcceptedUser.incrementCompletedTasks();
-            MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                    new MasterController.AsyncUpdateDocument(getBaseContext());
-            asyncUpdateDocument.execute(finalAcceptedUser);
+                finalAcceptedUser.incrementCompletedTasks();
+                MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                        new MasterController.AsyncUpdateDocument(getBaseContext());
+                asyncUpdateDocument.execute(finalAcceptedUser);
 
-            POPUP_WINDOW_DONE.dismiss();
-            Task newTask = getCurrentTask();
-            newTask.setStatusCompleted();
-            setCurrentTask(newTask);
-            MasterController.AsyncUpdateDocument asyncUpdateDocument2 =
-                    new MasterController.AsyncUpdateDocument(getBaseContext());
-            asyncUpdateDocument2.execute(getCurrentTask());
+                POPUP_WINDOW_DONE.dismiss();
+                Task newTask = getCurrentTask();
+                newTask.setStatusCompleted();
+                setCurrentTask(newTask);
+                MasterController.AsyncUpdateDocument asyncUpdateDocument2 =
+                        new MasterController.AsyncUpdateDocument(getBaseContext());
+                asyncUpdateDocument2.execute(getCurrentTask());
                 try {
                     asyncUpdateDocument.get();
                 } catch (InterruptedException e) {
@@ -543,9 +557,9 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
 
     /**
      *  uses MasterController to add a new bid. value is passode over
-      @throws InterruptedException
+     @throws InterruptedException
 
-     * @param value
+      * @param value
      */
     private void addBid(Double value){
         Bid bid = new Bid(getCurrentUser().getObjectID(), value, getCurrentTask().getObjectID());
@@ -611,7 +625,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    updateDisplayedValues();
+        updateDisplayedValues();
     }
 
     @Override

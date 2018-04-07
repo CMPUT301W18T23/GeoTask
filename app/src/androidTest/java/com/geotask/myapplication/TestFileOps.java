@@ -256,13 +256,13 @@ public class TestFileOps implements AsyncCallBackManager{
     }
 
     @Test
-    public void testSearchQuery() {
+    public void testSearchQuery() throws ExecutionException, InterruptedException {
         Bid bid = new Bid("testSearchQuery", 3.2, "testSearchQuery");
 
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
                 new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(bid);
-
+//
         MasterController.AsyncGetDocument asyncGetDocument =
                 new MasterController.AsyncGetDocument(this, InstrumentationRegistry.getTargetContext());
         asyncGetDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
@@ -279,7 +279,7 @@ public class TestFileOps implements AsyncCallBackManager{
         assertEquals(bid.getObjectID(), result.getObjectID());
 
         SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
-        builder.addColumns(new String[]{"object_id"});
+        builder.addColumns(new String[]{"objectId"});
 
         String[] object = new String[]{bid.getObjectID()};
         builder.addParameters(object);
@@ -287,15 +287,8 @@ public class TestFileOps implements AsyncCallBackManager{
         MasterController.AsyncSearch asyncSearch =
                 new MasterController.AsyncSearch(this, InstrumentationRegistry.getTargetContext());
         asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
-
-        List<Bid> resultList = null;
-        try {
-            resultList = (List<Bid>) asyncSearch.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        List<Bid> resultList = (List<Bid>) asyncSearch.get();
+//        List<Bid> resultList = dataBase.bidDAO().searchBidsByQuery(builder.build());
 
         assertEquals(1, resultList.size());
         assertEquals(bid.getObjectID(), resultList.get(0).getObjectID());
@@ -324,6 +317,32 @@ public class TestFileOps implements AsyncCallBackManager{
         }
 
         assertNotNull(result.get(0));
+    }
+
+
+    @Test
+    public void testAddingMultipleSearchFields() {
+        String test = "testAddingMultipleSearchFields";
+        Task task = new Task(test,test,test);
+
+
+        dataBase.taskDAO().insert(task);
+
+        SQLQueryBuilder builder = new SQLQueryBuilder(Task.class);
+        builder.addColumns(new String[]{"description"});
+        builder.addParameters(new String[] {test});
+
+        List<Task> remote = dataBase.taskDAO().searchTasksByQuery(builder.build());
+        assertNotNull(remote);
+        assertEquals(task, remote.get(0));
+
+        builder.addColumns(new String[]{"status"});
+        builder.addParameters(new String[] {"Requested"});
+
+        remote = dataBase.taskDAO().searchTasksByQuery(builder.build());
+
+        assertNotNull(remote);
+        assertEquals(task, remote.get(0));
     }
 
     @Test
