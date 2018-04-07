@@ -204,7 +204,6 @@ public class ElasticsearchController {
                 .addType(type.toString())
                 .setParameter(Parameters.SIZE, 10000)
                 .build();
-
         SearchResult result = client.execute(search);
 
         List<? extends GTData> dataList = null;
