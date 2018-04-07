@@ -24,7 +24,11 @@ public class SQLQueryBuilder implements Cloneable {
     }
 
     public void addColumns(String[] columns) {
-        query1 += "WHERE ";
+        if(query1.length() < 21) {
+            query1 += "WHERE ";
+        } else {
+            query1 += "AND ";
+        }
         for(String column : columns){
             query1 += column + " = ? AND ";
         }
@@ -32,7 +36,11 @@ public class SQLQueryBuilder implements Cloneable {
     }
 
     public void addColumns(String[] columns, String operator) {
-        query1 += "WHERE ";
+        if(query1.length() < 21) {
+            query1 += "WHERE ";
+        } else {
+            query1 += "AND ";
+        }
         for(String column : columns){
             query1 += column + " " + operator + " ?";
         }
