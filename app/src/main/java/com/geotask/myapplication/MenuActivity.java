@@ -96,8 +96,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -343,6 +341,8 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 for (String searchTerm : getSearchKeywords().split(" ")){
                     builder1.addColumns(new String[]{"description"});
                     builder1.addParameters(new String[] {searchTerm.toLowerCase()});
+                    Log.d("BUGSBUGSBUGSMterm", searchTerm.toString());
+                    Log.d("BUGSBUGSBUGSmenu", String.valueOf(builder1.build().getSql() + " " + builder1.build().getArgCount()));
                     //builder1.addParameters(new String[] {filterArray.get(i).toLowerCase()});
                 }
                 //if(filterArray.size() > 0){
@@ -396,9 +396,12 @@ public class MenuActivity extends AbstractGeoTaskActivity
             builder3.addParameters(new String[] {"Bidded"});
             //builder3.addColumns(new String[]{"description"});
             //builder3.addParameters(new String[] {"a"});
+            Log.d("BUGSBUGSBUGSstatus", builder1.build().getSql() + " " + builder1.build().getArgCount() + " " + builder3.build().getSql() + " " + builder3.build().getArgCount());
+
 
             asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
             asyncSearch2.execute(new AsyncArgumentWrapper(builder3, Task.class));
+
             try {
                 setTaskList((ArrayList<Task>) asyncSearch.get());
                 tempTaskList2 = (ArrayList<Task>) asyncSearch2.get();
@@ -416,6 +419,8 @@ public class MenuActivity extends AbstractGeoTaskActivity
             builder1.addParameters(new String[] {"Requested"});
             builder3.addColumns(new String[] {"status"});
             builder3.addParameters(new String[] {"Bidded"});
+            Log.d("BUGSBUGSBUGSstatus", builder1.build().getSql() + " " + builder1.build().getArgCount() + " " + builder3.build().getSql() + " " + builder3.build().getArgCount());
+
 
             MasterController.AsyncSearch asyncSearch1 =
                     new MasterController.AsyncSearch(this, this);
