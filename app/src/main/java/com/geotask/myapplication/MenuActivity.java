@@ -28,6 +28,7 @@ import android.widget.TextView;
 import com.geotask.myapplication.Adapters.FastTaskArrayAdapter;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
+import com.geotask.myapplication.Controllers.Helpers.GetKeywordMatches;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
@@ -329,10 +330,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
         }
 
         //Add filter keywords to the builder if present
+        String inString = "";
         try {
             Boolean showClear = false;
-            Log.i("filter-------->", "test");
-            //Log.i("filter-------->", getSearchKeywords());
             String test = getSearchKeywords();
             Boolean tes2 = (getSearchKeywords() != null);
             if((getSearchKeywords() != null) && !(getSearchKeywords().compareTo("") == 0)) {
@@ -341,15 +341,18 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 showClear = true;
                 //filterArray = getSearchKeywords().split(" ");
                 clearFiltersButton.setVisibility(View.VISIBLE);
-                //for (int i = 0; i < filterArray.size(); i++) {
+                Boolean first = true;
                 for (String searchTerm : getSearchKeywords().split(" ")){
-                    builder1.addColumns(new String[]{"description"});
-                    builder1.addParameters(new String[] {searchTerm.toLowerCase()});
-                    Log.d("BUGSBUGSBUGSMterm", searchTerm.toString());
-                    Log.d("BUGSBUGSBUGSmenu", String.valueOf(builder1.build().getSql() + " " + builder1.build().getArgCount()));
-                    //builder1.addParameters(new String[] {filterArray.get(i).toLowerCase()});
+                    if(!first){
+                        inString+= ", ";
+                    }
+                    inString += "\"" + searchTerm + "\"";
+                    first = false;
                 }
+
                 if (getSearchKeywords().split(" ").length > 0){
+                    Log.d("BUGSBUGSBUGSmenu", String.valueOf(builder1.build().getSql()));
+                    builder1.addRaw(" description IN (" + inString + ") ");
                     navigationView.setCheckedItem(R.id.nav_filter);
                 }
 
@@ -393,6 +396,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
             try {
                 setTaskList((ArrayList<Task>) asyncSearch.get());
                 ArrayList<Task> newList = getTaskList();
+                if(inString.compareTo("") != 0){
+                    newList = GetKeywordMatches.getSortedResults(newList, getSearchKeywords());
+                }
                 setTaskList(newList);
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
@@ -427,6 +433,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
             }
 
             tempTaskList1.addAll(tempTaskList2);
+            if(inString.compareTo("") != 0){
+                tempTaskList1 = GetKeywordMatches.getSortedResults(tempTaskList1, getSearchKeywords());
+            }
             setTaskList(tempTaskList1);
         }
 

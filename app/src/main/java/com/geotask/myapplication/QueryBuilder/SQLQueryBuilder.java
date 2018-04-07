@@ -57,6 +57,15 @@ public class SQLQueryBuilder implements Cloneable {
         }
     }
 
+    public void addRaw(String string){
+        if(query1.length() < 21) {
+            query1 += "WHERE ";
+        } else {
+            query1 += "AND ";
+        }
+        query1 += string + " ";
+    }
+
     //DO NOT USE FOR ANYTHING BUT TASK BUILDERS
     @Override
     public SQLQueryBuilder clone() {
