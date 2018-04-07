@@ -86,6 +86,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
     TextView drawerEmail;
     TextView emptyText;
     SwipeRefreshLayout refreshLayout;
+    private Boolean statusSearchBool;
 
     Task lastClickedTask = null;
 
@@ -102,6 +103,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        statusSearchBool = false;
         oldTasks = findViewById(R.id.taskListView);
         emptyText = findViewById(R.id.empty_task_string);
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
@@ -335,6 +337,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 clearFiltersButton.setVisibility(View.INVISIBLE);
             }
 
+            statusSearchBool = false;
             if (getSearchStatus()!= null){
                 clearFiltersButton.setVisibility(View.VISIBLE);
                 if(getViewMode() == R.integer.MODE_INT_ALL) {
@@ -342,8 +345,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
                         if(!showClear) {
                             clearFiltersButton.setVisibility(View.INVISIBLE);
                         }
-                        //builder1.addColumns(new String[] {"status", "status"});
-                        //builder1.addParameters(new String[] {"Requested", "Bidded"});
+                        statusSearchBool = true;
                 }
                 } else if (getSearchStatus().compareTo("Requested") == 0){
                     builder1.addColumns(new String[] {"status"});
@@ -358,15 +360,48 @@ public class MenuActivity extends AbstractGeoTaskActivity
             e.printStackTrace();
         }
 
-        MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this, this);
-        asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
+        if(!statusSearchBool) {
+            MasterController.AsyncSearch asyncSearch =
+                    new MasterController.AsyncSearch(this, this);
+            asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
+            try {
+                setTaskList((ArrayList<Task>) asyncSearch.get());
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        } else {
+            ArrayList<Task> tempTaskList1 = new ArrayList<Task>();
+            ArrayList<Task> tempTaskList2 = new ArrayList<Task>();
+            SQLQueryBuilder builder3  = builder1.clone();
+            builder1.addColumns(new String[] {"status"});
+            builder1.addParameters(new String[] {"Requested"});
+            builder3.addColumns(new String[] {"status"});
+            builder3.addParameters(new String[] {"Bidded"});
 
-        try {
-            setTaskList((ArrayList<Task>) asyncSearch.get());
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            MasterController.AsyncSearch asyncSearch1 =
+                    new MasterController.AsyncSearch(this, this);
+            asyncSearch1.execute(new AsyncArgumentWrapper(builder1, Task.class));
+            try {
+                tempTaskList1 = (ArrayList<Task>) asyncSearch1.get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+
+            MasterController.AsyncSearch asyncSearch2 =
+                    new MasterController.AsyncSearch(this, this);
+            asyncSearch2.execute(new AsyncArgumentWrapper(builder3, Task.class));
+            try {
+                tempTaskList2 = (ArrayList<Task>) asyncSearch2.get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+
+            tempTaskList1.addAll(tempTaskList2);
+            setTaskList(tempTaskList1);
+
         }
+
+
 
         //Only show tasks which have been bidded on by current user
         //Need to do this after elastic search by removing results without bids by the user
