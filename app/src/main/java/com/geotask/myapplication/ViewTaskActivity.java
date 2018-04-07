@@ -264,13 +264,27 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
 
         this.doneButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                triggerDone(v);
+                if(networkIsAvailable()) {
+                    triggerDone(v);
+                } else {
+                    Toast.makeText(getBaseContext(),
+                            R.string.CANNOT_COMPLETE_TASK_OFFLINE,
+                            Toast.LENGTH_LONG)
+                            .show();
+                }
             }
         });
 
         this.notCompleteButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                triggerNotComplete(v);
+                if(networkIsAvailable()) {
+                    triggerNotComplete(v);
+                } else {
+                    Toast.makeText(getBaseContext(),
+                            R.string.CANNOT_DECLINE_ACCEPTED_OFFLINE,
+                            Toast.LENGTH_LONG)
+                            .show();
+                }
             }
         });
 
