@@ -359,22 +359,25 @@ public class MenuActivity extends AbstractGeoTaskActivity
             statusSearchBool = false;
             if (getSearchStatus()!= null){
                 clearFiltersButton.setVisibility(View.VISIBLE);
+                int test2 = getViewMode();
                 if(getViewMode() == R.integer.MODE_INT_ALL) {
                     if(getSearchStatus().compareTo("All") ==0){
                         if(!showClear) {
                             clearFiltersButton.setVisibility(View.INVISIBLE);
                         }
                         statusSearchBool = true;
-                }
-                } else if (getSearchStatus().compareTo("Requested") == 0){
-                    builder1.addColumns(new String[] {"status"});
-                    builder1.addParameters(new String[] {"Requested"});
-                } else if (getSearchStatus().compareTo("Bidded") == 0){
-                    builder1.addColumns(new String[] {"status"});
-                    builder1.addParameters(new String[] {"Bidded"});
-                } else if (getSearchStatus().compareTo("All") == 0){
+                    }
+                    if(getSearchStatus().compareTo("Requested") == 0) {
+                        builder1.addColumns(new String[] {"status"});
+                        builder1.addParameters(new String[] {"Requested"});
 
+                    } else if(getSearchStatus().compareTo("Bidded") == 0) {
+                        builder1.addColumns(new String[] {"status"});
+                        builder1.addParameters(new String[] {"Bidded"});
+                    }
                 }
+            } else {
+                statusSearchBool = true;
             }
 
         } catch (NullPointerException e) {
@@ -385,28 +388,17 @@ public class MenuActivity extends AbstractGeoTaskActivity
             ArrayList<Task> tempTaskList2 = new ArrayList<Task>();
             MasterController.AsyncSearch asyncSearch =
                     new MasterController.AsyncSearch(this, this);
-            MasterController.AsyncSearch asyncSearch2 =
-                    new MasterController.AsyncSearch(this, this);
 
             SQLQueryBuilder builder3 = builder1.clone();
-            builder1.addColumns(new String[] {"status"});
-            builder1.addParameters(new String[] {"Requested"});
 
-            builder3.addColumns(new String[] {"status"});
-            builder3.addParameters(new String[] {"Bidded"});
-            //builder3.addColumns(new String[]{"description"});
-            //builder3.addParameters(new String[] {"a"});
-            Log.d("BUGSBUGSBUGSstatus", builder1.build().getSql() + " " + builder1.build().getArgCount() + " " + builder3.build().getSql() + " " + builder3.build().getArgCount());
-
+            //Log.d("BUGSBUGSBUGSstatus", builder1.build().getSql() + " " + builder1.build().getArgCount() + " " + builder3.build().getSql() + " " + builder3.build().getArgCount());
 
             asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
-            asyncSearch2.execute(new AsyncArgumentWrapper(builder3, Task.class));
+
 
             try {
                 setTaskList((ArrayList<Task>) asyncSearch.get());
-                tempTaskList2 = (ArrayList<Task>) asyncSearch2.get();
                 ArrayList<Task> newList = getTaskList();
-                newList.addAll(tempTaskList2);
                 setTaskList(newList);
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
