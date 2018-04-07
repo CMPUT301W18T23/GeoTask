@@ -309,19 +309,23 @@ public class MenuActivity extends AbstractGeoTaskActivity
         getTaskList().clear();
         SQLQueryBuilder builder1 = new SQLQueryBuilder(Task.class);
 
+        Boolean anyStatus = false;
         //Only show tasks created by the user
         if(getViewMode() == R.integer.MODE_INT_REQUESTER) {
             setSearchStatus(null);
             builder1.addColumns(new String[] {"requesterID"});
             builder1.addParameters(new String[] {getCurrentUser().getObjectID()});
+            anyStatus = true;
         } else if(getViewMode() == R.integer.MODE_INT_ACCEPTED) {
             setSearchStatus(null);
             builder1.addColumns(new String[] {"requesterID", "status"});
             builder1.addParameters(new String[] {getCurrentUser().getObjectID(), "Accepted"});
+            anyStatus = true;
         } else if(getViewMode() == R.integer.MODE_INT_ASSIGNED) {
             setSearchStatus(null);
             builder1.addColumns(new String[] {"acceptedProviderID"});
             builder1.addParameters(new String[] {getCurrentUser().getObjectID()});
+            anyStatus = true;
         }
 
         //Add filter keywords to the builder if present
@@ -345,13 +349,10 @@ public class MenuActivity extends AbstractGeoTaskActivity
                     Log.d("BUGSBUGSBUGSmenu", String.valueOf(builder1.build().getSql() + " " + builder1.build().getArgCount()));
                     //builder1.addParameters(new String[] {filterArray.get(i).toLowerCase()});
                 }
-                //if(filterArray.size() > 0){
-                //TODO - THIS CRASHES THE SQL????
-                /*
                 if (getSearchKeywords().split(" ").length > 0){
                     navigationView.setCheckedItem(R.id.nav_filter);
                 }
-                */
+
             } else {
                 clearFiltersButton.setVisibility(View.INVISIBLE);
             }
@@ -384,17 +385,10 @@ public class MenuActivity extends AbstractGeoTaskActivity
             e.printStackTrace();
         }
 
-        if(!statusSearchBool) {
-            ArrayList<Task> tempTaskList2 = new ArrayList<Task>();
+        if(anyStatus || (!statusSearchBool)){
             MasterController.AsyncSearch asyncSearch =
                     new MasterController.AsyncSearch(this, this);
-
-            SQLQueryBuilder builder3 = builder1.clone();
-
-            //Log.d("BUGSBUGSBUGSstatus", builder1.build().getSql() + " " + builder1.build().getArgCount() + " " + builder3.build().getSql() + " " + builder3.build().getArgCount());
-
             asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
-
 
             try {
                 setTaskList((ArrayList<Task>) asyncSearch.get());
@@ -434,7 +428,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
 
             tempTaskList1.addAll(tempTaskList2);
             setTaskList(tempTaskList1);
-
         }
 
         /*
