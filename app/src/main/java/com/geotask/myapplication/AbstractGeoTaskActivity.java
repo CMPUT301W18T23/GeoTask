@@ -438,4 +438,6 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
     public static void setSearchStatus(String searchStatus) {
         AbstractGeoTaskActivity.searchStatus = searchStatus;
     }
+
+
 }

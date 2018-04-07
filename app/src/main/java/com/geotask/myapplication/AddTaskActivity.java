@@ -41,6 +41,7 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
 
     private FusedLocationProviderClient mFusedLocationClient; //for location grabbing
     private String coordString;
+    private Boolean haveLocaiton;
 
     /**
      * sets up buttons
@@ -52,6 +53,12 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
         super.onCreate(savedInstanceState);
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this); //set location client
+
+        //get location of the user by checking
+        //if location permission is given, if not just make location = ""
+        haveLocaiton = Boolean.FALSE;
+        retrieveLocation();
+        while(!haveLocaiton);   //wait for location data
 
         setContentView(R.layout.activity_new_add_task);
 
@@ -101,8 +108,7 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
         String titleString = Title.getText().toString().trim();
         String descriptionString = Description.getText().toString().trim();
 
-        //check if location permission is given, if not just make location = ""
-        retrieveLocation();
+
 
         if (titleString.length() > 30) {
             Toast.makeText(this,
