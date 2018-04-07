@@ -12,10 +12,12 @@ import com.geotask.myapplication.Controllers.ElasticsearchController;
 import com.geotask.myapplication.Controllers.LocalFilesOps.LocalDataBase;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
+import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import io.searchbox.client.JestResult;
 
@@ -147,6 +149,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                 database.bidDAO().insert(bid);
             }
             Log.d("geotasksync", "bid size after pull = " + database.bidDAO().selectAll().size());
+
+            Log.d("geotasksync", "user rows deleted = " + database.userDAO().delete());
+            for(User user : (List<User>) controller.search("", User.class)) {
+                database.userDAO().insert(user);
+            }
         } catch (IOException e) {e.printStackTrace();}
     }
 }

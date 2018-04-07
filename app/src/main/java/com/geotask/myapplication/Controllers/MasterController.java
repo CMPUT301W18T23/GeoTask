@@ -137,7 +137,8 @@ public class MasterController {
                     result = database.taskDAO().selectByID(argument.getID());
                 } else if (argument.getType().equals(User.class)) {
                     try {
-                        result = controller.getDocument(argument.getID(), argument.getType());
+                        result = database.userDAO().selectByID(argument.getID());
+                        //result = controller.getDocument(argument.getID(), argument.getType());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -252,7 +253,11 @@ public class MasterController {
                 if (data instanceof Task){
                     database.taskDAO().update((Task) data);
                 } else if (data instanceof User) {
-                    database.userDAO().update((User) data);
+                    try {
+                        controller.updateDocument(data);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 } else if (data instanceof Bid) {
                     database.bidDAO().update((Bid) data);
                 }
