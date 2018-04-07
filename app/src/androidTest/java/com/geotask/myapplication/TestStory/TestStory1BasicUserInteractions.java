@@ -172,7 +172,7 @@ public class TestStory1BasicUserInteractions {
         onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).perform(click());
 
         //onView(withId(R.id.editTaskButton)).perform(click());
-        onView(withId(R.id.deleteButton)).perform(click());
+        onView(withId(R.id.action_delete)).perform(click());
     }
 
     //1.e
