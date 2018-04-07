@@ -194,11 +194,11 @@ public class MasterController {
                 }
 
                 //ToDo JobScheduler
-//                try {
-//                    controller.deleteDocument(argument.getID(), argument.getType());
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
+                try {
+                    controller.deleteDocument(argument.getID(), argument.getType());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             return null;
         }
@@ -220,11 +220,11 @@ public class MasterController {
                 database.bidDAO().deleteByTaskID(argument.getID());
 
                 //ToDo JobScheduler
-//                try {
-//                    controller.deleteDocumentByValue(argument.getID(), argument.getType());
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
+                try {
+                    controller.deleteDocumentByValue(argument.getID(), argument.getType());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             return null;
         }
