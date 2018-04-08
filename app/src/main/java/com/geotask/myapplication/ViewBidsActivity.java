@@ -231,7 +231,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         asyncUpdateDocument.execute(task);
         //The following should wok, but needs to be tested after the array is truly populated by the
         //master controller
-        deleteAllBut(task);
+//        deleteAllBut(task);
 
         //go back to ViewTaskActivity
         Intent intent = new Intent(ViewBidsActivity.this, MenuActivity.class);
