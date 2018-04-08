@@ -29,9 +29,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private LocalDataBase database;
     private ArrayList<Task> remoteTaskList;
     private ArrayList<Bid> remoteBidList;
+    private ArrayList<User> remoteUserList;
     private ArrayList<Task> localTaskList;
     private ArrayList<Bid> localBidList;
-    private ArrayList<User> remoteUserList;
+    private ArrayList<User> localUserList;
+
 
     public SyncAdapter(Context context, boolean autoInitiate) {
         super(context, autoInitiate);
@@ -92,10 +94,16 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         localBidList = (ArrayList<Bid>) database.bidDAO().searchBidsByQuery(query.build());
         //Log.d("geotasksync", "localBidList_size = " + localBidList.size());
 
+        query = new SQLQueryBuilder(User.class);
+        query.addColumns(new String[] {"flag"});
+        query.addParameters(new Boolean[] {true});
+        localUserList = (ArrayList<User>) database.userDAO().searchUsersByQuery(query.build());
+
         // get all tasks on server
         try {
             remoteTaskList = (ArrayList<Task>) controller.search("", Task.class);
             remoteBidList = (ArrayList<Bid>) controller.search("", Bid.class);
+            remoteUserList = (ArrayList<User>) controller.search("", User.class);
             //Log.d("geotasksync", "remoteTAskList_size = " + remoteTaskList.size());
         } catch (IOException e) {e.printStackTrace();}
 
@@ -113,6 +121,16 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
                     database.taskDAO().update(localTask);
                 }
             } catch (Exception e) {e.printStackTrace();}
+        }
+
+        for (User localUser: localUserList) {
+            if(!remoteUserList.contains(localUser)) {
+                try {
+                    result = controller.updateDocument(localUser, localUser.getVersion());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         //Log.d("geotasksync", "localbidlist size is still " + localBidList.size());

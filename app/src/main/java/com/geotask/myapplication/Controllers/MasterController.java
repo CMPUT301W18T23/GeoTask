@@ -250,11 +250,7 @@ public class MasterController {
                 if (data instanceof Task){
                     database.taskDAO().update((Task) data);
                 } else if (data instanceof User) {
-                    try {
-                        controller.updateDocument(data);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    database.userDAO().update((User) data);
                 } else if (data instanceof Bid) {
                     database.bidDAO().update((Bid) data);
                 }
