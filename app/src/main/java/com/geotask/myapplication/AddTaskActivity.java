@@ -157,18 +157,19 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
                     .show();
         } else {
             newTask = new Task(getCurrentUser().getObjectID(), titleString, descriptionString);
-
-
+            photo = new Photo(newTask.getObjectID(),photoList);
+            newTask.setPhotoList(photo.getObjectID());
 
             MasterController.AsyncCreateNewDocument asyncCreateNewDocument
                     = new MasterController.AsyncCreateNewDocument(this);
             asyncCreateNewDocument.execute(newTask);
 
-            photo = new Photo(newTask.getObjectID(),photoList);
+
 
             MasterController.AsyncCreateNewDocument asyncCreateNewDocument1
                     = new MasterController.AsyncCreateNewDocument(this);
             asyncCreateNewDocument1.execute(photo);
+
 
             try {
                 Thread.sleep(400);

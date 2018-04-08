@@ -195,7 +195,8 @@ public class MasterController {
 
             for (AsyncArgumentWrapper argument : argumentList) {
                 verifySettings(context);
-
+                Log.i("checkout", argument.getID() + argument.getType());
+                Log.i("checkout", String.valueOf(argument.getType().equals(Photo.class)));
                 if (argument.getType().equals(Task.class)){
                     result = database.taskDAO().selectByID(argument.getID());
                 } else if (argument.getType().equals(User.class)) {
@@ -209,8 +210,15 @@ public class MasterController {
                     }
                 } else if (argument.getType().equals(Bid.class)) {
                     result = database.bidDAO().selectByID(argument.getID());
+                } else if (argument.getType().equals(Photo.class)) {
+                    try {
+                        controller.getDocument(argument.getID(), argument.getType());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
+            Log.i("checkout",result.toString());
             return result;
         }
 

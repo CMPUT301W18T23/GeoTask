@@ -32,7 +32,7 @@ public class Task extends GTData implements Comparable{
 	@ColumnInfo //ToDo change type to Enum
 	private String status;
 	@Ignore
-	private ArrayList<String> photoList = new ArrayList<>();
+	private String photoList;
 	@TypeConverters(HashSetConverter.class)
 	private HashSet<String> bidList = new HashSet<>();
 	@ColumnInfo
@@ -154,23 +154,17 @@ public class Task extends GTData implements Comparable{
 	 *gets list of pictures
 	 * @return this.photoList
 	 */
-	public ArrayList<String> getPictures() { 
+	public String getPictures() {
 		return this.photoList; 
 	}
 	/**
 	 *sets a picture
 	 * @param Picture
 	 */
-	public void setPicture(String Picture) { 	
-		this.photoList.add(Picture);
+	public void setPicture(String Picture) {
+		this.photoList= Picture;
 	}
-	/**
-	 *deletes a picture from arraylist
-	 * @param Picture
-	 */
-	public void deletePicture(String Picture) { 
-		this.photoList.remove(Picture);
-	}
+
 	/**
 	 *sets the ammount of accepted Bid
 	 * @param Bid
@@ -246,11 +240,7 @@ public class Task extends GTData implements Comparable{
 		bidList.add(bid.getObjectID());
 	}
 
-	/**
-	 *gets list of photolist
-	 * @return photolist
-	 */
-	public ArrayList<String> getPhotoList() {
+	public String getPhotoList() {
 		return photoList;
 	}
 
@@ -382,7 +372,7 @@ public class Task extends GTData implements Comparable{
 		return super.hashCode();
 	}
 
-	public void setPhotoList(ArrayList<String> photoList) {
+	public void setPhotoList(String photoList) {
 		this.photoList = photoList;
 	}
 

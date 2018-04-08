@@ -23,6 +23,7 @@ import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
+import com.geotask.myapplication.DataClasses.Photo;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
@@ -53,6 +54,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
     private Button addBidButton;
     private Button doneButton;
     private Button notCompleteButton;
+    private Button viewphoto;
     private PopupWindow POPUP_WINDOW_DELETION = null;   //popup for error message
     private PopupWindow POPUP_WINDOW_DONE = null;   //popup for error message
     private User userBeingViewed;
@@ -61,6 +63,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
     private MenuItem starBtn;
     private MenuItem deleteBtn;
     private ArrayList<Bid> bidList;
+    private List<byte[]> photolist;
     /**
      * inits vars and view items, and button
      * also gets current Task, Current User, and the USer of the Task currently viewed
@@ -92,12 +95,22 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         addBidButton = findViewById(R.id.addBidButton);
         doneButton = findViewById(R.id.doneButton);
         notCompleteButton = findViewById(R.id.notCompleteButton);
+        viewphoto = findViewById(R.id.viewPhoto);
 
         updateDisplayedValues();
         setupButtons();
         getTaskUser();
+        try {
+            getPhotolist();
+            //System.out.println(photolist.get(0).toString());
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         if (getCurrentUser().getObjectID().equals(getCurrentTask().getRequesterID())){   //hide editbutton if not user
+            //viewphoto.setVisibility(View.GONE);
             addBidButton.setVisibility(View.INVISIBLE);
             System.out.print("ye");
             if ("Bidded".equals(getCurrentTask().getStatus())||"Requested".equals(getCurrentTask().getStatus())||"Completed".equals(getCurrentTask().getStatus())){
@@ -106,8 +119,10 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
 
             }
         } else {
+            viewphoto.setVisibility(View.VISIBLE);
             if ("Bidded".equals(getCurrentTask().getStatus())||"Requested".equals(getCurrentTask().getStatus())) {
                 addBidButton.setVisibility(View.VISIBLE);
+
             } else {
                 addBidButton.setVisibility(View.INVISIBLE);
             }
@@ -252,6 +267,13 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
      * sets up buttons (cleaner than in the one methood
      */
     private void setupButtons(){
+        this.viewphoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ViewTaskActivity.this, SelectPhotoActivity.class);
+
+            }
+        });
 
         this.bidButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
@@ -293,6 +315,13 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
             }
         });
 
+    }
+
+    private void getPhotolist() throws ExecutionException, InterruptedException {
+        MasterController.AsyncGetDocument asyncGetDocument =
+                new MasterController.AsyncGetDocument(this,this);
+        asyncGetDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getPhotoList(),Photo.class));
+        photolist = (List<byte[]>) asyncGetDocument.get();
     }
 
     /**
@@ -659,5 +688,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
+
+
 
 }

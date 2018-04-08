@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
+import com.geotask.myapplication.DataClasses.Photo;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
@@ -122,8 +123,13 @@ public class ElasticsearchController {
             data = result.getSourceAsObject(Task.class);
         } else if (type.equals(User.class)) {
             data = result.getSourceAsObject(User.class);
+        } else if (type.equals(Photo.class)) {
+            data = result.getSourceAsObject(Photo.class);
         }
+        Log.i("checkget",data.toString());
         return data;
+
+
     }
 
     /**
