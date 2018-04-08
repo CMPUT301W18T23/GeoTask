@@ -576,6 +576,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
             Intent intent = new Intent(getBaseContext(), LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
+            //MasterController.shutDown();
         }  else if (id == R.id.nav_assigned) {
             fab.hide();
             setViewMode(R.integer.MODE_INT_ASSIGNED); //TODO - add the map
