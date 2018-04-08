@@ -12,6 +12,7 @@ import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -88,16 +89,16 @@ public class MasterController {
                 if (data instanceof Task){
                     database.taskDAO().insert((Task) data);
                 } else if (data instanceof User) {
-                    try {
-                        controller.createNewDocument(data);
-                        database.userDAO().insert((User) data);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    database.userDAO().insert((User) data);
                 } else if (data instanceof Bid) {
                     database.bidDAO().insert((Bid) data);
                 }
 
+                try {
+                    controller.createNewDocument(data);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             return null;
         }
@@ -306,6 +307,7 @@ public class MasterController {
                 }
                 Log.d("BUGSBUGSBUGS", resultList.toString());
             }
+            Collections.sort(resultList);
             return resultList;
         }
 

@@ -1,6 +1,9 @@
 package com.geotask.myapplication;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -88,6 +91,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
     TextView drawerEmail;
     TextView emptyText;
     SwipeRefreshLayout refreshLayout;
+    BroadcastReceiver syncProgress;
 
     Task lastClickedTask = null;
 
@@ -248,6 +252,16 @@ public class MenuActivity extends AbstractGeoTaskActivity
         //Log.i("LifeCycle --->", "onStart is called");
         fab.show();
         navigationView.setCheckedItem(R.id.nav_browse);
+
+        syncProgress = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.d("geotasksync", "received");
+                populateTaskView();
+            }
+        };
+        registerReceiver(syncProgress, new IntentFilter("broadcast"));
+        Log.d("geotasksync", "registered");
     }
 
     /**
@@ -278,6 +292,12 @@ public class MenuActivity extends AbstractGeoTaskActivity
     protected void onRestart(){
         super.onRestart();
         setOrientation();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(syncProgress);
     }
 
     /**

@@ -19,19 +19,18 @@ public class LetThereBeData {
         ElasticsearchController controller = new ElasticsearchController();
         controller.verifySettings();
 
-        try {
-            controller.deleteIndex();
-            controller.createIndex();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            controller.deleteIndex();
+//            controller.createIndex();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         User michael = new User("Michael", "mtang@ualberta.ca", "5555555");
-
         Task task;
         String temp;
         for(int i = 0; i< 100; i++){
-            for(int j = 0; j< 5; j++){
+            for(int j = 0; j< 2; j++){
                 temp = "test" + i + "block" + j;
                 task = new Task(temp, temp, temp);
                 task.setRequesterID(michael.getObjectID());
