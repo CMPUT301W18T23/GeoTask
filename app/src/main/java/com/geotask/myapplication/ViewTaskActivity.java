@@ -476,6 +476,10 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
 
         updateTaskMetaData(this);
         updateDisplayedValues();
+        MenuActivity.setLastClicked(getCurrentTask());
+        Intent intent = new Intent(getBaseContext(), MenuActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
 
     }
 
