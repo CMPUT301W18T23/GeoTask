@@ -182,7 +182,15 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
                         Bid otherBid = dupHash.get(bid.getProviderID());
                         if(bid.getDate() > otherBid.getDate()){
                             dupHash.put(bid.getProviderID(), bid);
+                            MasterController.AsyncDeleteDocument asyncDeleteDocument =
+                                    new MasterController.AsyncDeleteDocument(this);
+                            asyncDeleteDocument.execute(new AsyncArgumentWrapper(otherBid.getObjectID(), Bid.class));
+                        } else {
+                            MasterController.AsyncDeleteDocument asyncDeleteDocument =
+                                    new MasterController.AsyncDeleteDocument(this);
+                            asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
                         }
+
                         //otherwise we keep the old bid
                     } else {
                         dupHash.put(bid.getProviderID(), bid);
