@@ -196,4 +196,11 @@ public class User extends GTData{
         this.historyList = historyList;
     }
 
+    public ArrayList<String> getNotificationList() {
+        return notificationList;
+    }
+
+    public void setNotificationList(ArrayList<String> notificationList) {
+        this.notificationList = notificationList;
+    }
 }
