@@ -77,11 +77,12 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        /*
         Bundle settings = new Bundle();
         settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         settings.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         ContentResolver.requestSync(getAccount(), getString(R.string.SYNC_AUTHORITY), settings);
-
+        */
         title = findViewById(R.id.textViewTitle);
         name = findViewById(R.id.textViewName);
         description = findViewById(R.id.textViewDescription);
