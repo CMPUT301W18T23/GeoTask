@@ -88,7 +88,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
     TextView drawerEmail;
     TextView emptyText;
     SwipeRefreshLayout refreshLayout;
-    private Boolean statusSearchBool;
 
     Task lastClickedTask = null;
 
@@ -100,7 +99,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        statusSearchBool = false;
         oldTasks = findViewById(R.id.taskListView);
         emptyText = findViewById(R.id.empty_task_string);
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
@@ -286,6 +284,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
      */
     private void populateTaskView(){
         Log.i("start with2------->", String.format("%d", getTaskList().size()));
+        /*
+            Handling cases where the taskList has already been set by outside
+         */
         if(getViewMode() == R.integer.MODE_INT_STARRED){
             getTaskList().clear();
             setStarredMode();
@@ -306,6 +307,10 @@ public class MenuActivity extends AbstractGeoTaskActivity
             setEmptyString();
             return;
         }
+
+        /*
+            Otherwise the a builder is need and we need tro check the viewmode
+         */
         Log.i("none------>", String.format("%d", getViewMode()));
         getTaskList().clear();
         SQLQueryBuilder builder1 = new SQLQueryBuilder(Task.class);
@@ -329,34 +334,15 @@ public class MenuActivity extends AbstractGeoTaskActivity
             anyStatus = true;
         }
 
-        //Add filter keywords to the builder if present
+        /*
+            Add filter keywords to the builder if present
+        */
         String inString = "";
         try {
             Boolean showClear = false;
             String test = getSearchKeywords();
             Boolean tes2 = (getSearchKeywords() != null);
             if((getSearchKeywords() != null) && !(getSearchKeywords().compareTo("") == 0)) {
-                /*
-                Log.i("filter-------->", getSearchKeywords());
-                Log.i("filter-------->",  getSearchKeywords().split(" ").toString());
-                showClear = true;
-                //filterArray = getSearchKeywords().split(" ");
-                clearFiltersButton.setVisibility(View.VISIBLE);
-                Boolean first = true;
-                for (String searchTerm : getSearchKeywords().split(" ")){
-                    if(!first){
-                        inString+= ", ";
-                    }
-                    inString += "\"" + searchTerm + "\"";
-                    first = false;
-                }
-
-                if (getSearchKeywords().split(" ").length > 0){
-                    Log.d("BUGSBUGSBUGSmenu", String.valueOf(builder1.build().getSql()));
-                    builder1.addRaw(" description IN (" + inString + ") ");
-                    navigationView.setCheckedItem(R.id.nav_filter);
-                }
-                */
                 showClear = true;
                 clearFiltersButton.setVisibility(View.VISIBLE);
                 Boolean first = true;
@@ -378,7 +364,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 clearFiltersButton.setVisibility(View.INVISIBLE);
             }
 
-            statusSearchBool = false;
+            /*
+                Set status field of query if defined
+             */
             if (getSearchStatus()!= null){
                 clearFiltersButton.setVisibility(View.VISIBLE);
                 int test2 = getViewMode();
@@ -387,7 +375,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
                         if(!showClear) {
                             clearFiltersButton.setVisibility(View.INVISIBLE);
                         }
-                        statusSearchBool = true;
                     }
                     if(getSearchStatus().compareTo("Requested") == 0) {
                         builder1.addColumns(new String[] {"status"});
@@ -396,17 +383,23 @@ public class MenuActivity extends AbstractGeoTaskActivity
                     } else if(getSearchStatus().compareTo("Bidded") == 0) {
                         builder1.addColumns(new String[] {"status"});
                         builder1.addParameters(new String[] {"Bidded"});
+                    } else if(getSearchStatus().compareTo("All") == 0) {
+                        builder1.addRaw(" (status = \"Bidded\" OR status = \"Requested\" ) ");
                     }
                 }
             } else {
-                statusSearchBool = true;
+                if(!anyStatus){
+                    builder1.addRaw(" ( status = \"Bidded\" OR status = \"Requested\" ) ");
+                }
             }
-
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
 
-        if(anyStatus || (!statusSearchBool)){
+        /*
+               Perform the search
+         */
+        if(anyStatus || (getViewMode() == R.integer.MODE_INT_ALL)) {
             MasterController.AsyncSearch asyncSearch =
                     new MasterController.AsyncSearch(this, this);
             asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
@@ -414,58 +407,18 @@ public class MenuActivity extends AbstractGeoTaskActivity
             try {
                 setTaskList((ArrayList<Task>) asyncSearch.get());
                 ArrayList<Task> newList = getTaskList();
-                if(inString.compareTo("") != 0){
+                if (inString.compareTo("") != 0) {
                     newList = GetKeywordMatches.getSortedResults(newList, getSearchKeywords());
                 }
                 setTaskList(newList);
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
-        } else {
-            ArrayList<Task> tempTaskList1 = new ArrayList<Task>();
-            ArrayList<Task> tempTaskList2 = new ArrayList<Task>();
-            SQLQueryBuilder builder3  = builder1.clone();
-            builder1.addColumns(new String[] {"status"});
-            builder1.addParameters(new String[] {"Requested"});
-            builder3.addColumns(new String[] {"status"});
-            builder3.addParameters(new String[] {"Bidded"});
-            Log.d("BUGSBUGSBUGSstatus", builder1.build().getSql() + " " + builder1.build().getArgCount() + " " + builder3.build().getSql() + " " + builder3.build().getArgCount());
-
-
-            MasterController.AsyncSearch asyncSearch1 =
-                    new MasterController.AsyncSearch(this, this);
-            asyncSearch1.execute(new AsyncArgumentWrapper(builder1, Task.class));
-            try {
-                tempTaskList1 = (ArrayList<Task>) asyncSearch1.get();
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-
-            MasterController.AsyncSearch asyncSearch2 =
-                    new MasterController.AsyncSearch(this, this);
-            asyncSearch2.execute(new AsyncArgumentWrapper(builder3, Task.class));
-            try {
-                tempTaskList2 = (ArrayList<Task>) asyncSearch2.get();
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-
-            tempTaskList1.addAll(tempTaskList2);
-            if(inString.compareTo("") != 0){
-                tempTaskList1 = GetKeywordMatches.getSortedResults(tempTaskList1, getSearchKeywords());
-            }
-            setTaskList(tempTaskList1);
-        }
-
+        } else if(getViewMode() == R.integer.MODE_INT_PROVIDER) {
         /*
-        if(getViewMode() == R.integer.MODE_INT_ALL) {
-            clearFiltersButton.setVisibility(View.INVISIBLE);
-        }
+            Only show tasks which have been bidded on by current user
+            Need to do this after elastic search by removing results without bids by the user
         */
-
-        //Only show tasks which have been bidded on by current user
-        //Need to do this after elastic search by removing results without bids by the user
-       if(getViewMode() == R.integer.MODE_INT_PROVIDER) {
            SQLQueryBuilder builder2 = new SQLQueryBuilder(Bid.class);
            builder2.addColumns(new String[] {"providerID"});
            builder2.addParameters(new String[] {getCurrentUser().getObjectID()});
@@ -497,9 +450,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
            } catch (IndexOutOfBoundsException e) {
                e.printStackTrace();
            }
-       }
-
-        if(getViewMode() == R.integer.MODE_INT_ASSIGNED) {
+       } else if(getViewMode() == R.integer.MODE_INT_ASSIGNED) {
             try {
                 for (int i = 0; i < getTaskList().size(); i++) {
                     Task tempTask = getTaskList().get(i);

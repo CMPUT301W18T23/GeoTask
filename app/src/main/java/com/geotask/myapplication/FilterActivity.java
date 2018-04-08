@@ -83,7 +83,8 @@ public class FilterActivity extends AbstractGeoTaskActivity implements AdapterVi
                         //To represent no range set
                         setSearchRange(-1);
                     }
-                    setSearchKeywords(keywordsText.getText().toString());
+                    setSearchKeywords(keywordsText.getText().toString().replace("%", "")
+                    .replace(";", "").replace("-", "").replace("\"", ""));
                     setSearchStatus(status);
                     startActivity(intent);
                 } catch(NumberFormatException e) {
