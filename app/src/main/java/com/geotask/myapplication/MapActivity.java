@@ -80,10 +80,9 @@ public class MapActivity extends AbstractGeoTaskActivity implements OnMapReadyCa
 
         Log.e("testing", "drawing You Are Here marker");
         //add a "You are here" marker at and move camera to user location
-        if(locationString.equals("null") || locationString == null){
-            //continue
-        }
-        else {
+        if(locationString == null){ }
+        else if(locationString.equals("null")){ }
+        else{
             user_locationX = Double.parseDouble((locationString.split("[,]")[0]));
             user_locationY = Double.parseDouble((locationString.split("[,]")[1]));
             user_location = new LatLng(user_locationX, user_locationY);
@@ -93,13 +92,13 @@ public class MapActivity extends AbstractGeoTaskActivity implements OnMapReadyCa
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(user_location));
         }
 
-
         //add a marker for each task with a location
         Log.e("testing","right before adding tasks");
         for (int i = 0; i < taskList.size(); i++) {
             Log.e("testing","adding task...");
-            if(taskList.get(i).getLocation().equals("null") || taskList.get(i).getLocation()== null){
-                Log.e("testing","location was empty string, continuing");
+            if(taskList.get(i).getLocation() == null) {}
+            else if(taskList.get(i).getLocation().equals("null")){
+                Log.e("testing","location was null, continuing");
             }
             else {
                 //add custom marker for this task
