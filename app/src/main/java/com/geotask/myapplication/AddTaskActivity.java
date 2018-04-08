@@ -181,6 +181,13 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
         }
     }
 
+    /**
+     * get the intent from selectphoto activity
+     * and put the byte[] into list
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

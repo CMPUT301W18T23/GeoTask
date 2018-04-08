@@ -23,7 +23,7 @@ public class Photo extends GTData {
     public Photo(String TaskID, List<byte[]> photolist){
         super.setType(Photo.class.toString());
         this.TaskID = TaskID;
-        this.photolistbyte = new ArrayList<>();
+        this.photolistbyte = photolist;
         super.setType(Photo.class.toString());
     }
 
@@ -36,7 +36,7 @@ public class Photo extends GTData {
 
 
     /**
-     * reset the list<byte></byte>
+     * reset the list<byte
      * @param photolistbyte
      */
 

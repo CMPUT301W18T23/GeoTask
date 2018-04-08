@@ -8,6 +8,10 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 
 public class ViewPhotoActivity extends AppCompatActivity {
+    /**
+     * open the photo into new view activity
+     * @param savedInstanceState
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

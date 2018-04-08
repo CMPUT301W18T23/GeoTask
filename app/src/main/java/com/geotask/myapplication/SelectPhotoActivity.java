@@ -24,6 +24,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * this is the photo selector acticity
+ *
+ * references by: https://blog.csdn.net/qq_26841579/article/details/72438318
+ */
+
 public class SelectPhotoActivity extends AppCompatActivity {
     private GridView gridView;
     private PhotoAdapter adapter;
@@ -34,7 +40,10 @@ public class SelectPhotoActivity extends AppCompatActivity {
     private Button cancelButton;
 
 
-    //String path;
+    /**
+     * initial the variables
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +59,9 @@ public class SelectPhotoActivity extends AppCompatActivity {
         }
 
 
-
+        /**
+         * if the typecase is add, then this is the layout for requester edit
+         */
         if(typecase.equals("add")){
             System.out.println(typecase);
             adapter = new PhotoAdapter(this, list);
@@ -79,7 +90,11 @@ public class SelectPhotoActivity extends AppCompatActivity {
                     finish();
                 }
             });
-        }else if(typecase.equals("view")){
+        }
+        /**
+         * if the typecase is view, this is the layout for provider view
+         */
+        else if(typecase.equals("view")){
             adapter2 = new ViewPhotoAdapter(this, list);
 
             gridView.setAdapter(adapter2);
@@ -111,9 +126,11 @@ public class SelectPhotoActivity extends AppCompatActivity {
 
     }
 
-    private void ViewPhoto(ViewPhotoAdapter adapter){
-
-    }
+    /**
+     * init the photo adapter
+     * and then open the select photo function
+     * @param adapter
+     */
     private void initView(PhotoAdapter adapter) {
         imagePicker = new ImagePicker();
         imagePicker.setTitle("Select Photo");
@@ -129,7 +146,7 @@ public class SelectPhotoActivity extends AppCompatActivity {
                 if (position==parent.getChildCount()-1){
                     if (position==6){
                     }else{
-                        opnePhoto();
+                        openPhoto();
                     }
                 }else{
                     Intent intent = new Intent(SelectPhotoActivity.this, ViewPhotoActivity.class);
@@ -140,7 +157,11 @@ public class SelectPhotoActivity extends AppCompatActivity {
             }
         });
     }
-    public void opnePhoto() {
+
+    /**
+     * open the photo selecter and check the photo size is less than 64kb
+     */
+    public void openPhoto() {
         imagePicker.startChooser(this, new ImagePicker.Callback() {
             @Override
             public void onPickImage(Uri imageUri) {
@@ -179,6 +200,13 @@ public class SelectPhotoActivity extends AppCompatActivity {
             }
         });
     }
+
+    /**
+     * get the result of photo selecter
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int
             resultCode, Intent data) {
@@ -188,7 +216,11 @@ public class SelectPhotoActivity extends AppCompatActivity {
     }
 
 
-
+    /**
+     * change the photo format into byte[]
+     * @param inputStream
+     * @return
+     */
     public byte[] getBytes(InputStream inputStream){
         ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
         int bufferSize = 1024;

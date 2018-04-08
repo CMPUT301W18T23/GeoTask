@@ -16,6 +16,8 @@ import java.util.List;
 
 /**
  * Created by Kehan 2017/5/16.
+ * this is the adapter for requester select the photo
+ * reference by: https://blog.csdn.net/qq_26841579/article/details/72438318
  */
 
 public class PhotoAdapter extends BaseAdapter {
