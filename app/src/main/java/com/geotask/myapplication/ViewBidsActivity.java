@@ -389,7 +389,6 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
                 new MasterController.AsyncCreateNewDocument(this);
         asyncCreateNewDocument.execute(bid);
 
-        //populateBidView();
         Log.i("Adding --->", bid.getValue().toString());
         bidList.add(bid);
         Collections.sort(bidList);
@@ -397,12 +396,12 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         bidList = (ArrayList<Bid>) getBidList();
         Log.i("Size --->",String.format("%d", bidList.size()));
 
-        //populateBidView();
         adapter = new BidArrayAdapter(this, R.layout.bid_list_item, bidList);
         oldBids.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
         updateTaskMetaData(this);
+        populateBidView();
     }
 
     /**
