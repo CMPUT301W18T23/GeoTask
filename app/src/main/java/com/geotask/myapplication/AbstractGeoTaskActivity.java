@@ -1,13 +1,20 @@
 package com.geotask.myapplication;
 
+import android.Manifest;
 import android.accounts.Account;
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
@@ -16,6 +23,10 @@ import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,6 +57,9 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
     private static Context context;
     private static User lastViewedUser;
 
+    private static FusedLocationProviderClient mFusedLocationClient; //for location grabbing
+
+    private static String coordString; //current users location as a string
 
 
     public static User getLastViewedUser() {
@@ -446,6 +460,7 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this); //set location client
     }
 
     @Override
@@ -462,5 +477,64 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
         AbstractGeoTaskActivity.searchStatus = searchStatus;
     }
 
+    /*
+        Returns a string with the users last known latitude,longitude
+     */
+    public static String retrieveLocation(Activity currentActivity) {
+        Log.e("testing", "retrieving location");
+        if (ContextCompat.checkSelfPermission(currentActivity, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            Log.e("testing","permission already granted");
+            //permission already granted, get the last location
+            mFusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(currentActivity, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            Log.e("testing", "onSuccess");
+
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                Log.e("testing", "loc is not null");
+                                //set coordString to the correct location, formatted
+                                coordString = Double.toString(location.getLatitude()).trim()
+                                        + "," + Double.toString(location.getLongitude()).trim();
+                            } else {
+                                Log.e("testing", "location was null, setting coord to \"null\"");
+                                coordString = "null";
+                            }
+                        }
+                    });
+        } else {
+            Log.e("testing","asking for location");
+            //permission not granted, ask for permission
+            ActivityCompat.requestPermissions(currentActivity,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    1);         //defining 1 to be the requestCode for accessing fine location
+
+        }
+        //end of permission check/request
+        return coordString;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.e("testing","permission granted after being asked for");
+                    coordString = retrieveLocation(this);
+
+                } else {
+                    //permission was denied
+                    Log.e("testing", "permission explicitly denied, setting coord to \"null\"");
+                    coordString = "null";
+                }
+                return;
+            }
+        }
+    }
 
 }
