@@ -2,11 +2,13 @@ package com.geotask.myapplication.Controllers.LocalFilesOps;
 
 //https://medium.com/@ajaysaini.official/building-database-with-room-persistence-library-ecf7d0b8f3e9
 
+import android.arch.persistence.db.SupportSQLiteQuery;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.RawQuery;
 import android.arch.persistence.room.Update;
 
 import com.geotask.myapplication.DataClasses.User;
@@ -41,11 +43,14 @@ public interface UserDAO {
      * wipes users table, use responsibly
      */
     @Query("DELETE FROM users")
-    void delete();
+    int delete();
 
     @Query("SELECT * FROM users WHERE objectId LIKE :id")
     User selectByID(String id);
 
     @Query("DELETE FROM users WHERE objectId LIKE :id")
     int deleteByID(String id);
+
+    @RawQuery
+    List<User> searchUsersByQuery(SupportSQLiteQuery query);
 }

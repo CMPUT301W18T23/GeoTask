@@ -47,7 +47,23 @@ public class SQLQueryBuilder implements Cloneable {
     }
 
     public void addParameters(Object[] object) {
-        this.object = object;
+        if (this.object == null) {
+            this.object = object;
+        } else {
+            String[] temp = new String[this.object.length + object.length];
+            System.arraycopy(this.object, 0, temp, 0, this.object.length);
+            System.arraycopy(object, 0, temp, this.object.length, object.length);
+            this.object = temp;
+        }
+    }
+
+    public void addRaw(String string){
+        if(query1.length() < 21) {
+            query1 += "WHERE ";
+        } else {
+            query1 += "AND ";
+        }
+        query1 += string + " ";
     }
 
     //DO NOT USE FOR ANYTHING BUT TASK BUILDERS

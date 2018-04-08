@@ -76,6 +76,11 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+//        Bundle settings = new Bundle();
+//        settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+//        settings.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+//        ContentResolver.requestSync(getAccount(), getString(R.string.SYNC_AUTHORITY), settings);
+
         title = findViewById(R.id.textViewTitle);
         name = findViewById(R.id.textViewName);
         description = findViewById(R.id.textViewDescription);
@@ -264,13 +269,27 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
 
         this.doneButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                triggerDone(v);
+                if(networkIsAvailable()) {
+                    triggerDone(v);
+                } else {
+                    Toast.makeText(getBaseContext(),
+                            R.string.CANNOT_COMPLETE_TASK_OFFLINE,
+                            Toast.LENGTH_LONG)
+                            .show();
+                }
             }
         });
 
         this.notCompleteButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                triggerNotComplete(v);
+                if(networkIsAvailable()) {
+                    triggerNotComplete(v);
+                } else {
+                    Toast.makeText(getBaseContext(),
+                            R.string.CANNOT_DECLINE_ACCEPTED_OFFLINE,
+                            Toast.LENGTH_LONG)
+                            .show();
+                }
             }
         });
 
@@ -462,6 +481,10 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
 
         updateTaskMetaData(this);
         updateDisplayedValues();
+        MenuActivity.setLastClicked(getCurrentTask());
+        Intent intent = new Intent(getBaseContext(), MenuActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
 
     }
 

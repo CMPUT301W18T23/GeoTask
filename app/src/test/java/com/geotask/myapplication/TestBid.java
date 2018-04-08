@@ -13,11 +13,11 @@ public class TestBid {
 //	}
 
 	@Test
-	public static void BidTest() {
+	public  void BidTest() {
 		testEntry();
 		testChange();
 	}
-	public static void testEntry(){
+	public void testEntry(){
 		String Provider = "abcd1234";
 		Double Value = 1.01;
 		String Task = "ZZZZ9999";
@@ -27,7 +27,7 @@ public class TestBid {
 		assert(bid.getTaskID() == Task);
 		System.out.print(bid.getProviderID() + " "+ bid.getValue() + "" + bid.getTaskID());
 	}
-	public static void testChange() {
+	public void testChange() {
 		String Provider = "abcd";
 		Double Value = 1.01;
 		String Task = "ZZZZ";

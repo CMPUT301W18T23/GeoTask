@@ -53,7 +53,14 @@ public class LoginActivity extends AbstractGeoTaskActivity implements AsyncCallB
         //Sends the user to MenuActivity
         loginButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                login_check();
+                if(networkIsAvailable()) {
+                    login_check();
+                } else {
+                    Toast.makeText(getBaseContext(),
+                            R.string.CANNOT_LOGIN_OFFLINE,
+                            Toast.LENGTH_SHORT)
+                            .show();
+                }
             }
         });
 
@@ -85,6 +92,9 @@ public class LoginActivity extends AbstractGeoTaskActivity implements AsyncCallB
             setCurrentUser(user);
             setHistoryHash();
             setStarHash();
+            setViewMode(R.integer.MODE_INT_ALL);
+            setSearchStatus(null);
+            setSearchKeywords("");
             Intent intent = new Intent(getBaseContext(), MenuActivity.class);
             startActivity(intent);
         }

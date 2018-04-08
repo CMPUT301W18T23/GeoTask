@@ -79,7 +79,7 @@ public class TestStory4SearchingInteractions {
     }
     //4.a
     @Test
-    public void testSearch() {
+    public void testSearch()throws InterruptedException  {
         String newname = "testUserName";
         String newphone = "123456789";
         String newemail = "testEmail@e.com";
@@ -110,6 +110,7 @@ public class TestStory4SearchingInteractions {
                 .perform(DrawerActions.open());
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.nav_filter));
         onView(withId(R.id.textKeywords)).perform(replaceText("apple"));
+        Thread.sleep(5000);
         onView(withId(R.id.buttonApply)).perform(click());
         onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).
                 onChildView(withId(R.id.task_list_desc)).
@@ -120,6 +121,7 @@ public class TestStory4SearchingInteractions {
                 .perform(DrawerActions.open());
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.nav_filter));
         onView(withId(R.id.textKeywords)).perform(replaceText("orange pineapple"));
+        Thread.sleep(8000);
         onView(withId(R.id.buttonApply)).perform(click());
         onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).
                 onChildView(withId(R.id.task_list_desc)).

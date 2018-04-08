@@ -321,6 +321,31 @@ public class TestFileOps implements AsyncCallBackManager{
 
 
     @Test
+    public void testAddingMultipleSearchFields() {
+        String test = "testAddingMultipleSearchFields";
+        Task task = new Task(test,test,test);
+
+
+        dataBase.taskDAO().insert(task);
+
+        SQLQueryBuilder builder = new SQLQueryBuilder(Task.class);
+        builder.addColumns(new String[]{"description"});
+        builder.addParameters(new String[] {test});
+
+        List<Task> remote = dataBase.taskDAO().searchTasksByQuery(builder.build());
+        assertNotNull(remote);
+        assertEquals(task, remote.get(0));
+
+        builder.addColumns(new String[]{"status"});
+        builder.addParameters(new String[] {"Requested"});
+
+        remote = dataBase.taskDAO().searchTasksByQuery(builder.build());
+
+        assertNotNull(remote);
+        assertEquals(task, remote.get(0));
+    }
+
+    @Test
     public void testSelectingRowThatDoesNotExistShouldReturnNull() {
         assertNull(dataBase.taskDAO().selectByID("adsgasdg"));
     }

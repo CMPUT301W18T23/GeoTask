@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.geotask.myapplication.Adapters.BidArrayAdapter;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
@@ -32,6 +33,7 @@ import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -142,7 +144,6 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
      */
     private void populateBidView(){
 
-        /// THIS SHOULD WORK BUT IS CURRENTLY COMMENTED OUT
         if ("Accepted".equals(getCurrentTask().getStatus())) {
 
             MasterController.AsyncGetDocument asyncGetDocument =
@@ -171,7 +172,35 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
 
             try {
                 bidList = (ArrayList<Bid>) asyncSearch.get();
+
+                /*
+                    removing duplicates
+                */
+                HashMap<String, Bid> dupHash = new HashMap<>();
+                for(Bid bid : bidList){
+                    if(dupHash.containsKey(bid.getProviderID())){
+                        Bid otherBid = dupHash.get(bid.getProviderID());
+                        if(bid.getDate() > otherBid.getDate()){
+                            dupHash.put(bid.getProviderID(), bid);
+                            MasterController.AsyncDeleteDocument asyncDeleteDocument =
+                                    new MasterController.AsyncDeleteDocument(this);
+                            asyncDeleteDocument.execute(new AsyncArgumentWrapper(otherBid.getObjectID(), Bid.class));
+                        } else {
+                            MasterController.AsyncDeleteDocument asyncDeleteDocument =
+                                    new MasterController.AsyncDeleteDocument(this);
+                            asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
+                        }
+
+                        //otherwise we keep the old bid
+                    } else {
+                        dupHash.put(bid.getProviderID(), bid);
+                    }
+                }
                 if(bidList != null) {
+                    bidList.clear();
+                    for(String key : dupHash.keySet()){
+                        bidList.add(dupHash.get(key));
+                    }
                     Collections.sort(bidList);
                 }
             } catch (InterruptedException | ExecutionException e) {
@@ -231,7 +260,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         asyncUpdateDocument.execute(task);
         //The following should wok, but needs to be tested after the array is truly populated by the
         //master controller
-        deleteAllBut(task);
+//        deleteAllBut(task);
 
         //go back to ViewTaskActivity
         Intent intent = new Intent(ViewBidsActivity.this, MenuActivity.class);
@@ -360,10 +389,11 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
                 new MasterController.AsyncCreateNewDocument(this);
         asyncCreateNewDocument.execute(bid);
 
-        //populateBidView();
         Log.i("Adding --->", bid.getValue().toString());
         bidList.add(bid);
         Collections.sort(bidList);
+        setBidList(bidList);
+        bidList = (ArrayList<Bid>) getBidList();
         Log.i("Size --->",String.format("%d", bidList.size()));
 
         adapter = new BidArrayAdapter(this, R.layout.bid_list_item, bidList);
@@ -371,6 +401,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         adapter.notifyDataSetChanged();
 
         updateTaskMetaData(this);
+        populateBidView();
     }
 
     /**
@@ -490,6 +521,18 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
             }
         });
 
+        if(networkIsAvailable()) {
+            deleteBtn.setEnabled(true);
+            acceptBtn.setEnabled(true);
+        } else {
+            deleteBtn.setEnabled(false);
+            acceptBtn.setEnabled(false);
+            Toast.makeText(this,
+                    R.string.CANNOT_EDIT_BID_OFFLINE,
+                    Toast.LENGTH_SHORT)
+                    .show();
+        }
+
         Button viewProfileBtn = (Button) layout.findViewById(R.id.btn_visit_profile);
         viewProfileBtn.setOnClickListener(new View.OnClickListener()
         {
@@ -518,7 +561,18 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         POPUP_WINDOW_DELETION.setBackgroundDrawable(null);
         POPUP_WINDOW_DELETION.showAtLocation(layout, Gravity.CENTER, 1, 1);
 
+
         Button deleteBtn = (Button) layout.findViewById(R.id.btn_delete_my_bid);
+
+        if(networkIsAvailable()) {
+            deleteBtn.setEnabled(true);
+        } else {
+            deleteBtn.setEnabled(false);
+            Toast.makeText(this,
+                    R.string.CANNOT_DELETE_BID_OFFLINE,
+                    Toast.LENGTH_SHORT)
+                    .show();
+        }
         deleteBtn.setOnClickListener(new View.OnClickListener()
         {
             @Override

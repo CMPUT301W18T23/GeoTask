@@ -13,7 +13,7 @@ import java.util.Date;
 /**
  * parent class of all data classes that are exchanded with the server
  */
-public abstract class GTData implements Serializable{
+public abstract class GTData implements Serializable, Comparable{
 
     @PrimaryKey
     @NonNull
@@ -125,5 +125,12 @@ public abstract class GTData implements Serializable{
 
     public void setClientOriginalFlag(boolean clientOriginalFlag) {
         this.clientOriginalFlag = clientOriginalFlag;
+    }
+
+    @Override
+    public int compareTo(@NonNull Object o) {
+        GTData other = (GTData) o;
+        int ret = (int) ((int) this.getDate() - other.getDate());
+        return ret;
     }
 }
