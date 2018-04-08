@@ -2,7 +2,6 @@ package com.geotask.myapplication.Controllers;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.LocalFilesOps.LocalDataBase;
@@ -192,16 +191,17 @@ public class MasterController {
                 if (argument.getType().equals(Task.class)){
                     result = database.taskDAO().selectByID(argument.getID());
                 } else if (argument.getType().equals(User.class)) {
+                    result = database.userDAO().selectByID(argument.getID());
+                } else if (argument.getType().equals(Bid.class)) {
+                    result = database.bidDAO().selectByID(argument.getID());
+                }
+
+                if(result == null) {
                     try {
-                        result = database.userDAO().selectByID(argument.getID());
-                        if (result == null) {
-                            result = controller.getDocument(argument.getID(), argument.getType());
-                        }
+                        result = controller.getDocument(argument.getID(), argument.getType());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                } else if (argument.getType().equals(Bid.class)) {
-                    result = database.bidDAO().selectByID(argument.getID());
                 }
             }
             return result;
@@ -347,14 +347,11 @@ public class MasterController {
             verifySettings(context);
 
             for(AsyncArgumentWrapper argument : argumentWrappers) {
-                //Log.d("BUGSBUGSBUGS", String.valueOf(argument.getSQLQuery().getSql() + " " +
-                //        argument.getSQLQuery().getArgCount()));
                 if (argument.getType().equals(Task.class)){
                     resultList = database.taskDAO().searchTasksByQuery(argument.getSQLQuery());
                 } else if (argument.getType().equals(Bid.class)) {
                     resultList = database.bidDAO().searchBidsByQuery(argument.getSQLQuery());
                 }
-                Log.d("BUGSBUGSBUGS", resultList.toString());
             }
             Collections.sort(resultList);
             return resultList;
