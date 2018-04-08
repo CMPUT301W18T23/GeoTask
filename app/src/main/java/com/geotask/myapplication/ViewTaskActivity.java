@@ -26,6 +26,7 @@ import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
+import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -75,6 +76,12 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         setContentView(R.layout.app_bar_menu_view_task);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        if(networkIsAvailable()) {
+            if(!syncTaskAndBidData()){
+                onBackPressed();
+            }
+        }
 
 //        Bundle settings = new Bundle();
 //        settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
@@ -216,6 +223,66 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    private Boolean syncTaskAndBidData(){
+        MasterController.AsyncGetDocumentNewest asyncGetDocument =
+                new MasterController.AsyncGetDocumentNewest(this, this);
+        asyncGetDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getObjectID(), Bid.class));
+        Task task = null;
+        try {
+            task = (Task) asyncGetDocument.get();
+            setCurrentTask(task);
+
+            if(task == null){
+                return false;
+            } else {
+                SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
+                builder.addColumns(new String[] {"taskId"});
+                builder.addParameters(new String[] {task.getObjectID()});
+
+                SuperBooleanBuilder superBuilder = new SuperBooleanBuilder();
+                superBuilder.put("taskId", task.getObjectID());
+
+                MasterController.AsyncSearch asyncSearch =
+                        new MasterController.AsyncSearch(this, this);
+                asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
+
+                ArrayList<Bid> updatedBidList = (ArrayList<Bid>) MasterController.slowSearch(new AsyncArgumentWrapper(superBuilder.toString(), Bid.class));
+                ArrayList<Bid> oldBidList = (ArrayList<Bid>) asyncSearch.get();
+
+                /*
+                    insert the new bids into the local database
+                 */
+                for(Bid bid : updatedBidList){
+                    if(!oldBidList.contains(bid)){
+                        MasterController.AsyncCreateNewLocalDocument asyncCreateNewLocalDocument =
+                                new MasterController.AsyncCreateNewLocalDocument(this);
+                        asyncCreateNewLocalDocument.execute(bid);
+                        oldBidList.remove(bid);
+                        updatedBidList.remove(bid);
+                    }
+                }
+
+                /*
+                    deleted deleted documents from the local database
+                 */
+                for(Bid bid : oldBidList){
+                    if(!updatedBidList.contains(bid)){
+                        MasterController.AsyncDeleteLocalDocument asyncDeleteLocalDocument =
+                                new MasterController.AsyncDeleteLocalDocument(this);
+                        asyncDeleteLocalDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
+                    }
+                }
+            }
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 
     /**

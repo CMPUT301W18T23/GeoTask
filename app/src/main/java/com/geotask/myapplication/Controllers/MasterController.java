@@ -69,6 +69,38 @@ public class MasterController {
     /**
      * AsyncTask for putting document into server
      */
+    public static class AsyncCreateNewLocalDocument extends AsyncTask<GTData, Void, Void> {
+
+        private Context context;
+
+        public AsyncCreateNewLocalDocument(Context context) {
+            this.context = context;
+        }
+        /**
+         *
+         * @param dataList queue of GTData waiting for execution
+         * @return assumes success, will not throw exceptions if failed
+         */
+        @Override
+        protected Void doInBackground(GTData... dataList) {
+            verifySettings(context);
+
+            for(GTData data : dataList) {
+                if (data instanceof Task){
+                    database.taskDAO().insert((Task) data);
+                } else if (data instanceof User) {
+                    database.userDAO().insert((User) data);
+                } else if (data instanceof Bid) {
+                    database.bidDAO().insert((Bid) data);
+                }
+            }
+            return null;
+        }
+    }
+
+    /**
+     * AsyncTask for putting document into server
+     */
    public static class AsyncCreateNewDocument extends AsyncTask<GTData, Void, Void> {
 
         private Context context;
@@ -216,6 +248,37 @@ public class MasterController {
             if(callBack != null) {
                 callBack.onPostExecute(data);
             }
+        }
+    }
+
+    /**
+     * deletes a single document by ID
+     */
+    public static class AsyncDeleteLocalDocument extends  AsyncTask<AsyncArgumentWrapper, Void, Void> {
+
+        private Context context;
+
+        public AsyncDeleteLocalDocument(Context context){
+            this.context = context;
+        }
+
+        /**
+         *
+         * @param argumentList
+         * @return nothing, assumes success
+         */
+        @Override
+        protected Void doInBackground(AsyncArgumentWrapper... argumentList) {
+            verifySettings(context);
+
+            for(AsyncArgumentWrapper argument : argumentList) {
+                if (argument.getType().equals(Task.class)){
+                    database.taskDAO().deleteByID(argument.getID());
+                } else if (argument.getType().equals(Bid.class)) {
+                    database.bidDAO().deleteByID(argument.getID());
+                }
+            }
+            return null;
         }
     }
 
