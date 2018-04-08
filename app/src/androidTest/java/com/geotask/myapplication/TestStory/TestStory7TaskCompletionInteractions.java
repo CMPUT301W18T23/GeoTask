@@ -51,19 +51,6 @@ public class TestStory7TaskCompletionInteractions {
         }
     }
 
-    @Before
-    public void setUp() {
-        database = LocalDataBase.getDatabase(InstrumentationRegistry.getTargetContext());
-        database.taskDAO().delete();
-        database.bidDAO().delete();
-        database.userDAO().delete();
-    }
-
-    @After
-    public void tearDown() {
-        database.close();
-    }
-
 
     @Rule
     public ActivityTestRule<ViewTaskActivity> taskViewActivityActivityTestRule =
