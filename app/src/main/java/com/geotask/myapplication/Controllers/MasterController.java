@@ -97,7 +97,6 @@ public class MasterController {
                     database.bidDAO().insert((Bid) data);
                 }
 
-                //ToDo JobSchedule
             }
             return null;
         }
@@ -184,12 +183,6 @@ public class MasterController {
             for(AsyncArgumentWrapper argument : argumentList) {
                 if (argument.getType().equals(Task.class)){
                     database.taskDAO().deleteByID(argument.getID());
-                } else if (argument.getType().equals(User.class)) {
-                    try {
-                        controller.deleteDocument(argument.getID(), argument.getType());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                 } else if (argument.getType().equals(Bid.class)) {
                     database.bidDAO().deleteByID(argument.getID());
                 }
