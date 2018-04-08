@@ -77,11 +77,13 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
         if(networkIsAvailable()) {
             if(!syncTaskAndBidData()){
                 onBackPressed();
             }
         }
+
 
 //        Bundle settings = new Bundle();
 //        settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
@@ -145,6 +147,15 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         name.setPaintFlags(name.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         addBidButton.setVisibility(View.INVISIBLE);
     }
+
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        updateDisplayedValues();
+    }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -260,19 +271,6 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
                         MasterController.AsyncCreateNewLocalDocument asyncCreateNewLocalDocument =
                                 new MasterController.AsyncCreateNewLocalDocument(this);
                         asyncCreateNewLocalDocument.execute(bid);
-                        oldBidList.remove(bid);
-                        updatedBidList.remove(bid);
-                    }
-                }
-
-                /*
-                    deleted deleted documents from the local database
-                 */
-                for(Bid bid : oldBidList){
-                    if(!updatedBidList.contains(bid)){
-                        MasterController.AsyncDeleteLocalDocument asyncDeleteLocalDocument =
-                                new MasterController.AsyncDeleteLocalDocument(this);
-                        asyncDeleteLocalDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
                     }
                 }
             }
