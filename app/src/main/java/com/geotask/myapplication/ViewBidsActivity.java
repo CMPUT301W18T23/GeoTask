@@ -399,7 +399,9 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         adapter = new BidArrayAdapter(this, R.layout.bid_list_item, bidList);
         oldBids.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-
+        Task t = getCurrentTask();
+        t.addBid(bid);
+        setCurrentTask(t);
         updateTaskMetaData(this);
         populateBidView();
     }
@@ -408,6 +410,9 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
      * Allows a user to delete their bid on a task
      */
     public void deleteBid(Bid bid, Task task){
+        Task t = getCurrentTask();
+        t.deleteBid(bid);
+        setCurrentTask(t); //for notifications
         MasterController.AsyncDeleteDocument asyncDeleteDocument =
                 new MasterController.AsyncDeleteDocument(this);
         asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));

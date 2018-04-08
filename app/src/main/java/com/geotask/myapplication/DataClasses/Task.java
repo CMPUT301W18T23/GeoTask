@@ -83,6 +83,7 @@ public class Task extends GTData implements Comparable{
 		this.lowestBid = -1.0;
 		this.numBids = 0;
 		editedFlag = false;
+		this.bidList = new HashSet<String>();
 	}
 
 	/**
@@ -262,6 +263,13 @@ public class Task extends GTData implements Comparable{
 		return bidList;
 	}
 
+	/**
+	 * deletes a bid given to the bidlist
+	 * @param bid
+	 */
+	public void deleteBid(Bid bid){
+		bidList.remove(bid.getObjectID());
+	}
 	/**
 	 *gets the accepted bid
 	 * @return acceptedBid
