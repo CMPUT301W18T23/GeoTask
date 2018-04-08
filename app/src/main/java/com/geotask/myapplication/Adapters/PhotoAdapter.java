@@ -65,7 +65,7 @@ public class PhotoAdapter extends BaseAdapter {
 
             vh.img.setVisibility(View.VISIBLE);
             vh.demimg.setVisibility(View.GONE);
-            if (position==6&&mMaxPosition==7){
+            if (position==10&&mMaxPosition==11){
                 vh.img.setVisibility(View.GONE);
             }
         }else{
