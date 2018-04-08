@@ -496,11 +496,13 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
                             if (location != null) {
                                 Log.e("testing", "loc is not null");
                                 //set coordString to the correct location, formatted
-                                coordString = Double.toString(location.getLatitude()).trim()
-                                        + "," + Double.toString(location.getLongitude()).trim();
+                                StringBuilder SB = new StringBuilder();
+                                SB.append(Double.toString(location.getLatitude()))
+                                        .append(",").append(Double.toString((location.getLongitude())));
+                                coordString = SB.toString();
                             } else {
                                 Log.e("testing", "location was null, setting coord to \"null\"");
-                                coordString = "null";
+                                coordString =  "null";
                             }
                         }
                     });
