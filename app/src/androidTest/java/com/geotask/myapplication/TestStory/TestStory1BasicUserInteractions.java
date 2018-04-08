@@ -11,6 +11,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.view.Gravity;
 
 import com.geotask.myapplication.AddTaskActivity;
+import com.geotask.myapplication.Controllers.LocalFilesOps.LocalDataBase;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
@@ -19,6 +20,8 @@ import com.geotask.myapplication.MenuActivity;
 import com.geotask.myapplication.R;
 import com.geotask.myapplication.TestServerAddress;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,6 +51,7 @@ public class TestStory1BasicUserInteractions {
     @Rule
     public ActivityTestRule<MenuActivity> testMenu = new ActivityTestRule<MenuActivity>(MenuActivity.class, true, false);
 
+    LocalDataBase database;
 
     @BeforeClass
     public static void oneTimeSetUp() {
@@ -63,7 +67,19 @@ public class TestStory1BasicUserInteractions {
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument
                 = new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(user);
+    }
 
+    @Before
+    public void setUp() {
+        database = LocalDataBase.getDatabase(InstrumentationRegistry.getTargetContext());
+        database.taskDAO().delete();
+        database.bidDAO().delete();
+        database.userDAO().delete();
+    }
+
+    @After
+    public void tearDown() {
+        database.close();
     }
 
     //1.a
@@ -172,7 +188,7 @@ public class TestStory1BasicUserInteractions {
         onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).perform(click());
 
         //onView(withId(R.id.editTaskButton)).perform(click());
-        onView(withId(R.id.deleteButton)).perform(click());
+        onView(withId(R.id.action_delete)).perform(click());
     }
 
     //1.e

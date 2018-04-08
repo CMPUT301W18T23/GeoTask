@@ -90,6 +90,7 @@ public class MasterController {
                 } else if (data instanceof User) {
                     try {
                         controller.createNewDocument(data);
+                        database.userDAO().insert((User) data);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -137,7 +138,9 @@ public class MasterController {
                 } else if (argument.getType().equals(User.class)) {
                     try {
                         result = database.userDAO().selectByID(argument.getID());
-                        //result = controller.getDocument(argument.getID(), argument.getType());
+                        if (result == null) {
+                            result = controller.getDocument(argument.getID(), argument.getType());
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -294,8 +297,8 @@ public class MasterController {
             verifySettings(context);
 
             for(AsyncArgumentWrapper argument : argumentWrappers) {
-                Log.d("BUGSBUGSBUGS", String.valueOf(argument.getSQLQuery().getSql() + " " +
-                        argument.getSQLQuery().getArgCount()));
+                //Log.d("BUGSBUGSBUGS", String.valueOf(argument.getSQLQuery().getSql() + " " +
+                //        argument.getSQLQuery().getArgCount()));
                 if (argument.getType().equals(Task.class)){
                     resultList = database.taskDAO().searchTasksByQuery(argument.getSQLQuery());
                 } else if (argument.getType().equals(Bid.class)) {

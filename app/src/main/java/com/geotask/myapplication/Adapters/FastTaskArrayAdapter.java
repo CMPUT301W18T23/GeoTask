@@ -255,8 +255,13 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
             Bid remote = null;
             try {
                 remote = (Bid) asyncGetDocument.get();
-                headerSub.lowestBid.setText(String.format("Accepted for: %.2f", remote.getValue()));
-                headerSub.bids.setText(String.format("Bids: %d", item.getNumBids()));
+                if(remote != null) {
+                    headerSub.lowestBid.setText(String.format("Accepted for: %.2f", remote.getValue()));
+                    headerSub.bids.setText(String.format("Bids: %d", item.getNumBids()));
+                } else {
+                    headerSub.lowestBid.setText(String.format("Accepted for: ?"));
+                    headerSub.bids.setText(String.format("Bids: ?"));
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {

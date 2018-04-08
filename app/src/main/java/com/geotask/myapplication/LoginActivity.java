@@ -92,6 +92,9 @@ public class LoginActivity extends AbstractGeoTaskActivity implements AsyncCallB
             setCurrentUser(user);
             setHistoryHash();
             setStarHash();
+            setViewMode(R.integer.MODE_INT_ALL);
+            setSearchStatus(null);
+            setSearchKeywords("");
             Intent intent = new Intent(getBaseContext(), MenuActivity.class);
             startActivity(intent);
         }
