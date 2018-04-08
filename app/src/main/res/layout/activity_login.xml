@@ -41,7 +41,7 @@
         android:layout_marginTop="8dp"
         android:contentDescription="Email"
         android:ems="10"
-        android:inputType="text"
+        android:inputType="textEmailAddress"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"

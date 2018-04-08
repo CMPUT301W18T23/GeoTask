@@ -77,6 +77,11 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+//        Bundle settings = new Bundle();
+//        settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+//        settings.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+//        ContentResolver.requestSync(getAccount(), getString(R.string.SYNC_AUTHORITY), settings);
+
         title = findViewById(R.id.textViewTitle);
         name = findViewById(R.id.textViewName);
         description = findViewById(R.id.textViewDescription);
@@ -141,7 +146,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         editBtn = toolbar.getMenu().findItem(R.id.action_edit);
         starBtn = toolbar.getMenu().findItem(R.id.action_star);
         deleteBtn = toolbar.getMenu().findItem(R.id.action_delete);
-
+        deleteBtn.setEnabled(true);
         if((getCurrentUser().getObjectID().compareTo(getCurrentTask().getRequesterID()) == 0)
                 && (getCurrentTask().getStatus().toLowerCase().compareTo("requested") == 0)) {
             editBtn.setVisible(true);
@@ -199,8 +204,8 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         } else if (id == R.id.action_delete){
             String taskStatus = getCurrentTask().getStatus();
             if(taskStatus.compareTo("Accepted") != 0 && taskStatus.compareTo("Completed") != 0) {
+                deleteBtn.setEnabled(false);
                 deleteData();
-
                 Intent intent = new Intent(ViewTaskActivity.this, MenuActivity.class);
                 startActivity(intent);
             } else {

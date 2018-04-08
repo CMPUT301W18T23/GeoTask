@@ -99,4 +99,25 @@ public class Bid extends GTData implements Comparable{
 		int ret = (int) (this.getValue() - compare.getValue());
 		return ret;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		if (!super.equals(o)) return false;
+
+		Bid bid = (Bid) o;
+
+		if (providerID != null ? !providerID.equals(bid.providerID) : bid.providerID != null)
+			return false;
+		return taskID != null ? taskID.equals(bid.taskID) : bid.taskID == null;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + (providerID != null ? providerID.hashCode() : 0);
+		result = 31 * result + (taskID != null ? taskID.hashCode() : 0);
+		return result;
+	}
 }

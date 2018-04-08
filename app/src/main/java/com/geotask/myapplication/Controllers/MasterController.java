@@ -12,6 +12,7 @@ import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -19,7 +20,6 @@ import java.util.List;
  * Contains ElasticsearchController and 3 DatabaseController.
  * Do not call ElasticSearchController and DatabaseControllers explicitly, use this instead.
  */
-//ToDo add sync logic between local and server, ToDo JobScheduler
 public class MasterController {
 
     private static ElasticsearchController controller = new ElasticsearchController();
@@ -58,6 +58,7 @@ public class MasterController {
     public static void shutDown() {
         controller.verifySettings();
         controller.shutDown();
+        database.close();
     }
 
     public static User existsProfile(String s) {
@@ -88,22 +89,76 @@ public class MasterController {
                 if (data instanceof Task){
                     database.taskDAO().insert((Task) data);
                 } else if (data instanceof User) {
-                    try {
-                        controller.createNewDocument(data);
-                        database.userDAO().insert((User) data);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    database.userDAO().insert((User) data);
                 } else if (data instanceof Bid) {
                     database.bidDAO().insert((Bid) data);
                 }
 
-                //ToDo JobSchedule
+                try {
+                    controller.createNewDocument(data);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             return null;
         }
     }
 
+    public static class AsyncGetDocumentNewest extends AsyncTask<AsyncArgumentWrapper, Void, GTData> {
+        private AsyncCallBackManager callBack = null;
+        private Context context;
+
+        /**
+         * contains the reference to the calling activity
+         * @param callback
+         */
+        public AsyncGetDocumentNewest(AsyncCallBackManager callback, Context context) {
+            this.callBack = callback;
+            this.context = context;
+        }
+
+        /**
+         *
+         * @param argumentList
+         * @return returns null if failed, otherwise returns GTData
+         */
+        @Override
+        protected GTData doInBackground(AsyncArgumentWrapper... argumentList) {
+            verifySettings(context);
+
+            GTData result = null;
+
+            for (AsyncArgumentWrapper argument : argumentList) {
+                verifySettings(context);
+
+                try {
+                    result = controller.getDocument(argument.getID(), Task.class);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if(result.getType().equals(Task.class.toString())){
+                    database.taskDAO().insert((Task) result);
+                } else if(result.getType().equals(User.class.toString())) {
+                    database.userDAO().insert((User) result);
+                } else if (result.getType().equals(Bid.class.toString())) {
+                    database.bidDAO().insert((Bid) result);
+                }
+            }
+            return result;
+        }
+
+        /**
+         * returns GTData to main thread
+         * @param data
+         */
+        @Override
+        protected void onPostExecute(GTData data) {
+            if(callBack != null) {
+                callBack.onPostExecute(data);
+            }
+        }
+    }
     /**
      * AsyncTask for getting a single document by ID
      */
@@ -187,12 +242,6 @@ public class MasterController {
             for(AsyncArgumentWrapper argument : argumentList) {
                 if (argument.getType().equals(Task.class)){
                     database.taskDAO().deleteByID(argument.getID());
-                } else if (argument.getType().equals(User.class)) {
-                    try {
-                        controller.deleteDocument(argument.getID(), argument.getType());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                 } else if (argument.getType().equals(Bid.class)) {
                     database.bidDAO().deleteByID(argument.getID());
                 }
@@ -252,25 +301,19 @@ public class MasterController {
             verifySettings(context);
 
             for(GTData data: dataList) {
-                data.setClientOriginalFlag(true);
+                try {
+                    controller.updateDocument(data);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
                 if (data instanceof Task){
                     database.taskDAO().update((Task) data);
                 } else if (data instanceof User) {
-                    try {
-                        controller.updateDocument(data);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    database.userDAO().update((User) data);
                 } else if (data instanceof Bid) {
                     database.bidDAO().update((Bid) data);
                 }
-
-                //ToDo JobScheduler
-//                try {
-//                    controller.updateDocument(data);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
             }
             return null;
         }
@@ -313,6 +356,7 @@ public class MasterController {
                 }
                 Log.d("BUGSBUGSBUGS", resultList.toString());
             }
+            Collections.sort(resultList);
             return resultList;
         }
 

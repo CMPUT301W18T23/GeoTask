@@ -15,7 +15,7 @@ import java.util.List;
  * Used by SQL operations to store bidList field in Task.
  * DO not call explicitly.
  */
-public class BidListConverter {
+public class ListConverter {
 
     @TypeConverter
     public static String ListToJson(ArrayList<String> bidList) {

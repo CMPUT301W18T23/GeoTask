@@ -4,6 +4,7 @@ import android.accounts.Account;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SyncResult;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,7 +18,6 @@ import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import io.searchbox.client.JestResult;
 
@@ -29,8 +29,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private LocalDataBase database;
     private ArrayList<Task> remoteTaskList;
     private ArrayList<Bid> remoteBidList;
+    private ArrayList<User> remoteUserList;
     private ArrayList<Task> localTaskList;
     private ArrayList<Bid> localBidList;
+    private ArrayList<User> localUserList;
+
 
     public SyncAdapter(Context context, boolean autoInitiate) {
         super(context, autoInitiate);
@@ -91,9 +94,17 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         localBidList = (ArrayList<Bid>) database.bidDAO().searchBidsByQuery(query.build());
         Log.d("geotasksync", "localBidList_size = " + localBidList.size());
 
+//        query = new SQLQueryBuilder(User.class);
+//        query.addColumns(new String[] {"flag"});
+//        query.addParameters(new Boolean[] {true});
+//        localUserList = (ArrayList<User>) database.userDAO().searchUsersByQuery(query.build());
+//        Log.d("geotasksync", "localUserList_size = " + localUserList.size());
+
         // get all tasks on server
         try {
             remoteTaskList = (ArrayList<Task>) controller.search("", Task.class);
+            remoteBidList = (ArrayList<Bid>) controller.search("", Bid.class);
+            remoteUserList = (ArrayList<User>) controller.search("", User.class);
             Log.d("geotasksync", "remoteTAskList_size = " + remoteTaskList.size());
         } catch (IOException e) {e.printStackTrace();}
 
@@ -117,6 +128,10 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         for(Bid localBid : localBidList) {
             try {
                 if(controller.getDocument(localBid.getTaskID(), Task.class) != null) {
+                    if(remoteBidList.contains(localBid)){
+                        controller.deleteDocument(remoteBidList
+                                .get(remoteBidList.indexOf(localBid)).getObjectID(), Bid.class);
+                    }
                     result = controller.createNewDocument(localBid);
                     Log.d("geotasksync", result.getJsonString());
                 }
@@ -132,29 +147,36 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         try {
             remoteTaskList = (ArrayList<Task>) controller.search("", Task.class);
             remoteBidList = (ArrayList<Bid>) controller.search("", Bid.class);
+            remoteUserList = (ArrayList<User>) controller.search("", User.class);
             Log.d("geotasksync", "remote updated task: " + remoteTaskList.size() +
                     ". remote updated bid: " + remoteBidList.size());
 
-            //database.taskDAO().delete();
+            database.taskDAO().delete();
             Log.d("geotasksync", "task rows deleted = " + database.taskDAO().delete());
-            for(Task task : remoteTaskList){
-                task.setVersion(controller.getDocumentVersion(task.getObjectID()));
-                database.taskDAO().insert(task);
+            for(int i = 0; i < remoteTaskList.size(); i++){
+                remoteTaskList.get(i).setVersion(controller.getDocumentVersion(remoteTaskList.get(i).getObjectID()));
+                database.taskDAO().insert(remoteTaskList.get(i));
+                if(i % 50 == 0) {
+                    getContext().sendBroadcast(new Intent("broadcast"));
+                }
             }
             Log.d("geotasksync", "task size after pull = " + database.taskDAO().selectAll().size());
 
-            //database.bidDAO().delete();
+            database.bidDAO().delete();
             Log.d("geotasksync", "bid rows deleted = " + database.bidDAO().delete());
-            for(Bid bid : remoteBidList){
-                database.bidDAO().insert(bid);
-            }
+            database.bidDAO().insertMultiple(remoteBidList.toArray(new Bid[remoteBidList.size()]));
+//            for(Bid bid : remoteBidList){
+//                database.bidDAO().insert(bid);
+//            }
             Log.d("geotasksync", "bid size after pull = " + database.bidDAO().selectAll().size());
 
             Log.d("geotasksync", "user rows deleted = " + database.userDAO().delete());
-            for(User user : (List<User>) controller.search("", User.class)) {
-                database.userDAO().insert(user);
-            }
+            database.userDAO().insertMultiple(remoteUserList.toArray(new User[remoteUserList.size()]));
+//            for(User user : (List<User>) controller.search("", User.class)) {
+//                database.userDAO().insert(user);
+//            }
         } catch (IOException e) {e.printStackTrace();}
+        Log.d("geotasksync", "done");
     }
 }
 

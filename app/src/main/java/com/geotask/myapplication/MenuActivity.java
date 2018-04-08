@@ -1,6 +1,9 @@
 package com.geotask.myapplication;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -88,6 +91,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
     TextView drawerEmail;
     TextView emptyText;
     SwipeRefreshLayout refreshLayout;
+    BroadcastReceiver syncProgress;
 
     Task lastClickedTask = null;
 
@@ -95,6 +99,11 @@ public class MenuActivity extends AbstractGeoTaskActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//
+//        Bundle settings = new Bundle();
+//        settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+//        settings.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+//        ContentResolver.requestSync(getAccount(), getString(R.string.SYNC_AUTHORITY), settings);
 
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -108,10 +117,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 refreshLayout.setRefreshing(true);
                 populateTaskView();
                 refreshLayout.setRefreshing(false);
-//                Bundle settings = new Bundle();
-//                settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-//                settings.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-//                ContentResolver.requestSync(getAccount(), getString(R.string.SYNC_AUTHORITY), settings);
             }
         });
 
@@ -247,6 +252,16 @@ public class MenuActivity extends AbstractGeoTaskActivity
         //Log.i("LifeCycle --->", "onStart is called");
         fab.show();
         navigationView.setCheckedItem(R.id.nav_browse);
+
+        syncProgress = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.d("geotasksync", "received");
+                populateTaskView();
+            }
+        };
+        registerReceiver(syncProgress, new IntentFilter("broadcast"));
+        Log.d("geotasksync", "registered");
     }
 
     /**
@@ -277,6 +292,12 @@ public class MenuActivity extends AbstractGeoTaskActivity
     protected void onRestart(){
         super.onRestart();
         setOrientation();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(syncProgress);
     }
 
     /**
@@ -555,6 +576,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
             Intent intent = new Intent(getBaseContext(), LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
+            //MasterController.shutDown();
         }  else if (id == R.id.nav_assigned) {
             fab.hide();
             setViewMode(R.integer.MODE_INT_ASSIGNED); //TODO - add the map
