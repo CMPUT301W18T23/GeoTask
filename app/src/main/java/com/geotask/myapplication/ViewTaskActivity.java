@@ -27,6 +27,7 @@ import com.geotask.myapplication.DataClasses.Photo;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
+import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -160,7 +161,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         editBtn = toolbar.getMenu().findItem(R.id.action_edit);
         starBtn = toolbar.getMenu().findItem(R.id.action_star);
         deleteBtn = toolbar.getMenu().findItem(R.id.action_delete);
-
+        deleteBtn.setEnabled(true);
         if((getCurrentUser().getObjectID().compareTo(getCurrentTask().getRequesterID()) == 0)
                 && (getCurrentTask().getStatus().toLowerCase().compareTo("requested") == 0)) {
             editBtn.setVisible(true);
@@ -218,8 +219,8 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         } else if (id == R.id.action_delete){
             String taskStatus = getCurrentTask().getStatus();
             if(taskStatus.compareTo("Accepted") != 0 && taskStatus.compareTo("Completed") != 0) {
+                deleteBtn.setEnabled(false);
                 deleteData();
-
                 Intent intent = new Intent(ViewTaskActivity.this, MenuActivity.class);
                 startActivity(intent);
             } else {
@@ -487,7 +488,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
     public void notComplete() {
         MasterController.AsyncDeleteDocument asyncDeleteDocument =
                 new MasterController.AsyncDeleteDocument(this);
-        asyncDeleteDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getAccpeptedBidID(), Bid.class));
+        asyncDeleteDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getAcceptedBidID(), Bid.class));
 
         SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
         builder.addColumns(new String[] {"taskId"});

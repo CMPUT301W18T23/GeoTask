@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import com.geotask.myapplication.Controllers.Helpers.HashSetConverter;
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 
@@ -36,9 +35,9 @@ public class Task extends GTData implements Comparable{
 	@TypeConverters(HashSetConverter.class)
 	private HashSet<String> bidList = new HashSet<>();
 	@ColumnInfo
-	private Double accpetedBid;
+	private Double acceptedBid;
 	@ColumnInfo
-	private String accpeptedBidID;
+	private String acceptedBidID;
 	@ColumnInfo(name = "requesterId")
 	private String requesterID;
 	@ColumnInfo
@@ -58,18 +57,33 @@ public class Task extends GTData implements Comparable{
 		return location;
 	}
 
-	public float getLocationX() { return Float.parseFloat(location.split("[,]")[0]); }
+	public Double getLocationX() {
+		System.out.println(location);
+		if (location.equals("null") || location == null) {
+			return -1.0;
+		}
+		else {
+			return Double.parseDouble((location.split("[,]")[0]));
+		 }
+	}
 
-	public float getLocationY() { return Float.parseFloat(location.split("[,]")[1]); }
+	public Double getLocationY() {
+		System.out.println(location);
+		if(location.equals("null")  || location == null) {
+			return -1.0;
+		}
+		else {
+			return Double.parseDouble((location.split("[,]")[1]));
+		}
+	}
 
 	public void setLocation(String location) {
 		this.location = location;
 	}
 	//ToDo pictures
-	//ToDo locations
 
 
-	@Ignore
+	//@Ignore
 	public Task(String requesterID, String name, String description, String location) { //need string for pictures
 		super.setType(Task.class.toString());
 		this.name = name;
@@ -77,7 +91,7 @@ public class Task extends GTData implements Comparable{
 		this.hitCounter = 0;
 		this.status = "Requested";
 		super.setDate(new Date().getTime());
-		this.accpetedBid = -1.0; //ToDo
+		this.acceptedBid = -1.0; //ToDo
 		this.requesterID = requesterID;
 		this.location = location;
 		this.lowestBid = -1.0;
@@ -92,6 +106,7 @@ public class Task extends GTData implements Comparable{
 	 * @param name
 	 * @param description
 	 */
+	@Ignore
 	public Task(String requesterID, String name, String description) { //need string for pictures
 		super.setType(Task.class.toString());
 		this.name = name;
@@ -99,7 +114,7 @@ public class Task extends GTData implements Comparable{
 		this.hitCounter = 0;
 		this.status = "Requested";
 		super.setDate(new Date().getTime());
-		this.accpetedBid = -1.0; //ToDo
+		this.acceptedBid = -1.0; //ToDo
 		this.requesterID = requesterID;
 		this.lowestBid = -1.0;
 		this.numBids = 0;
@@ -142,6 +157,7 @@ public class Task extends GTData implements Comparable{
 	public String getStatus() {
 		return this.status;
 	}
+
 	/**
 	 *set status
 	 * @param Status
@@ -155,7 +171,7 @@ public class Task extends GTData implements Comparable{
 	 * @return this.photoList
 	 */
 	public String getPictures() {
-		return this.photoList; 
+		return this.photoList;
 	}
 	/**
 	 *sets a picture
@@ -170,14 +186,14 @@ public class Task extends GTData implements Comparable{
 	 * @param Bid
 	 */
 	public void setAcceptedBid(Double Bid) {
-		this.accpetedBid = Bid;
+		this.acceptedBid = Bid;
 	}
 	/**
 	 *get ammount of the accepted bid
-	 * @return this.accpetedBid
+	 * @return this.acceptedBid
 	 */
 	public Double getAcceptedBid() {
-		return this.accpetedBid;
+		return this.acceptedBid;
 	}
 
 	/**
@@ -252,13 +268,7 @@ public class Task extends GTData implements Comparable{
 		return bidList;
 	}
 
-	/**
-	 *gets the accepted bid
-	 * @return acceptedBid
-	 */
-	public Double getAccpetedBid() {
-		return accpetedBid;
-	}
+
 
 	/**
 	 *sets bidlist from given value
@@ -268,13 +278,7 @@ public class Task extends GTData implements Comparable{
 		this.bidList = bidList;
 	}
 
-	/**
-	 *sets the amount of accepted bids
-	 * @param accpetedBid
-	 */
-	public void setAccpetedBid(Double accpetedBid) {
-		this.accpetedBid = accpetedBid;
-	}
+
 
 	/**
 	 *sets the hitcounter to specified ammount
@@ -287,16 +291,16 @@ public class Task extends GTData implements Comparable{
 	/**
 	 *gets the id of the accpted bid
 	 */
-	public String getAccpeptedBidID() {
-		return accpeptedBidID;
+	public String getAcceptedBidID() {
+		return acceptedBidID;
 	}
 
 	/**
 	 *sets Id of the accpted Bid
-	 * @param accpeptedBidID
+	 * @param acceptedBidID
 	 */
-	public void setAccpeptedBidID(String accpeptedBidID) {
-		this.accpeptedBidID = accpeptedBidID;
+	public void setAcceptedBidID(String acceptedBidID) {
+		this.acceptedBidID = acceptedBidID;
 	}
 
 	/**

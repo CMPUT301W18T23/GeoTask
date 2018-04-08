@@ -1,12 +1,12 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 18,
-    "identityHash": "ba22da54ff59fe02ce636f1452fff71d",
+    "version": 15,
+    "identityHash": "a4ab3f9236bbc4456635adc25841763f",
     "entities": [
       {
         "tableName": "users",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `email` TEXT, `phonenum` TEXT, `completedTasks` INTEGER, `location` TEXT, `historyList` TEXT, `starredList` TEXT, `notificationList` TEXT, `objectId` TEXT NOT NULL, `type` TEXT, `date` INTEGER NOT NULL, `version` REAL NOT NULL, `flag` INTEGER NOT NULL, PRIMARY KEY(`objectId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `email` TEXT, `phonenum` TEXT, `completedTasks` INTEGER, `location` TEXT, `historyList` TEXT, `starredList` TEXT, `objectId` TEXT NOT NULL, `type` TEXT, `date` INTEGER NOT NULL, `version` REAL NOT NULL, `flag` INTEGER NOT NULL, PRIMARY KEY(`objectId`))",
         "fields": [
           {
             "fieldPath": "name",
@@ -47,12 +47,6 @@
           {
             "fieldPath": "starredList",
             "columnName": "starredList",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
-            "fieldPath": "notificationList",
-            "columnName": "notificationList",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -160,7 +154,7 @@
       },
       {
         "tableName": "tasks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `description` TEXT, `status` TEXT, `bidList` TEXT, `acceptedBid` REAL, `acceptedBidID` TEXT, `requesterId` TEXT, `acceptedProviderID` TEXT, `hitCounter` INTEGER NOT NULL, `location` TEXT, `lowestBid` REAL, `numBids` INTEGER, `editedFlag` INTEGER NOT NULL, `objectId` TEXT NOT NULL, `type` TEXT, `date` INTEGER NOT NULL, `version` REAL NOT NULL, `flag` INTEGER NOT NULL, PRIMARY KEY(`objectId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `description` TEXT, `status` TEXT, `bidList` TEXT, `accpetedBid` REAL, `accpeptedBidID` TEXT, `requesterId` TEXT, `acceptedProviderID` TEXT, `hitCounter` INTEGER NOT NULL, `location` TEXT, `lowestBid` REAL, `numBids` INTEGER, `editedFlag` INTEGER NOT NULL, `objectId` TEXT NOT NULL, `type` TEXT, `date` INTEGER NOT NULL, `version` REAL NOT NULL, `flag` INTEGER NOT NULL, PRIMARY KEY(`objectId`))",
         "fields": [
           {
             "fieldPath": "name",
@@ -187,14 +181,14 @@
             "notNull": false
           },
           {
-            "fieldPath": "acceptedBid",
-            "columnName": "acceptedBid",
+            "fieldPath": "accpetedBid",
+            "columnName": "accpetedBid",
             "affinity": "REAL",
             "notNull": false
           },
           {
-            "fieldPath": "acceptedBidID",
-            "columnName": "acceptedBidID",
+            "fieldPath": "accpeptedBidID",
+            "columnName": "accpeptedBidID",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -283,7 +277,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"ba22da54ff59fe02ce636f1452fff71d\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"a4ab3f9236bbc4456635adc25841763f\")"
     ]
   }
 }
