@@ -5,6 +5,7 @@ package com.geotask.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -159,6 +160,8 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
             newTask = new Task(getCurrentUser().getObjectID(), titleString, descriptionString);
             photo = new Photo(newTask.getObjectID(),photoList);
             newTask.setPhotoList(photo.getObjectID());
+            Log.i("checkout", newTask.getObjectID());
+            Log.i("checkout", photo.getObjectID());
 
             MasterController.AsyncCreateNewDocument asyncCreateNewDocument
                     = new MasterController.AsyncCreateNewDocument(this);

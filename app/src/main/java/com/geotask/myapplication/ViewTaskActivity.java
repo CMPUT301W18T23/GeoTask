@@ -63,7 +63,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
     private MenuItem starBtn;
     private MenuItem deleteBtn;
     private ArrayList<Bid> bidList;
-    private List<byte[]> photolist;
+    private Photo currentPhoto;
     /**
      * inits vars and view items, and button
      * also gets current Task, Current User, and the USer of the Task currently viewed
@@ -110,7 +110,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         }
 
         if (getCurrentUser().getObjectID().equals(getCurrentTask().getRequesterID())){   //hide editbutton if not user
-            //viewphoto.setVisibility(View.GONE);
+            viewphoto.setVisibility(View.GONE);
             addBidButton.setVisibility(View.INVISIBLE);
             System.out.print("ye");
             if ("Bidded".equals(getCurrentTask().getStatus())||"Requested".equals(getCurrentTask().getStatus())||"Completed".equals(getCurrentTask().getStatus())){
@@ -271,6 +271,14 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(ViewTaskActivity.this, SelectPhotoActivity.class);
+                intent.putExtra("type","view");
+                intent.putExtra(getString(R.string.PHOTO_LIST_SIZE), currentPhoto.photolistbyte.size());
+                System.out.println("1234567890"+currentPhoto.photolistbyte.size());
+                for (int i = 0; i < currentPhoto.photolistbyte.size(); i++) {
+                    intent.putExtra("list" + i, currentPhoto.photolistbyte.get(i));
+                }
+                startActivity(intent);
+
 
             }
         });
@@ -320,8 +328,9 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
     private void getPhotolist() throws ExecutionException, InterruptedException {
         MasterController.AsyncGetDocument asyncGetDocument =
                 new MasterController.AsyncGetDocument(this,this);
+        Log.i("checkout_currnettask", getCurrentTask().toString()+getCurrentTask().getPhotoList());
         asyncGetDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getPhotoList(),Photo.class));
-        photolist = (List<byte[]>) asyncGetDocument.get();
+        currentPhoto = (Photo) asyncGetDocument.get();
     }
 
     /**

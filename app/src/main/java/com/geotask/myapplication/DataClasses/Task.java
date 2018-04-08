@@ -31,7 +31,7 @@ public class Task extends GTData implements Comparable{
 	private String description;
 	@ColumnInfo //ToDo change type to Enum
 	private String status;
-	@Ignore
+	@ColumnInfo
 	private String photoList;
 	@TypeConverters(HashSetConverter.class)
 	private HashSet<String> bidList = new HashSet<>();

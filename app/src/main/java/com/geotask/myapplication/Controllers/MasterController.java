@@ -212,13 +212,12 @@ public class MasterController {
                     result = database.bidDAO().selectByID(argument.getID());
                 } else if (argument.getType().equals(Photo.class)) {
                     try {
-                        controller.getDocument(argument.getID(), argument.getType());
+                        result = controller.getDocument(argument.getID(), argument.getType());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
             }
-            Log.i("checkout",result.toString());
             return result;
         }
 
