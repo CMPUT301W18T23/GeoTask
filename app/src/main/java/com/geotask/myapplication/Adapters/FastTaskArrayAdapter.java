@@ -250,7 +250,7 @@ public class FastTaskArrayAdapter extends ArrayAdapter<Task> implements AsyncCal
         if((item.getStatus().compareTo("Accepted") == 0) || (item.getStatus().compareTo("Completed") == 0)){
             MasterController.AsyncGetDocument asyncGetDocument =
                 new MasterController.AsyncGetDocument(this, context);
-            asyncGetDocument.execute(new AsyncArgumentWrapper(item.getAccpeptedBidID(), Bid.class));
+            asyncGetDocument.execute(new AsyncArgumentWrapper(item.getAcceptedBidID(), Bid.class));
 
             Bid remote = null;
             try {

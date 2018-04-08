@@ -148,7 +148,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
 
             MasterController.AsyncGetDocument asyncGetDocument =
                     new MasterController.AsyncGetDocument(this, this);
-            asyncGetDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getAccpeptedBidID(), Bid.class));
+            asyncGetDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getAcceptedBidID(), Bid.class));
 
             Bid accepted = null;
             try {
@@ -252,7 +252,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         //TODO - update the database by notifying the provider
 
         task.setAcceptedProviderID(bid.getProviderID());
-        task.setAccpeptedBidID(bid.getObjectID());
+        task.setAcceptedBidID(bid.getObjectID());
         task.setStatusAccepted();
 
         MasterController.AsyncUpdateDocument asyncUpdateDocument =
@@ -285,7 +285,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
             e.printStackTrace();
         }
         for (Bid bid : bidList) {
-            if (!task.getAccpeptedBidID().equals(bid.getObjectID())){
+            if (!task.getAcceptedBidID().equals(bid.getObjectID())){
                 MasterController.AsyncDeleteDocument asyncDeleteDocument =
                         new MasterController.AsyncDeleteDocument(this);
                 asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
@@ -446,9 +446,9 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
      */
     public void updateTaskAfterDelete(Bid bid , Task task){
 
-        if (bid.getObjectID().equals(task.getAccpeptedBidID())){
+        if (bid.getObjectID().equals(task.getAcceptedBidID())){
             task.setAcceptedProviderID(null);
-            task.setAccpeptedBidID(null);
+            task.setAcceptedBidID(null);
         if (bidList.size() ==0 ){
             task.setStatus("Requested");
         } else {

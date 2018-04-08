@@ -449,7 +449,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
     public void notComplete() {
         MasterController.AsyncDeleteDocument asyncDeleteDocument =
                 new MasterController.AsyncDeleteDocument(this);
-        asyncDeleteDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getAccpeptedBidID(), Bid.class));
+        asyncDeleteDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getAcceptedBidID(), Bid.class));
 
         SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
         builder.addColumns(new String[] {"taskId"});
