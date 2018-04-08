@@ -144,7 +144,7 @@ public class SelectPhotoActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View
                     view, int position, long id) {
                 if (position==parent.getChildCount()-1){
-                    if (position==6){
+                    if (position==10){
                     }else{
                         openPhoto();
                     }
