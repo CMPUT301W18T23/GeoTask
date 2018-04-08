@@ -20,7 +20,6 @@ import java.util.List;
  * Contains ElasticsearchController and 3 DatabaseController.
  * Do not call ElasticSearchController and DatabaseControllers explicitly, use this instead.
  */
-//ToDo add sync logic between local and server, ToDo JobScheduler
 public class MasterController {
 
     private static ElasticsearchController controller = new ElasticsearchController();
