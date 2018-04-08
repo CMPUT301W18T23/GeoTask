@@ -8,6 +8,7 @@ import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.LocalFilesOps.LocalDataBase;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
+import com.geotask.myapplication.DataClasses.Photo;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
@@ -95,6 +96,12 @@ public class MasterController {
                     }
                 } else if (data instanceof Bid) {
                     database.bidDAO().insert((Bid) data);
+                } else if (data instanceof Photo) {
+                    try {
+                        controller.createNewDocument(data);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 //ToDo JobSchedule

@@ -11,9 +11,15 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.geotask.myapplication.Controllers.MasterController;
+import com.geotask.myapplication.DataClasses.Photo;
 import com.geotask.myapplication.DataClasses.Task;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * handles adding a task by the task requester
  * the user must be in requester mode for the button to show to go to this activity
@@ -32,6 +38,12 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
 
     private FusedLocationProviderClient mFusedLocationClient; //for location grabbing
     private String coordString;
+
+    private List<byte[]> photoList;
+    private Photo photo;
+
+
+    private Button testbutton;
 
     /**
      *sets up buttons
@@ -53,12 +65,20 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
         Map = findViewById(R.id.TaskMap);
         Save = findViewById(R.id.TaskSave);
         Save.setEnabled(true);
+        photoList = new ArrayList<>();
 
         Picture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(AddTaskActivity.this, SelectPhotoActivity.class);
-                startActivity(intent);
+                intent.putExtra("type","add");
+                intent.putExtra(getString(R.string.PHOTO_LIST_SIZE), photoList.size());
+                System.out.println("1234567890"+photoList.size());
+                for (int i = 0; i < photoList.size(); i++) {
+                    intent.putExtra("list" + i, photoList.get(i));
+                }
+                //}
+                startActivityForResult(intent,1);
             }
         });
 
@@ -74,6 +94,23 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
                 addTask();
             }
         });
+
+
+        testbutton = findViewById(R.id.button2);
+        testbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(AddTaskActivity.this, SelectPhotoActivity.class);
+                intent.putExtra("type","view");
+                intent.putExtra(getString(R.string.PHOTO_LIST_SIZE), photoList.size());
+                for (int i = 0; i < photoList.size(); i++) {
+                    intent.putExtra("list" + i, photoList.get(i));
+                }
+                startActivity(intent);
+
+            }
+        });
+
 
     }
 
@@ -134,9 +171,17 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
         } else {
             newTask = new Task(getCurrentUser().getObjectID(), titleString, descriptionString);
 
+
+
             MasterController.AsyncCreateNewDocument asyncCreateNewDocument
                     = new MasterController.AsyncCreateNewDocument(this);
             asyncCreateNewDocument.execute(newTask);
+
+            photo = new Photo(newTask.getObjectID(),photoList);
+
+            MasterController.AsyncCreateNewDocument asyncCreateNewDocument1
+                    = new MasterController.AsyncCreateNewDocument(this);
+            asyncCreateNewDocument1.execute(photo);
 
             try {
                 Thread.sleep(400);
@@ -146,6 +191,26 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
 
             Intent intent = new Intent(getBaseContext(), MenuActivity.class);
             startActivity(intent);
+        }
+    }
+
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            Intent intent = data;
+
+
+            int size = 0;
+            if(data != null){
+                size = Integer.parseInt(intent.getExtras().get(getString(R.string.PHOTO_LIST_SIZE)).toString());
+                photoList.clear();}
+            for (int i = 0; i < size; i++) {
+                photoList.add(intent.getByteArrayExtra("list" + i));
+            }
+
+
+            System.out.println("123321123321123321123231123123123131121hg"+photoList.size());
         }
     }
 }

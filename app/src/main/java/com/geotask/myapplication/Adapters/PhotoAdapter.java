@@ -21,9 +21,9 @@ import java.util.List;
 public class PhotoAdapter extends BaseAdapter {
     private Context context;
     private int mMaxPosition;//
-    private List<String> list;
+    private List<byte[]> list;
 
-    public PhotoAdapter(Context context, List<String> list) {
+    public PhotoAdapter(Context context, List<byte[]> list) {
         this.context = context;
         this.list = list;
     }

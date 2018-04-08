@@ -17,8 +17,7 @@ public class ViewPhotoActivity extends AppCompatActivity {
 
         Intent intent = this.getIntent();
         Bundle bdl = getIntent().getExtras();
-        String img = bdl.getString("ID");
-        int x = bdl.getInt("ID");
+        byte[] img = bdl.getByteArray("ID");
         Glide.with(this).load(img).into(image);
     }
 }
