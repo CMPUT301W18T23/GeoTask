@@ -96,20 +96,7 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
         });
 
 
-        testbutton = findViewById(R.id.button2);
-        testbutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(AddTaskActivity.this, SelectPhotoActivity.class);
-                intent.putExtra("type","view");
-                intent.putExtra(getString(R.string.PHOTO_LIST_SIZE), photoList.size());
-                for (int i = 0; i < photoList.size(); i++) {
-                    intent.putExtra("list" + i, photoList.get(i));
-                }
-                startActivity(intent);
 
-            }
-        });
 
 
     }
