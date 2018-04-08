@@ -1,6 +1,7 @@
 package com.geotask.myapplication;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
@@ -75,6 +76,11 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         setContentView(R.layout.app_bar_menu_view_task);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        Bundle settings = new Bundle();
+        settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        settings.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        ContentResolver.requestSync(getAccount(), getString(R.string.SYNC_AUTHORITY), settings);
 
         title = findViewById(R.id.textViewTitle);
         name = findViewById(R.id.textViewName);
