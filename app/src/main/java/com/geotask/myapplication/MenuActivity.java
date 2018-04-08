@@ -336,6 +336,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
             String test = getSearchKeywords();
             Boolean tes2 = (getSearchKeywords() != null);
             if((getSearchKeywords() != null) && !(getSearchKeywords().compareTo("") == 0)) {
+                /*
                 Log.i("filter-------->", getSearchKeywords());
                 Log.i("filter-------->",  getSearchKeywords().split(" ").toString());
                 showClear = true;
@@ -353,6 +354,23 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 if (getSearchKeywords().split(" ").length > 0){
                     Log.d("BUGSBUGSBUGSmenu", String.valueOf(builder1.build().getSql()));
                     builder1.addRaw(" description IN (" + inString + ") ");
+                    navigationView.setCheckedItem(R.id.nav_filter);
+                }
+                */
+                showClear = true;
+                clearFiltersButton.setVisibility(View.VISIBLE);
+                Boolean first = true;
+                for (String searchTerm : getSearchKeywords().split(" ")){
+                    if(!first){
+                        inString+= "OR ";
+                    }
+                    inString += "description LIKE \"%" + searchTerm + "%\" ";
+                    first = false;
+                }
+
+                if (getSearchKeywords().split(" ").length > 0){
+                    Log.d("BUGSBUGSBUGSmenu", String.valueOf(builder1.build().getSql()));
+                    builder1.addRaw(" ( " + inString + " ) ");
                     navigationView.setCheckedItem(R.id.nav_filter);
                 }
 
