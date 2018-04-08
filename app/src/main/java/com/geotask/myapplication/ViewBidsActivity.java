@@ -33,6 +33,7 @@ import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -171,7 +172,35 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
 
             try {
                 bidList = (ArrayList<Bid>) asyncSearch.get();
+
+                /*
+                    removing duplicates
+                */
+                HashMap<String, Bid> dupHash = new HashMap<>();
+                for(Bid bid : bidList){
+                    if(dupHash.containsKey(bid.getProviderID())){
+                        Bid otherBid = dupHash.get(bid.getProviderID());
+                        if(bid.getDate() > otherBid.getDate()){
+                            dupHash.put(bid.getProviderID(), bid);
+                            MasterController.AsyncDeleteDocument asyncDeleteDocument =
+                                    new MasterController.AsyncDeleteDocument(this);
+                            asyncDeleteDocument.execute(new AsyncArgumentWrapper(otherBid.getObjectID(), Bid.class));
+                        } else {
+                            MasterController.AsyncDeleteDocument asyncDeleteDocument =
+                                    new MasterController.AsyncDeleteDocument(this);
+                            asyncDeleteDocument.execute(new AsyncArgumentWrapper(bid.getObjectID(), Bid.class));
+                        }
+
+                        //otherwise we keep the old bid
+                    } else {
+                        dupHash.put(bid.getProviderID(), bid);
+                    }
+                }
                 if(bidList != null) {
+                    bidList.clear();
+                    for(String key : dupHash.keySet()){
+                        bidList.add(dupHash.get(key));
+                    }
                     Collections.sort(bidList);
                 }
             } catch (InterruptedException | ExecutionException e) {
@@ -364,8 +393,11 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         Log.i("Adding --->", bid.getValue().toString());
         bidList.add(bid);
         Collections.sort(bidList);
+        setBidList(bidList);
+        bidList = (ArrayList<Bid>) getBidList();
         Log.i("Size --->",String.format("%d", bidList.size()));
 
+        //populateBidView();
         adapter = new BidArrayAdapter(this, R.layout.bid_list_item, bidList);
         oldBids.setAdapter(adapter);
         adapter.notifyDataSetChanged();
