@@ -175,7 +175,7 @@ public class SelectPhotoActivity extends AppCompatActivity {
                     try {
                         InputStream iStream = getContentResolver().openInputStream(imageUri);
                         byte[] inputData = getBytes(iStream);
-                        if(inputData.length/4 <65336){
+                        if(inputData.length<72990){
                             list.add(inputData);
                         }else{
                             Toast.makeText(SelectPhotoActivity.this,"Too large photo",Toast.LENGTH_SHORT).show();
