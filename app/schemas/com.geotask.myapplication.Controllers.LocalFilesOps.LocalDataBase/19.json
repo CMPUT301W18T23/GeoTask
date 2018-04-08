@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 19,
-    "identityHash": "ba22da54ff59fe02ce636f1452fff71d",
+    "identityHash": "5a192f6fb5d8fd2d08031a3ffc15a8bb",
     "entities": [
       {
         "tableName": "users",
@@ -160,7 +160,7 @@
       },
       {
         "tableName": "tasks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `description` TEXT, `status` TEXT, `bidList` TEXT, `acceptedBid` REAL, `acceptedBidID` TEXT, `requesterId` TEXT, `acceptedProviderID` TEXT, `hitCounter` INTEGER NOT NULL, `location` TEXT, `lowestBid` REAL, `numBids` INTEGER, `editedFlag` INTEGER NOT NULL, `objectId` TEXT NOT NULL, `type` TEXT, `date` INTEGER NOT NULL, `version` REAL NOT NULL, `flag` INTEGER NOT NULL, PRIMARY KEY(`objectId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `description` TEXT, `status` TEXT, `photoList` TEXT, `bidList` TEXT, `acceptedBid` REAL, `acceptedBidID` TEXT, `requesterId` TEXT, `acceptedProviderID` TEXT, `hitCounter` INTEGER NOT NULL, `location` TEXT, `lowestBid` REAL, `numBids` INTEGER, `editedFlag` INTEGER NOT NULL, `objectId` TEXT NOT NULL, `type` TEXT, `date` INTEGER NOT NULL, `version` REAL NOT NULL, `flag` INTEGER NOT NULL, PRIMARY KEY(`objectId`))",
         "fields": [
           {
             "fieldPath": "name",
@@ -177,6 +177,12 @@
           {
             "fieldPath": "status",
             "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "photoList",
+            "columnName": "photoList",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -283,7 +289,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"ba22da54ff59fe02ce636f1452fff71d\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"5a192f6fb5d8fd2d08031a3ffc15a8bb\")"
     ]
   }
 }
