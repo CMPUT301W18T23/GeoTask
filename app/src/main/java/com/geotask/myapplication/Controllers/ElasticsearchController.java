@@ -45,7 +45,7 @@ https://github.com/searchbox-io/Jest/tree/master/jest
 public class ElasticsearchController {
     private static final String SERVER_ADDRESS = "http://cmput301.softwareprocess.es:8080";
     private static JestDroidClient client;
-    private static String INDEX_NAME = "cmput301w18t23testphoto";
+    private static String INDEX_NAME = "cmput301w18t23";
 
     /**
      * Creates the index

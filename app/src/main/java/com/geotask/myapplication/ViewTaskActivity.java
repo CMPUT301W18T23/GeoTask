@@ -271,14 +271,19 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         this.viewphoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ViewTaskActivity.this, SelectPhotoActivity.class);
-                intent.putExtra("type","view");
-                intent.putExtra(getString(R.string.PHOTO_LIST_SIZE), currentPhoto.photolistbyte.size());
-                System.out.println("1234567890"+currentPhoto.photolistbyte.size());
-                for (int i = 0; i < currentPhoto.photolistbyte.size(); i++) {
-                    intent.putExtra("list" + i, currentPhoto.photolistbyte.get(i));
+                if (currentPhoto.photolistbyte.size() != 0){
+                    Intent intent = new Intent(ViewTaskActivity.this, SelectPhotoActivity.class);
+                    intent.putExtra("type","view");
+                    intent.putExtra(getString(R.string.PHOTO_LIST_SIZE), currentPhoto.photolistbyte.size());
+                    //System.out.println("1234567890"+currentPhoto.photolistbyte.size());
+                    for (int i = 0; i < currentPhoto.photolistbyte.size(); i++) {
+                        intent.putExtra("list" + i, currentPhoto.photolistbyte.get(i));
+                    }
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(ViewTaskActivity.this,"There is no photos",Toast.LENGTH_LONG).show();
                 }
-                startActivity(intent);
+
 
 
             }
