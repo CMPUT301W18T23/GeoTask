@@ -58,18 +58,33 @@ public class Task extends GTData implements Comparable{
 		return location;
 	}
 
-	public float getLocationX() { return Float.parseFloat(location.split("[,]")[0]); }
+	public Double getLocationX() {
+		System.out.println(location);
+		if (location.equals("null") || location == null) {
+			return -1.0;
+		}
+		else {
+			return Double.parseDouble((location.split("[,]")[0]));
+		 }
+	}
 
-	public float getLocationY() { return Float.parseFloat(location.split("[,]")[1]); }
+	public Double getLocationY() {
+		System.out.println(location);
+		if(location.equals("null")  || location == null) {
+			return -1.0;
+		}
+		else {
+			return Double.parseDouble((location.split("[,]")[1]));
+		}
+	}
 
 	public void setLocation(String location) {
 		this.location = location;
 	}
 	//ToDo pictures
-	//ToDo locations
 
 
-	@Ignore
+	//@Ignore
 	public Task(String requesterID, String name, String description, String location) { //need string for pictures
 		super.setType(Task.class.toString());
 		this.name = name;
@@ -92,6 +107,7 @@ public class Task extends GTData implements Comparable{
 	 * @param name
 	 * @param description
 	 */
+	@Ignore
 	public Task(String requesterID, String name, String description) { //need string for pictures
 		super.setType(Task.class.toString());
 		this.name = name;

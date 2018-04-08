@@ -26,6 +26,7 @@ import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
+import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import org.apache.commons.lang3.StringUtils;
 
