@@ -7,6 +7,7 @@ import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.geotask.myapplication.Controllers.LocalFilesOps.LocalDataBase;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
@@ -15,6 +16,8 @@ import com.geotask.myapplication.R;
 import com.geotask.myapplication.TestServerAddress;
 import com.geotask.myapplication.ViewTaskActivity;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,6 +37,8 @@ import static org.hamcrest.CoreMatchers.containsString;
 @RunWith(AndroidJUnit4.class)
 public class TestStory7TaskCompletionInteractions {
 
+    LocalDataBase database;
+
     @BeforeClass
     public static void oneTimeSetUp() {
         MasterController.verifySettings(InstrumentationRegistry.getTargetContext());
@@ -45,6 +50,20 @@ public class TestStory7TaskCompletionInteractions {
             e.printStackTrace();
         }
     }
+
+    @Before
+    public void setUp() {
+        database = LocalDataBase.getDatabase(InstrumentationRegistry.getTargetContext());
+        database.taskDAO().delete();
+        database.bidDAO().delete();
+        database.userDAO().delete();
+    }
+
+    @After
+    public void tearDown() {
+        database.close();
+    }
+
 
     @Rule
     public ActivityTestRule<ViewTaskActivity> taskViewActivityActivityTestRule =
@@ -59,7 +78,7 @@ public class TestStory7TaskCompletionInteractions {
 
     //7.b
     @Test
-    public void testChangeStatusWhenNotCompleted() throws InterruptedException {
+    public void testChangeStatusWhenNotCompleted() throws InterruptedException, IOException {
         String requesterID = "testChangeStatusWhenNotCompleted_requester";
         String providerID = "testChangeStatusWhenNotCompleted_provider";
 
@@ -76,6 +95,7 @@ public class TestStory7TaskCompletionInteractions {
         Bid bid1 = new Bid(provider.getObjectID(), 11.0, task.getObjectID());
         task.setStatus("Accepted");
         task.setAcceptedBid(bid1.getValue());
+        task.setAccpeptedBidID(bid1.getObjectID());
         task.addBid(bid1);
         Bid bid2 = new Bid(provider.getObjectID(), 12.0, task.getObjectID());
         task.addBid(bid2);
@@ -83,8 +103,6 @@ public class TestStory7TaskCompletionInteractions {
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
                 new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(task, requester, bid1, bid2, provider);
-
-        Thread.sleep(1000);
 
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
@@ -101,7 +119,6 @@ public class TestStory7TaskCompletionInteractions {
 //        onView(withId(R.id.bidsButton)).perform(click());
 //        onData(anything()).inAdapterView(withId(R.id.bidListView)).atPosition(0).perform(click());
 //        onView(withId(R.id.btn_delete_my_bid)).perform(click());
-        Thread.sleep(2000);
 ////        Espresso.pressBack();
 ////        pressBack();
 //        onView(withId(R.id.status_header))

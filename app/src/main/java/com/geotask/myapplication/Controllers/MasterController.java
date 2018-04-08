@@ -90,6 +90,7 @@ public class MasterController {
                 } else if (data instanceof User) {
                     try {
                         controller.createNewDocument(data);
+                        database.userDAO().insert((User) data);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -138,7 +139,9 @@ public class MasterController {
                 } else if (argument.getType().equals(User.class)) {
                     try {
                         result = database.userDAO().selectByID(argument.getID());
-                        //result = controller.getDocument(argument.getID(), argument.getType());
+                        if (result == null) {
+                            result = controller.getDocument(argument.getID(), argument.getType());
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
