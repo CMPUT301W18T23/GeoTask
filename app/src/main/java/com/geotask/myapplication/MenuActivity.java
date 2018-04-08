@@ -185,6 +185,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
                         .setAction("Action", null).show();
                 setSearchKeywords("");
                 setSearchStatus("All");
+                getSupportActionBar().setTitle("All Tasks");
                 setViewMode(R.integer.MODE_INT_ALL);
                 navigationView.setCheckedItem(R.id.nav_browse);
                 populateTaskView();
@@ -292,6 +293,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
             setStarredMode();
             return;
         } else if (getViewMode() == R.integer.MODE_INT_HISTORY) {
+            getSupportActionBar().setTitle("My History");
             clearFiltersButton.setVisibility(View.VISIBLE);
             adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), getLastClicked(), getCurrentUser());
             oldTasks.setAdapter(adapter);
@@ -299,6 +301,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
             setEmptyString();
             return;
         } else if (getViewMode() == R.integer.MODE_INT_OTHERS_TASKS) {
+            getSupportActionBar().setTitle(String.format("%s\'s Tasks", getLastViewedUser().getName()));
             Log.i("other------>", String.format("%d", getViewMode()));
             clearFiltersButton.setVisibility(View.VISIBLE);
             adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, getTaskList(), getLastClicked(), getCurrentUser());
