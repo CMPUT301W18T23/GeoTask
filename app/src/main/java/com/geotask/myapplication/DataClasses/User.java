@@ -4,8 +4,8 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.TypeConverters;
 
-import com.geotask.myapplication.Controllers.Helpers.BidListConverter;
 import com.geotask.myapplication.Controllers.Helpers.EmailConverter;
+import com.geotask.myapplication.Controllers.Helpers.ListConverter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,10 +28,12 @@ public class User extends GTData{
     private Integer completedTasks; //metric of completed tasks
     @ColumnInfo(name = "location", typeAffinity = ColumnInfo.TEXT)
     private String location;                                        //format example: "47.55,-82.11"
-    @TypeConverters(BidListConverter.class)
+    @TypeConverters(ListConverter.class)
     private ArrayList<String> historyList;
-    @TypeConverters(BidListConverter.class)
+    @TypeConverters(ListConverter.class)
     private ArrayList<String> starredList;
+    @TypeConverters(ListConverter.class)
+    private ArrayList<String> notificationList;
 
     /**
      *constructor
