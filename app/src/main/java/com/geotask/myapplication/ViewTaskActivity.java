@@ -282,7 +282,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
                     }
                     startActivity(intent);
                 }else{
-                    Toast.makeText(ViewTaskActivity.this,"There is no photos",Toast.LENGTH_LONG).show();
+                    Toast.makeText(ViewTaskActivity.this,"There are no photos",Toast.LENGTH_LONG).show();
                 }
 
 
