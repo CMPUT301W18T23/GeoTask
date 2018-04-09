@@ -79,8 +79,10 @@ public class ViewProfileActivity extends AbstractGeoTaskActivity implements Asyn
             //TODO make edit button visible
             this.historyBtn.setVisibility(View.VISIBLE);
         }
-        if(getCurrentUser().getUserPhoto() != null){
+        if(getCurrentUser().getUserPhoto().length != 0){
             Glide.with(context).load(getCurrentUser().getUserPhoto()).into(profilePic);
+        }else{
+            Glide.with(context).load(R.drawable.kyle_deafault).into(profilePic);
         }
     }
 

@@ -42,9 +42,11 @@ public class LetThereBeData {
         controller.createNewDocument(JamesJ);
         controller.createNewDocument(Kehan);
         String temp;
+        byte[] photo = new byte[0];
         for(int i = 0; i< 100; i++){
             for(int j = 0; j< 5; j++){
                 temp = "test" + i + "block" + j;
+
                 task = new Task(temp, temp, temp);
                 task.setRequesterID(michael.getObjectID());
                 try {

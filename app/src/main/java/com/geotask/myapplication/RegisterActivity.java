@@ -53,6 +53,7 @@ public class RegisterActivity extends AbstractGeoTaskActivity{
         photobyte = new byte[0];
         context = getApplicationContext();
 
+        Glide.with(context).load(R.drawable.kyle_deafault).into(userPhoto);
         userPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -148,7 +149,7 @@ public class RegisterActivity extends AbstractGeoTaskActivity{
                     Toast.LENGTH_SHORT)
                     .show();
             return false;
-        } else if(newPhone.getText().toString().length() > 10) {
+        } else if(newPhone.getText().toString().length() > 11) {
             Toast.makeText(this,
                     R.string.PHONE_TOO_LONG,
                     Toast.LENGTH_SHORT)

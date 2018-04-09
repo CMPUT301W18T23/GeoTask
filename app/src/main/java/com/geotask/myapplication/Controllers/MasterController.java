@@ -502,7 +502,9 @@ public class MasterController {
                     resultList = database.photoDAO().searchPhotosByQuery(argument.getSQLQuery());
                 }
             }
-            Collections.sort(resultList);
+            if(resultList != null) {
+                Collections.sort(resultList);
+            }
             return resultList;
         }
 

@@ -57,11 +57,6 @@ import static com.geotask.myapplication.AbstractGeoTaskActivity.getTaskList;
 
 public class MapActivity extends AbstractGeoTaskActivity implements OnMapReadyCallback, AsyncCallBackManager{
     private ArrayList<Task> taskList = getTaskList();
-    private FusedLocationProviderClient mFusedLocationClient; //for location
-    private String locationString;
-    private Double user_locationX;
-    private Double user_locationY;
-    private LatLng user_location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
