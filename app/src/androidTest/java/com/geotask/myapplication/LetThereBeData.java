@@ -35,13 +35,15 @@ public class LetThereBeData {
         User michael = new User("Michael", "mtang@ualberta.ca", "5555555");
         User kyle = new User("Kyle", "k@k", "55552355");
         User JamesJ = new User("JamesJ", "1@1.1", "2353490423");
+        User Kehan = new User("kehan", "kehan1@u", "2348793258");
         Task task;
         controller.createNewDocument(michael);
         controller.createNewDocument(kyle);
         controller.createNewDocument(JamesJ);
+        controller.createNewDocument(Kehan);
         String temp;
         for(int i = 0; i< 100; i++){
-            for(int j = 0; j< 2; j++){
+            for(int j = 0; j< 5; j++){
                 temp = "test" + i + "block" + j;
                 task = new Task(temp, temp, temp);
                 task.setRequesterID(michael.getObjectID());
