@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -28,6 +30,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -540,4 +543,10 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
         }
     }
 
+    //http://ramsandroid4all.blogspot.ca/2014/09/converting-byte-array-to-bitmap-in.html
+    public Bitmap ByteArrayToBitmap(byte[] byteArray)     {
+        ByteArrayInputStream arrayInputStream = new ByteArrayInputStream(byteArray);
+        Bitmap bitmap = BitmapFactory.decodeStream(arrayInputStream);
+        return bitmap;
+    }
 }

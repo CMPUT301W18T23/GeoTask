@@ -167,8 +167,10 @@ public class MasterController {
             for (AsyncArgumentWrapper argument : argumentList) {
                 verifySettings(context);
 
+                Log.i("getusergetuser", String.valueOf(result.getType().equals(User.class.toString())));
                 try {
                     result = controller.getDocument(argument.getID(), Task.class);
+                    Log.i("getusergetuser", result.toString());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -177,6 +179,7 @@ public class MasterController {
                     database.taskDAO().insert((Task) result);
                 } else if(result.getType().equals(User.class.toString())) {
                     database.userDAO().insert((User) result);
+                    Log.d("getusergetuser", result.toString());
                 } else if (result.getType().equals(Bid.class.toString())) {
                     database.bidDAO().insert((Bid) result);
                 } else if (result.getType().equals(Photo.class.toString())){
