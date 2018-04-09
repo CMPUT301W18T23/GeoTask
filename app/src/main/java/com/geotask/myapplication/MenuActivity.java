@@ -32,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.geotask.myapplication.Adapters.FastTaskArrayAdapter;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
@@ -93,6 +94,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
     private OrientationEventListener orientationEventListener = null;
     public static int screenWidthInDPs;
     public static int curOrientation;
+    private Context context;
     NavigationView navigationView;
     View headerView;
     ImageView drawerImage;
@@ -117,6 +119,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        context=getApplicationContext();
         oldTasks = findViewById(R.id.taskListView);
         emptyText = findViewById(R.id.empty_task_string);
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
@@ -294,9 +297,11 @@ public class MenuActivity extends AbstractGeoTaskActivity
 
 
 
+
         //TODO - set drawerImage to user profile pic
         drawerUsername.setText(getCurrentUser().getName());
         drawerEmail.setText(getCurrentUser().getEmail());
+        Glide.with(context).load(getCurrentUser().getUserPhoto()).into(drawerImage);
     }
 
     /**
