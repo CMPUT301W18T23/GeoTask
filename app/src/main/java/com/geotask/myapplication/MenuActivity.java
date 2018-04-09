@@ -118,6 +118,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
 //        settings.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
 //        ContentResolver.requestSync(getAccount(), getString(R.string.SYNC_AUTHORITY), settings);
 
+        //get current user location to store in the abstract class
+        locationString = retrieveLocation(this);
+
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
