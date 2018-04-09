@@ -167,7 +167,7 @@ public class MasterController {
             for (AsyncArgumentWrapper argument : argumentList) {
                 verifySettings(context);
 
-                Log.i("getusergetuser", String.valueOf(result.getType().equals(User.class.toString())));
+               // Log.i("getusergetuser", String.valueOf(result.getType().equals(User.class.toString())));
                 try {
                     result = controller.getDocument(argument.getID(), Task.class);
                     Log.i("getusergetuser", result.toString());
