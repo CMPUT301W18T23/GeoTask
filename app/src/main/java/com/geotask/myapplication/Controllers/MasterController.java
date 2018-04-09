@@ -413,6 +413,44 @@ public class MasterController {
     /**
      * AsyncTask for search, returns result through callBack
      */
+    public static class AsyncSearchServer extends AsyncTask<AsyncArgumentWrapper, Void, List<? extends GTData>> {
+        private Context context;
+        private AsyncCallBackManager callBack = null;
+
+        public AsyncSearchServer(AsyncCallBackManager callback, Context context) {
+            this.callBack = callback;
+            this.context = context;
+        }
+
+        @Override
+        protected List<? extends GTData> doInBackground(AsyncArgumentWrapper... argumentWrappers) {
+            List<? extends GTData> resultList = null;
+            verifySettings(context);
+
+            for(AsyncArgumentWrapper argument : argumentWrappers) {
+                if (argument.getType().equals(Task.class)){
+                    resultList = database.taskDAO().searchTasksByQuery(argument.getSQLQuery());
+                } else if (argument.getType().equals(Bid.class)) {
+                    resultList = database.bidDAO().searchBidsByQuery(argument.getSQLQuery());
+                } else if (argument.getType().equals(Photo.class)) {
+                    resultList = database.photoDAO().searchPhotosByQuery(argument.getSQLQuery());
+                }
+            }
+            Collections.sort(resultList);
+            return resultList;
+        }
+
+        @Override
+        protected void onPostExecute(List<? extends GTData> dataList) {
+            if(callBack != null) {
+                callBack.onPostExecute(dataList);
+            }
+        }
+    }
+
+    /**
+     * AsyncTask for search, returns result through callBack
+     */
     public static class AsyncSearch extends AsyncTask<AsyncArgumentWrapper, Void, List<? extends GTData>> {
         private Context context;
         private AsyncCallBackManager callBack = null;

@@ -208,6 +208,10 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         } else {
             starBtn.setVisible(false);
         }
+        if(!networkIsAvailable()){
+            editBtn.setVisible(false);
+            deleteBtn.setVisible(false);
+        }
         return true;
     }
 
