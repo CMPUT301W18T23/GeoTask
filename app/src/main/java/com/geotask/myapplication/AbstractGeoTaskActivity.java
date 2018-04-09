@@ -56,6 +56,7 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
     private static ContentResolver syncResolver;
     private static Context context;
     private static User lastViewedUser;
+    public static final int SET_TASK_LOCATION = 4;
 
     private static FusedLocationProviderClient mFusedLocationClient; //for location grabbing
 
