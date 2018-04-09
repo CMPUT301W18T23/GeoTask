@@ -318,8 +318,8 @@ public class MenuActivity extends AbstractGeoTaskActivity
         asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
 
         try {
-            setTaskList((ArrayList<Task>) asyncSearch.get());
-            ArrayList<Task> newList = getTaskList();
+
+            ArrayList<Task> newList = (ArrayList<Task>) asyncSearch.get();
             Boolean nofifyBool = false;
             for (Task t: newList){
                 if (!t.getBidList().isEmpty()){
