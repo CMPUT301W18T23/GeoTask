@@ -150,7 +150,7 @@ public class MapActivity extends AbstractGeoTaskActivity implements OnMapReadyCa
                 googleMap.addMarker(new MarkerOptions()             //add the marker to the map
                         .position(taskLocation)                     //set position of marker
                         .title(tempTask.getName())                  //set name of marker
-                        .icon(tempIcon)                             //set the icon to be the profile picture of the task requester
+                        //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))                             //set the icon to be the profile picture of the task requester
                 );
             }
         }
