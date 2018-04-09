@@ -120,7 +120,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         }
 
         if (getCurrentUser().getObjectID().equals(getCurrentTask().getRequesterID())){   //hide editbutton if not user
-            viewphoto.setVisibility(View.GONE);
+            viewphoto.setVisibility(View.VISIBLE);
             addBidButton.setVisibility(View.INVISIBLE);
             System.out.print("ye");
             if ("Bidded".equals(getCurrentTask().getStatus())||"Requested".equals(getCurrentTask().getStatus())||"Completed".equals(getCurrentTask().getStatus())){
