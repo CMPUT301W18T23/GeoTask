@@ -369,13 +369,44 @@ public class MenuActivity extends AbstractGeoTaskActivity
         try {
             SuperBooleanBuilder superBuilder2 = new SuperBooleanBuilder();
             superBuilder2.put("requesterID", getCurrentUser().getObjectID());
-            ArrayList<Task> newList = (ArrayList<Task>) MasterController.slowSearch(new AsyncArgumentWrapper(superBuilder2, Task.class));
+            MasterController.AsyncSearchServer asyncSearchServer =
+                    new MasterController.AsyncSearchServer(this);
+            asyncSearchServer.execute(new AsyncArgumentWrapper(superBuilder2, Task.class));
+            ArrayList<Task> newList = (ArrayList<Task>) asyncSearchServer.get();
+            //ArrayList<Task> newList = (ArrayList<Task>) MasterController.slowSearch(new AsyncArgumentWrapper(superBuilder2, Task.class));
 
 //            ArrayList<Task> newList = (ArrayList<Task>) asyncSearch.get();
             Boolean nofifyBool = false;
             for (Task t: newList){
                 if (!t.getBidList().isEmpty()){
                     nofifyBool = true;
+
+                    /*
+                    for(String bidID : t.getBidList()){
+                        Bid localBid = null;
+                        Bid serverBid = null;
+
+                        MasterController.AsyncGetDocument asyncGetDocument =
+                                new MasterController.AsyncGetDocument(this, this);
+                        asyncGetDocument.execute(new AsyncArgumentWrapper(bidID, Bid.class));
+                        localBid = (Bid) asyncGetDocument.get();
+
+                        MasterController.AsyncGetDocumentNewest asyncGetDocumentNewest =
+                                new MasterController.AsyncGetDocumentNewest(this, this);
+                        asyncGetDocumentNewest.execute(new AsyncArgumentWrapper(bidID, Bid.class));
+                        serverBid = (Bid) asyncGetDocumentNewest.get();
+
+                        if(localBid == null){
+                            MasterController.AsyncCreateNewLocalDocument asyncCreateNewLocalDocument =
+                                    new MasterController.AsyncCreateNewLocalDocument(this);
+                            asyncCreateNewLocalDocument.execute(serverBid);
+                        } else {
+                            MasterController.AsyncUpdateLocalDocument asyncUpdateLocalDocument =
+                                    new MasterController.AsyncUpdateLocalDocument(this);
+                            asyncUpdateLocalDocument.execute(serverBid);
+                        }
+                    }
+                    */
                 }
             }
             if (nofifyBool == true){
@@ -388,7 +419,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 Notification notification = new Notification.Builder(MenuActivity.this)
                         .setContentTitle("You Have New Bids")
                         .setContentText("Go to Notifications to View Bids")
-                        .setSmallIcon(R.drawable.geotaskicon)
+                        .setSmallIcon(R.drawable.geotaskicon22)
                         .setChannelId(CHANNEL_ID)
                         .build();
 
@@ -401,6 +432,10 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 mNotificationManager.notify(0, notification);
             }
         }catch (NullPointerException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
             e.printStackTrace();
         }
 //        catch (InterruptedException e){
@@ -450,7 +485,17 @@ public class MenuActivity extends AbstractGeoTaskActivity
         } else if (getViewMode() == R.integer.MODE_INT_NOTIFICATIONS){
             SuperBooleanBuilder superBuilder3 = new SuperBooleanBuilder();
             superBuilder3.put("requesterID", getCurrentUser().getObjectID());
-            ArrayList<Task> newList = (ArrayList<Task>) MasterController.slowSearch(new AsyncArgumentWrapper(superBuilder3, Task.class));
+            MasterController.AsyncSearchServer asyncSearchServer =
+                    new MasterController.AsyncSearchServer(this);
+            asyncSearchServer.execute(new AsyncArgumentWrapper(superBuilder3, Task.class));
+            ArrayList<Task> newList = null;
+            try {
+                newList = (ArrayList<Task>) asyncSearchServer.get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
 
             HashSet<String> bidList = new HashSet<>();
             ArrayList<Task> remove = new ArrayList<Task>();
