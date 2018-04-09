@@ -35,6 +35,7 @@ import android.widget.TextView;
 import com.geotask.myapplication.Adapters.FastTaskArrayAdapter;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
+import com.geotask.myapplication.Controllers.Helpers.DistanceCalculator;
 import com.geotask.myapplication.Controllers.Helpers.GetKeywordMatches;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
@@ -47,6 +48,8 @@ import junit.framework.Assert;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.HashMap;
+
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -516,52 +519,111 @@ public class MenuActivity extends AbstractGeoTaskActivity
         }
 
         if(getViewMode() == R.integer.MODE_INT_PROVIDER) {
-        /*
-            Only show tasks which have been bidded on by current user
-            Need to do this after elastic search by removing results without bids by the user
-        */
-           SQLQueryBuilder builder2 = new SQLQueryBuilder(Bid.class);
-           builder2.addColumns(new String[] {"providerID"});
-           builder2.addParameters(new String[] {getCurrentUser().getObjectID()});
+            String query1 = String.format(
+                    "SELECT\n" +
+                    "  *\n" +
+                    "FROM\n" +
+                    "  bids\n" +
+                    "WHERE\n" +
+                    "  providerId = \"%s\"\n", getCurrentUser().getObjectID());
 
-           MasterController.AsyncSearch asyncSearch2 =
-                   new MasterController.AsyncSearch(this, this);
-           asyncSearch2.execute(new AsyncArgumentWrapper(builder2, Bid.class));
 
-           try {
-               bidFilterList = (ArrayList<Bid>) asyncSearch2.get();
-           } catch (InterruptedException | ExecutionException e) {
-               e.printStackTrace();
-           }
+            Log.i("SQL:", query1);
+            System.out.println(query1);
 
-           try {
-               for (int i = 0; i < getTaskList().size(); i++) {
-                   Boolean bidbool = false;
-                   String tempTaskID = getTaskList().get(i).getObjectID();
-                   for(int j = 0; j < bidFilterList.size(); j++) {
-                       if(tempTaskID.compareTo(bidFilterList.get(j).getTaskID()) == 0) {
-                           bidbool = true;
-                       }
-                   }
-                   if (!bidbool) {
-                       getTaskList().remove(i);
-                       i--;
-                   }
-               }
-           } catch (IndexOutOfBoundsException e) {
-               e.printStackTrace();
-           }
-       } else if(getViewMode() == R.integer.MODE_INT_ASSIGNED) {
+            SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
+            builder.setRawQuery(query1);
+
+            MasterController.AsyncSearch asyncSearch1 =
+                    new MasterController.AsyncSearch(this, this);
+            asyncSearch1.execute(new AsyncArgumentWrapper(builder, Bid.class));
+
             try {
+                ArrayList<Bid> tasksBidOn = ((ArrayList<Bid>) asyncSearch1.get());
+                String keyList = "";
+                Boolean first = true;
+                for(Bid bid : tasksBidOn){
+                    if(!first){
+                        keyList += ", ";
+                    }
+                    keyList += "\"" + bid.getTaskID() + "\"";
+                    first = false;
+                }
+                keyList = "(" + keyList + ")";
+
+                SQLQueryBuilder builder2  = new SQLQueryBuilder(Task.class);
+                String query2 = String.format(
+                        "SELECT\n" +
+                        "  *\n" +
+                        "FROM\n" +
+                        "  tasks\n" +
+                        "WHERE\n" +
+                        "  status != \"Requested\" " +
+                        "    AND objectId IN %s\n", keyList);
+                builder2.setRawQuery(query2);
+                System.out.println(query2);
+
+                MasterController.AsyncSearch asyncSearch2 =
+                        new MasterController.AsyncSearch(this, this);
+                asyncSearch2.execute(new AsyncArgumentWrapper(builder2, Task.class));
+
+                setTaskList((ArrayList<Task>) asyncSearch2.get());
+
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+
+        } else if(getViewMode() == R.integer.MODE_INT_ASSIGNED) {
+            SQLQueryBuilder builder = new SQLQueryBuilder(Task.class);
+            String query = String.format("SELECT\n" +
+                    "  *\n" +
+                    "FROM\n" +
+                    "  tasks\n" +
+                    "WHERE\n" +
+                    "  acceptedProviderID = \"%s\"\n", getCurrentUser().getObjectID());
+
+            builder.setRawQuery(query);
+
+            MasterController.AsyncSearch asyncSearch1 =
+                    new MasterController.AsyncSearch(this, this);
+            asyncSearch1.execute(new AsyncArgumentWrapper(builder, Task.class));
+
+            try {
+                setTaskList((ArrayList<Task>) asyncSearch1.get());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //remove all the tasks that aren't in the specified range
+        //https://www.geodatasource.com/developers/java
+        //Used for calculating the distance between two points
+        if(getSearchRange() != -1){
+            //retrieve the user's current location
+            String userloc = retrieveLocation(this);
+            if(userloc != null) {
+                Double userX = Double.parseDouble((userloc.split(",")[0]));
+                Double userY = Double.parseDouble((userloc.split(",")[1]));
+
                 for (int i = 0; i < getTaskList().size(); i++) {
-                    Task tempTask = getTaskList().get(i);
-                    if (tempTask.getAcceptedProviderID().compareTo(getCurrentUser().getObjectID()) != 0) {
+                    Task currentTask = getTaskList().get(i);
+                    if (currentTask.getLocationX() == null || currentTask.getLocationX().equals("null")) {
                         getTaskList().remove(i);
                         i--;
+                    } else {
+                        Double taskX = currentTask.getLocationX();
+                        Double taskY = currentTask.getLocationY();
+
+                        Double distance = DistanceCalculator.distance(userX, userY, taskX, taskY, "K");
+
+                        if (distance > getSearchRange()) {
+                            getTaskList().remove(i);
+                            i--;
+                        }
                     }
                 }
-            } catch (IndexOutOfBoundsException e) {
-                e.printStackTrace();
             }
         }
 
@@ -569,6 +631,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         oldTasks.setAdapter(adapter);
         adapter.notifyDataSetChanged();
         setEmptyString();
+
     }
 
     public void setEmptyString(){
