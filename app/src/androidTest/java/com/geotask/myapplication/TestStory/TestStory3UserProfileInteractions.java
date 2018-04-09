@@ -11,10 +11,12 @@ import android.support.test.runner.AndroidJUnit4;
 import android.view.Gravity;
 
 import com.geotask.myapplication.Controllers.MasterController;
+import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.LoginActivity;
 import com.geotask.myapplication.R;
 import com.geotask.myapplication.TestServerAddress;
+import com.geotask.myapplication.ViewTaskActivity;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -54,6 +56,10 @@ public class TestStory3UserProfileInteractions {
     @Rule
     public ActivityTestRule<LoginActivity> LoginActivityTestRule =
             new ActivityTestRule<>(LoginActivity.class, false, false);
+
+    @Rule
+    public ActivityTestRule<ViewTaskActivity> viewTaskActivityRule =
+            new ActivityTestRule<>(ViewTaskActivity.class, false, false);
 
     //3.a
     @Test
@@ -115,6 +121,18 @@ public class TestStory3UserProfileInteractions {
     //part 5
     @Test
     public void testViewAnotherProfile() {
+        User anotherUser = new User("anotherUser", "anotherUser", "anotherUser");
+        User currentUser = new User("current", "current", "current");
+        Task currentTask = new Task("currentTask", "currentTask", "currentTask");
+        MasterController.AsyncCreateNewDocument asyncCreateNewDocument =
+                new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
+        asyncCreateNewDocument.execute(anotherUser, currentTask, currentUser);
 
+        Context targetContext =
+                InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Intent intent = new Intent(targetContext, ViewTaskActivity.class);
+        viewTaskActivityRule.getActivity().setCurrentTask(currentTask);
+        viewTaskActivityRule.getActivity().setCurrentUser(currentUser);
+        viewTaskActivityRule.launchActivity(intent);
     }
 }

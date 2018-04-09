@@ -6,6 +6,7 @@ import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
 import com.geotask.myapplication.DataClasses.Bid;
+import com.geotask.myapplication.DataClasses.Photo;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
@@ -13,7 +14,7 @@ import com.geotask.myapplication.DataClasses.User;
 /**
  * singleton RoomDataBase object used to instanstiate reference used to access database
  */
-@Database(entities = {User.class, Bid.class, Task.class}, version = 20)
+@Database(entities = {User.class, Bid.class, Task.class, Photo.class}, version = 22)
 public abstract class LocalDataBase extends RoomDatabase{
 
     private static LocalDataBase instance;
@@ -21,6 +22,7 @@ public abstract class LocalDataBase extends RoomDatabase{
     public abstract UserDAO userDAO();
     public abstract TaskDAO taskDAO();
     public abstract BidDAO bidDAO();
+    public abstract PhotoDAO photoDAO();
 
     public static LocalDataBase getDatabase(Context context) {
         if(instance == null) {

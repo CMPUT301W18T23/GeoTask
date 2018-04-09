@@ -2,6 +2,7 @@ package com.geotask.myapplication.DataClasses;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.TypeConverters;
 
 import com.geotask.myapplication.Controllers.Helpers.EmailConverter;
@@ -9,6 +10,7 @@ import com.geotask.myapplication.Controllers.Helpers.ListConverter;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * data structure for A User
@@ -25,6 +27,8 @@ public class User extends GTData{
     @ColumnInfo(name = "phonenum", typeAffinity = ColumnInfo.TEXT) //ToDo validation
     private String phonenum;
     @ColumnInfo
+    private byte[] userPhoto;
+    @ColumnInfo
     private Integer completedTasks; //metric of completed tasks
     @ColumnInfo(name = "location", typeAffinity = ColumnInfo.TEXT)
     private String location;                                        //format example: "47.55,-82.11"
@@ -37,12 +41,14 @@ public class User extends GTData{
 
     /**
      *constructor
+     * @param userPhoto
      * @param name
      * @param email
      * @param phonenum
      */
-    public User(String name, String email, String phonenum){
+    public User(byte[] userPhoto,String name, String email, String phonenum){
         super.setType(User.class.toString());
+        this.userPhoto = userPhoto;
         this.name = name;
         this.email = EmailConverter.convertEmailForElasticSearch(email);
         this.phonenum = phonenum;
@@ -51,6 +57,21 @@ public class User extends GTData{
         this.starredList = new ArrayList<String>();
         this.historyList = new ArrayList<String>();
     }
+
+    @Ignore
+    public User(String name, String email, String phonenum){
+        super.setType(User.class.toString());
+        this.userPhoto = userPhoto;
+        this.name = name;
+        this.email = EmailConverter.convertEmailForElasticSearch(email);
+        this.phonenum = phonenum;
+        this.completedTasks = 0;
+        super.setDate(new Date().getTime());
+        this.starredList = new ArrayList<String>();
+        this.historyList = new ArrayList<String>();
+    }
+
+
 
     /**
      *gets  the location of user
@@ -128,6 +149,14 @@ public class User extends GTData{
     /**
      *gets a number of completed tasks
      */
+
+    public byte[] getUserPhoto() {
+        return userPhoto;
+    }
+
+    public void setUserPhoto(byte[] userPhoto) {
+        this.userPhoto = userPhoto;
+    }
     public Integer getCompletedTasks() {
         return completedTasks;
     }

@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 20,
-    "identityHash": "5a192f6fb5d8fd2d08031a3ffc15a8bb",
+    "identityHash": "dab633dc2ff9a466ea0a1b3e960dd17a",
     "entities": [
       {
         "tableName": "users",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `email` TEXT, `phonenum` TEXT, `completedTasks` INTEGER, `location` TEXT, `historyList` TEXT, `starredList` TEXT, `notificationList` TEXT, `objectId` TEXT NOT NULL, `type` TEXT, `date` INTEGER NOT NULL, `version` REAL NOT NULL, `flag` INTEGER NOT NULL, PRIMARY KEY(`objectId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT, `email` TEXT, `phonenum` TEXT, `userPhoto` BLOB, `completedTasks` INTEGER, `location` TEXT, `historyList` TEXT, `starredList` TEXT, `notificationList` TEXT, `objectId` TEXT NOT NULL, `type` TEXT, `date` INTEGER NOT NULL, `version` REAL NOT NULL, `flag` INTEGER NOT NULL, PRIMARY KEY(`objectId`))",
         "fields": [
           {
             "fieldPath": "name",
@@ -24,6 +24,12 @@
             "fieldPath": "phonenum",
             "columnName": "phonenum",
             "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "userPhoto",
+            "columnName": "userPhoto",
+            "affinity": "BLOB",
             "notNull": false
           },
           {
@@ -289,7 +295,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"5a192f6fb5d8fd2d08031a3ffc15a8bb\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"dab633dc2ff9a466ea0a1b3e960dd17a\")"
     ]
   }
 }

@@ -1,6 +1,5 @@
 package com.geotask.myapplication;
 
-import com.geotask.myapplication.Controllers.Helpers.UniqueIDGenerator;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 
