@@ -261,7 +261,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
     private Boolean syncTaskAndBidData(){
         MasterController.AsyncGetDocumentNewest asyncGetDocument =
                 new MasterController.AsyncGetDocumentNewest(this, this);
-        asyncGetDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getObjectID(), Bid.class));
+        asyncGetDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getObjectID(), Task.class));
         Task task = null;
         try {
             task = (Task) asyncGetDocument.get();
@@ -281,7 +281,10 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
                         new MasterController.AsyncSearch(this, this);
                 asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
 
-                ArrayList<Bid> updatedBidList = (ArrayList<Bid>) MasterController.slowSearch(new AsyncArgumentWrapper(superBuilder, Bid.class));
+                MasterController.AsyncSearchServer asyncSearchServer =
+                        new MasterController.AsyncSearchServer(this);
+                asyncSearchServer.execute(new AsyncArgumentWrapper(superBuilder, Bid.class));
+                ArrayList<Bid> updatedBidList = (ArrayList<Bid>) asyncSearchServer.get(); // (ArrayList<Bid>) MasterController.slowSearch(new AsyncArgumentWrapper(superBuilder, Bid.class));
                 ArrayList<Bid> oldBidList = (ArrayList<Bid>) asyncSearch.get();
 
                 /*
