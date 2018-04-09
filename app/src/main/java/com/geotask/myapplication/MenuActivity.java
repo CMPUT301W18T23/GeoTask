@@ -423,22 +423,22 @@ public class MenuActivity extends AbstractGeoTaskActivity
         /*
                Perform the search
          */
-        if(anyStatus || (getViewMode() == R.integer.MODE_INT_ALL)) {
-            MasterController.AsyncSearch asyncSearch =
-                    new MasterController.AsyncSearch(this, this);
-            asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
+        MasterController.AsyncSearch asyncSearch =
+                new MasterController.AsyncSearch(this, this);
+        asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
 
-            try {
-                setTaskList((ArrayList<Task>) asyncSearch.get());
-                ArrayList<Task> newList = getTaskList();
-                if (inString.compareTo("") != 0) {
-                    newList = GetKeywordMatches.getSortedResults(newList, getSearchKeywords());
-                }
-                setTaskList(newList);
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+        try {
+            setTaskList((ArrayList<Task>) asyncSearch.get());
+            ArrayList<Task> newList = getTaskList();
+            if (inString.compareTo("") != 0) {
+                newList = GetKeywordMatches.getSortedResults(newList, getSearchKeywords());
             }
-        } else if(getViewMode() == R.integer.MODE_INT_PROVIDER) {
+            setTaskList(newList);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        if(getViewMode() == R.integer.MODE_INT_PROVIDER) {
         /*
             Only show tasks which have been bidded on by current user
             Need to do this after elastic search by removing results without bids by the user

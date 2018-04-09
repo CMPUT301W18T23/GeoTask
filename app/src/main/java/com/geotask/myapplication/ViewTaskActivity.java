@@ -23,6 +23,7 @@ import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
+import com.geotask.myapplication.DataClasses.Photo;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
@@ -54,6 +55,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
     private Button addBidButton;
     private Button doneButton;
     private Button notCompleteButton;
+    private Button viewphoto;
     private PopupWindow POPUP_WINDOW_DELETION = null;   //popup for error message
     private PopupWindow POPUP_WINDOW_DONE = null;   //popup for error message
     private User userBeingViewed;
@@ -62,6 +64,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
     private MenuItem starBtn;
     private MenuItem deleteBtn;
     private ArrayList<Bid> bidList;
+    private Photo currentPhoto;
     /**
      * inits vars and view items, and button
      * also gets current Task, Current User, and the USer of the Task currently viewed
@@ -101,12 +104,22 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         addBidButton = findViewById(R.id.addBidButton);
         doneButton = findViewById(R.id.doneButton);
         notCompleteButton = findViewById(R.id.notCompleteButton);
+        viewphoto = findViewById(R.id.viewPhoto);
 
         updateDisplayedValues();
         setupButtons();
         getTaskUser();
+        try {
+            getPhotolist();
+            //System.out.println(photolist.get(0).toString());
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         if (getCurrentUser().getObjectID().equals(getCurrentTask().getRequesterID())){   //hide editbutton if not user
+            viewphoto.setVisibility(View.GONE);
             addBidButton.setVisibility(View.INVISIBLE);
             System.out.print("ye");
             if ("Bidded".equals(getCurrentTask().getStatus())||"Requested".equals(getCurrentTask().getStatus())||"Completed".equals(getCurrentTask().getStatus())){
@@ -115,8 +128,10 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
 
             }
         } else {
+            viewphoto.setVisibility(View.VISIBLE);
             if ("Bidded".equals(getCurrentTask().getStatus())||"Requested".equals(getCurrentTask().getStatus())) {
                 addBidButton.setVisibility(View.VISIBLE);
+
             } else {
                 addBidButton.setVisibility(View.INVISIBLE);
             }
@@ -163,7 +178,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         editBtn = toolbar.getMenu().findItem(R.id.action_edit);
         starBtn = toolbar.getMenu().findItem(R.id.action_star);
         deleteBtn = toolbar.getMenu().findItem(R.id.action_delete);
-
+        deleteBtn.setEnabled(true);
         if((getCurrentUser().getObjectID().compareTo(getCurrentTask().getRequesterID()) == 0)
                 && (getCurrentTask().getStatus().toLowerCase().compareTo("requested") == 0)) {
             editBtn.setVisible(true);
@@ -221,8 +236,8 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         } else if (id == R.id.action_delete){
             String taskStatus = getCurrentTask().getStatus();
             if(taskStatus.compareTo("Accepted") != 0 && taskStatus.compareTo("Completed") != 0) {
+                deleteBtn.setEnabled(false);
                 deleteData();
-
                 Intent intent = new Intent(ViewTaskActivity.this, MenuActivity.class);
                 startActivity(intent);
             } else {
@@ -317,6 +332,26 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
      * sets up buttons (cleaner than in the one methood
      */
     private void setupButtons(){
+        this.viewphoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (currentPhoto.photolistbyte.size() != 0){
+                    Intent intent = new Intent(ViewTaskActivity.this, SelectPhotoActivity.class);
+                    intent.putExtra("type","view");
+                    intent.putExtra(getString(R.string.PHOTO_LIST_SIZE), currentPhoto.photolistbyte.size());
+                    //System.out.println("1234567890"+currentPhoto.photolistbyte.size());
+                    for (int i = 0; i < currentPhoto.photolistbyte.size(); i++) {
+                        intent.putExtra("list" + i, currentPhoto.photolistbyte.get(i));
+                    }
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(ViewTaskActivity.this,"There is no photos",Toast.LENGTH_LONG).show();
+                }
+
+
+
+            }
+        });
 
         this.bidButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
@@ -358,6 +393,14 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
             }
         });
 
+    }
+
+    private void getPhotolist() throws ExecutionException, InterruptedException {
+        MasterController.AsyncGetDocument asyncGetDocument =
+                new MasterController.AsyncGetDocument(this,this);
+        Log.i("checkout_currnettask", getCurrentTask().toString()+getCurrentTask().getPhotoList());
+        asyncGetDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getPhotoList(),Photo.class));
+        currentPhoto = (Photo) asyncGetDocument.get();
     }
 
     /**
@@ -514,7 +557,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
     public void notComplete() {
         MasterController.AsyncDeleteDocument asyncDeleteDocument =
                 new MasterController.AsyncDeleteDocument(this);
-        asyncDeleteDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getAccpeptedBidID(), Bid.class));
+        asyncDeleteDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getAcceptedBidID(), Bid.class));
 
         SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
         builder.addColumns(new String[] {"taskId"});
@@ -724,5 +767,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
+
+
 
 }

@@ -8,6 +8,10 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 
 public class ViewPhotoActivity extends AppCompatActivity {
+    /**
+     * open the photo into new view activity
+     * @param savedInstanceState
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,8 +21,7 @@ public class ViewPhotoActivity extends AppCompatActivity {
 
         Intent intent = this.getIntent();
         Bundle bdl = getIntent().getExtras();
-        String img = bdl.getString("ID");
-        int x = bdl.getInt("ID");
+        byte[] img = bdl.getByteArray("ID");
         Glide.with(this).load(img).into(image);
     }
 }

@@ -33,8 +33,7 @@
             android:label="Edit Profile"
             android:noHistory="true" />
         <activity
-            android:name=".AddTaskActivity"
-            android:noHistory="true" />
+            android:name=".AddTaskActivity" />
         <activity
             android:name=".ViewBidsActivity"
             android:noHistory="true"
