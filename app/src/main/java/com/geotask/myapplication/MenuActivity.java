@@ -312,7 +312,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         int n = getCurrentUser().getUserPhoto().length;
         Log.i("checklength",String.valueOf(n));
         if(getCurrentUser().getUserPhoto().length == 0){
-            //Glide.with(context).load(R.drawable.defaultheadshot).into(drawerImage);
+            Glide.with(context).load(R.drawable.kyle_deafault).into(drawerImage);
         }else{
             Glide.with(context).load(getCurrentUser().getUserPhoto()).into(drawerImage);}
 
