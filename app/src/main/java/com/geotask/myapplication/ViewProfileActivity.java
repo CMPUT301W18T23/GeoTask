@@ -1,5 +1,6 @@
 package com.geotask.myapplication;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -11,6 +12,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.MasterController;
@@ -39,6 +41,7 @@ public class ViewProfileActivity extends AbstractGeoTaskActivity implements Asyn
     private Button historyBtn;
     private MenuItem editBtn;
     private Toolbar toolbar;
+    private Context context;
 
     /**
      * sets up vars from intent to view user data
@@ -55,6 +58,8 @@ public class ViewProfileActivity extends AbstractGeoTaskActivity implements Asyn
         setContentView(R.layout.app_bar_menu_profile);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        context= getApplicationContext();
+
 
         Intent intent = getIntent();
         this.viewUser = (User) intent.getSerializableExtra(getString(R.string.VIEW_USER));
@@ -73,6 +78,9 @@ public class ViewProfileActivity extends AbstractGeoTaskActivity implements Asyn
         if(getCurrentUser().getObjectID().compareTo(viewUser.getObjectID()) ==0){
             //TODO make edit button visible
             this.historyBtn.setVisibility(View.VISIBLE);
+        }
+        if(getCurrentUser().getUserPhoto() != null){
+            Glide.with(context).load(getCurrentUser().getUserPhoto()).into(profilePic);
         }
     }
 

@@ -27,6 +27,7 @@ import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
+import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -43,6 +44,8 @@ import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import static com.geotask.myapplication.AbstractGeoTaskActivity.getTaskList;
 
@@ -50,7 +53,7 @@ import static com.geotask.myapplication.AbstractGeoTaskActivity.getTaskList;
  * Created by James on 2018-03-17.
  */
 
-public class MapActivity extends AbstractGeoTaskActivity implements OnMapReadyCallback {
+public class MapActivity extends AbstractGeoTaskActivity implements OnMapReadyCallback, AsyncCallBackManager{
     private ArrayList<Task> taskList = getTaskList();
     private FusedLocationProviderClient mFusedLocationClient; //for location
     private String locationString;
@@ -105,14 +108,39 @@ public class MapActivity extends AbstractGeoTaskActivity implements OnMapReadyCa
             }
             else {
                 //add custom marker for this task
-                LatLng taskLocation = new LatLng(taskList.get(i).getLocationX(), taskList.get(i).getLocationY());
+                Task tempTask = taskList.get(i);            //get current task
+
+                //get user that requested the task
+                MasterController.AsyncGetDocument asyncGetDocument =
+                        new MasterController.AsyncGetDocument(this, this);
+                asyncGetDocument.execute(new AsyncArgumentWrapper(tempTask.getRequesterID(), Task.class));
+                User tempUser = null;
+                try {
+                tempUser = (User) asyncGetDocument.get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+
+                LatLng taskLocation = new LatLng(tempTask.getLocationX(), tempTask.getLocationY());
                 googleMap.addMarker(new MarkerOptions()             //add the marker to the map
                         .position(taskLocation)                     //set position of marker
-                        .title(taskList.get(i).getName())           //set name of marker
-                        //########set the icon to be the profile picture of the task requester
+                        .title(tempTask.getName())                  //set name of marker
+                        //.icon(tempUser.getUserPhoto())              //set the icon to be the profile picture of the task requester
                 );
             }
         }
+    }
+
+    @Override
+    public void onPostExecute(GTData data) {
+
+    }
+
+    @Override
+    public void onPostExecute(List<? extends GTData> searchResult) {
+
     }
 }
 
