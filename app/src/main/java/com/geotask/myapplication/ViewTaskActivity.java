@@ -415,9 +415,9 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
      * @throws InterruptedException
      */
     private void getTaskUser(){  //this should work when get really data to get
-        MasterController.AsyncGetDocumentNewest asyncGetDocumentNewest =
-                new MasterController.AsyncGetDocumentNewest(this, this);
-        asyncGetDocumentNewest.execute(new AsyncArgumentWrapper(getCurrentTask().getRequesterID(), User.class));
+        MasterController.AsyncGetDocument asyncGetDocument =
+                                new MasterController.AsyncGetDocument(this, this);
+        asyncGetDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getRequesterID(), User.class));
     }
 
     /**

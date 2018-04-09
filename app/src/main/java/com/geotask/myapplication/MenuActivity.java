@@ -133,6 +133,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
             public void onRefresh() {
                 refreshLayout.setRefreshing(true);
                 syncTasksFromServer();
+                syncBidsFromServer();
                 populateTaskView();
                 refreshLayout.setRefreshing(false);
                 notifyUser();
@@ -310,7 +311,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         int n = getCurrentUser().getUserPhoto().length;
         Log.i("checklength",String.valueOf(n));
         if(getCurrentUser().getUserPhoto().length == 0){
-            Glide.with(context).load(R.drawable.defaultheadshot).into(drawerImage);
+            //Glide.with(context).load(R.drawable.defaultheadshot).into(drawerImage);
         }else{
             Glide.with(context).load(getCurrentUser().getUserPhoto()).into(drawerImage);}
 
@@ -996,6 +997,59 @@ public class MenuActivity extends AbstractGeoTaskActivity
                         MasterController.AsyncCreateNewLocalDocument asyncCreateNewLocalDocument =
                                 new MasterController.AsyncCreateNewLocalDocument(this);
                         asyncCreateNewLocalDocument.execute(task);
+                    }
+                }
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void syncBidsFromServer(){
+        if(networkIsAvailable()) {
+            //grab from server
+            SuperBooleanBuilder builder = new SuperBooleanBuilder();
+            MasterController.AsyncSearchServer asyncSearchServer =
+                    new MasterController.AsyncSearchServer(this);
+            asyncSearchServer.execute(new AsyncArgumentWrapper(builder, Bid.class));
+
+            //grab from local
+            SQLQueryBuilder builder2 = new SQLQueryBuilder(Bid.class);
+            MasterController.AsyncSearch asyncSearch =
+                    new MasterController.AsyncSearch(this, this);
+            asyncSearch.execute(new AsyncArgumentWrapper(builder2, Bid.class));
+
+            try {
+                ArrayList<Bid> serverList = (ArrayList<Bid>) asyncSearchServer.get();
+                ArrayList<Bid> localList = (ArrayList<Bid>) asyncSearch.get();
+
+                if((serverList == null) || (localList == null)){
+                    return;
+                }
+                Integer test1 = serverList.size();
+                Integer test2 = localList.size();
+                Log.i("Sizes", String.format("%d %d", test1, test2));
+                HashMap<Bid, Bid> localHash = new HashMap<Bid, Bid>();
+                for(Bid Bid : localList){
+                    localHash.put(Bid, Bid);
+                }
+                for(Bid Bid : serverList){
+                    if(localHash.containsKey(Bid)){
+                        String string1 = new Gson().toJson(Bid);
+                        String string2 = new Gson().toJson(localHash.get(Bid));
+                        //if the Bids are not the same
+                        if(string1.compareTo(string2) != 0){
+                            MasterController.AsyncUpdateLocalDocument asyncUpdateLocalDocument =
+                                    new MasterController.AsyncUpdateLocalDocument(this);
+                            asyncUpdateLocalDocument.execute(Bid);
+                        }
+                    } else {
+                        MasterController.AsyncCreateNewLocalDocument asyncCreateNewLocalDocument =
+                                new MasterController.AsyncCreateNewLocalDocument(this);
+                        asyncCreateNewLocalDocument.execute(Bid);
                     }
                 }
 
