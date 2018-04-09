@@ -27,7 +27,6 @@ public class MasterController {
     private static LocalDataBase database;
 
     public static void verifySettings(Context context) {
-        controller.verifySettings();
         if(database == null) {
             database = LocalDataBase.getDatabase(context);
         }

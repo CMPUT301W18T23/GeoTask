@@ -16,7 +16,6 @@ import com.searchly.jestdroid.JestDroidClient;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.Date;
 import java.util.List;
 
 import io.searchbox.client.JestResult;
@@ -93,7 +92,6 @@ public class ElasticsearchController {
      * @return - ID of the document
      */
     public JestResult createNewDocument(GTData data) throws IOException {
-        data.setDate(new Date().getTime());
         Gson gson = new Gson();
         String json = gson.toJson(data);
         Index request = new Index.Builder(json)
@@ -169,7 +167,6 @@ public class ElasticsearchController {
      * @throws IOException
      */
     public JestResult updateDocument(GTData data) throws IOException {
-        data.setDate(new Date().getTime());
         Gson gson = new Gson();
         String json = gson.toJson(data);
         Index request = new Index.Builder(json)
@@ -182,7 +179,6 @@ public class ElasticsearchController {
         return result;
     }
     public JestResult updateDocument(GTData data, double version) throws IOException {
-        data.setDate(new Date().getTime());
         Gson gson = new Gson();
         String json = gson.toJson(data);
         Index request = new Index.Builder(json)

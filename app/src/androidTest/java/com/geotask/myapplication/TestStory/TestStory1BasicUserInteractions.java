@@ -79,7 +79,7 @@ public class TestStory1BasicUserInteractions {
 
     @After
     public void tearDown() {
-        database.close();
+        //database.close();
     }
 
     //1.a
@@ -119,14 +119,12 @@ public class TestStory1BasicUserInteractions {
         onView(withId(R.id.TaskSave))
                 .perform(click());
 
-        Thread.sleep(1000);
         onView(withId(R.id.drawer_layout))
                 .check(matches(isClosed(Gravity.LEFT)))
                 .perform(DrawerActions.open());
         onView(withId(R.id.nav_view))
                 .perform(NavigationViewActions.navigateTo(R.id.nav_requester));
 
-        Thread.sleep(1000);
         onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).perform(click());
 
     }
@@ -154,7 +152,6 @@ public class TestStory1BasicUserInteractions {
                 .perform(DrawerActions.open());
         onView(withId(R.id.nav_view))
                 .perform(NavigationViewActions.navigateTo(R.id.nav_requester));
-        Thread.sleep(1000);
         onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).perform(click());
         pressBack();
     }
@@ -173,10 +170,9 @@ public class TestStory1BasicUserInteractions {
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
         Intent result = new Intent(targetContext, MenuActivity.class);
-        testMenu.launchActivity(result);
         testMenu.getActivity().setCurrentUser(user);
         testMenu.getActivity().setCurrentTask(task);
-
+        testMenu.launchActivity(result);
 
         onView(withId(R.id.drawer_layout))
                 .check(matches(isClosed(Gravity.LEFT)))
@@ -184,8 +180,8 @@ public class TestStory1BasicUserInteractions {
         onView(withId(R.id.nav_view))
                 .perform(NavigationViewActions.navigateTo(R.id.nav_requester));
 
-        Thread.sleep(1000);
         onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).perform(click());
+        Thread.sleep(1000);
 
         //onView(withId(R.id.editTaskButton)).perform(click());
         onView(withId(R.id.action_delete)).perform(click());
@@ -235,7 +231,6 @@ public class TestStory1BasicUserInteractions {
         onView(withId(R.id.nav_view))
                 .perform(NavigationViewActions.navigateTo(R.id.nav_all));
 
-        Thread.sleep(1000);
         onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).perform(click());
         pressBack();
         onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(1).perform(click());
