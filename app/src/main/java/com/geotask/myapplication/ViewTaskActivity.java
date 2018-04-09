@@ -281,7 +281,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
                         new MasterController.AsyncSearch(this, this);
                 asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
 
-                ArrayList<Bid> updatedBidList = (ArrayList<Bid>) MasterController.slowSearch(new AsyncArgumentWrapper(superBuilder.toString(), Bid.class));
+                ArrayList<Bid> updatedBidList = (ArrayList<Bid>) MasterController.slowSearch(new AsyncArgumentWrapper(superBuilder, Bid.class));
                 ArrayList<Bid> oldBidList = (ArrayList<Bid>) asyncSearch.get();
 
                 /*

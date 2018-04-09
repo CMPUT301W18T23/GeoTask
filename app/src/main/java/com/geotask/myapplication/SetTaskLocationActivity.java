@@ -24,10 +24,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
  */
 
 public class SetTaskLocationActivity extends AbstractGeoTaskActivity implements OnMapReadyCallback {
-    private String locationString;
-    private Double user_locationX;
-    private Double user_locationY;
-    private LatLng user_location;
     private String manLocation;
 
     @Override

@@ -15,6 +15,7 @@ package com.geotask.myapplication;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -35,6 +36,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -55,11 +57,6 @@ import static com.geotask.myapplication.AbstractGeoTaskActivity.getTaskList;
 
 public class MapActivity extends AbstractGeoTaskActivity implements OnMapReadyCallback, AsyncCallBackManager{
     private ArrayList<Task> taskList = getTaskList();
-    private FusedLocationProviderClient mFusedLocationClient; //for location
-    private String locationString;
-    private Double user_locationX;
-    private Double user_locationY;
-    private LatLng user_location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,21 +110,42 @@ public class MapActivity extends AbstractGeoTaskActivity implements OnMapReadyCa
                 //get user that requested the task
                 MasterController.AsyncGetDocument asyncGetDocument =
                         new MasterController.AsyncGetDocument(this, this);
-                asyncGetDocument.execute(new AsyncArgumentWrapper(tempTask.getRequesterID(), Task.class));
+                asyncGetDocument.execute(new AsyncArgumentWrapper(tempTask.getRequesterID(), User.class));
+                Log.e("testingnull",tempTask.getRequesterID());
                 User tempUser = null;
+
                 try {
                 tempUser = (User) asyncGetDocument.get();
+                Log.e("testing","was able to assign tempUser");
                 } catch (InterruptedException e) {
+                    Log.e("catch","InterruptedException");
                     e.printStackTrace();
                 } catch (ExecutionException e) {
+                    Log.e("catch","ExecutionException");
                     e.printStackTrace();
+                }
+
+                BitmapDescriptor tempIcon = null;
+
+                //decide what colour icon to use if the requester did not have a profile picure (it was null)
+                if(tempUser.getUserPhoto() == null){
+                    Log.e("testing","setting icon to red or yellow");
+                    if(tempTask.getStatus().equals("requested")) {
+                        tempIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
+                    }
+                    else if(tempTask.getStatus().equals("bidded")) {
+                        tempIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
+                    }
+                }
+                else{
+                    tempIcon = BitmapDescriptorFactory.fromBitmap(ByteArrayToBitmap(tempUser.getUserPhoto()));
                 }
 
                 LatLng taskLocation = new LatLng(tempTask.getLocationX(), tempTask.getLocationY());
                 googleMap.addMarker(new MarkerOptions()             //add the marker to the map
                         .position(taskLocation)                     //set position of marker
                         .title(tempTask.getName())                  //set name of marker
-                        //.icon(tempUser.getUserPhoto())              //set the icon to be the profile picture of the task requester
+                        //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))                             //set the icon to be the profile picture of the task requester
                 );
             }
         }

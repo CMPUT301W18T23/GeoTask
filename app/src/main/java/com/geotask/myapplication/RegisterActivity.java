@@ -156,7 +156,7 @@ public class RegisterActivity extends AbstractGeoTaskActivity{
             return false;
         } else {
             try {
-                int testPhoneToInt = Integer.parseInt(newPhone.getText().toString());
+                double testPhoneToInt = Double.parseDouble(newPhone.getText().toString());
             } catch(NumberFormatException e) {
                 Toast.makeText(this,
                         R.string.INVALID_PHONE,
