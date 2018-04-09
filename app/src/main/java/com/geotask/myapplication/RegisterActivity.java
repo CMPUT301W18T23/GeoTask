@@ -53,6 +53,7 @@ public class RegisterActivity extends AbstractGeoTaskActivity{
         photobyte = new byte[0];
         context = getApplicationContext();
 
+        Glide.with(context).load(R.drawable.defaultheadshot).into(userPhoto);
         userPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

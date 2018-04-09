@@ -22,7 +22,8 @@
         android:theme="@style/Theme.AppCompat.Light">
         //map related things START here
         <activity
-            android:name=".RegisterActivity"/>
+            android:name=".RegisterActivity"
+            android:label="Register"/>
         <activity
             android:name=".MenuActivity"
             android:label="@string/title_activity_menu"

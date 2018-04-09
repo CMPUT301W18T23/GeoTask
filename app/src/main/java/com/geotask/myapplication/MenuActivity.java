@@ -307,7 +307,12 @@ public class MenuActivity extends AbstractGeoTaskActivity
         //TODO - set drawerImage to user profile pic
         drawerUsername.setText(getCurrentUser().getName());
         drawerEmail.setText(getCurrentUser().getEmail());
-        Glide.with(context).load(getCurrentUser().getUserPhoto()).into(drawerImage);
+        int n = getCurrentUser().getUserPhoto().length;
+        Log.i("checklength",String.valueOf(n));
+        if(getCurrentUser().getUserPhoto().length == 0){
+            Glide.with(context).load(R.drawable.defaultheadshot).into(drawerImage);
+        }else{
+            Glide.with(context).load(getCurrentUser().getUserPhoto()).into(drawerImage);}
 
         drawerImage.setOnClickListener(new View.OnClickListener() {
             @Override
