@@ -43,6 +43,7 @@ import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
+import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import junit.framework.Assert;
 
@@ -227,14 +228,14 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 } else {
                     Log.i("click --->", "not-clicked");
                 }
-                if(getTaskList().size() >= position){
+//                if(getTaskList().size() >= position){
                     Task task = getTaskList().get(position);
                     MenuActivity.setLastClicked(task);
                     Intent intent = new Intent(MenuActivity.this, ViewTaskActivity.class);
                     setCurrentTask(task);
                     startActivity(intent);
                     Log.i("LifeCycle --->", "after activity return");
-                }
+//                }
 
             }
         });
@@ -314,17 +315,20 @@ public class MenuActivity extends AbstractGeoTaskActivity
     }
 
     public void notifyUser(){
-        SQLQueryBuilder builder1 = new SQLQueryBuilder(Task.class);
-        builder1.addColumns(new String[] {"requesterID"});
-        builder1.addParameters(new String[] {getCurrentUser().getObjectID()});
-
-        MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this, this);
-        asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
+//        SQLQueryBuilder builder1 = new SQLQueryBuilder(Task.class);
+//        builder1.addColumns(new String[] {"requesterID"});
+//        builder1.addParameters(new String[] {getCurrentUser().getObjectID()});
+//
+//        MasterController.AsyncSearch asyncSearch =
+//                new MasterController.AsyncSearch(this, this);
+//        asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
 
         try {
+            SuperBooleanBuilder superBuilder2 = new SuperBooleanBuilder();
+            superBuilder2.put("requesterID", getCurrentUser().getObjectID());
+            ArrayList<Task> newList = (ArrayList<Task>) MasterController.slowSearch(new AsyncArgumentWrapper(superBuilder2, Task.class));
 
-            ArrayList<Task> newList = (ArrayList<Task>) asyncSearch.get();
+//            ArrayList<Task> newList = (ArrayList<Task>) asyncSearch.get();
             Boolean nofifyBool = false;
             for (Task t: newList){
                 if (!t.getBidList().isEmpty()){
@@ -355,11 +359,12 @@ public class MenuActivity extends AbstractGeoTaskActivity
             }
         }catch (NullPointerException e) {
             e.printStackTrace();
-        }catch (InterruptedException e){
-            e.printStackTrace();
-        }catch (ExecutionException e){
-            e.printStackTrace();
         }
+//        catch (InterruptedException e){
+//            e.printStackTrace();
+//        }catch (ExecutionException e){
+//            e.printStackTrace();
+//        }
 
     }
 
@@ -399,6 +404,29 @@ public class MenuActivity extends AbstractGeoTaskActivity
             adapter.notifyDataSetChanged();
             setEmptyString();
             return;
+        } else if (getViewMode() == R.integer.MODE_INT_NOTIFICATIONS){
+            SuperBooleanBuilder superBuilder3 = new SuperBooleanBuilder();
+            superBuilder3.put("requesterID", getCurrentUser().getObjectID());
+            ArrayList<Task> newList = (ArrayList<Task>) MasterController.slowSearch(new AsyncArgumentWrapper(superBuilder3, Task.class));
+
+            HashSet<String> bidList = new HashSet<>();
+            ArrayList<Task> remove = new ArrayList<Task>();
+            for (Task t : newList) {
+                if (t.getBidList().isEmpty()) {
+                    remove.add(t);
+                }
+                t.setBidList(bidList);
+                MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                        new MasterController.AsyncUpdateDocument(this);
+                asyncUpdateDocument.execute(t);
+            }
+            newList.removeAll(remove);
+            clearFiltersButton.setVisibility(View.VISIBLE);
+            adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, newList, getLastClicked(), getCurrentUser());
+            oldTasks.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+            setEmptyString();
+            return;
         }
 
         /*
@@ -415,12 +443,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
             builder1.addColumns(new String[] {"requesterID"});
             builder1.addParameters(new String[] {getCurrentUser().getObjectID()});
             anyStatus = true;
-        } else if(getViewMode() == R.integer.MODE_INT_NOTIFICATIONS) {
-            setSearchStatus(null);
-            builder1.addColumns(new String[] {"requesterID"});
-            builder1.addParameters(new String[] {getCurrentUser().getObjectID()});
-            anyStatus = true;
-        } else if(getViewMode() == R.integer.MODE_INT_ACCEPTED) {
+        }else if(getViewMode() == R.integer.MODE_INT_ACCEPTED) {
             setSearchStatus(null);
             builder1.addColumns(new String[] {"requesterID", "status"});
             builder1.addParameters(new String[] {getCurrentUser().getObjectID(), "Accepted"});
@@ -507,20 +530,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 ArrayList<Task> newList = getTaskList();
                 if (inString.compareTo("") != 0) {
                     newList = GetKeywordMatches.getSortedResults(newList, getSearchKeywords());
-                }
-                if (getViewMode() == R.integer.MODE_INT_NOTIFICATIONS) {
-                    HashSet<String> bidList = new HashSet<>();
-                    ArrayList<Task> remove = new ArrayList<Task>();
-                    for (Task t : newList) {
-                        if (t.getBidList().isEmpty()) {
-                            remove.add(t);
-                        }
-                        t.setBidList(bidList);
-                        MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                                new MasterController.AsyncUpdateDocument(this);
-                        asyncUpdateDocument.execute(t);
-                    }
-                    newList.removeAll(remove);
                 }
                 setTaskList(newList);
             } catch (InterruptedException | ExecutionException e) {
