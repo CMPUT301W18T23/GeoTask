@@ -226,8 +226,6 @@ public class MasterController {
 
             for (AsyncArgumentWrapper argument : argumentList) {
                 verifySettings(context);
-                Log.i("checkoutget", argument.getID() + argument.getType());
-                Log.i("checkoutget", String.valueOf(argument.getType().equals(Photo.class)));
                 if (argument.getType().equals(Task.class)){
                     result = database.taskDAO().selectByID(argument.getID());
                 } else if (argument.getType().equals(User.class)) {
@@ -247,7 +245,6 @@ public class MasterController {
                     return result;
                 }
             }
-            Log.i("checkoutget", result.toString());
             return result;
         }
 

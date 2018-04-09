@@ -99,6 +99,7 @@ public class RegisterActivity extends AbstractGeoTaskActivity{
                 Intent intent = new Intent(getBaseContext(), LoginActivity.class);
                 startActivity(intent);
             }
+            saveUserButton.setEnabled(true);
         }
     }
 
@@ -174,11 +175,8 @@ public class RegisterActivity extends AbstractGeoTaskActivity{
     }
 
 
-
     public void openPhoto() {
-        imagePicker = new ImagePicker();
-        imagePicker.setTitle("Select Photo");
-        imagePicker.setCropImage(true);
+
         imagePicker = new ImagePicker();
         imagePicker.setTitle("Select Photo");
         imagePicker.setCropImage(true);
@@ -234,7 +232,6 @@ public class RegisterActivity extends AbstractGeoTaskActivity{
         imagePicker.onActivityResult(RegisterActivity.this,requestCode, resultCode, data);
 
     }
-
     public byte[] getBytes(InputStream inputStream){
         ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
         int bufferSize = 1024;
