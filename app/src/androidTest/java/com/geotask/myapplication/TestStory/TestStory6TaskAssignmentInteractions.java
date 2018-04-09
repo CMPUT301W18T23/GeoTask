@@ -97,5 +97,41 @@ public class TestStory6TaskAssignmentInteractions {
     @Test
     public void testViewMyAssignedTasksAsRequesters() {
 
+        String name1 = "kehan1";
+        String name2 = "kehan2";
+
+        String email1= "kehan1@ualberta.ca";
+        String email2 = "kehan2@ualberta.ca";
+
+        String phone1 = "7808858151";
+        String phone2 = "7808828152";
+
+        //byte[] photo = "photo";
+
+        Context targetContext =
+                InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Intent intent = new Intent(targetContext, LoginActivity.class);
+        LoginActivityTestRule.launchActivity(intent);
+
+        onView(ViewMatchers.withId(R.id.registerButton)).perform(click());
+        onView(withId(R.id.newName))
+                .perform(clearText(),typeText(name1),closeSoftKeyboard());
+        onView(withId(R.id.newPhone))
+                .perform(clearText(),typeText(phone1),closeSoftKeyboard());
+        onView(withId(R.id.newEmail))
+                .perform(clearText(),typeText(email1),closeSoftKeyboard());
+        onView(withId(R.id.newSave))
+                .perform(click());
+
+        onView(withId(R.id.emailText))
+                .perform(clearText(),typeText(email1),closeSoftKeyboard());
+
+        onView(withId(R.id.drawer_layout))
+                .check(matches(isClosed(Gravity.LEFT)))
+                .perform(DrawerActions.open());
+        onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.nav_profile));
+
+
+
     }
 }
