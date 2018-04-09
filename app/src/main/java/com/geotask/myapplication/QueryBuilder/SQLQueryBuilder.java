@@ -66,6 +66,10 @@ public class SQLQueryBuilder implements Cloneable {
         query1 += string + " ";
     }
 
+    public void setRawQuery(String query){
+        query1 = query;
+    }
+
     //DO NOT USE FOR ANYTHING BUT TASK BUILDERS
     @Override
     public SQLQueryBuilder clone() {
