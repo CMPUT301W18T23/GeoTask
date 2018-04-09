@@ -35,6 +35,7 @@ import android.widget.TextView;
 import com.geotask.myapplication.Adapters.FastTaskArrayAdapter;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
+import com.geotask.myapplication.Controllers.Helpers.DistanceCalculator;
 import com.geotask.myapplication.Controllers.Helpers.GetKeywordMatches;
 import com.geotask.myapplication.Controllers.MasterController;
 import com.geotask.myapplication.DataClasses.Bid;
@@ -562,6 +563,36 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 }
             } catch (IndexOutOfBoundsException e) {
                 e.printStackTrace();
+            }
+        }
+
+        //remove all the tasks that aren't in the specified range
+        //https://www.geodatasource.com/developers/java
+        //Used for calculating the distance between two points
+        if(getSearchRange() != -1){
+            //retrieve the user's current location
+            String userloc = retrieveLocation(this);
+            if(userloc != null) {
+                Double userX = Double.parseDouble((userloc.split(",")[0]));
+                Double userY = Double.parseDouble((userloc.split(",")[1]));
+
+                for (int i = 0; i < getTaskList().size(); i++) {
+                    Task currentTask = getTaskList().get(i);
+                    if (currentTask.getLocationX() == null || currentTask.getLocationX().equals("null")) {
+                        getTaskList().remove(i);
+                        i--;
+                    } else {
+                        Double taskX = currentTask.getLocationX();
+                        Double taskY = currentTask.getLocationY();
+
+                        Double distance = DistanceCalculator.distance(userX, userY, taskX, taskY, "K");
+
+                        if (distance > getSearchRange()) {
+                            getTaskList().remove(i);
+                            i--;
+                        }
+                    }
+                }
             }
         }
 
