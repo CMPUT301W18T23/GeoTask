@@ -48,7 +48,7 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
     private static Account account;
     private static int viewMode = R.integer.MODE_INT_ALL;
     private static String searchKeywords;
-    private static double searchRange;
+    private static double searchRange = -1.0;
     private static String searchStatus;
     private static HashMap<String, Boolean> starHash;
     private static HashMap<String, Boolean> historyHash;
