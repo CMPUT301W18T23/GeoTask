@@ -19,9 +19,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-/**
- * Created by James on 2018-04-08.
- */
 
 public class SetTaskLocationActivity extends AbstractGeoTaskActivity implements OnMapReadyCallback {
     private String manLocation;
