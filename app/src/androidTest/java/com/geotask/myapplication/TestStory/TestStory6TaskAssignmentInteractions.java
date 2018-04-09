@@ -85,10 +85,6 @@ public class TestStory6TaskAssignmentInteractions {
         onView(withId(R.id.emailText))
                 .perform(clearText(),typeText(email1),closeSoftKeyboard());
 
-        onView(withId(R.id.drawer_layout))
-                .check(matches(isClosed(Gravity.LEFT)))
-                .perform(DrawerActions.open());
-        onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.nav_profile));
 
     }
 
@@ -126,10 +122,6 @@ public class TestStory6TaskAssignmentInteractions {
         onView(withId(R.id.emailText))
                 .perform(clearText(),typeText(email1),closeSoftKeyboard());
 
-        onView(withId(R.id.drawer_layout))
-                .check(matches(isClosed(Gravity.LEFT)))
-                .perform(DrawerActions.open());
-        onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.nav_profile));
 
 
 
