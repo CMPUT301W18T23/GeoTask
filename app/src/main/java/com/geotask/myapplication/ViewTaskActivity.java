@@ -34,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -79,6 +80,14 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         setContentView(R.layout.app_bar_menu_view_task);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+        if(networkIsAvailable()) {
+            if(!syncTaskAndBidData()){
+                onBackPressed();
+            }
+        }
+
 
 //        Bundle settings = new Bundle();
 //        settings.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
@@ -154,6 +163,15 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         name.setPaintFlags(name.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         addBidButton.setVisibility(View.INVISIBLE);
     }
+
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        updateDisplayedValues();
+    }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -234,6 +252,53 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         return super.onOptionsItemSelected(item);
     }
 
+
+    private Boolean syncTaskAndBidData(){
+        MasterController.AsyncGetDocumentNewest asyncGetDocument =
+                new MasterController.AsyncGetDocumentNewest(this, this);
+        asyncGetDocument.execute(new AsyncArgumentWrapper(getCurrentTask().getObjectID(), Bid.class));
+        Task task = null;
+        try {
+            task = (Task) asyncGetDocument.get();
+            setCurrentTask(task);
+
+            if(task == null){
+                return false;
+            } else {
+                SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
+                builder.addColumns(new String[] {"taskId"});
+                builder.addParameters(new String[] {task.getObjectID()});
+
+                SuperBooleanBuilder superBuilder = new SuperBooleanBuilder();
+                superBuilder.put("taskId", task.getObjectID());
+
+                MasterController.AsyncSearch asyncSearch =
+                        new MasterController.AsyncSearch(this, this);
+                asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
+
+                ArrayList<Bid> updatedBidList = (ArrayList<Bid>) MasterController.slowSearch(new AsyncArgumentWrapper(superBuilder.toString(), Bid.class));
+                ArrayList<Bid> oldBidList = (ArrayList<Bid>) asyncSearch.get();
+
+                /*
+                    insert the new bids into the local database
+                 */
+                for(Bid bid : updatedBidList){
+                    if(!oldBidList.contains(bid)){
+                        MasterController.AsyncCreateNewLocalDocument asyncCreateNewLocalDocument =
+                                new MasterController.AsyncCreateNewLocalDocument(this);
+                        asyncCreateNewLocalDocument.execute(bid);
+                    }
+                }
+            }
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
     /**
      *handles data deleting - called from deleteButton press
      * nothing returned and no result code returned
@@ -281,7 +346,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
                     }
                     startActivity(intent);
                 }else{
-                    Toast.makeText(ViewTaskActivity.this,"There is no photos",Toast.LENGTH_LONG).show();
+                    Toast.makeText(ViewTaskActivity.this,"There are no photos",Toast.LENGTH_LONG).show();
                 }
 
 
@@ -690,7 +755,25 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
             //ToDo ?????
         }
     }
+    public void updateNotifications(){
+        String e = getCurrentUser().getObjectID();
+        String x = getCurrentTask().getRequesterID();
+        if (getCurrentUser().getObjectID().equals(getCurrentTask().getRequesterID())){
+            HashSet<String> bidList = new HashSet<>();
+            Task t = getCurrentTask();
+            t.setBidList(bidList);
+            MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                    new MasterController.AsyncUpdateDocument(this);
+            asyncUpdateDocument.execute(t);
 
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        updateNotifications();
+    }
     @Override
     public void onPostExecute(List<? extends GTData> dataList) {
     }

@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import com.geotask.myapplication.Controllers.Helpers.HashSetConverter;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 
@@ -59,7 +60,7 @@ public class Task extends GTData implements Comparable{
 
 	public Double getLocationX() {
 		System.out.println(location);
-		if (location.equals("null") || location == null) {
+		if (location == null || location.equals("null")) {
 			return -1.0;
 		}
 		else {
@@ -69,7 +70,7 @@ public class Task extends GTData implements Comparable{
 
 	public Double getLocationY() {
 		System.out.println(location);
-		if(location.equals("null")  || location == null) {
+		if(location == null || location.equals("null")) {
 			return -1.0;
 		}
 		else {
@@ -267,7 +268,13 @@ public class Task extends GTData implements Comparable{
 	public HashSet<String> getBidList() {
 		return bidList;
 	}
-
+    /**
+     * deletes a bid given to the bidlist
+     * @param bid
+     */
+    public void deleteBid(Bid bid){
+        bidList.remove(bid.getObjectID());
+    }
 
 
 	/**

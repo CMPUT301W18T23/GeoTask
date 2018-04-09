@@ -82,7 +82,7 @@ public class TestStory7TaskCompletionInteractions {
         Bid bid1 = new Bid(provider.getObjectID(), 11.0, task.getObjectID());
         task.setStatus("Accepted");
         task.setAcceptedBid(bid1.getValue());
-        task.setAccpeptedBidID(bid1.getObjectID());
+//        task.setAccpeptedBidID(bid1.getObjectID());
         task.addBid(bid1);
         Bid bid2 = new Bid(provider.getObjectID(), 12.0, task.getObjectID());
         task.addBid(bid2);

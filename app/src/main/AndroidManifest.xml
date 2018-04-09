@@ -33,6 +33,9 @@
         <activity
             android:name=".AddTaskActivity" />
         <activity
+            android:name=".SetTaskLocationActivity"
+            android:noHistory="true" />
+        <activity
             android:name=".ViewBidsActivity"
             android:noHistory="true"
             android:theme="@style/AppTheme.NoActionBar" />

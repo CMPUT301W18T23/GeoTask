@@ -177,6 +177,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 //            }
         } catch (IOException e) {e.printStackTrace();}
         Log.d("geotasksync", "done");
+        getContext().sendBroadcast(new Intent("broadcast"));
     }
 }
 
