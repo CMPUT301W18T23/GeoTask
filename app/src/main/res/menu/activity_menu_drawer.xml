@@ -46,7 +46,7 @@
                 android:title="My Bids" />
             <item
                 android:id="@+id/nav_notifications"
-                android:icon="@drawable/check_circle"
+                android:icon="@drawable/ic_bell_outline_black_48dp"
                 android:title="Notifications" />
             <item
                 android:id="@+id/nav_starred"
