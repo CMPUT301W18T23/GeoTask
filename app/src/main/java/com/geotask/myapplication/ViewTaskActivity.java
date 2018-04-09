@@ -250,6 +250,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
                         R.string.CANT_DELETE_TASK,
                         Toast.LENGTH_LONG)
                         .show();
+                deleteBtn.setEnabled(true);
             }
 
         }
