@@ -367,6 +367,38 @@ public class MasterController {
      * update in the best way. delete then re-add. has no guards against concurrency issues
      * also returns nothing, assumes success
      */
+    public static class AsyncUpdateLocalDocument extends AsyncTask<GTData, Void, Void> {
+
+
+        private Context context;
+
+        public AsyncUpdateLocalDocument(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected Void doInBackground(GTData... dataList) {
+            verifySettings(context);
+
+            for(GTData data: dataList) {
+                if (data instanceof Task){
+                    database.taskDAO().update((Task) data);
+                } else if (data instanceof User) {
+                    database.userDAO().update((User) data);
+                } else if (data instanceof Bid) {
+                    database.bidDAO().update((Bid) data);
+                } else if (data instanceof Photo) {
+                    database.photoDAO().update((Photo) data);
+                }
+            }
+            return null;
+        }
+    }
+
+    /**
+     * update in the best way. delete then re-add. has no guards against concurrency issues
+     * also returns nothing, assumes success
+     */
     public static class AsyncUpdateDocument extends AsyncTask<GTData, Void, Void> {
 
 
@@ -411,33 +443,29 @@ public class MasterController {
         return controller.search(argumentWrapper.getSearchQuery(), argumentWrapper.getType());
     }
 
+
     /**
-     * AsyncTask for search, returns result through callBack
+     * AsyncTask for search, returns result through callBack FROM SERVER
      */
     public static class AsyncSearchServer extends AsyncTask<AsyncArgumentWrapper, Void, List<? extends GTData>> {
-        private Context context;
         private AsyncCallBackManager callBack = null;
 
-        public AsyncSearchServer(AsyncCallBackManager callback, Context context) {
+        public AsyncSearchServer(AsyncCallBackManager callback) {
             this.callBack = callback;
-            this.context = context;
         }
 
         @Override
         protected List<? extends GTData> doInBackground(AsyncArgumentWrapper... argumentWrappers) {
             List<? extends GTData> resultList = null;
-            verifySettings(context);
+            controller.verifySettings();
 
             for(AsyncArgumentWrapper argument : argumentWrappers) {
-                if (argument.getType().equals(Task.class)){
-                    resultList = database.taskDAO().searchTasksByQuery(argument.getSQLQuery());
-                } else if (argument.getType().equals(Bid.class)) {
-                    resultList = database.bidDAO().searchBidsByQuery(argument.getSQLQuery());
-                } else if (argument.getType().equals(Photo.class)) {
-                    resultList = database.photoDAO().searchPhotosByQuery(argument.getSQLQuery());
+                try {
+                    resultList = controller.search(argument.getSearchQuery(), argument.getType());
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
-            Collections.sort(resultList);
             return resultList;
         }
 
