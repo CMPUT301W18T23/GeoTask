@@ -750,7 +750,8 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
 
     @Override
     public void onPostExecute(GTData data) {
-        if(data instanceof User) {
+
+            if((data instanceof User)&& this.name.getText().toString().equals("Requested by") ) {
             userBeingViewed = (User) data;
             profile();
             this.name.setText(String.format("Requested by %s", userBeingViewed.getName()));

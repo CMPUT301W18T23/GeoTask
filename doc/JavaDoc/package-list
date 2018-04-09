@@ -3,5 +3,7 @@ com.geotask.myapplication.Adapters
 com.geotask.myapplication.Controllers
 com.geotask.myapplication.Controllers.Helpers
 com.geotask.myapplication.Controllers.LocalFilesOps
+com.geotask.myapplication.Controllers.SyncServices
 com.geotask.myapplication.DataClasses
 com.geotask.myapplication.QueryBuilder
+com.geotask.myapplication.TestStory
