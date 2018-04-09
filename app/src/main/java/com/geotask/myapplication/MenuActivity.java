@@ -512,6 +512,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
                     asyncUpdateDocument.execute(t);
                 }
                 newList.removeAll(remove);
+                setTaskList(newList);
                 clearFiltersButton.setVisibility(View.VISIBLE);
                 adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, newList, getLastClicked(), getCurrentUser());
                 oldTasks.setAdapter(adapter);
