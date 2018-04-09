@@ -32,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.geotask.myapplication.Adapters.FastTaskArrayAdapter;
 import com.geotask.myapplication.Controllers.AsyncCallBackManager;
 import com.geotask.myapplication.Controllers.Helpers.AsyncArgumentWrapper;
@@ -42,6 +43,8 @@ import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
+import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
+import com.google.gson.Gson;
 
 import junit.framework.Assert;
 
@@ -93,6 +96,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
     private OrientationEventListener orientationEventListener = null;
     public static int screenWidthInDPs;
     public static int curOrientation;
+    private Context context;
     NavigationView navigationView;
     View headerView;
     ImageView drawerImage;
@@ -117,6 +121,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         setContentView(R.layout.activity_menu);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        context=getApplicationContext();
         oldTasks = findViewById(R.id.taskListView);
         emptyText = findViewById(R.id.empty_task_string);
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
@@ -124,6 +129,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
             @Override
             public void onRefresh() {
                 refreshLayout.setRefreshing(true);
+                syncTasksFromServer();
                 populateTaskView();
                 refreshLayout.setRefreshing(false);
                 notifyUser();
@@ -224,14 +230,14 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 } else {
                     Log.i("click --->", "not-clicked");
                 }
-                if(getTaskList().size() >= position){
+//                if(getTaskList().size() >= position){
                     Task task = getTaskList().get(position);
                     MenuActivity.setLastClicked(task);
                     Intent intent = new Intent(MenuActivity.this, ViewTaskActivity.class);
                     setCurrentTask(task);
                     startActivity(intent);
                     Log.i("LifeCycle --->", "after activity return");
-                }
+//                }
 
             }
         });
@@ -294,9 +300,11 @@ public class MenuActivity extends AbstractGeoTaskActivity
 
 
 
+
         //TODO - set drawerImage to user profile pic
         drawerUsername.setText(getCurrentUser().getName());
         drawerEmail.setText(getCurrentUser().getEmail());
+        Glide.with(context).load(getCurrentUser().getUserPhoto()).into(drawerImage);
     }
 
     /**
@@ -309,17 +317,20 @@ public class MenuActivity extends AbstractGeoTaskActivity
     }
 
     public void notifyUser(){
-        SQLQueryBuilder builder1 = new SQLQueryBuilder(Task.class);
-        builder1.addColumns(new String[] {"requesterID"});
-        builder1.addParameters(new String[] {getCurrentUser().getObjectID()});
-
-        MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this, this);
-        asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
+//        SQLQueryBuilder builder1 = new SQLQueryBuilder(Task.class);
+//        builder1.addColumns(new String[] {"requesterID"});
+//        builder1.addParameters(new String[] {getCurrentUser().getObjectID()});
+//
+//        MasterController.AsyncSearch asyncSearch =
+//                new MasterController.AsyncSearch(this, this);
+//        asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
 
         try {
-            setTaskList((ArrayList<Task>) asyncSearch.get());
-            ArrayList<Task> newList = getTaskList();
+            SuperBooleanBuilder superBuilder2 = new SuperBooleanBuilder();
+            superBuilder2.put("requesterID", getCurrentUser().getObjectID());
+            ArrayList<Task> newList = (ArrayList<Task>) MasterController.slowSearch(new AsyncArgumentWrapper(superBuilder2, Task.class));
+
+//            ArrayList<Task> newList = (ArrayList<Task>) asyncSearch.get();
             Boolean nofifyBool = false;
             for (Task t: newList){
                 if (!t.getBidList().isEmpty()){
@@ -350,11 +361,12 @@ public class MenuActivity extends AbstractGeoTaskActivity
             }
         }catch (NullPointerException e) {
             e.printStackTrace();
-        }catch (InterruptedException e){
-            e.printStackTrace();
-        }catch (ExecutionException e){
-            e.printStackTrace();
         }
+//        catch (InterruptedException e){
+//            e.printStackTrace();
+//        }catch (ExecutionException e){
+//            e.printStackTrace();
+//        }
 
     }
 
@@ -394,6 +406,29 @@ public class MenuActivity extends AbstractGeoTaskActivity
             adapter.notifyDataSetChanged();
             setEmptyString();
             return;
+        } else if (getViewMode() == R.integer.MODE_INT_NOTIFICATIONS){
+            SuperBooleanBuilder superBuilder3 = new SuperBooleanBuilder();
+            superBuilder3.put("requesterID", getCurrentUser().getObjectID());
+            ArrayList<Task> newList = (ArrayList<Task>) MasterController.slowSearch(new AsyncArgumentWrapper(superBuilder3, Task.class));
+
+            HashSet<String> bidList = new HashSet<>();
+            ArrayList<Task> remove = new ArrayList<Task>();
+            for (Task t : newList) {
+                if (t.getBidList().isEmpty()) {
+                    remove.add(t);
+                }
+                t.setBidList(bidList);
+                MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                        new MasterController.AsyncUpdateDocument(this);
+                asyncUpdateDocument.execute(t);
+            }
+            newList.removeAll(remove);
+            clearFiltersButton.setVisibility(View.VISIBLE);
+            adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, newList, getLastClicked(), getCurrentUser());
+            oldTasks.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+            setEmptyString();
+            return;
         }
 
         /*
@@ -410,12 +445,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
             builder1.addColumns(new String[] {"requesterID"});
             builder1.addParameters(new String[] {getCurrentUser().getObjectID()});
             anyStatus = true;
-        } else if(getViewMode() == R.integer.MODE_INT_NOTIFICATIONS) {
-            setSearchStatus(null);
-            builder1.addColumns(new String[] {"requesterID"});
-            builder1.addParameters(new String[] {getCurrentUser().getObjectID()});
-            anyStatus = true;
-        } else if(getViewMode() == R.integer.MODE_INT_ACCEPTED) {
+        }else if(getViewMode() == R.integer.MODE_INT_ACCEPTED) {
             setSearchStatus(null);
             builder1.addColumns(new String[] {"requesterID", "status"});
             builder1.addParameters(new String[] {getCurrentUser().getObjectID(), "Accepted"});
@@ -502,20 +532,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 ArrayList<Task> newList = getTaskList();
                 if (inString.compareTo("") != 0) {
                     newList = GetKeywordMatches.getSortedResults(newList, getSearchKeywords());
-                }
-                if (getViewMode() == R.integer.MODE_INT_NOTIFICATIONS) {
-                    HashSet<String> bidList = new HashSet<>();
-                    ArrayList<Task> remove = new ArrayList<Task>();
-                    for (Task t : newList) {
-                        if (t.getBidList().isEmpty()) {
-                            remove.add(t);
-                        }
-                        t.setBidList(bidList);
-                        MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                                new MasterController.AsyncUpdateDocument(this);
-                        asyncUpdateDocument.execute(t);
-                    }
-                    newList.removeAll(remove);
                 }
                 setTaskList(newList);
             } catch (InterruptedException | ExecutionException e) {
@@ -844,6 +860,56 @@ public class MenuActivity extends AbstractGeoTaskActivity
         adapter.notifyDataSetChanged();
         saveStarHashToServer();
         setEmptyString();
+    }
+
+    private void syncTasksFromServer(){
+        if(networkIsAvailable()) {
+            //grab from server
+            SuperBooleanBuilder builder = new SuperBooleanBuilder();
+            MasterController.AsyncSearchServer asyncSearchServer =
+                    new MasterController.AsyncSearchServer(this);
+            asyncSearchServer.execute(new AsyncArgumentWrapper(builder, Task.class));
+
+            //grab from local
+            SQLQueryBuilder builder2 = new SQLQueryBuilder(Task.class);
+            MasterController.AsyncSearch asyncSearch =
+                    new MasterController.AsyncSearch(this, this);
+            asyncSearch.execute(new AsyncArgumentWrapper(builder2, Task.class));
+
+            try {
+                ArrayList<Task> serverList = (ArrayList<Task>) asyncSearchServer.get();
+                ArrayList<Task> localList = (ArrayList<Task>) asyncSearch.get();
+
+                if((serverList == null) || (localList == null)){
+                    return;
+                }
+                HashMap<Task, Task> localHash = new HashMap<Task, Task>();
+                for(Task task : localList){
+                    localHash.put(task, task);
+                }
+                for(Task task : serverList){
+                    if(localHash.containsKey(task)){
+                        String string1 = new Gson().toJson(task);
+                        String string2 = new Gson().toJson(localHash.get(task));
+                        //if the tasks are not the same
+                        if(string1.compareTo(string2) != 0){
+                            MasterController.AsyncUpdateLocalDocument asyncUpdateLocalDocument =
+                                    new MasterController.AsyncUpdateLocalDocument(this);
+                            asyncUpdateLocalDocument.execute(task);
+                        }
+                    } else {
+                        MasterController.AsyncCreateNewLocalDocument asyncCreateNewLocalDocument =
+                                new MasterController.AsyncCreateNewLocalDocument(this);
+                        asyncCreateNewLocalDocument.execute(task);
+                    }
+                }
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override

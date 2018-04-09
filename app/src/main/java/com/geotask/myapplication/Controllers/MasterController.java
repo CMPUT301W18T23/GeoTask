@@ -229,8 +229,6 @@ public class MasterController {
 
             for (AsyncArgumentWrapper argument : argumentList) {
                 verifySettings(context);
-                Log.i("checkoutget", argument.getID() + argument.getType());
-                Log.i("checkoutget", String.valueOf(argument.getType().equals(Photo.class)));
                 if (argument.getType().equals(Task.class)){
                     result = database.taskDAO().selectByID(argument.getID());
                 } else if (argument.getType().equals(User.class)) {
@@ -239,7 +237,6 @@ public class MasterController {
                     result = database.bidDAO().selectByID(argument.getID());
                 } else if (argument.getType().equals(Photo.class)) {
                     result = database.photoDAO().selectByID(argument.getID());
-                    Log.i("checkoutget", result.toString());
                 }
 
                 if(result == null) {
@@ -251,7 +248,6 @@ public class MasterController {
                     return result;
                 }
             }
-            Log.i("checkoutget", result.toString());
             return result;
         }
 
@@ -370,6 +366,38 @@ public class MasterController {
      * update in the best way. delete then re-add. has no guards against concurrency issues
      * also returns nothing, assumes success
      */
+    public static class AsyncUpdateLocalDocument extends AsyncTask<GTData, Void, Void> {
+
+
+        private Context context;
+
+        public AsyncUpdateLocalDocument(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected Void doInBackground(GTData... dataList) {
+            verifySettings(context);
+
+            for(GTData data: dataList) {
+                if (data instanceof Task){
+                    database.taskDAO().update((Task) data);
+                } else if (data instanceof User) {
+                    database.userDAO().update((User) data);
+                } else if (data instanceof Bid) {
+                    database.bidDAO().update((Bid) data);
+                } else if (data instanceof Photo) {
+                    database.photoDAO().update((Photo) data);
+                }
+            }
+            return null;
+        }
+    }
+
+    /**
+     * update in the best way. delete then re-add. has no guards against concurrency issues
+     * also returns nothing, assumes success
+     */
     public static class AsyncUpdateDocument extends AsyncTask<GTData, Void, Void> {
 
 
@@ -412,6 +440,40 @@ public class MasterController {
      */
     public static List<? extends GTData> Search(AsyncArgumentWrapper argumentWrapper) throws IOException {
         return controller.search(argumentWrapper.getSearchQuery(), argumentWrapper.getType());
+    }
+
+
+    /**
+     * AsyncTask for search, returns result through callBack FROM SERVER
+     */
+    public static class AsyncSearchServer extends AsyncTask<AsyncArgumentWrapper, Void, List<? extends GTData>> {
+        private AsyncCallBackManager callBack = null;
+
+        public AsyncSearchServer(AsyncCallBackManager callback) {
+            this.callBack = callback;
+        }
+
+        @Override
+        protected List<? extends GTData> doInBackground(AsyncArgumentWrapper... argumentWrappers) {
+            List<? extends GTData> resultList = null;
+            controller.verifySettings();
+
+            for(AsyncArgumentWrapper argument : argumentWrappers) {
+                try {
+                    resultList = controller.search(argument.getSearchQuery(), argument.getType());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return resultList;
+        }
+
+        @Override
+        protected void onPostExecute(List<? extends GTData> dataList) {
+            if(callBack != null) {
+                callBack.onPostExecute(dataList);
+            }
+        }
     }
 
     /**

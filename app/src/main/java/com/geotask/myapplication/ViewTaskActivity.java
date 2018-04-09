@@ -120,7 +120,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         }
 
         if (getCurrentUser().getObjectID().equals(getCurrentTask().getRequesterID())){   //hide editbutton if not user
-            viewphoto.setVisibility(View.GONE);
+            viewphoto.setVisibility(View.VISIBLE);
             addBidButton.setVisibility(View.INVISIBLE);
             System.out.print("ye");
             if ("Bidded".equals(getCurrentTask().getStatus())||"Requested".equals(getCurrentTask().getStatus())||"Completed".equals(getCurrentTask().getStatus())){
@@ -208,6 +208,10 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         } else {
             starBtn.setVisible(false);
         }
+        if(!networkIsAvailable()){
+            editBtn.setVisible(false);
+            deleteBtn.setVisible(false);
+        }
         return true;
     }
 
@@ -246,6 +250,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
                         R.string.CANT_DELETE_TASK,
                         Toast.LENGTH_LONG)
                         .show();
+                deleteBtn.setEnabled(true);
             }
 
         }
@@ -276,7 +281,7 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
                         new MasterController.AsyncSearch(this, this);
                 asyncSearch.execute(new AsyncArgumentWrapper(builder, Bid.class));
 
-                ArrayList<Bid> updatedBidList = (ArrayList<Bid>) MasterController.slowSearch(new AsyncArgumentWrapper(superBuilder.toString(), Bid.class));
+                ArrayList<Bid> updatedBidList = (ArrayList<Bid>) MasterController.slowSearch(new AsyncArgumentWrapper(superBuilder, Bid.class));
                 ArrayList<Bid> oldBidList = (ArrayList<Bid>) asyncSearch.get();
 
                 /*
@@ -340,7 +345,6 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
                 Intent intent = new Intent(ViewTaskActivity.this, SelectPhotoActivity.class);
                 intent.putExtra("type","view");
                 intent.putExtra(getString(R.string.PHOTO_LIST_SIZE), currentPhoto.photolistbyte.size());
-                //System.out.println("1234567890"+currentPhoto.photolistbyte.size());
                 for (int i = 0; i < currentPhoto.photolistbyte.size(); i++) {
                     intent.putExtra("list" + i, currentPhoto.photolistbyte.get(i));
                 }

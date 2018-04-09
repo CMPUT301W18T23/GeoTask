@@ -181,6 +181,7 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
             Intent intent = new Intent(getBaseContext(), MenuActivity.class);
             startActivity(intent);
         }
+        Save.setEnabled(true);
     }
 
     /**
