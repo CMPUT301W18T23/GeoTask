@@ -44,6 +44,7 @@ import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
 
 import junit.framework.Assert;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -497,15 +498,17 @@ public class MenuActivity extends AbstractGeoTaskActivity
             }
             if (getViewMode() == R.integer.MODE_INT_NOTIFICATIONS){
                 HashSet<String> bidList = new HashSet<>();
+                ArrayList<Task> remove = new ArrayList<Task>();
                 for (Task t : newList){
                     if(t.getBidList().isEmpty()){
-                        newList.remove(t);
+                       remove.add(t);
                     }
                     t.setBidList(bidList);
                     MasterController.AsyncUpdateDocument asyncUpdateDocument =
                             new MasterController.AsyncUpdateDocument(this);
                     asyncUpdateDocument.execute(t);
                 }
+                newList.removeAll(remove);
             }
             setTaskList(newList);
         } catch (InterruptedException | ExecutionException e) {
