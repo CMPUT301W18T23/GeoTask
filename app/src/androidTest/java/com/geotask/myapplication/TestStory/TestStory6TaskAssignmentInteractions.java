@@ -1,6 +1,5 @@
 package com.geotask.myapplication.TestStory;
 
-import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
@@ -12,7 +11,6 @@ import android.support.test.runner.AndroidJUnit4;
 import android.view.Gravity;
 
 import com.geotask.myapplication.Controllers.MasterController;
-import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.LoginActivity;
 import com.geotask.myapplication.R;
 import com.geotask.myapplication.TestServerAddress;
