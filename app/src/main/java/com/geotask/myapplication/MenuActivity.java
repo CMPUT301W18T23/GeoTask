@@ -339,6 +339,33 @@ public class MenuActivity extends AbstractGeoTaskActivity
             for (Task t: newList){
                 if (!t.getBidList().isEmpty()){
                     nofifyBool = true;
+
+                    /*
+                    for(String bidID : t.getBidList()){
+                        Bid localBid = null;
+                        Bid serverBid = null;
+
+                        MasterController.AsyncGetDocument asyncGetDocument =
+                                new MasterController.AsyncGetDocument(this, this);
+                        asyncGetDocument.execute(new AsyncArgumentWrapper(bidID, Bid.class));
+                        localBid = (Bid) asyncGetDocument.get();
+
+                        MasterController.AsyncGetDocumentNewest asyncGetDocumentNewest =
+                                new MasterController.AsyncGetDocumentNewest(this, this);
+                        asyncGetDocumentNewest.execute(new AsyncArgumentWrapper(bidID, Bid.class));
+                        serverBid = (Bid) asyncGetDocumentNewest.get();
+
+                        if(localBid == null){
+                            MasterController.AsyncCreateNewLocalDocument asyncCreateNewLocalDocument =
+                                    new MasterController.AsyncCreateNewLocalDocument(this);
+                            asyncCreateNewLocalDocument.execute(serverBid);
+                        } else {
+                            MasterController.AsyncUpdateLocalDocument asyncUpdateLocalDocument =
+                                    new MasterController.AsyncUpdateLocalDocument(this);
+                            asyncUpdateLocalDocument.execute(serverBid);
+                        }
+                    }
+                    */
                 }
             }
             if (nofifyBool == true){

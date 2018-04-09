@@ -30,6 +30,7 @@ import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
+import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -143,7 +144,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
      * with all bids for the task
      */
     private void populateBidView(){
-
+        syncThisTasksBids();
         if ("Accepted".equals(getCurrentTask().getStatus())) {
 
             MasterController.AsyncGetDocument asyncGetDocument =
@@ -260,7 +261,7 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
         asyncUpdateDocument.execute(task);
         //The following should wok, but needs to be tested after the array is truly populated by the
         //master controller
-//        deleteAllBut(task);
+        //deleteAllBut(task);
 
         //go back to ViewTaskActivity
         Intent intent = new Intent(ViewBidsActivity.this, MenuActivity.class);
@@ -671,6 +672,43 @@ public class ViewBidsActivity extends AbstractGeoTaskActivity implements AsyncCa
             emptyText.setText("");
             emptyText.setVisibility(View.INVISIBLE);
             oldBids.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void syncThisTasksBids(){
+        if(networkIsAvailable()){
+            SuperBooleanBuilder builder = new SuperBooleanBuilder();
+            builder.put("taskID", getCurrentTask().getObjectID());
+
+            MasterController.AsyncSearchServer asyncSearchServer =
+                    new MasterController.AsyncSearchServer(this);
+            asyncSearchServer.execute(new AsyncArgumentWrapper(builder, Bid.class));
+
+            SQLQueryBuilder builder1 = new SQLQueryBuilder(Bid.class);
+            builder1.addRaw(String.format(
+                    "taskId = \"%s\"",getCurrentTask().getObjectID()
+            ));
+
+            MasterController.AsyncSearch asyncSearch =
+                    new MasterController.AsyncSearch(this, this);
+            asyncSearch.execute(new AsyncArgumentWrapper(builder1, Bid.class));
+
+
+            try {
+                ArrayList<Bid> updatedBidList = (ArrayList<Bid>) asyncSearchServer.get();
+                ArrayList<Bid> localBidList = (ArrayList<Bid>) asyncSearch.get();
+                for(Bid bid : updatedBidList){
+                    if(!localBidList.contains(bid)){
+                        MasterController.AsyncCreateNewLocalDocument asyncCreateNewLocalDocument =
+                                new MasterController.AsyncCreateNewLocalDocument(this);
+                        asyncCreateNewLocalDocument.execute(bid);
+                    }
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
         }
     }
 
