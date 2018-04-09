@@ -132,8 +132,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
             @Override
             public void onRefresh() {
                 refreshLayout.setRefreshing(true);
-                syncTasksFromServer();
-                syncBidsFromServer();
+                syncTasksFromServer(MenuActivity.this);
+                syncBidsFromServer(MenuActivity.this);
+                //syncUsersFromServer(MenuActivity.this);
                 populateTaskView();
                 refreshLayout.setRefreshing(false);
                 notifyUser();
@@ -956,109 +957,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
         adapter.notifyDataSetChanged();
         saveStarHashToServer();
         setEmptyString();
-    }
-
-    private void syncTasksFromServer(){
-        if(networkIsAvailable()) {
-            //grab from server
-            SuperBooleanBuilder builder = new SuperBooleanBuilder();
-            MasterController.AsyncSearchServer asyncSearchServer =
-                    new MasterController.AsyncSearchServer(this);
-            asyncSearchServer.execute(new AsyncArgumentWrapper(builder, Task.class));
-
-            //grab from local
-            SQLQueryBuilder builder2 = new SQLQueryBuilder(Task.class);
-            MasterController.AsyncSearch asyncSearch =
-                    new MasterController.AsyncSearch(this, this);
-            asyncSearch.execute(new AsyncArgumentWrapper(builder2, Task.class));
-
-            try {
-                ArrayList<Task> serverList = (ArrayList<Task>) asyncSearchServer.get();
-                ArrayList<Task> localList = (ArrayList<Task>) asyncSearch.get();
-
-                if((serverList == null) || (localList == null)){
-                    return;
-                }
-                HashMap<Task, Task> localHash = new HashMap<Task, Task>();
-                for(Task task : localList){
-                    localHash.put(task, task);
-                }
-                for(Task task : serverList){
-                    if(localHash.containsKey(task)){
-                        String string1 = new Gson().toJson(task);
-                        String string2 = new Gson().toJson(localHash.get(task));
-                        //if the tasks are not the same
-                        if(string1.compareTo(string2) != 0){
-                            MasterController.AsyncUpdateLocalDocument asyncUpdateLocalDocument =
-                                    new MasterController.AsyncUpdateLocalDocument(this);
-                            asyncUpdateLocalDocument.execute(task);
-                        }
-                    } else {
-                        MasterController.AsyncCreateNewLocalDocument asyncCreateNewLocalDocument =
-                                new MasterController.AsyncCreateNewLocalDocument(this);
-                        asyncCreateNewLocalDocument.execute(task);
-                    }
-                }
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void syncBidsFromServer(){
-        if(networkIsAvailable()) {
-            //grab from server
-            SuperBooleanBuilder builder = new SuperBooleanBuilder();
-            MasterController.AsyncSearchServer asyncSearchServer =
-                    new MasterController.AsyncSearchServer(this);
-            asyncSearchServer.execute(new AsyncArgumentWrapper(builder, Bid.class));
-
-            //grab from local
-            SQLQueryBuilder builder2 = new SQLQueryBuilder(Bid.class);
-            MasterController.AsyncSearch asyncSearch =
-                    new MasterController.AsyncSearch(this, this);
-            asyncSearch.execute(new AsyncArgumentWrapper(builder2, Bid.class));
-
-            try {
-                ArrayList<Bid> serverList = (ArrayList<Bid>) asyncSearchServer.get();
-                ArrayList<Bid> localList = (ArrayList<Bid>) asyncSearch.get();
-
-                if((serverList == null) || (localList == null)){
-                    return;
-                }
-                Integer test1 = serverList.size();
-                Integer test2 = localList.size();
-                Log.i("Sizes", String.format("%d %d", test1, test2));
-                HashMap<Bid, Bid> localHash = new HashMap<Bid, Bid>();
-                for(Bid Bid : localList){
-                    localHash.put(Bid, Bid);
-                }
-                for(Bid Bid : serverList){
-                    if(localHash.containsKey(Bid)){
-                        String string1 = new Gson().toJson(Bid);
-                        String string2 = new Gson().toJson(localHash.get(Bid));
-                        //if the Bids are not the same
-                        if(string1.compareTo(string2) != 0){
-                            MasterController.AsyncUpdateLocalDocument asyncUpdateLocalDocument =
-                                    new MasterController.AsyncUpdateLocalDocument(this);
-                            asyncUpdateLocalDocument.execute(Bid);
-                        }
-                    } else {
-                        MasterController.AsyncCreateNewLocalDocument asyncCreateNewLocalDocument =
-                                new MasterController.AsyncCreateNewLocalDocument(this);
-                        asyncCreateNewLocalDocument.execute(Bid);
-                    }
-                }
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     @Override

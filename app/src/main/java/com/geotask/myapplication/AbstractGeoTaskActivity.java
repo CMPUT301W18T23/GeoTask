@@ -25,10 +25,12 @@ import com.geotask.myapplication.DataClasses.Bid;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
+import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.gson.Gson;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -552,5 +554,158 @@ public abstract class AbstractGeoTaskActivity extends AppCompatActivity{
         ByteArrayInputStream arrayInputStream = new ByteArrayInputStream(byteArray);
         Bitmap bitmap = BitmapFactory.decodeStream(arrayInputStream);
         return bitmap;
+    }
+
+    protected void syncTasksFromServer(AsyncCallBackManager callback){
+        if(networkIsAvailable()) {
+            //grab from server
+            SuperBooleanBuilder builder = new SuperBooleanBuilder();
+            MasterController.AsyncSearchServer asyncSearchServer =
+                    new MasterController.AsyncSearchServer(callback);
+            asyncSearchServer.execute(new AsyncArgumentWrapper(builder, Task.class));
+
+            //grab from local
+            SQLQueryBuilder builder2 = new SQLQueryBuilder(Task.class);
+            MasterController.AsyncSearch asyncSearch =
+                    new MasterController.AsyncSearch(callback, this);
+            asyncSearch.execute(new AsyncArgumentWrapper(builder2, Task.class));
+
+            try {
+                ArrayList<Task> serverList = (ArrayList<Task>) asyncSearchServer.get();
+                ArrayList<Task> localList = (ArrayList<Task>) asyncSearch.get();
+
+                if((serverList == null) || (localList == null)){
+                    return;
+                }
+                HashMap<Task, Task> localHash = new HashMap<Task, Task>();
+                for(Task task : localList){
+                    localHash.put(task, task);
+                }
+                for(Task task : serverList){
+                    if(localHash.containsKey(task)){
+                        String string1 = new Gson().toJson(task);
+                        String string2 = new Gson().toJson(localHash.get(task));
+                        //if the tasks are not the same
+                        if(string1.compareTo(string2) != 0){
+                            MasterController.AsyncUpdateLocalDocument asyncUpdateLocalDocument =
+                                    new MasterController.AsyncUpdateLocalDocument(this);
+                            asyncUpdateLocalDocument.execute(task);
+                        }
+                    } else {
+                        MasterController.AsyncCreateNewLocalDocument asyncCreateNewLocalDocument =
+                                new MasterController.AsyncCreateNewLocalDocument(this);
+                        asyncCreateNewLocalDocument.execute(task);
+                    }
+                }
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    protected void syncBidsFromServer(AsyncCallBackManager callback){
+        if(networkIsAvailable()) {
+            //grab from server
+            SuperBooleanBuilder builder = new SuperBooleanBuilder();
+            MasterController.AsyncSearchServer asyncSearchServer =
+                    new MasterController.AsyncSearchServer(callback);
+            asyncSearchServer.execute(new AsyncArgumentWrapper(builder, Bid.class));
+
+            //grab from local
+            SQLQueryBuilder builder2 = new SQLQueryBuilder(Bid.class);
+            MasterController.AsyncSearch asyncSearch =
+                    new MasterController.AsyncSearch(callback, this);
+            asyncSearch.execute(new AsyncArgumentWrapper(builder2, Bid.class));
+
+            try {
+                ArrayList<Bid> serverList = (ArrayList<Bid>) asyncSearchServer.get();
+                ArrayList<Bid> localList = (ArrayList<Bid>) asyncSearch.get();
+
+                if((serverList == null) || (localList == null)){
+                    return;
+                }
+                Integer test1 = serverList.size();
+                Integer test2 = localList.size();
+                Log.i("Sizes", String.format("%d %d", test1, test2));
+                HashMap<Bid, Bid> localHash = new HashMap<Bid, Bid>();
+                for(Bid Bid : localList){
+                    localHash.put(Bid, Bid);
+                }
+                for(Bid Bid : serverList){
+                    if(localHash.containsKey(Bid)){
+                        String string1 = new Gson().toJson(Bid);
+                        String string2 = new Gson().toJson(localHash.get(Bid));
+                        //if the Bids are not the same
+                        if(string1.compareTo(string2) != 0){
+                            MasterController.AsyncUpdateLocalDocument asyncUpdateLocalDocument =
+                                    new MasterController.AsyncUpdateLocalDocument(this);
+                            asyncUpdateLocalDocument.execute(Bid);
+                        }
+                    } else {
+                        MasterController.AsyncCreateNewLocalDocument asyncCreateNewLocalDocument =
+                                new MasterController.AsyncCreateNewLocalDocument(this);
+                        asyncCreateNewLocalDocument.execute(Bid);
+                    }
+                }
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    protected void syncUsersFromServer(AsyncCallBackManager callback){
+        if(networkIsAvailable()) {
+            //grab from server
+            SuperBooleanBuilder builder = new SuperBooleanBuilder();
+            MasterController.AsyncSearchServer asyncSearchServer =
+                    new MasterController.AsyncSearchServer(callback);
+            asyncSearchServer.execute(new AsyncArgumentWrapper(builder, User.class));
+
+            //grab from local
+            SQLQueryBuilder builder2 = new SQLQueryBuilder(User.class);
+            MasterController.AsyncSearch asyncSearch =
+                    new MasterController.AsyncSearch(callback, this);
+            asyncSearch.execute(new AsyncArgumentWrapper(builder2, User.class));
+
+            try {
+                ArrayList<User> serverList = (ArrayList<User>) asyncSearchServer.get();
+                ArrayList<User> localList = (ArrayList<User>) asyncSearch.get();
+
+                if((serverList == null) || (localList == null)){
+                    return;
+                }
+                HashMap<User, User> localHash = new HashMap<User, User>();
+                for(User User : localList){
+                    localHash.put(User, User);
+                }
+                for(User User : serverList){
+                    if(localHash.containsKey(User)){
+                        String string1 = new Gson().toJson(User);
+                        String string2 = new Gson().toJson(localHash.get(User));
+                        //if the Users are not the same
+                        if(string1.compareTo(string2) != 0){
+                            MasterController.AsyncUpdateLocalDocument asyncUpdateLocalDocument =
+                                    new MasterController.AsyncUpdateLocalDocument(this);
+                            asyncUpdateLocalDocument.execute(User);
+                        }
+                    } else {
+                        MasterController.AsyncCreateNewLocalDocument asyncCreateNewLocalDocument =
+                                new MasterController.AsyncCreateNewLocalDocument(this);
+                        asyncCreateNewLocalDocument.execute(User);
+                    }
+                }
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

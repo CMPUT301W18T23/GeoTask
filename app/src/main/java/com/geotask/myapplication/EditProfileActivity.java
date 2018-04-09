@@ -50,7 +50,7 @@ public class EditProfileActivity extends AbstractGeoTaskActivity {
         if(getCurrentUser().getUserPhoto().length != 0){
             Glide.with(getBaseContext()).load(getCurrentUser().getUserPhoto()).into(userPhoto);
         }else{
-            Glide.with(context).load(R.drawable.defaultheadshot).into(userPhoto);
+            //Glide.with(context).load(R.drawable.defaultheadshot).into(userPhoto);
         }
         userPhoto.setOnClickListener(new View.OnClickListener() {
             @Override

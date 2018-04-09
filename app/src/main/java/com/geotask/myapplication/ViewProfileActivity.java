@@ -82,7 +82,7 @@ public class ViewProfileActivity extends AbstractGeoTaskActivity implements Asyn
         if(getCurrentUser().getUserPhoto().length != 0){
             Glide.with(context).load(getCurrentUser().getUserPhoto()).into(profilePic);
         }else{
-            Glide.with(context).load(R.drawable.defaultheadshot).into(profilePic);
+            //Glide.with(context).load(R.drawable.defaultheadshot).into(profilePic);
         }
     }
 
