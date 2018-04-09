@@ -92,6 +92,8 @@ public class MasterController {
                     database.userDAO().insert((User) data);
                 } else if (data instanceof Bid) {
                     database.bidDAO().insert((Bid) data);
+                } else if (data instanceof Photo) {
+                    database.photoDAO().insert((Photo) data);
                 }
             }
             return null;
@@ -125,11 +127,7 @@ public class MasterController {
                 } else if (data instanceof Bid) {
                     database.bidDAO().insert((Bid) data);
                 } else if (data instanceof Photo) {
-                    try {
-                        controller.createNewDocument(data);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    database.photoDAO().insert((Photo) data);
                 }
 
                 try {
@@ -181,6 +179,8 @@ public class MasterController {
                     database.userDAO().insert((User) result);
                 } else if (result.getType().equals(Bid.class.toString())) {
                     database.bidDAO().insert((Bid) result);
+                } else if (result.getType().equals(Photo.class.toString())){
+                    database.photoDAO().insert((Photo) result);
                 }
             }
             return result;
@@ -230,13 +230,12 @@ public class MasterController {
                 Log.i("checkout", String.valueOf(argument.getType().equals(Photo.class)));
                 if (argument.getType().equals(Task.class)){
                     result = database.taskDAO().selectByID(argument.getID());
-                    return result;
                 } else if (argument.getType().equals(User.class)) {
                     result = database.userDAO().selectByID(argument.getID());
-                    return result;
                 } else if (argument.getType().equals(Bid.class)) {
                     result = database.bidDAO().selectByID(argument.getID());
-                    return result;
+                } else if (argument.getType().equals(Photo.class)) {
+                    result = database.photoDAO().selectByID(argument.getID());
                 }
 
                 if(result == null) {
@@ -248,7 +247,7 @@ public class MasterController {
                     return result;
                 }
             }
-            return null;
+            return result;
         }
 
         /**
@@ -288,6 +287,8 @@ public class MasterController {
                     database.taskDAO().deleteByID(argument.getID());
                 } else if (argument.getType().equals(Bid.class)) {
                     database.bidDAO().deleteByID(argument.getID());
+                } else if (argument.getType().equals(Photo.class)) {
+                    database.photoDAO().deleteByID(argument.getID());
                 }
             }
             return null;
@@ -319,6 +320,8 @@ public class MasterController {
                     database.taskDAO().deleteByID(argument.getID());
                 } else if (argument.getType().equals(Bid.class)) {
                     database.bidDAO().deleteByID(argument.getID());
+                } else if (argument.getType().equals(Photo.class)) {
+                    database.photoDAO().deleteByID(argument.getID());
                 }
 
                 //ToDo JobScheduler
@@ -388,6 +391,8 @@ public class MasterController {
                     database.userDAO().update((User) data);
                 } else if (data instanceof Bid) {
                     database.bidDAO().update((Bid) data);
+                } else if (data instanceof Photo) {
+                    database.photoDAO().update((Photo) data);
                 }
             }
             return null;
@@ -426,6 +431,8 @@ public class MasterController {
                     resultList = database.taskDAO().searchTasksByQuery(argument.getSQLQuery());
                 } else if (argument.getType().equals(Bid.class)) {
                     resultList = database.bidDAO().searchBidsByQuery(argument.getSQLQuery());
+                } else if (argument.getType().equals(Photo.class)) {
+                    resultList = database.photoDAO().searchPhotosByQuery(argument.getSQLQuery());
                 }
             }
             Collections.sort(resultList);

@@ -8,10 +8,6 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 
-/**
- * Created by Michael on 3/30/2018.
- */
-
 public class HashSetConverter {
     @TypeConverter
     public static String ListToJson(HashSet<String> bidList) {

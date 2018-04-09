@@ -12,6 +12,7 @@ import android.util.Log;
 import com.geotask.myapplication.Controllers.ElasticsearchController;
 import com.geotask.myapplication.Controllers.LocalFilesOps.LocalDataBase;
 import com.geotask.myapplication.DataClasses.Bid;
+import com.geotask.myapplication.DataClasses.Photo;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
@@ -32,7 +33,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     private ArrayList<User> remoteUserList;
     private ArrayList<Task> localTaskList;
     private ArrayList<Bid> localBidList;
-    private ArrayList<User> localUserList;
+    private ArrayList<Photo> localPhotoList;
+    private ArrayList<Photo> remotePhotoList;
 
 
     public SyncAdapter(Context context, boolean autoInitiate) {
@@ -94,6 +96,12 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         localBidList = (ArrayList<Bid>) database.bidDAO().searchBidsByQuery(query.build());
         Log.d("geotasksync", "localBidList_size = " + localBidList.size());
 
+        query = new SQLQueryBuilder(Bid.class);
+        query.addColumns(new String[] {"flag"});
+        query.addParameters(new Boolean[] {true});
+        localPhotoList = (ArrayList<Photo>) database.photoDAO().searchPhotosByQuery(query.build());
+        Log.d("geotasksync", "localBidList_size = " + localBidList.size());
+
 //        query = new SQLQueryBuilder(User.class);
 //        query.addColumns(new String[] {"flag"});
 //        query.addParameters(new Boolean[] {true});
@@ -105,6 +113,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             remoteTaskList = (ArrayList<Task>) controller.search("", Task.class);
             remoteBidList = (ArrayList<Bid>) controller.search("", Bid.class);
             remoteUserList = (ArrayList<User>) controller.search("", User.class);
+            remotePhotoList = (ArrayList<Photo>) controller.search("", Photo.class);
             Log.d("geotasksync", "remoteTAskList_size = " + remoteTaskList.size());
         } catch (IOException e) {e.printStackTrace();}
 
@@ -144,10 +153,21 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             e.printStackTrace();
         }
 
+        for(Photo photo : localPhotoList){
+            if(!remotePhotoList.contains(photo)){
+                try {
+                    controller.createNewDocument(photo);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         try {
             remoteTaskList = (ArrayList<Task>) controller.search("", Task.class);
             remoteBidList = (ArrayList<Bid>) controller.search("", Bid.class);
             remoteUserList = (ArrayList<User>) controller.search("", User.class);
+            remotePhotoList = (ArrayList<Photo>) controller.search("", Photo.class);
             Log.d("geotasksync", "remote updated task: " + remoteTaskList.size() +
                     ". remote updated bid: " + remoteBidList.size());
 
@@ -172,11 +192,13 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
             Log.d("geotasksync", "user rows deleted = " + database.userDAO().delete());
             database.userDAO().insertMultiple(remoteUserList.toArray(new User[remoteUserList.size()]));
+            database.photoDAO().insertMultiple(remotePhotoList.toArray(new Photo[remotePhotoList.size()]));
 //            for(User user : (List<User>) controller.search("", User.class)) {
 //                database.userDAO().insert(user);
 //            }
         } catch (IOException e) {e.printStackTrace();}
         Log.d("geotasksync", "done");
+
         getContext().sendBroadcast(new Intent("broadcast"));
     }
 }

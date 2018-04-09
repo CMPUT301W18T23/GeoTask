@@ -215,6 +215,8 @@ public class ElasticsearchController {
             dataList = result.getSourceAsObjectList(Task.class);
         } else if (type.equals(User.class)) {
             dataList = result.getSourceAsObjectList(User.class);
+        } else if (type.equals(Photo.class)) {
+            dataList = result.getSourceAsObjectList(Photo.class);
         }
 
         return dataList;
