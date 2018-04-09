@@ -98,8 +98,7 @@ public class TestStory1BasicUserInteractions {
         onView(withId(R.id.loginButton))
                 .perform(click());
 
-        onView(withText(""))
-                .perform(click());
+        onView(withText("UPDATE"));
 
     }
 
