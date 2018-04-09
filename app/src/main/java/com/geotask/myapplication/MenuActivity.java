@@ -302,6 +302,39 @@ public class MenuActivity extends AbstractGeoTaskActivity
         drawerUsername.setText(getCurrentUser().getName());
         drawerEmail.setText(getCurrentUser().getEmail());
         Glide.with(context).load(getCurrentUser().getUserPhoto()).into(drawerImage);
+
+        drawerImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MenuActivity.this, ViewProfileActivity.class);
+                intent.putExtra("user_being_viewed", getCurrentUser());
+                startActivity(intent);
+            }
+        });
+
+
+
+
+        drawerUsername.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MenuActivity.this, ViewProfileActivity.class);
+                intent.putExtra("user_being_viewed", getCurrentUser());
+                startActivity(intent);
+            }
+        });
+
+
+
+
+        drawerEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MenuActivity.this, ViewProfileActivity.class);
+                intent.putExtra("user_being_viewed", getCurrentUser());
+                startActivity(intent);
+            }
+        });
     }
 
     /**

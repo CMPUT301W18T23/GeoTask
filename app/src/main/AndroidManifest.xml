@@ -48,6 +48,7 @@
         <activity
             android:name=".LoginActivity"
             android:noHistory="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -99,8 +100,10 @@
         <activity
             android:name="com.linchaolong.android.imagepicker.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
-        <activity android:name=".SelectPhotoActivity" />
-        <activity android:name=".ViewPhotoActivity"></activity>
+        <activity android:name=".SelectPhotoActivity"
+            android:label="Photo"/>
+        <activity android:name=".ViewPhotoActivity"
+            android:label="View Photo"></activity>
     </application>
 
 </manifest>

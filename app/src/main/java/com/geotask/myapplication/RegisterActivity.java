@@ -148,7 +148,7 @@ public class RegisterActivity extends AbstractGeoTaskActivity{
                     Toast.LENGTH_SHORT)
                     .show();
             return false;
-        } else if(newPhone.getText().toString().length() > 10) {
+        } else if(newPhone.getText().toString().length() > 11) {
             Toast.makeText(this,
                     R.string.PHONE_TOO_LONG,
                     Toast.LENGTH_SHORT)
