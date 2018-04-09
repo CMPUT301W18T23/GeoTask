@@ -61,4 +61,7 @@ public interface BidDAO {
 
     @RawQuery
     List<Bid> searchBidsByQuery(SupportSQLiteQuery query);
+
+    @RawQuery
+    List<String> searchBidsByQueryRetString(SupportSQLiteQuery query);
 }
