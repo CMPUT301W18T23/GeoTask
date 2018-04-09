@@ -1,10 +1,14 @@
 package com.geotask.myapplication;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -40,7 +44,9 @@ import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
 
 import junit.framework.Assert;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -117,6 +123,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 refreshLayout.setRefreshing(true);
                 populateTaskView();
                 refreshLayout.setRefreshing(false);
+                notifyUser();
             }
         });
 
@@ -262,6 +269,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
         };
         registerReceiver(syncProgress, new IntentFilter("broadcast"));
         Log.d("geotasksync", "registered");
+        notifyUser();
     }
 
     /**
@@ -292,6 +300,56 @@ public class MenuActivity extends AbstractGeoTaskActivity
     protected void onRestart(){
         super.onRestart();
         setOrientation();
+    }
+
+    public void notifyUser(){
+        SQLQueryBuilder builder1 = new SQLQueryBuilder(Task.class);
+        builder1.addColumns(new String[] {"requesterID"});
+        builder1.addParameters(new String[] {getCurrentUser().getObjectID()});
+
+        MasterController.AsyncSearch asyncSearch =
+                new MasterController.AsyncSearch(this, this);
+        asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
+
+        try {
+            setTaskList((ArrayList<Task>) asyncSearch.get());
+            ArrayList<Task> newList = getTaskList();
+            Boolean nofifyBool = false;
+            for (Task t: newList){
+                if (!t.getBidList().isEmpty()){
+                    nofifyBool = true;
+                }
+            }
+            if (nofifyBool == true){
+                int notifyID = 1;
+                String CHANNEL_ID = "my_channel_01";// The id of the channel.
+                CharSequence name = "yes";// The user-visible name of the channel.
+                int importance = NotificationManager.IMPORTANCE_HIGH;
+                NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+// Create a notification and set the notification channel.
+                Notification notification = new Notification.Builder(MenuActivity.this)
+                        .setContentTitle("You Have New Bids")
+                        .setContentText("Go to Notifications to View Bids")
+                        .setSmallIcon(R.drawable.geotaskicon)
+                        .setChannelId(CHANNEL_ID)
+                        .build();
+
+                NotificationManager mNotificationManager =
+                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    mNotificationManager.createNotificationChannel(mChannel);
+                }
+
+                mNotificationManager.notify(0, notification);
+            }
+        }catch (NullPointerException e) {
+            e.printStackTrace();
+        }catch (InterruptedException e){
+            e.printStackTrace();
+        }catch (ExecutionException e){
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -342,6 +400,11 @@ public class MenuActivity extends AbstractGeoTaskActivity
         Boolean anyStatus = false;
         //Only show tasks created by the user
         if(getViewMode() == R.integer.MODE_INT_REQUESTER) {
+            setSearchStatus(null);
+            builder1.addColumns(new String[] {"requesterID"});
+            builder1.addParameters(new String[] {getCurrentUser().getObjectID()});
+            anyStatus = true;
+        } else if(getViewMode() == R.integer.MODE_INT_NOTIFICATIONS) {
             setSearchStatus(null);
             builder1.addColumns(new String[] {"requesterID"});
             builder1.addParameters(new String[] {getCurrentUser().getObjectID()});
@@ -423,22 +486,36 @@ public class MenuActivity extends AbstractGeoTaskActivity
         /*
                Perform the search
          */
-        if(anyStatus || (getViewMode() == R.integer.MODE_INT_ALL)) {
-            MasterController.AsyncSearch asyncSearch =
-                    new MasterController.AsyncSearch(this, this);
-            asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
+        MasterController.AsyncSearch asyncSearch =
+                new MasterController.AsyncSearch(this, this);
+        asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
 
-            try {
-                setTaskList((ArrayList<Task>) asyncSearch.get());
-                ArrayList<Task> newList = getTaskList();
-                if (inString.compareTo("") != 0) {
-                    newList = GetKeywordMatches.getSortedResults(newList, getSearchKeywords());
-                }
-                setTaskList(newList);
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+        try {
+            setTaskList((ArrayList<Task>) asyncSearch.get());
+            ArrayList<Task> newList = getTaskList();
+            if (inString.compareTo("") != 0) {
+                newList = GetKeywordMatches.getSortedResults(newList, getSearchKeywords());
             }
-        } else if(getViewMode() == R.integer.MODE_INT_PROVIDER) {
+            if (getViewMode() == R.integer.MODE_INT_NOTIFICATIONS){
+                HashSet<String> bidList = new HashSet<>();
+                ArrayList<Task> remove = new ArrayList<Task>();
+                for (Task t : newList){
+                    if(t.getBidList().isEmpty()){
+                       remove.add(t);
+                    }
+                    t.setBidList(bidList);
+                    MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                            new MasterController.AsyncUpdateDocument(this);
+                    asyncUpdateDocument.execute(t);
+                }
+                newList.removeAll(remove);
+            }
+            setTaskList(newList);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        if(getViewMode() == R.integer.MODE_INT_PROVIDER) {
         /*
             Only show tasks which have been bidded on by current user
             Need to do this after elastic search by removing results without bids by the user
@@ -605,7 +682,14 @@ public class MenuActivity extends AbstractGeoTaskActivity
             Snackbar.make(snackView, "Changed view to \"Requester\"", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show();
             populateTaskView();
-        } else if (id == R.id.nav_provider) {
+        } else if (id == R.id.nav_notifications) {
+            fab.show();
+            setViewMode(R.integer.MODE_INT_NOTIFICATIONS);
+            getSupportActionBar().setTitle("Tasks With New Bids");
+            Snackbar.make(snackView, "Changed view to \"Requester\"", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
+            populateTaskView();
+        }else if (id == R.id.nav_provider) {
             fab.hide();
             setViewMode(R.integer.MODE_INT_PROVIDER);
             getSupportActionBar().setTitle("Tasks I Have Bid On");

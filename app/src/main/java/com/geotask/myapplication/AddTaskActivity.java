@@ -46,6 +46,8 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
     private Button Map;
     private Button Save;
     private Task newTask;
+    private String location;
+    private Boolean setLocationManually;
 
     /*
     private FusedLocationProviderClient mFusedLocationClient; //for location grabbing
@@ -65,6 +67,8 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setLocationManually = Boolean.FALSE;
 
         setContentView(R.layout.activity_new_add_task);
 
@@ -92,9 +96,12 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
             }
         });
 
+        //Click listener for the Map button when adding a task
         Map.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent(AddTaskActivity.this, SetTaskLocationActivity.class);
+                startActivityForResult(intent, SET_TASK_LOCATION);
             }
         });
 
@@ -122,8 +129,10 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
         String titleString = Title.getText().toString().trim();
         String descriptionString = Description.getText().toString().trim();
 
-        //ask for location
-        String location = retrieveLocation(this);
+        //ask for location if it hasn't been set manually
+        if(setLocationManually.booleanValue() == Boolean.FALSE){
+            location = retrieveLocation(this);
+        }
 
         if (titleString.length() > 30) {
             Toast.makeText(this,
@@ -146,7 +155,7 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
                     Toast.LENGTH_SHORT)
                     .show();
         } else {
-            newTask = new Task(getCurrentUser().getObjectID(), titleString, descriptionString);
+            newTask = new Task(getCurrentUser().getObjectID(), titleString, descriptionString, location);
             photo = new Photo(newTask.getObjectID(),photoList);
             newTask.setPhotoList(photo.getObjectID());
             Log.i("checkout", newTask.getObjectID());
@@ -187,7 +196,6 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
         if (requestCode == 1) {
             Intent intent = data;
 
-
             int size = 0;
             if(data != null){
                 size = Integer.parseInt(intent.getExtras().get(getString(R.string.PHOTO_LIST_SIZE)).toString());
@@ -199,5 +207,13 @@ public class AddTaskActivity extends AbstractGeoTaskActivity {
 
             System.out.println("123321123321123321123231123123123131121hg"+photoList.size());
         }
+
+        else if (requestCode == SET_TASK_LOCATION) {
+                // Make sure the request was successful
+                if (resultCode == RESULT_OK) {
+                    location = data.getStringExtra("MAN_LOC");
+                    setLocationManually = Boolean.TRUE;
+                }
+            }
     }
 }

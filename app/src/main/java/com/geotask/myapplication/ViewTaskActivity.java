@@ -34,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -271,14 +272,19 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         this.viewphoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ViewTaskActivity.this, SelectPhotoActivity.class);
-                intent.putExtra("type","view");
-                intent.putExtra(getString(R.string.PHOTO_LIST_SIZE), currentPhoto.photolistbyte.size());
-                System.out.println("1234567890"+currentPhoto.photolistbyte.size());
-                for (int i = 0; i < currentPhoto.photolistbyte.size(); i++) {
-                    intent.putExtra("list" + i, currentPhoto.photolistbyte.get(i));
+                if (currentPhoto.photolistbyte.size() != 0){
+                    Intent intent = new Intent(ViewTaskActivity.this, SelectPhotoActivity.class);
+                    intent.putExtra("type","view");
+                    intent.putExtra(getString(R.string.PHOTO_LIST_SIZE), currentPhoto.photolistbyte.size());
+                    //System.out.println("1234567890"+currentPhoto.photolistbyte.size());
+                    for (int i = 0; i < currentPhoto.photolistbyte.size(); i++) {
+                        intent.putExtra("list" + i, currentPhoto.photolistbyte.get(i));
+                    }
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(ViewTaskActivity.this,"There is no photos",Toast.LENGTH_LONG).show();
                 }
-                startActivity(intent);
+
 
 
             }
@@ -685,7 +691,25 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
             //ToDo ?????
         }
     }
+    public void updateNotifications(){
+        String e = getCurrentUser().getObjectID();
+        String x = getCurrentTask().getRequesterID();
+        if (getCurrentUser().getObjectID().equals(getCurrentTask().getRequesterID())){
+            HashSet<String> bidList = new HashSet<>();
+            Task t = getCurrentTask();
+            t.setBidList(bidList);
+            MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                    new MasterController.AsyncUpdateDocument(this);
+            asyncUpdateDocument.execute(t);
 
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        updateNotifications();
+    }
     @Override
     public void onPostExecute(List<? extends GTData> dataList) {
     }

@@ -144,7 +144,7 @@ public class SelectPhotoActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View
                     view, int position, long id) {
                 if (position==parent.getChildCount()-1){
-                    if (position==6){
+                    if (position==10){
                     }else{
                         openPhoto();
                     }
@@ -175,7 +175,7 @@ public class SelectPhotoActivity extends AppCompatActivity {
                     try {
                         InputStream iStream = getContentResolver().openInputStream(imageUri);
                         byte[] inputData = getBytes(iStream);
-                        if(inputData.length/4 <65336){
+                        if(inputData.length<72990){
                             list.add(inputData);
                         }else{
                             Toast.makeText(SelectPhotoActivity.this,"Too large photo",Toast.LENGTH_SHORT).show();

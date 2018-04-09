@@ -57,7 +57,6 @@ public class MapActivity extends AbstractGeoTaskActivity implements OnMapReadyCa
     private Double user_locationX;
     private Double user_locationY;
     private LatLng user_location;
-    private Boolean drawOnlyTasks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +75,10 @@ public class MapActivity extends AbstractGeoTaskActivity implements OnMapReadyCa
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.e("testing","Map is ready");
+
+        //###############set the marker click listener
+        //googleMap.setOnMarkerClickListener(this);
+
         locationString = retrieveLocation(this); //get user location, input as floats to the LatLng function
 
         Log.e("testing", "drawing You Are Here marker");
