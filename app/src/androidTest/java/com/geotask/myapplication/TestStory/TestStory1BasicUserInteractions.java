@@ -39,6 +39,7 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.contrib.DrawerMatchers.isClosed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.anything;
 
 @RunWith(AndroidJUnit4.class)
@@ -63,7 +64,8 @@ public class TestStory1BasicUserInteractions {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        User user = new User("KehanWang", "kehan1@ualberta.ca", "7808858151");
+        byte[] img = new byte[0];
+        User user = new User(img,"KehanWang", "kehan1@ualberta.ca", "7808858151");
         MasterController.AsyncCreateNewDocument asyncCreateNewDocument
                 = new MasterController.AsyncCreateNewDocument(InstrumentationRegistry.getTargetContext());
         asyncCreateNewDocument.execute(user);
@@ -96,21 +98,23 @@ public class TestStory1BasicUserInteractions {
         onView(withId(R.id.loginButton))
                 .perform(click());
 
-        onView(withId(R.id.drawer_layout))
-                .check(matches(isClosed(Gravity.LEFT)))
-                .perform(DrawerActions.open());
+        onView(withText("UPDATE"));
 
     }
 
     //1.b
     @Test
     public void testRequestNewTask() throws InterruptedException {
-        User user = new User("KehanWang", "kehan1@ualberta.ca", "7808858151");
+        byte[] image = new byte[0];
+        User user = new User(image,"KehanWang", "kehan1@ualberta.ca", "7808858151");
         Context targetContext =
                 InstrumentationRegistry.getInstrumentation().getTargetContext();
-        Intent result = new Intent(targetContext, AddTaskActivity.class);
+        Intent result = new Intent(targetContext, MenuActivity.class);
         testaddTask.launchActivity(result);
         testaddTask.getActivity().setCurrentUser(user);
+
+        onView((withId(R.id.fab)))
+                .perform(click());
 
         onView(withId(R.id.TaskTitle))
                 .perform(clearText(),typeText("cmput301 project."),closeSoftKeyboard());
@@ -123,7 +127,7 @@ public class TestStory1BasicUserInteractions {
                 .check(matches(isClosed(Gravity.LEFT)))
                 .perform(DrawerActions.open());
         onView(withId(R.id.nav_view))
-                .perform(NavigationViewActions.navigateTo(R.id.nav_requester));
+                .perform(NavigationViewActions.navigateTo(R.id.nav_all));
 
         onData(anything()).inAdapterView(withId(R.id.taskListView)).atPosition(0).perform(click());
 

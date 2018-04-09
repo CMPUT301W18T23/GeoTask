@@ -44,15 +44,11 @@ import com.geotask.myapplication.DataClasses.GTData;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.QueryBuilder.SQLQueryBuilder;
 import com.geotask.myapplication.QueryBuilder.SuperBooleanBuilder;
-import com.google.gson.Gson;
 
 import junit.framework.Assert;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.HashMap;
-
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -309,8 +305,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
         //TODO - set drawerImage to user profile pic
         drawerUsername.setText(getCurrentUser().getName());
         drawerEmail.setText(getCurrentUser().getEmail());
-        int n = getCurrentUser().getUserPhoto().length;
-        Log.i("checklength",String.valueOf(n));
         if(getCurrentUser().getUserPhoto().length == 0){
             Glide.with(context).load(R.drawable.kyle_deafault).into(drawerImage);
         }else{
