@@ -432,16 +432,6 @@ public class MasterController {
         }
     }
 
-    /**
-     * synchonized search on main thread. cheaper than calling get() on AsyncTask, might crash app if not used properly
-     * @param argumentWrapper
-     * @return
-     * @throws IOException
-     */
-    public static List<? extends GTData> Search(AsyncArgumentWrapper argumentWrapper) throws IOException {
-        return controller.search(argumentWrapper.getSearchQuery(), argumentWrapper.getType());
-    }
-
 
     /**
      * AsyncTask for search, returns result through callBack FROM SERVER
@@ -515,16 +505,4 @@ public class MasterController {
             }
         }
     }
-
-    public static List<? extends GTData> slowSearch(AsyncArgumentWrapper argument){
-        controller.verifySettings();
-        List<? extends GTData> resultList = null;
-        try {
-            resultList = controller.search(argument.getSearchQuery(), argument.getType());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return resultList;
-    }
-
 }
