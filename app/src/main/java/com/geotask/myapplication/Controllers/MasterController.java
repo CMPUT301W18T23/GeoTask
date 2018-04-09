@@ -199,10 +199,13 @@ public class MasterController {
                 Log.i("checkout", String.valueOf(argument.getType().equals(Photo.class)));
                 if (argument.getType().equals(Task.class)){
                     result = database.taskDAO().selectByID(argument.getID());
+                    return result;
                 } else if (argument.getType().equals(User.class)) {
                     result = database.userDAO().selectByID(argument.getID());
+                    return result;
                 } else if (argument.getType().equals(Bid.class)) {
                     result = database.bidDAO().selectByID(argument.getID());
+                    return result;
                 }
 
                 if(result == null) {
@@ -211,9 +214,10 @@ public class MasterController {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    return result;
                 }
             }
-            return result;
+            return null;
         }
 
         /**
