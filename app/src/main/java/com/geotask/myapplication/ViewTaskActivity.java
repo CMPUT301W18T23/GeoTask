@@ -34,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -690,7 +691,25 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
             //ToDo ?????
         }
     }
+    public void updateNotifications(){
+        String e = getCurrentUser().getObjectID();
+        String x = getCurrentTask().getRequesterID();
+        if (getCurrentUser().getObjectID().equals(getCurrentTask().getRequesterID())){
+            HashSet<String> bidList = new HashSet<>();
+            Task t = getCurrentTask();
+            t.setBidList(bidList);
+            MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                    new MasterController.AsyncUpdateDocument(this);
+            asyncUpdateDocument.execute(t);
 
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        updateNotifications();
+    }
     @Override
     public void onPostExecute(List<? extends GTData> dataList) {
     }

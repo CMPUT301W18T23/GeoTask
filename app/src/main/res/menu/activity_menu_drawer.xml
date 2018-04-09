@@ -45,6 +45,10 @@
                 android:icon="@drawable/ic_google_circles_extended_grey600_48dp"
                 android:title="My Bids" />
             <item
+                android:id="@+id/nav_notifications"
+                android:icon="@drawable/check_circle"
+                android:title="Notifications" />
+            <item
                 android:id="@+id/nav_starred"
                 android:icon="@drawable/ic_star_outline_grey600_48dp"
                 android:title="Starred" />

@@ -9,4 +9,5 @@
 	<integer name="MODE_INT_ACCEPTED">5</integer>
 	<integer name="MODE_INT_HISTORY">6</integer>
 	<integer name="MODE_INT_OTHERS_TASKS">7</integer>
+    <integer name="MODE_INT_NOTIFICATIONS">6</integer>
 </resources>
