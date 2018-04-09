@@ -416,21 +416,30 @@ public class MenuActivity extends AbstractGeoTaskActivity
 
             HashSet<String> bidList = new HashSet<>();
             ArrayList<Task> remove = new ArrayList<Task>();
-            for (Task t : newList) {
-                if (t.getBidList().isEmpty()) {
-                    remove.add(t);
+            if (newList != null){
+                for (Task t : newList) {
+                    if (t.getBidList().isEmpty()) {
+                        remove.add(t);
+                    }
+                    t.setBidList(bidList);
+                    MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                            new MasterController.AsyncUpdateDocument(this);
+                    asyncUpdateDocument.execute(t);
                 }
-                t.setBidList(bidList);
-                MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                        new MasterController.AsyncUpdateDocument(this);
-                asyncUpdateDocument.execute(t);
+                newList.removeAll(remove);
+                clearFiltersButton.setVisibility(View.VISIBLE);
+                adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, newList, getLastClicked(), getCurrentUser());
+                oldTasks.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+                setEmptyString();
+            }else{
+                clearFiltersButton.setVisibility(View.VISIBLE);
+                adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, remove, getLastClicked(), getCurrentUser());
+                oldTasks.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+                setEmptyString();
             }
-            newList.removeAll(remove);
-            clearFiltersButton.setVisibility(View.VISIBLE);
-            adapter = new FastTaskArrayAdapter(this, R.layout.task_list_item, newList, getLastClicked(), getCurrentUser());
-            oldTasks.setAdapter(adapter);
-            adapter.notifyDataSetChanged();
-            setEmptyString();
+
             return;
         }
 
