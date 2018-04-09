@@ -221,12 +221,15 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 } else {
                     Log.i("click --->", "not-clicked");
                 }
-                Task task = getTaskList().get(position);
-                MenuActivity.setLastClicked(task);
-                Intent intent = new Intent(MenuActivity.this, ViewTaskActivity.class);
-                setCurrentTask(task);
-                startActivity(intent);
-                Log.i("LifeCycle --->", "after activity return");
+                if(getTaskList().size() >= position){
+                    Task task = getTaskList().get(position);
+                    MenuActivity.setLastClicked(task);
+                    Intent intent = new Intent(MenuActivity.this, ViewTaskActivity.class);
+                    setCurrentTask(task);
+                    startActivity(intent);
+                    Log.i("LifeCycle --->", "after activity return");
+                }
+
             }
         });
 
