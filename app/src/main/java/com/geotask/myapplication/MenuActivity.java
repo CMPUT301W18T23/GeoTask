@@ -487,38 +487,75 @@ public class MenuActivity extends AbstractGeoTaskActivity
         }
 
         /*
-               Perform the search
-         */
-        MasterController.AsyncSearch asyncSearch =
-                new MasterController.AsyncSearch(this, this);
-        asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
+               Perform the search if the mode is all (ie filter or all) or if status was set
+        */
+        if(anyStatus || getViewMode() == R.integer.MODE_INT_ALL) {
+            MasterController.AsyncSearch asyncSearch =
+                    new MasterController.AsyncSearch(this, this);
+            asyncSearch.execute(new AsyncArgumentWrapper(builder1, Task.class));
 
-        try {
-            setTaskList((ArrayList<Task>) asyncSearch.get());
-            ArrayList<Task> newList = getTaskList();
-            if (inString.compareTo("") != 0) {
-                newList = GetKeywordMatches.getSortedResults(newList, getSearchKeywords());
-            }
-            if (getViewMode() == R.integer.MODE_INT_NOTIFICATIONS){
-                HashSet<String> bidList = new HashSet<>();
-                ArrayList<Task> remove = new ArrayList<Task>();
-                for (Task t : newList){
-                    if(t.getBidList().isEmpty()){
-                       remove.add(t);
-                    }
-                    t.setBidList(bidList);
-                    MasterController.AsyncUpdateDocument asyncUpdateDocument =
-                            new MasterController.AsyncUpdateDocument(this);
-                    asyncUpdateDocument.execute(t);
+            try {
+                setTaskList((ArrayList<Task>) asyncSearch.get());
+                ArrayList<Task> newList = getTaskList();
+                if (inString.compareTo("") != 0) {
+                    newList = GetKeywordMatches.getSortedResults(newList, getSearchKeywords());
                 }
-                newList.removeAll(remove);
+                if (getViewMode() == R.integer.MODE_INT_NOTIFICATIONS) {
+                    HashSet<String> bidList = new HashSet<>();
+                    ArrayList<Task> remove = new ArrayList<Task>();
+                    for (Task t : newList) {
+                        if (t.getBidList().isEmpty()) {
+                            remove.add(t);
+                        }
+                        t.setBidList(bidList);
+                        MasterController.AsyncUpdateDocument asyncUpdateDocument =
+                                new MasterController.AsyncUpdateDocument(this);
+                        asyncUpdateDocument.execute(t);
+                    }
+                    newList.removeAll(remove);
+                }
+                setTaskList(newList);
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
             }
-            setTaskList(newList);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+
+            //remove all the tasks that aren't in the specified range
+            //https://www.geodatasource.com/developers/java
+            //Used for calculating the distance between two points
+            if(getSearchRange() != -1){
+                //retrieve the user's current location
+                String userloc = retrieveLocation(this);
+                if(userloc != null) {
+                    Double userX = Double.parseDouble((userloc.split(",")[0]));
+                    Double userY = Double.parseDouble((userloc.split(",")[1]));
+
+                    for (int i = 0; i < getTaskList().size(); i++) {
+                        Task currentTask = getTaskList().get(i);
+                        if (currentTask.getLocationX() == null || currentTask.getLocationX().equals("null")) {
+                            getTaskList().remove(i);
+                            i--;
+                        } else {
+                            Double taskX = currentTask.getLocationX();
+                            Double taskY = currentTask.getLocationY();
+
+                            Double distance = DistanceCalculator.distance(userX, userY, taskX, taskY, "K");
+
+                            if (distance > getSearchRange()) {
+                                getTaskList().remove(i);
+                                i--;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
+        /*
+            If the mode is provider we query for all of the users bids, and then query for tasks with
+            matching objects Ids
+         */
         if(getViewMode() == R.integer.MODE_INT_PROVIDER) {
+            //raw query, string will not cause security issues
             String query1 = String.format(
                     "SELECT\n" +
                     "  *\n" +
@@ -529,11 +566,12 @@ public class MenuActivity extends AbstractGeoTaskActivity
 
 
             Log.i("SQL:", query1);
-            System.out.println(query1);
 
+            //make the builder
             SQLQueryBuilder builder = new SQLQueryBuilder(Bid.class);
             builder.setRawQuery(query1);
 
+            //call the search
             MasterController.AsyncSearch asyncSearch1 =
                     new MasterController.AsyncSearch(this, this);
             asyncSearch1.execute(new AsyncArgumentWrapper(builder, Bid.class));
@@ -542,6 +580,11 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 ArrayList<Bid> tasksBidOn = ((ArrayList<Bid>) asyncSearch1.get());
                 String keyList = "";
                 Boolean first = true;
+
+                /*
+                    this for loop sets the set that is fed to SQL for matching in the form of:
+                        ("item1", "item2", ..., "itemN")
+                */
                 for(Bid bid : tasksBidOn){
                     if(!first){
                         keyList += ", ";
@@ -561,7 +604,7 @@ public class MenuActivity extends AbstractGeoTaskActivity
                         "  status != \"Requested\" " +
                         "    AND objectId IN %s\n", keyList);
                 builder2.setRawQuery(query2);
-                System.out.println(query2);
+                Log.i("SQL:", query2);
 
                 MasterController.AsyncSearch asyncSearch2 =
                         new MasterController.AsyncSearch(this, this);
@@ -572,15 +615,19 @@ public class MenuActivity extends AbstractGeoTaskActivity
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
-
+        /*
+            If the mode is provider we have one query
+        */
         } else if(getViewMode() == R.integer.MODE_INT_ASSIGNED) {
             SQLQueryBuilder builder = new SQLQueryBuilder(Task.class);
-            String query = String.format("SELECT\n" +
+            String query = String.format(
+                    "SELECT\n" +
                     "  *\n" +
                     "FROM\n" +
                     "  tasks\n" +
                     "WHERE\n" +
-                    "  acceptedProviderID = \"%s\"\n", getCurrentUser().getObjectID());
+                    "  status = \"Accepted\" " +
+                            "AND acceptedProviderID = \"%s\"\n", getCurrentUser().getObjectID());
 
             builder.setRawQuery(query);
 
@@ -594,36 +641,6 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 e.printStackTrace();
             } catch (ExecutionException e) {
                 e.printStackTrace();
-            }
-        }
-
-        //remove all the tasks that aren't in the specified range
-        //https://www.geodatasource.com/developers/java
-        //Used for calculating the distance between two points
-        if(getSearchRange() != -1){
-            //retrieve the user's current location
-            String userloc = retrieveLocation(this);
-            if(userloc != null) {
-                Double userX = Double.parseDouble((userloc.split(",")[0]));
-                Double userY = Double.parseDouble((userloc.split(",")[1]));
-
-                for (int i = 0; i < getTaskList().size(); i++) {
-                    Task currentTask = getTaskList().get(i);
-                    if (currentTask.getLocationX() == null || currentTask.getLocationX().equals("null")) {
-                        getTaskList().remove(i);
-                        i--;
-                    } else {
-                        Double taskX = currentTask.getLocationX();
-                        Double taskY = currentTask.getLocationY();
-
-                        Double distance = DistanceCalculator.distance(userX, userY, taskX, taskY, "K");
-
-                        if (distance > getSearchRange()) {
-                            getTaskList().remove(i);
-                            i--;
-                        }
-                    }
-                }
             }
         }
 

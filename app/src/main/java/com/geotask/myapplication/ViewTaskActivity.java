@@ -336,21 +336,18 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
         this.viewphoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (currentPhoto.photolistbyte.size() != 0){
-                    Intent intent = new Intent(ViewTaskActivity.this, SelectPhotoActivity.class);
-                    intent.putExtra("type","view");
-                    intent.putExtra(getString(R.string.PHOTO_LIST_SIZE), currentPhoto.photolistbyte.size());
-                    //System.out.println("1234567890"+currentPhoto.photolistbyte.size());
-                    for (int i = 0; i < currentPhoto.photolistbyte.size(); i++) {
-                        intent.putExtra("list" + i, currentPhoto.photolistbyte.get(i));
-                    }
-                    startActivity(intent);
-                }else{
-                    Toast.makeText(ViewTaskActivity.this,"There are no photos",Toast.LENGTH_LONG).show();
+            if (currentPhoto.photolistbyte.size() != 0){
+                Intent intent = new Intent(ViewTaskActivity.this, SelectPhotoActivity.class);
+                intent.putExtra("type","view");
+                intent.putExtra(getString(R.string.PHOTO_LIST_SIZE), currentPhoto.photolistbyte.size());
+                //System.out.println("1234567890"+currentPhoto.photolistbyte.size());
+                for (int i = 0; i < currentPhoto.photolistbyte.size(); i++) {
+                    intent.putExtra("list" + i, currentPhoto.photolistbyte.get(i));
                 }
-
-
-
+                startActivity(intent);
+            }else{
+                Toast.makeText(ViewTaskActivity.this,"There are no photos",Toast.LENGTH_LONG).show();
+            }
             }
         });
 
@@ -370,27 +367,27 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
 
         this.doneButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                if(networkIsAvailable()) {
-                    triggerDone(v);
-                } else {
-                    Toast.makeText(getBaseContext(),
-                            R.string.CANNOT_COMPLETE_TASK_OFFLINE,
-                            Toast.LENGTH_LONG)
-                            .show();
-                }
+            if(networkIsAvailable()) {
+                triggerDone(v);
+            } else {
+                Toast.makeText(getBaseContext(),
+                        R.string.CANNOT_COMPLETE_TASK_OFFLINE,
+                        Toast.LENGTH_LONG)
+                        .show();
+            }
             }
         });
 
         this.notCompleteButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                if(networkIsAvailable()) {
-                    triggerNotComplete(v);
-                } else {
-                    Toast.makeText(getBaseContext(),
-                            R.string.CANNOT_DECLINE_ACCEPTED_OFFLINE,
-                            Toast.LENGTH_LONG)
-                            .show();
-                }
+            if(networkIsAvailable()) {
+                triggerNotComplete(v);
+            } else {
+                Toast.makeText(getBaseContext(),
+                        R.string.CANNOT_DECLINE_ACCEPTED_OFFLINE,
+                        Toast.LENGTH_LONG)
+                        .show();
+            }
             }
         });
 
