@@ -236,7 +236,6 @@ public class MasterController {
                     result = database.bidDAO().selectByID(argument.getID());
                 } else if (argument.getType().equals(Photo.class)) {
                     result = database.photoDAO().selectByID(argument.getID());
-                    Log.i("checkoutget", result.toString());
                 }
 
                 if(result == null) {
