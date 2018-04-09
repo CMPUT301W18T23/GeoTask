@@ -344,7 +344,6 @@ public class ViewTaskActivity extends AbstractGeoTaskActivity  implements AsyncC
                 Intent intent = new Intent(ViewTaskActivity.this, SelectPhotoActivity.class);
                 intent.putExtra("type","view");
                 intent.putExtra(getString(R.string.PHOTO_LIST_SIZE), currentPhoto.photolistbyte.size());
-                //System.out.println("1234567890"+currentPhoto.photolistbyte.size());
                 for (int i = 0; i < currentPhoto.photolistbyte.size(); i++) {
                     intent.putExtra("list" + i, currentPhoto.photolistbyte.get(i));
                 }
