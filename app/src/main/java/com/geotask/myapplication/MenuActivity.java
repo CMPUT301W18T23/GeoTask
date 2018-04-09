@@ -867,6 +867,9 @@ public class MenuActivity extends AbstractGeoTaskActivity
                 ArrayList<Task> serverList = (ArrayList<Task>) asyncSearchServer.get();
                 ArrayList<Task> localList = (ArrayList<Task>) asyncSearch.get();
 
+                if((serverList == null) || (localList == null)){
+                    return;
+                }
                 HashMap<Task, Task> localHash = new HashMap<Task, Task>();
                 for(Task task : localList){
                     localHash.put(task, task);
