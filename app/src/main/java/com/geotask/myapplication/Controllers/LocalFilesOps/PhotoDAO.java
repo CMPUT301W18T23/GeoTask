@@ -33,4 +33,10 @@ public interface PhotoDAO {
 
     @RawQuery
     List<Photo> searchPhotosByQuery(SimpleSQLiteQuery build);
+
+    @Query("DELETE FROM photos")
+    int delete();
+
+    @Query("SELECT * FROM photos")
+    List<Photo> selectAll();
 }

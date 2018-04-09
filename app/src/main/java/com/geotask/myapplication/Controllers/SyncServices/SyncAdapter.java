@@ -100,7 +100,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         query.addColumns(new String[] {"flag"});
         query.addParameters(new Boolean[] {true});
         localPhotoList = (ArrayList<Photo>) database.photoDAO().searchPhotosByQuery(query.build());
-        Log.d("geotasksync", "localBidList_size = " + localBidList.size());
+        Log.d("geotasksync", "localPhotoList_size = " + localPhotoList.size());
 
 //        query = new SQLQueryBuilder(User.class);
 //        query.addColumns(new String[] {"flag"});
@@ -169,7 +169,8 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             remoteUserList = (ArrayList<User>) controller.search("", User.class);
             remotePhotoList = (ArrayList<Photo>) controller.search("", Photo.class);
             Log.d("geotasksync", "remote updated task: " + remoteTaskList.size() +
-                    ". remote updated bid: " + remoteBidList.size());
+                    ". remote updated bid: " + remoteBidList.size() + " remote updated photo "
+                    + remotePhotoList.size() + " remote updated users " + remoteUserList.size() );
 
             database.taskDAO().delete();
             Log.d("geotasksync", "task rows deleted = " + database.taskDAO().delete());
@@ -191,11 +192,13 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             Log.d("geotasksync", "bid size after pull = " + database.bidDAO().selectAll().size());
 
             Log.d("geotasksync", "user rows deleted = " + database.userDAO().delete());
+            Log.d("geotasksync", "photo rows deleted = " + database.photoDAO().delete());
             database.userDAO().insertMultiple(remoteUserList.toArray(new User[remoteUserList.size()]));
             database.photoDAO().insertMultiple(remotePhotoList.toArray(new Photo[remotePhotoList.size()]));
 //            for(User user : (List<User>) controller.search("", User.class)) {
 //                database.userDAO().insert(user);
 //            }
+            Log.d("geotasksync", "photo size after pull = " + database.photoDAO().selectAll().size());
         } catch (IOException e) {e.printStackTrace();}
         Log.d("geotasksync", "done");
 
