@@ -51,15 +51,12 @@ public class RegisterActivity extends AbstractGeoTaskActivity{
         newName = findViewById(R.id.newName);
         newPhone = findViewById(R.id.newPhone);
         newEmail = findViewById(R.id.newEmail);
-        //photobyte = new byte[1024];
+        photobyte = new byte[0];
         context = getApplicationContext();
 
         userPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                imagePicker = new ImagePicker();
-                imagePicker.setTitle("Select Photo");
-                imagePicker.setCropImage(true);
                 openPhoto();
             }
         });
@@ -180,6 +177,9 @@ public class RegisterActivity extends AbstractGeoTaskActivity{
 
 
     public void openPhoto() {
+        imagePicker = new ImagePicker();
+        imagePicker.setTitle("Select Photo");
+        imagePicker.setCropImage(true);
         imagePicker = new ImagePicker();
         imagePicker.setTitle("Select Photo");
         imagePicker.setCropImage(true);
