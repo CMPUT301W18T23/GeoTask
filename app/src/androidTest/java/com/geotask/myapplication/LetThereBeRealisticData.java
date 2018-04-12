@@ -5,6 +5,8 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.geotask.myapplication.Controllers.ElasticsearchController;
 import com.geotask.myapplication.Controllers.LocalFilesOps.LocalDataBase;
+import com.geotask.myapplication.DataClasses.Bid;
+import com.geotask.myapplication.DataClasses.Photo;
 import com.geotask.myapplication.DataClasses.Task;
 import com.geotask.myapplication.DataClasses.User;
 
@@ -71,7 +73,7 @@ public class LetThereBeRealisticData {
                 "Abby Chauncey  \n" +
                 "Katharina Grund  \n" +
                 "\n";
-
+        generated = generated.toLowerCase();
         String phoneGen = "(725) 950-2919\n" +
                 "(817) 915-1817\n" +
                 "(145) 805-4527\n" +
@@ -109,7 +111,7 @@ public class LetThereBeRealisticData {
 
         for (int i = 0; i < 60; i+=2) {
             name[i/2] = singleName.get(i) + " " + singleName.get(i+1);
-            email[i/2] = singleName.get(i) + singleName.get(i+1)+ "@gmail.com";
+            email[i/2] = singleName.get(i) + "@gmail.com";
             phoneNumber[i/2] = "780" + phone.get(i+1);
         }
 
@@ -127,7 +129,7 @@ public class LetThereBeRealisticData {
                 "\n" +
                 "clothes\n" +
                 "\n" +
-                "wife\n" +
+                "shed\n" +
                 "\n" +
                 "rusty nail\n" +
                 "\n" +
@@ -263,21 +265,21 @@ public class LetThereBeRealisticData {
                 "\n" +
                 "hair brush\n" +
                 "\n" +
-                "tissue box\n" +
+                "car\n" +
                 "\n" +
-                "rubber duck\n" +
+                "car\n" +
                 "\n" +
-                "slipper\n" +
+                "car\n" +
                 "\n" +
-                "brocolli\n" +
+                "car\n" +
                 "\n" +
-                "remote\n" +
+                "car\n" +
                 "\n" +
                 "bracelet\n" +
                 "\n" +
                 "lace\n" +
                 "\n" +
-                "carrots\n" +
+                "creek\n" +
                 "\n" +
                 "desk\n" +
                 "\n" +
@@ -349,8 +351,16 @@ public class LetThereBeRealisticData {
 
         ArrayList<User> users = new ArrayList<User>();
         byte[] photobyte = new byte[0];
+        ArrayList<byte[]> taskPhoto = new ArrayList<byte[]>();
+        Photo photo = new Photo("123", taskPhoto);
+        controller.createNewDocument(photo);
+        taskPhoto.add(photobyte);
         User master = new User(photobyte, "1111", "1", "111111111111");
+        User master2 = new User(photobyte, "2222", "mtang@ualberta.ca", "22222222");
+
         controller.createNewDocument(master);
+        controller.createNewDocument(master2);
+
         for(int i = 0; i< 30; i++) {
             User a = new User(photobyte, name[i],email[i],phoneNumber[i]);
             controller.createNewDocument(a);
@@ -376,9 +386,17 @@ public class LetThereBeRealisticData {
             String lat = Double.toString(x)+","+Double.toString(y);
             Task a = new Task(users.get(i%30).getObjectID(),title[i],description[i], lat);
 //            controller.createNewDocument(a);
+            a.setPhotoList(photo.getObjectID());
             tasks.add(a);
             try {
+                if (i > 72){
+                    int value = rand.nextInt(100)+1;
+                    Bid bid = new Bid(users.get((i%29)+1).getObjectID() , (double) value, a.getObjectID());
+                    controller.createNewDocument(bid);
+                    a.setStatusBidded();
+                }
                     controller.createNewDocument(a);
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
